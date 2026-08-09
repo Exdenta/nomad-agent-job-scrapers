@@ -42,17 +42,19 @@ separate previously-delivered cache are intentionally outside this template.
 
 Deliverables:
 
-- importable scenario blueprint;
-- completed-Actor-run trigger/webhook;
-- paginated dataset retrieval;
-- flat mapping;
-- Airtable + Slack default route;
-- documented substitutions for Google Sheets + email;
-- error handler and idempotent rerun behavior.
+- [x] importable scenario blueprint JSON;
+- [x] scheduled or manual Actor run with bounded smoke-test defaults;
+- [x] dataset retrieval through Make's native Apify app;
+- [x] strict six-root validation and 32-column flat mapping in Make Code;
+- [x] Google Sheets lookup and append/update on `jobKey`;
+- [x] sequential rerun behavior without a separate delivery cache;
+- [x] connection, smoke-test, and scheduling instructions.
 
-Needed for an offline blueprint: chosen default route. Needed for proof: a Make
-workspace and disposable Apify, Airtable/Google, and Slack/email connections.
-Connection IDs and secrets will never be committed.
+The basic pack is intentionally Google Sheets only. Slack, email, Airtable,
+data stores, and a second advanced scenario are outside this template. The
+blueprint and mappings are offline tested. Needed for live proof: a Make
+workspace plus disposable Apify and Google connections. Connection IDs and
+secrets will never be committed.
 
 ## Pack 3: Airtable
 
@@ -114,7 +116,7 @@ Recommended defaults:
 | License | MIT for unrestricted reuse, including commercial use |
 | Primary API examples | TypeScript and Python |
 | n8n default | Basic Google Sheets append-or-update only |
-| Make default | Airtable + Slack, with Sheets/email substitutions |
+| Make default | Basic Google Sheets upsert only |
 
 The repository can be published after the owner, visibility, and license are
 confirmed and GitHub CLI authentication is restored.
