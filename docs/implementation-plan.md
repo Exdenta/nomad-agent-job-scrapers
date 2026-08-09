@@ -114,7 +114,7 @@ Recommended defaults:
 | GitHub owner/name | `Exdenta/nomad-agent-job-scrapers` |
 | Display name | Nomad Agent Job Scrapers |
 | Visibility | Public |
-| License | Apache-2.0 for broad integration reuse and an explicit patent grant |
+| License | MIT for unrestricted reuse, including commercial use |
 | Primary API examples | TypeScript and Python |
 | n8n default | Google Sheets + Telegram, with email variant |
 | Make default | Airtable + Slack, with Sheets/email substitutions |

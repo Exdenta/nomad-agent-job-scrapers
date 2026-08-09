@@ -99,7 +99,17 @@ tests/            Offline contract and mapper tests
 - Do not publish personal data or raw descriptions to destination systems
   without confirming the destination's retention and access controls.
 
-## Project status and license
+## Project status
 
-This is a pre-release scaffold. A license has not been selected yet; until one
-is added, normal copyright restrictions apply.
+This is a pre-release scaffold. The integration assets target the upcoming
+Actor `0.6` contract until live deployment verification is complete.
+
+## License
+
+The schemas, scripts, Agent Skills, examples, and documentation contained in
+this repository are available under the [MIT License](LICENSE), including for
+commercial use.
+
+The license applies only to files published in this repository. Hosted Apify
+Actor implementations are not included here and are not licensed by this
+repository.
