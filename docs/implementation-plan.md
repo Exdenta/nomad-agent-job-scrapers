@@ -111,8 +111,8 @@ Recommended defaults:
 
 | Decision | Recommendation |
 | --- | --- |
-| GitHub owner/name | `Exdenta/open-job-scrapers` |
-| Display name | Open Job Scrapers by Nomad Agent |
+| GitHub owner/name | `Exdenta/nomad-agent-job-scrapers` |
+| Display name | Nomad Agent Job Scrapers |
 | Visibility | Public |
 | License | Apache-2.0 for broad integration reuse and an explicit patent grant |
 | Primary API examples | TypeScript and Python |

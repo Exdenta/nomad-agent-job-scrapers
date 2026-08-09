@@ -1,7 +1,9 @@
-# Open Job Scrapers by Nomad Agent
+# Nomad Agent Job Scrapers
 
-Open integration recipes and agent skills for job-search Actors that return a
-shared normalized job contract.
+Open schemas, integration recipes, and agent skills for Nomad Agent job-search
+Actors. The Actor implementations may be hosted services; this repository
+publishes their interoperability layer, not a claim that every scraper is open
+source.
 
 The first supported source is the Apify Actor
 [`nomad-agent/linkedin-enrich-translate-normalize-scraper`](https://apify.com/nomad-agent/linkedin-enrich-translate-normalize-scraper).
