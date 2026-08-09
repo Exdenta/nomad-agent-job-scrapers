@@ -122,8 +122,10 @@ processing is enabled so two bundles cannot race to append the same key.
 The blueprint JSON, Actor request, Make Code projection, 32-column mapping,
 credential hygiene, and router structure are covered by offline repository
 tests. The Actor build and the equivalent n8n-to-Google-Sheets path were
-live-validated on 2026-08-09. Import and execution in a Make workspace still
-require a connected Make account and are not claimed as live-validated yet.
+live-validated on 2026-08-09. The eight-module blueprint was also imported and
+saved as a real Make scenario on that date. End-to-end Make execution is not
+claimed yet because the public blueprint intentionally contains no Apify or
+Google account connections.
 
 ## Security notes
 
@@ -139,4 +141,3 @@ require a connected Make account and are not claimed as live-validated yet.
 - [Make Apify app](https://apps.make.com/apify)
 - [Make Google Sheets app](https://apps.make.com/google-sheets)
 - [Make module types](https://help.make.com/types-of-modules)
-

@@ -52,9 +52,10 @@ Deliverables:
 
 The basic pack is intentionally Google Sheets only. Slack, email, Airtable,
 data stores, and a second advanced scenario are outside this template. The
-blueprint and mappings are offline tested. Needed for live proof: a Make
-workspace plus disposable Apify and Google connections. Connection IDs and
-secrets will never be committed.
+blueprint and mappings are offline tested, and import plus scenario saving were
+live-validated in Make on 2026-08-09. An end-to-end run still needs disposable
+Apify and Google connections. Connection IDs and secrets will never be
+committed.
 
 ## Pack 3: Airtable
 
