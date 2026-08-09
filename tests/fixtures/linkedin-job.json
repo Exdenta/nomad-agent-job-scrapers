@@ -1,0 +1,110 @@
+{
+  "schemaVersion": "nomad-agent-job-v1",
+  "identity": {
+    "source": "linkedin",
+    "externalId": "4446226935",
+    "url": "https://www.linkedin.com/jobs/view/software-engineer-4446226935"
+  },
+  "data": {
+    "title": "Software Engineer",
+    "company": {
+      "name": "Acme",
+      "sourceId": "6453825",
+      "department": null,
+      "url": "https://www.linkedin.com/company/acme",
+      "logoUrl": "https://example.com/logo.png"
+    },
+    "classification": {
+      "industries": ["Software Development"],
+      "jobFunctions": ["Engineering"]
+    },
+    "domains": null,
+    "domainsRaw": null,
+    "locations": [
+      {
+        "raw": "Madrid, Community of Madrid, Spain (Hybrid)",
+        "countryName": "Spain",
+        "countryCode": "ES",
+        "city": "Madrid",
+        "region": "Community of Madrid",
+        "postalCode": null,
+        "streetAddress": null,
+        "facilityName": null,
+        "positionsAvailable": null,
+        "latitude": null,
+        "longitude": null
+      }
+    ],
+    "employment": {
+      "workArrangements": ["hybrid"],
+      "applicantLocationRequirements": null,
+      "workSchedules": ["full_time"],
+      "contractTypes": [],
+      "durationMonths": null,
+      "hoursPerWeek": null,
+      "hoursPerWeekRaw": null,
+      "startDate": null,
+      "startDateRaw": null
+    },
+    "application": {
+      "postedAt": "2026-08-03",
+      "deadline": null,
+      "referenceNumber": "4446226935",
+      "referenceNumberIssuer": "Acme",
+      "applicantSnapshot": {
+        "count": 108,
+        "raw": "108 applicants",
+        "capturedAt": "2026-08-05T12:00:00Z"
+      },
+      "url": null,
+      "email": null,
+      "directApply": null,
+      "hiringContacts": null,
+      "eligibilityCriteria": null,
+      "selectionProcess": null
+    },
+    "seniority": {
+      "raw": ["Entry level"],
+      "levels": ["entry"]
+    },
+    "requirements": {
+      "education": null,
+      "experience": null,
+      "languages": null,
+      "requiredSkills": null,
+      "preferredSkills": null,
+      "certifications": null,
+      "skillsQualifications": null,
+      "specificRequirements": null
+    },
+    "benefits": null,
+    "funding": {
+      "programme": null
+    },
+    "compensation": {
+      "currency": "EUR",
+      "exact": null,
+      "minimum": 50000,
+      "maximum": 70000,
+      "period": "year",
+      "raw": "EUR 50,000-70,000 per year"
+    },
+    "constraints": {
+      "visaSponsorship": null,
+      "workAuthorization": null,
+      "securityClearance": null,
+      "locationPreference": null
+    }
+  },
+  "custom": null,
+  "llm": {
+    "status": "not_requested",
+    "requestedFields": [],
+    "filledFields": [],
+    "provider": null,
+    "model": null,
+    "promptVersion": null,
+    "completedAt": null
+  },
+  "raw": null
+}

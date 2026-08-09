@@ -1,0 +1,4 @@
+interface:
+  display_name: "LinkedIn Normalized Job Search"
+  short_description: "Search LinkedIn jobs with the normalized Apify Actor"
+  default_prompt: "Use $linkedin-enrich-translate-normalize-scraper to search LinkedIn jobs and preserve the normalized contract."
