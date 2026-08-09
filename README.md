@@ -44,8 +44,8 @@ Codex instructions.
 | Priority | Pack | Workflow | Status |
 | --- | --- | --- | --- |
 | 1 | [n8n](integrations/n8n/README.md) | Schedule -> Actor -> flatten -> Google Sheets append-or-update | Public import; Apify + n8n Cloud + Google Sheets live-validated |
-| 2 | [Make](integrations/make/README.md) | Schedule -> Actor -> flatten -> Google Sheets upsert | Public blueprint; Make import and scenario save live-validated |
-| 3 | Airtable | Field mapping and duplicate detection using stable job identity | Planned |
+| 2 | [Make](integrations/make/README.md) | Completed Actor run -> flatten -> Google Sheets upsert | Free-plan blueprint; append/update live-validated |
+| 3 | [Airtable](integrations/airtable/README.md) | Import 32 fields and upsert on stable `jobKey` | Public workbook and typed field preset |
 | 4 | MCP | ChatGPT, Claude, Cursor, Codex, or another MCP client | Initial implementation |
 | 5 | API/webhook | Custom job board, database, or internal application | Planned |
 

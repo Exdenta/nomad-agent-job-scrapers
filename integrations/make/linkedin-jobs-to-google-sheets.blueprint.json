@@ -3,50 +3,31 @@
   "flow": [
     {
       "id": 1,
-      "module": "util:BasicTrigger",
+      "module": "apify:finishedActorRuns",
       "version": 1,
-      "parameters": {
-        "values": [
-          {
-            "spec": [
-              { "name": "actorBuild", "value": "0.6.19" },
-              { "name": "keyword", "value": "software engineer" },
-              { "name": "location", "value": "United States" },
-              { "name": "postedWithin", "value": "30d" },
-              { "name": "workArrangementsJson", "value": "[]" },
-              { "name": "maxItems", "value": "1" },
-              { "name": "maxTotalChargeUsd", "value": "0.1" },
-              { "name": "googleSpreadsheetId", "value": "REPLACE_WITH_GOOGLE_SPREADSHEET_ID" },
-              { "name": "googleSheetName", "value": "Jobs" }
-            ]
-          }
-        ]
-      },
+      "parameters": {},
       "mapper": {},
       "metadata": {
-        "designer": { "x": 0, "y": 0, "name": "Configuration" },
-        "notes": "Start with maxItems=1. Replace the spreadsheet ID and connect Apify and Google Sheets before running."
+        "designer": { "x": 0, "y": 0, "name": "Watch completed LinkedIn Actor runs" },
+        "notes": "Create an Apify webhook for the LinkedIn Jobs Scraper — Normalized Contract Actor. The asynchronous trigger avoids Make's 120-second synchronous Actor limit."
       }
     },
     {
       "id": 2,
-      "module": "apify:runActorNew",
+      "module": "util:SetVariables",
       "version": 1,
       "parameters": {},
       "mapper": {
-        "actorId": "kqIdAA2UQiPdOtzEB",
-        "runSync": true,
-        "build": "{{1.actorBuild}}",
-        "timeout": 120,
-        "memory": 512,
-        "maxItems": "{{1.maxItems}}",
-        "maxTotalChargeUsd": "{{1.maxTotalChargeUsd}}",
-        "actor_search_type": "user",
-        "inputBodykqIdAA2UQiPdOtzEB": "{\n  \"schemaVersion\": \"nomad-agent-job-search-input-v1\",\n  \"keyword\": \"{{1.keyword}}\",\n  \"location\": \"{{1.location}}\",\n  \"postedWithin\": \"{{1.postedWithin}}\",\n  \"workArrangements\": {{1.workArrangementsJson}},\n  \"maxItems\": {{1.maxItems}},\n  \"translateToEnglish\": false,\n  \"aiEnrichment\": false,\n  \"includeRaw\": false,\n  \"dedupe\": { \"enabled\": false, \"key\": \"\", \"stateResetAcknowledged\": false },\n  \"analyticsEnabled\": false\n}"
+        "variables": [
+          { "name": "maxitems", "value": "1" },
+          { "name": "googlespreadsheetid", "value": "REPLACE_WITH_GOOGLE_SPREADSHEET_ID" },
+          { "name": "googlesheetname", "value": "Jobs" }
+        ],
+        "scope": "roundtrip"
       },
       "metadata": {
-        "designer": { "x": 300, "y": 0, "name": "Run LinkedIn jobs Actor" },
-        "notes": "Select your Apify connection. The public Actor ID is pinned and the first run is bounded to one item."
+        "designer": { "x": 300, "y": 0, "name": "Configuration" },
+        "notes": "Replace the spreadsheet ID. Keep maxitems=1 for the first completed-run smoke test."
       }
     },
     {
@@ -56,9 +37,9 @@
       "parameters": {},
       "mapper": {
         "type": "clean",
-        "limit": "{{1.maxItems}}",
+        "limit": "{{2.maxitems}}",
         "format": "json",
-        "datasetId": "{{2.defaultDatasetId}}"
+        "datasetId": "{{1.defaultDatasetId}}"
       },
       "metadata": {
         "designer": { "x": 600, "y": 0, "name": "Get normalized jobs" },
@@ -67,21 +48,56 @@
     },
     {
       "id": 4,
-      "module": "code:ExecuteCode",
+      "module": "util:SetVariables",
       "version": 1,
       "parameters": {},
+      "filter": {
+        "name": "Skip empty Actor runs",
+        "conditions": [[
+          { "a": "{{3.identity.source}}", "o": "exist" },
+          { "a": "{{3.identity.externalId}}", "o": "exist" }
+        ]]
+      },
       "mapper": {
-        "language": "javascript",
-        "inputFormat": "editor",
-        "dependencies": [],
-        "input": [
-          { "name": "job", "value": "{{`3`}}" }
+        "variables": [
+          { "name": "schemaVersion", "value": "nomad-agent-flat-job-v1" },
+          { "name": "jobKey", "value": "{{3.identity.source}}:{{3.identity.externalId}}" },
+          { "name": "source", "value": "{{3.identity.source}}" },
+          { "name": "identityExternalId", "value": "{{3.identity.externalId}}" },
+          { "name": "jobUrl", "value": "{{3.identity.url}}" },
+          { "name": "title", "value": "{{3.data.title}}" },
+          { "name": "companyName", "value": "{{3.data.company.name}}" },
+          { "name": "companySourceId", "value": "{{3.data.company.sourceId}}" },
+          { "name": "companyUrl", "value": "{{3.data.company.url}}" },
+          { "name": "locationText", "value": "{{get(first(3.data.locations); \"raw\")}}" },
+          { "name": "countryCode", "value": "{{get(first(3.data.locations); \"countryCode\")}}" },
+          { "name": "city", "value": "{{get(first(3.data.locations); \"city\")}}" },
+          { "name": "region", "value": "{{get(first(3.data.locations); \"region\")}}" },
+          { "name": "workArrangements", "value": "{{if(3.data.employment.workArrangements = null; null; if(length(3.data.employment.workArrangements) = 0; \"[]\"; join(add(emptyarray; \"[\\\"\"; join(3.data.employment.workArrangements; \"\\\",\\\"\"); \"\\\"]\"); emptystring)))}}" },
+          { "name": "workSchedules", "value": "{{if(3.data.employment.workSchedules = null; null; if(length(3.data.employment.workSchedules) = 0; \"[]\"; join(add(emptyarray; \"[\\\"\"; join(3.data.employment.workSchedules; \"\\\",\\\"\"); \"\\\"]\"); emptystring)))}}" },
+          { "name": "contractTypes", "value": "{{if(3.data.employment.contractTypes = null; null; if(length(3.data.employment.contractTypes) = 0; \"[]\"; join(add(emptyarray; \"[\\\"\"; join(3.data.employment.contractTypes; \"\\\",\\\"\"); \"\\\"]\"); emptystring)))}}" },
+          { "name": "postedAt", "value": "{{3.data.application.postedAt}}" },
+          { "name": "applicationDeadline", "value": "{{3.data.application.deadline}}" },
+          { "name": "applicationUrl", "value": "{{3.data.application.url}}" },
+          { "name": "applicationEmail", "value": "{{3.data.application.email}}" },
+          { "name": "directApply", "value": "{{3.data.application.directApply}}" },
+          { "name": "seniorityLevels", "value": "{{if(3.data.seniority.levels = null; null; if(length(3.data.seniority.levels) = 0; \"[]\"; join(add(emptyarray; \"[\\\"\"; join(3.data.seniority.levels; \"\\\",\\\"\"); \"\\\"]\"); emptystring)))}}" },
+          { "name": "industries", "value": "{{if(3.data.classification.industries = null; null; if(length(3.data.classification.industries) = 0; \"[]\"; join(add(emptyarray; \"[\\\"\"; join(3.data.classification.industries; \"\\\",\\\"\"); \"\\\"]\"); emptystring)))}}" },
+          { "name": "jobFunctions", "value": "{{if(3.data.classification.jobFunctions = null; null; if(length(3.data.classification.jobFunctions) = 0; \"[]\"; join(add(emptyarray; \"[\\\"\"; join(3.data.classification.jobFunctions; \"\\\",\\\"\"); \"\\\"]\"); emptystring)))}}" },
+          { "name": "salaryCurrency", "value": "{{3.data.compensation.currency}}" },
+          { "name": "salaryExact", "value": "{{3.data.compensation.exact}}" },
+          { "name": "salaryMinimum", "value": "{{3.data.compensation.minimum}}" },
+          { "name": "salaryMaximum", "value": "{{3.data.compensation.maximum}}" },
+          { "name": "salaryPeriod", "value": "{{3.data.compensation.period}}" },
+          { "name": "salaryRaw", "value": "{{3.data.compensation.raw}}" },
+          { "name": "descriptionText", "value": "{{3.data.descriptionText}}" },
+          { "name": "llmStatus", "value": "{{ifempty(3.llm.status; \"not_requested\")}}" }
         ],
-        "codeEditorJavascript": "const job = input.job;\nconst roots = ['schemaVersion', 'identity', 'data', 'custom', 'llm', 'raw'];\nif (!job || typeof job !== 'object') throw new Error('Actor item must be an object.');\nconst actualRoots = Object.keys(job).sort();\nconst expectedRoots = [...roots].sort();\nif (JSON.stringify(actualRoots) !== JSON.stringify(expectedRoots)) throw new Error('Actor item has unexpected roots: ' + actualRoots.join(', '));\nif (job.schemaVersion !== 'nomad-agent-job-v1') throw new Error('Expected nomad-agent-job-v1.');\nconst identity = job.identity || {};\nif (!identity.source || identity.externalId == null) throw new Error('identity.source and identity.externalId are required.');\nconst data = job.data || {};\nconst company = data.company || {};\nconst classification = data.classification || {};\nconst location = Array.isArray(data.locations) && data.locations.length ? data.locations[0] : {};\nconst employment = data.employment || {};\nconst application = data.application || {};\nconst seniority = data.seniority || {};\nconst compensation = data.compensation || {};\nconst compact = value => value == null ? null : JSON.stringify(value);\nreturn {\n  schemaVersion: 'nomad-agent-flat-job-v1',\n  jobKey: String(identity.source) + ':' + String(identity.externalId),\n  source: String(identity.source),\n  identityExternalId: String(identity.externalId),\n  jobUrl: identity.url ?? null,\n  title: data.title ?? null,\n  companyName: company.name ?? null,\n  companySourceId: company.sourceId ?? null,\n  companyUrl: company.url ?? null,\n  locationText: location.raw ?? null,\n  countryCode: location.countryCode ?? null,\n  city: location.city ?? null,\n  region: location.region ?? null,\n  workArrangements: compact(employment.workArrangements),\n  workSchedules: compact(employment.workSchedules),\n  contractTypes: compact(employment.contractTypes),\n  postedAt: application.postedAt ?? null,\n  applicationDeadline: application.deadline ?? null,\n  applicationUrl: application.url ?? null,\n  applicationEmail: application.email ?? null,\n  directApply: application.directApply ?? null,\n  seniorityLevels: compact(seniority.levels),\n  industries: compact(classification.industries),\n  jobFunctions: compact(classification.jobFunctions),\n  salaryCurrency: compensation.currency ?? null,\n  salaryExact: compensation.exact ?? null,\n  salaryMinimum: compensation.minimum ?? null,\n  salaryMaximum: compensation.maximum ?? null,\n  salaryPeriod: compensation.period ?? null,\n  salaryRaw: compensation.raw ?? null,\n  descriptionText: data.descriptionText ?? null,\n  llmStatus: job.llm && job.llm.status != null ? job.llm.status : null\n};"
+        "scope": "roundtrip"
       },
       "metadata": {
-        "designer": { "x": 900, "y": 0, "name": "Validate and flatten job" },
-        "notes": "Validates the six-root canonical contract and creates the 32-column nomad-agent-flat-job-v1 projection."
+        "designer": { "x": 900, "y": 0, "name": "Flatten normalized job" },
+        "notes": "Creates the 32-column nomad-agent-flat-job-v1 projection with Make's free built-in Tools module. No paid Make Code app is required."
       }
     },
     {
@@ -95,12 +111,12 @@
         "continue": true,
         "filter": [
           [
-            { "a": "B", "b": "{{4.result.jobKey}}", "o": "text:equal" }
+            { "a": "B", "b": "{{4.jobKey}}", "o": "text:equal" }
           ]
         ],
-        "sheetId": "{{1.googleSheetName}}",
+        "sheetId": "{{2.googlesheetname}}",
         "sortOrder": "asc",
-        "spreadsheetId": "{{1.googleSpreadsheetId}}",
+        "spreadsheetId": "{{2.googlespreadsheetid}}",
         "tableFirstRow": "A1:AF1",
         "includesHeaders": true,
         "valueRenderOption": "FORMATTED_VALUE",
@@ -134,46 +150,46 @@
               },
               "mapper": {
                 "mode": "map",
-                "spreadsheetId": "{{1.googleSpreadsheetId}}",
-                "sheetId": "{{1.googleSheetName}}",
+                "spreadsheetId": "{{2.googlespreadsheetid}}",
+                "sheetId": "{{2.googlesheetname}}",
                 "rowNumber": "{{5.__ROW_NUMBER__}}",
                 "tableFirstRow": "A1:AF1",
                 "includesHeaders": true,
                 "useColumnHeaders": false,
                 "valueInputOption": "USER_ENTERED",
                 "values": {
-                  "0": "{{4.result.schemaVersion}}",
-                  "1": "{{4.result.jobKey}}",
-                  "2": "{{4.result.source}}",
-                  "3": "{{4.result.identityExternalId}}",
-                  "4": "{{4.result.jobUrl}}",
-                  "5": "{{4.result.title}}",
-                  "6": "{{4.result.companyName}}",
-                  "7": "{{4.result.companySourceId}}",
-                  "8": "{{4.result.companyUrl}}",
-                  "9": "{{4.result.locationText}}",
-                  "10": "{{4.result.countryCode}}",
-                  "11": "{{4.result.city}}",
-                  "12": "{{4.result.region}}",
-                  "13": "{{4.result.workArrangements}}",
-                  "14": "{{4.result.workSchedules}}",
-                  "15": "{{4.result.contractTypes}}",
-                  "16": "{{4.result.postedAt}}",
-                  "17": "{{4.result.applicationDeadline}}",
-                  "18": "{{4.result.applicationUrl}}",
-                  "19": "{{4.result.applicationEmail}}",
-                  "20": "{{4.result.directApply}}",
-                  "21": "{{4.result.seniorityLevels}}",
-                  "22": "{{4.result.industries}}",
-                  "23": "{{4.result.jobFunctions}}",
-                  "24": "{{4.result.salaryCurrency}}",
-                  "25": "{{4.result.salaryExact}}",
-                  "26": "{{4.result.salaryMinimum}}",
-                  "27": "{{4.result.salaryMaximum}}",
-                  "28": "{{4.result.salaryPeriod}}",
-                  "29": "{{4.result.salaryRaw}}",
-                  "30": "{{4.result.descriptionText}}",
-                  "31": "{{4.result.llmStatus}}"
+                  "0": "{{4.schemaVersion}}",
+                  "1": "{{4.jobKey}}",
+                  "2": "{{4.source}}",
+                  "3": "{{4.identityExternalId}}",
+                  "4": "{{4.jobUrl}}",
+                  "5": "{{4.title}}",
+                  "6": "{{4.companyName}}",
+                  "7": "{{4.companySourceId}}",
+                  "8": "{{4.companyUrl}}",
+                  "9": "{{4.locationText}}",
+                  "10": "{{4.countryCode}}",
+                  "11": "{{4.city}}",
+                  "12": "{{4.region}}",
+                  "13": "{{4.workArrangements}}",
+                  "14": "{{4.workSchedules}}",
+                  "15": "{{4.contractTypes}}",
+                  "16": "{{4.postedAt}}",
+                  "17": "{{4.applicationDeadline}}",
+                  "18": "{{4.applicationUrl}}",
+                  "19": "{{4.applicationEmail}}",
+                  "20": "{{4.directApply}}",
+                  "21": "{{4.seniorityLevels}}",
+                  "22": "{{4.industries}}",
+                  "23": "{{4.jobFunctions}}",
+                  "24": "{{4.salaryCurrency}}",
+                  "25": "{{4.salaryExact}}",
+                  "26": "{{4.salaryMinimum}}",
+                  "27": "{{4.salaryMaximum}}",
+                  "28": "{{4.salaryPeriod}}",
+                  "29": "{{4.salaryRaw}}",
+                  "30": "{{4.descriptionText}}",
+                  "31": "{{4.llmStatus}}"
                 }
               },
               "metadata": {
@@ -197,45 +213,45 @@
               "mapper": {
                 "mode": "map",
                 "from": "drive",
-                "spreadsheetId": "{{1.googleSpreadsheetId}}",
-                "sheetId": "{{1.googleSheetName}}",
+                "spreadsheetId": "{{2.googlespreadsheetid}}",
+                "sheetId": "{{2.googlesheetname}}",
                 "includesHeaders": true,
                 "insertUnformatted": false,
                 "insertDataOption": "INSERT_ROWS",
                 "valueInputOption": "USER_ENTERED",
                 "values": {
-                  "0": "{{4.result.schemaVersion}}",
-                  "1": "{{4.result.jobKey}}",
-                  "2": "{{4.result.source}}",
-                  "3": "{{4.result.identityExternalId}}",
-                  "4": "{{4.result.jobUrl}}",
-                  "5": "{{4.result.title}}",
-                  "6": "{{4.result.companyName}}",
-                  "7": "{{4.result.companySourceId}}",
-                  "8": "{{4.result.companyUrl}}",
-                  "9": "{{4.result.locationText}}",
-                  "10": "{{4.result.countryCode}}",
-                  "11": "{{4.result.city}}",
-                  "12": "{{4.result.region}}",
-                  "13": "{{4.result.workArrangements}}",
-                  "14": "{{4.result.workSchedules}}",
-                  "15": "{{4.result.contractTypes}}",
-                  "16": "{{4.result.postedAt}}",
-                  "17": "{{4.result.applicationDeadline}}",
-                  "18": "{{4.result.applicationUrl}}",
-                  "19": "{{4.result.applicationEmail}}",
-                  "20": "{{4.result.directApply}}",
-                  "21": "{{4.result.seniorityLevels}}",
-                  "22": "{{4.result.industries}}",
-                  "23": "{{4.result.jobFunctions}}",
-                  "24": "{{4.result.salaryCurrency}}",
-                  "25": "{{4.result.salaryExact}}",
-                  "26": "{{4.result.salaryMinimum}}",
-                  "27": "{{4.result.salaryMaximum}}",
-                  "28": "{{4.result.salaryPeriod}}",
-                  "29": "{{4.result.salaryRaw}}",
-                  "30": "{{4.result.descriptionText}}",
-                  "31": "{{4.result.llmStatus}}"
+                  "0": "{{4.schemaVersion}}",
+                  "1": "{{4.jobKey}}",
+                  "2": "{{4.source}}",
+                  "3": "{{4.identityExternalId}}",
+                  "4": "{{4.jobUrl}}",
+                  "5": "{{4.title}}",
+                  "6": "{{4.companyName}}",
+                  "7": "{{4.companySourceId}}",
+                  "8": "{{4.companyUrl}}",
+                  "9": "{{4.locationText}}",
+                  "10": "{{4.countryCode}}",
+                  "11": "{{4.city}}",
+                  "12": "{{4.region}}",
+                  "13": "{{4.workArrangements}}",
+                  "14": "{{4.workSchedules}}",
+                  "15": "{{4.contractTypes}}",
+                  "16": "{{4.postedAt}}",
+                  "17": "{{4.applicationDeadline}}",
+                  "18": "{{4.applicationUrl}}",
+                  "19": "{{4.applicationEmail}}",
+                  "20": "{{4.directApply}}",
+                  "21": "{{4.seniorityLevels}}",
+                  "22": "{{4.industries}}",
+                  "23": "{{4.jobFunctions}}",
+                  "24": "{{4.salaryCurrency}}",
+                  "25": "{{4.salaryExact}}",
+                  "26": "{{4.salaryMinimum}}",
+                  "27": "{{4.salaryMaximum}}",
+                  "28": "{{4.salaryPeriod}}",
+                  "29": "{{4.salaryRaw}}",
+                  "30": "{{4.descriptionText}}",
+                  "31": "{{4.llmStatus}}"
                 }
               },
               "metadata": {
@@ -249,7 +265,7 @@
     }
   ],
   "metadata": {
-    "instant": false,
+    "instant": true,
     "version": 1,
     "scenario": {
       "roundtrips": 1,

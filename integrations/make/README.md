@@ -2,7 +2,7 @@
 
 Import
 [linkedin-jobs-to-google-sheets.blueprint.json](linkedin-jobs-to-google-sheets.blueprint.json)
-to run a bounded LinkedIn job search, validate and flatten the normalized
+to watch completed LinkedIn Actor runs, validate and flatten their normalized
 records, and append or update rows in Google Sheets.
 
 This is the same deliberately small workflow as the basic n8n pack. It has no
@@ -11,18 +11,19 @@ Slack, email, Airtable, data store, or separate delivery cache.
 ## Workflow
 
 ```text
-Scheduled or manual scenario run
+Completed LinkedIn Actor run
+  -> Apify webhook trigger
   -> Configuration
-  -> Run LinkedIn jobs Actor
   -> Get normalized jobs
   -> Validate and flatten each job
   -> Find a Google Sheets row by jobKey
   -> Update the existing row or append a new row
 ```
 
-The Actor remains the source of canonical `nomad-agent-job-v1` records. Make
-Code creates the table-oriented `nomad-agent-flat-job-v1` projection; it does
-not change the Actor output.
+The Actor remains the source of canonical `nomad-agent-job-v1` records. Make's
+built-in **Set multiple variables** module creates the table-oriented
+`nomad-agent-flat-job-v1` projection; it does not change the Actor output and
+does not require the paid Make Code app.
 
 ## 1. Import the blueprint
 
@@ -47,19 +48,18 @@ https://docs.google.com/spreadsheets/d/SPREADSHEET_ID/edit
 
 ## 3. Connect Apify
 
-Open both Apify modules and select or create the same Apify connection:
-
-- **Run LinkedIn jobs Actor**;
-- **Get normalized jobs**.
+Create the webhook in **Watch completed LinkedIn Actor runs** and select
+**LinkedIn Jobs Scraper — Normalized Contract**. Then select the same Apify
+connection in **Get normalized jobs**.
 
 Make's Apify connection stores the API token; the blueprint contains no token.
-Use a dedicated scoped token that can run the trusted Actor and read its run
-dataset.
+Use a dedicated scoped token that can receive the Actor completion webhook and
+read its run dataset.
 
-The blueprint uses Actor ID `kqIdAA2UQiPdOtzEB`, build `0.6.19`, synchronous
-execution, 512 MB of memory, `maxItems=1`, and a `$0.10` maximum charge for the
-initial smoke test. Make's native **Run an Actor** module can wait at most 120
-seconds, so keep the first run small.
+This completion-trigger design is intentional. Make's synchronous **Run an
+Actor** action waits at most 120 seconds, which is too short for this Actor's
+production deadline reserves. Run or schedule the Actor in Apify; Make starts
+immediately after Apify reports that the run finished.
 
 ## 4. Connect Google Sheets
 
@@ -69,42 +69,39 @@ Open these three modules and select the same Google Sheets connection:
 - **Update existing job**;
 - **Append new job**.
 
-In **Configuration**, replace
-`REPLACE_WITH_GOOGLE_SPREADSHEET_ID` with the spreadsheet ID. Change `Jobs`
-only if the sheet tab has another name.
+In **Configuration**, replace the `googlespreadsheetid` value
+`REPLACE_WITH_GOOGLE_SPREADSHEET_ID` with the spreadsheet ID. Change
+`googlesheetname` from `Jobs` only if the sheet tab has another name.
 
 Open **Find row by jobKey** and confirm **Continue the execution of the route
 even if the module returns no results** is enabled. This is what lets a new
 `jobKey` reach the Append Row branch.
 
-## 5. Adjust the search
+## 5. Configure the Actor run
 
-Edit these non-secret values in **Configuration**:
+In **Configuration**, keep `maxitems=1` for the first Make smoke test. This
+limits how many completed-run dataset items Make imports; it does not change
+the Actor's own input.
 
-- `keyword`;
-- `location`, or an empty string for no location filter;
-- `actorBuild`, pinned to the live-tested `0.6.19` build;
-- `postedWithin`: `1h`, `24h`, `7d`, `30d`, or `any`;
-- `workArrangementsJson`: `[]`, `["remote"]`, `["hybrid"]`,
-  `["onsite"]`, or a JSON array containing several values;
-- `maxItems`, initially `1`;
-- `maxTotalChargeUsd`, the per-run Apify safety cap.
-
-Translation, AI enrichment, raw descriptions, analytics, and Actor-side
-cross-run deduplication are disabled in the starter request.
+Configure the actual search, build, item limit, and spending cap in Apify. For
+the first test, use the currently published `0.6` Actor version, `maxItems=1`,
+and a conservative run charge cap. The public blueprint intentionally contains
+no Actor input or billing configuration.
 
 ## 6. Test and schedule
 
-1. Click **Run once**.
-2. Confirm the Actor returned at least one canonical job.
+1. Click **Run once** so Make starts listening for the webhook.
+2. Run the LinkedIn Actor in Apify and confirm it returned at least one
+   canonical job.
 3. Confirm the `Jobs` sheet contains one flat row per `jobKey`.
-4. Run the same search again. The same `jobKey` must update its row rather than
+4. Run the same Actor input again. The same `jobKey` must update its row rather than
    append a duplicate.
 5. Increase `maxItems` only after the one-job smoke test succeeds.
-6. Configure the scenario schedule, for example once per day, and activate it.
+6. Activate the Make scenario, then schedule the Actor in Apify, for example
+   once per day.
 
-Make stores scheduling separately from an exported scenario blueprint, so an
-imported copy is not activated automatically.
+Make stores activation and Apify stores the Actor schedule separately from the
+exported blueprint. An imported copy is not activated automatically.
 
 ## Duplicate and update behavior
 
@@ -116,16 +113,26 @@ B for that value. The router then performs exactly one action:
 
 There is no separate previously-delivered cache. Sequential scenario
 processing is enabled so two bundles cannot race to append the same key.
+Runs with an empty dataset are stopped before flattening, so they never create
+placeholder rows.
+
+## Free-plan compatibility
+
+The flattening step uses only native Make functions (`first`, `get`, `if`,
+`length`, `join`, and `add`) in the built-in Tools app. The six array-valued
+fields are stored as compact JSON text. `null` becomes an empty cell while an
+explicit empty array remains the literal `[]`.
 
 ## Validation boundary
 
-The blueprint JSON, Actor request, Make Code projection, 32-column mapping,
+The blueprint JSON, asynchronous Actor handoff, native 32-column projection,
 credential hygiene, and router structure are covered by offline repository
-tests. The Actor build and the equivalent n8n-to-Google-Sheets path were
-live-validated on 2026-08-09. The eight-module blueprint was also imported and
-saved as a real Make scenario on that date. End-to-end Make execution is not
-claimed yet because the public blueprint intentionally contains no Apify or
-Google account connections.
+tests. On 2026-08-09, the Make completion webhook, dataset retrieval, append
+route, and duplicate-update route were live-validated against Actor version
+`0.6` and Google Sheets. The public blueprint was corrected from the observed
+webhook payload and remains credential-free. A synchronous test also proved
+that Make's 120-second Actor action cannot safely start every production run;
+the asynchronous completion path is the supported design.
 
 ## Security notes
 
