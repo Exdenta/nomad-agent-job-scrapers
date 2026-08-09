@@ -1,0 +1,138 @@
+from __future__ import annotations
+
+import csv
+import json
+import subprocess
+import unittest
+from pathlib import Path
+
+
+ROOT = Path(__file__).resolve().parents[1]
+WORKFLOW_PATH = (
+    ROOT
+    / "integrations"
+    / "n8n"
+    / "linkedin-jobs-to-google-sheets-telegram.json"
+)
+COLUMNS_PATH = ROOT / "integrations" / "n8n" / "google-sheets-columns.csv"
+FLAT_SCHEMA_PATH = ROOT / "integrations" / "shared" / "flat-job-v1.schema.json"
+
+
+class N8nPackTest(unittest.TestCase):
+    def setUp(self) -> None:
+        self.workflow = json.loads(WORKFLOW_PATH.read_text(encoding="utf-8"))
+        self.nodes = {node["name"]: node for node in self.workflow["nodes"]}
+
+    def test_workflow_has_unique_nodes_and_valid_connections(self) -> None:
+        self.assertEqual(len(self.nodes), len(self.workflow["nodes"]))
+        ids = [node["id"] for node in self.workflow["nodes"]]
+        self.assertEqual(len(ids), len(set(ids)))
+        for source, outputs in self.workflow["connections"].items():
+            self.assertIn(source, self.nodes)
+            for branch in outputs["main"]:
+                for target in branch:
+                    self.assertIn(target["node"], self.nodes)
+
+        self.assertEqual(
+            self.nodes["Every day at 08:00 UTC"]["type"],
+            "n8n-nodes-base.scheduleTrigger",
+        )
+        self.assertEqual(
+            self.nodes["Run manually"]["type"],
+            "n8n-nodes-base.manualTrigger",
+        )
+        self.assertFalse(self.workflow["active"])
+
+    def test_apify_request_uses_header_auth_and_bounded_v1_input(self) -> None:
+        node = self.nodes["Run Actor on Apify"]
+        params = node["parameters"]
+        self.assertEqual(params["method"], "POST")
+        self.assertEqual(params["authentication"], "genericCredentialType")
+        self.assertEqual(params["genericAuthType"], "httpHeaderAuth")
+        self.assertIn(
+            "nomad-agent~linkedin-enrich-translate-normalize-scraper/"
+            "run-sync-get-dataset-items",
+            params["url"],
+        )
+        self.assertNotIn("token=", params["url"].lower())
+        body = params["jsonBody"]
+        self.assertIn("nomad-agent-job-search-input-v1", body)
+        self.assertIn("translateToEnglish: false", body)
+        self.assertIn("aiEnrichment: false", body)
+        self.assertIn("includeRaw: false", body)
+        query = {
+            item["name"]: item["value"]
+            for item in params["queryParameters"]["parameters"]
+        }
+        self.assertEqual(query["timeout"], "300")
+        self.assertIn("maxTotalChargeUsd", query)
+
+    def test_flattening_and_dedupe_are_contract_bound(self) -> None:
+        flatten = self.nodes["Validate and flatten jobs"]["parameters"]["jsCode"]
+        self.assertIn("nomad-agent-job-v1", flatten)
+        self.assertIn("nomad-agent-flat-job-v1", flatten)
+        self.assertIn("unexpected roots", flatten)
+        self.assertIn("`${identity.source}:${stablePart}`", flatten)
+        self.assertIn("JSON.stringify(value)", flatten)
+
+        before = self.nodes["Filter previously delivered jobs"]["parameters"]["jsCode"]
+        after = self.nodes["Remember delivered jobs"]["parameters"]["jsCode"]
+        self.assertIn("$getWorkflowStaticData('global')", before)
+        self.assertIn("$getWorkflowStaticData('global')", after)
+        self.assertIn("$('Filter previously delivered jobs').all()", after)
+        self.assertIn("5000", after)
+
+    def test_embedded_flatten_javascript_matches_shared_fixture(self) -> None:
+        fixture_path = ROOT / "tests" / "fixtures" / "linkedin-job.json"
+        script = """
+const fs = require('fs');
+const workflow = JSON.parse(fs.readFileSync(process.argv[1], 'utf8'));
+const record = JSON.parse(fs.readFileSync(process.argv[2], 'utf8'));
+const node = workflow.nodes.find(value => value.name === 'Validate and flatten jobs');
+global.$input = { all: () => [{ json: record }] };
+const output = new Function(node.parameters.jsCode)();
+process.stdout.write(JSON.stringify(output));
+"""
+        completed = subprocess.run(
+            ["node", "-e", script, str(WORKFLOW_PATH), str(fixture_path)],
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+        flattened = json.loads(completed.stdout)[0]["json"]
+        flat_schema = json.loads(FLAT_SCHEMA_PATH.read_text(encoding="utf-8"))
+        self.assertEqual(list(flattened), flat_schema["required"])
+        self.assertEqual(flattened["jobKey"], "linkedin:4446226935")
+        self.assertEqual(flattened["workArrangements"], '["hybrid"]')
+        self.assertEqual(flattened["contractTypes"], "[]")
+        self.assertIsNone(flattened["descriptionText"])
+
+    def test_google_sheet_mapping_matches_flat_schema(self) -> None:
+        flat_schema = json.loads(FLAT_SCHEMA_PATH.read_text(encoding="utf-8"))
+        expected = flat_schema["required"]
+        with COLUMNS_PATH.open(newline="", encoding="utf-8") as handle:
+            headers = next(csv.reader(handle))
+        self.assertEqual(headers, expected)
+
+        node = self.nodes["Upsert jobs in Google Sheets"]
+        self.assertEqual(node["type"], "n8n-nodes-base.googleSheets")
+        self.assertEqual(node["typeVersion"], 4.7)
+        columns = node["parameters"]["columns"]
+        self.assertEqual(node["parameters"]["operation"], "appendOrUpdate")
+        self.assertEqual(columns["mappingMode"], "autoMapInputData")
+        self.assertEqual(columns["matchingColumns"], ["jobKey"])
+        self.assertEqual([field["id"] for field in columns["schema"]], expected)
+
+    def test_notifications_are_opt_in_and_no_credentials_are_committed(self) -> None:
+        telegram = self.nodes["Send Telegram digest"]
+        self.assertTrue(telegram["disabled"])
+        self.assertNotIn("credentials", telegram)
+        self.assertNotIn("credentials", self.nodes["Run Actor on Apify"])
+        rendered = json.dumps(self.workflow).lower()
+        self.assertNotIn("token=", rendered)
+        self.assertNotIn("apify_api_token", rendered)
+        self.assertIn("replace_with_telegram_chat_id", rendered)
+
+
+if __name__ == "__main__":
+    unittest.main()

@@ -8,10 +8,9 @@ source.
 The first supported source is the Apify Actor
 [`nomad-agent/linkedin-enrich-translate-normalize-scraper`](https://apify.com/nomad-agent/linkedin-enrich-translate-normalize-scraper).
 
-> [!IMPORTANT]
-> This repository currently targets the Actor's upcoming `0.6` contract. That
-> build has not been deployed or live-validated yet. Treat the examples as a
-> release candidate until this notice is removed.
+The LinkedIn Actor's `0.6` base path is deployed and has been live-validated
+with a bounded production run. Destination-specific packs clearly distinguish
+offline structural validation from end-to-end validation in a user's account.
 
 ## Start with MCP
 
@@ -43,7 +42,7 @@ Codex instructions.
 
 | Priority | Pack | Workflow | Status |
 | --- | --- | --- | --- |
-| 1 | n8n | Schedule -> Actor -> flatten -> deduplicate -> Google Sheets -> email or Telegram | Planned |
+| 1 | [n8n](integrations/n8n/README.md) | Schedule -> Actor -> flatten -> deduplicate -> Google Sheets -> email or Telegram | Importable; offline validated |
 | 2 | Make | Completed run -> dataset -> Sheets or Airtable -> Slack or email | Planned |
 | 3 | Airtable | Field mapping and duplicate detection using stable job identity | Planned |
 | 4 | MCP | ChatGPT, Claude, Cursor, Codex, or another MCP client | Initial implementation |
@@ -101,8 +100,9 @@ tests/            Offline contract and mapper tests
 
 ## Project status
 
-This is a pre-release scaffold. The integration assets target the upcoming
-Actor `0.6` contract until live deployment verification is complete.
+The integration repository is under active development. The LinkedIn Actor
+`0.6` base contract is live; MCP client-specific and destination-platform
+validation remains documented per pack.
 
 ## License
 

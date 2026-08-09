@@ -14,32 +14,30 @@ Already scaffolded:
 - `nomad-agent-flat-job-v1` mapper and JSON Schema;
 - offline tests and a synthetic fixture.
 
-Release gates:
+Actor `0.6` release state:
 
-1. Test the local Actor `0.6` build without deploying it.
-2. Explicitly authorize and deploy the Actor.
-3. Confirm that the hosted MCP server exposes the deployed input and inferred
-   output schema.
-4. Run a bounded live search and validate the complete dataset.
-5. Remove the repository's pre-release notice only after those checks pass.
+- local Actor tests passed;
+- deployment was explicitly authorized and the verified build was promoted;
+- a bounded production run returned a strict six-root normalized record;
+- hosted MCP client-specific validation remains separate from Actor deployment.
 
 ## Pack 1: n8n
 
 Deliverables:
 
-- importable workflow JSON;
-- environment/credential setup guide;
-- scheduled and manual triggers;
-- Actor run plus complete dataset retrieval;
-- flat projection in a Code node;
-- duplicate lookup/upsert on `jobKey`;
-- Google Sheets append/update;
-- Telegram notification path and an email alternative;
-- partial-failure and rerun behavior.
+- [x] importable workflow JSON;
+- [x] environment/credential setup guide;
+- [x] scheduled and manual triggers;
+- [x] Actor run plus complete dataset retrieval;
+- [x] flat projection in a Code node;
+- [x] duplicate suppression and upsert on `jobKey`;
+- [x] Google Sheets append/update;
+- [x] Telegram notification path and documented email alternative;
+- [x] partial-failure and rerun behavior.
 
-Needed for an offline template: chosen default notification path and an example
-Sheet column order. Needed for end-to-end proof: a disposable n8n instance,
-Apify connection, Google account, and Telegram bot or SMTP account.
+The importable pack and Sheet column order are offline tested. End-to-end
+destination proof still needs a disposable n8n instance, Apify connection,
+Google account, and Telegram bot or SMTP account.
 
 ## Pack 2: Make
 

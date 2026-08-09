@@ -1,0 +1,429 @@
+{
+  "name": "Nomad Agent LinkedIn jobs to Google Sheets and Telegram",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 8 * * *"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -1120,
+        120
+      ],
+      "id": "295697d6-65c8-46b3-98c0-525d14dcf99d",
+      "name": "Every day at 08:00 UTC"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -1120,
+        340
+      ],
+      "id": "e514f1e0-14e5-4773-8c3e-d8019f629fad",
+      "name": "Run manually"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "8619485a-f06a-451d-917c-bc3ff0e55a9c",
+              "name": "keyword",
+              "value": "software engineer",
+              "type": "string"
+            },
+            {
+              "id": "a97a35dc-3e7f-40b3-b3f4-576f98dba404",
+              "name": "location",
+              "value": "Spain",
+              "type": "string"
+            },
+            {
+              "id": "49e57acf-98be-4984-8929-66ec6f3151ab",
+              "name": "postedWithin",
+              "value": "7d",
+              "type": "string"
+            },
+            {
+              "id": "703d4a55-2842-4c5b-990f-25c11892520c",
+              "name": "workArrangementsCsv",
+              "value": "remote,hybrid",
+              "type": "string"
+            },
+            {
+              "id": "6f1599da-7316-4d08-ad31-b62d89bc2fa8",
+              "name": "maxItems",
+              "value": 50,
+              "type": "number"
+            },
+            {
+              "id": "35653c02-77ea-42e2-af7a-cf079e799c47",
+              "name": "maxTotalChargeUsd",
+              "value": 0.1,
+              "type": "number"
+            },
+            {
+              "id": "c9bb9cb5-172d-423d-a245-ddcfb89fa279",
+              "name": "googleSpreadsheetId",
+              "value": "REPLACE_WITH_GOOGLE_SPREADSHEET_ID",
+              "type": "string"
+            },
+            {
+              "id": "aac53089-cf1c-4ce6-8678-665398e75f70",
+              "name": "googleSheetName",
+              "value": "Jobs",
+              "type": "string"
+            },
+            {
+              "id": "7a2ea3da-d6ce-482d-ad82-18ade2ef066d",
+              "name": "telegramChatId",
+              "value": "REPLACE_WITH_TELEGRAM_CHAT_ID",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": false,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -860,
+        220
+      ],
+      "id": "8fd92c58-377b-48c1-ad4e-57edc55189c1",
+      "name": "Configuration"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.apify.com/v2/acts/nomad-agent~linkedin-enrich-translate-normalize-scraper/run-sync-get-dataset-items",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "format",
+              "value": "json"
+            },
+            {
+              "name": "clean",
+              "value": "true"
+            },
+            {
+              "name": "timeout",
+              "value": "300"
+            },
+            {
+              "name": "memory",
+              "value": "512"
+            },
+            {
+              "name": "maxTotalChargeUsd",
+              "value": "={{ $('Configuration').first().json.maxTotalChargeUsd }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "json",
+        "specifyBody": "json",
+        "jsonBody": "={{ { schemaVersion: 'nomad-agent-job-search-input-v1', keyword: $('Configuration').first().json.keyword, location: $('Configuration').first().json.location, postedWithin: $('Configuration').first().json.postedWithin, workArrangements: String($('Configuration').first().json.workArrangementsCsv || '').split(',').map(value => value.trim()).filter(Boolean), maxItems: Number($('Configuration').first().json.maxItems), translateToEnglish: false, aiEnrichment: false, includeRaw: false, dedupe: { enabled: false, key: '', stateResetAcknowledged: false }, analyticsEnabled: false } }}",
+        "options": {
+          "timeout": 300000,
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -580,
+        220
+      ],
+      "id": "a2dc2f8e-4d46-4447-aeac-23a580b61edc",
+      "name": "Run Actor on Apify"
+    },
+    {
+      "parameters": {
+        "jsCode": "const ROOTS = ['custom', 'data', 'identity', 'llm', 'raw', 'schemaVersion'];\n\nconst compactArray = (value, path) => {\n  if (value === null || value === undefined) return null;\n  if (!Array.isArray(value)) throw new Error(`${path} must be an array or null`);\n  return JSON.stringify(value);\n};\n\nconst objectOrEmpty = (value) => value && typeof value === 'object' && !Array.isArray(value) ? value : {};\n\nconst locationLabel = (location) => {\n  const value = objectOrEmpty(location);\n  if (typeof value.raw === 'string' && value.raw.trim()) return value.raw.trim();\n  return [...new Set([value.city, value.region, value.countryName].filter(part => typeof part === 'string' && part.trim()).map(part => part.trim()))].join(', ') || null;\n};\n\nconst incoming = $input.all().map(item => item.json);\nconst jobs = [];\nfor (const value of incoming) {\n  if (Array.isArray(value)) jobs.push(...value);\n  else if (value && Array.isArray(value.body)) jobs.push(...value.body);\n  else if (value && value.schemaVersion === 'nomad-agent-job-v1') jobs.push(value);\n  else if (value && Object.keys(value).length === 0) continue;\n  else throw new Error('Apify response did not contain nomad-agent-job-v1 records');\n}\n\nconst seen = new Set();\nconst output = [];\nfor (const record of jobs) {\n  if (!record || typeof record !== 'object' || Array.isArray(record)) throw new Error('Actor row must be an object');\n  const actualRoots = Object.keys(record).sort();\n  if (JSON.stringify(actualRoots) !== JSON.stringify(ROOTS)) throw new Error(`Actor row has unexpected roots: ${actualRoots.join(', ')}`);\n  if (record.schemaVersion !== 'nomad-agent-job-v1') throw new Error(`Unsupported schemaVersion: ${record.schemaVersion}`);\n\n  const identity = objectOrEmpty(record.identity);\n  const data = objectOrEmpty(record.data);\n  const company = objectOrEmpty(data.company);\n  const classification = objectOrEmpty(data.classification);\n  const employment = objectOrEmpty(data.employment);\n  const application = objectOrEmpty(data.application);\n  const seniority = objectOrEmpty(data.seniority);\n  const compensation = objectOrEmpty(data.compensation);\n  const llm = objectOrEmpty(record.llm);\n  const raw = objectOrEmpty(record.raw);\n  const locations = data.locations;\n  if (locations !== null && locations !== undefined && !Array.isArray(locations)) throw new Error('data.locations must be an array or null');\n  const firstLocation = Array.isArray(locations) && locations.length ? objectOrEmpty(locations[0]) : {};\n  const stablePart = identity.externalId || identity.url;\n  if (!identity.source || !stablePart) throw new Error('identity.source and identity.externalId or identity.url are required');\n  const jobKey = `${identity.source}:${stablePart}`;\n  if (seen.has(jobKey)) continue;\n  seen.add(jobKey);\n\n  output.push({ json: {\n    schemaVersion: 'nomad-agent-flat-job-v1',\n    jobKey,\n    source: identity.source,\n    identityExternalId: identity.externalId ?? null,\n    jobUrl: identity.url ?? null,\n    title: data.title ?? null,\n    companyName: company.name ?? null,\n    companySourceId: company.sourceId ?? null,\n    companyUrl: company.url ?? null,\n    locationText: Array.isArray(locations) ? locations.map(locationLabel).filter(Boolean).join(' | ') || null : null,\n    countryCode: firstLocation.countryCode ?? null,\n    city: firstLocation.city ?? null,\n    region: firstLocation.region ?? null,\n    workArrangements: compactArray(employment.workArrangements, 'data.employment.workArrangements'),\n    workSchedules: compactArray(employment.workSchedules, 'data.employment.workSchedules'),\n    contractTypes: compactArray(employment.contractTypes, 'data.employment.contractTypes'),\n    postedAt: application.postedAt ?? null,\n    applicationDeadline: application.deadline ?? null,\n    applicationUrl: application.url ?? null,\n    applicationEmail: application.email ?? null,\n    directApply: application.directApply ?? null,\n    seniorityLevels: compactArray(seniority.levels, 'data.seniority.levels'),\n    industries: compactArray(classification.industries, 'data.classification.industries'),\n    jobFunctions: compactArray(classification.jobFunctions, 'data.classification.jobFunctions'),\n    salaryCurrency: compensation.currency ?? null,\n    salaryExact: compensation.exact ?? null,\n    salaryMinimum: compensation.minimum ?? null,\n    salaryMaximum: compensation.maximum ?? null,\n    salaryPeriod: compensation.period ?? null,\n    salaryRaw: compensation.raw ?? null,\n    descriptionText: raw.description ?? null,\n    llmStatus: llm.status ?? null\n  } });\n}\nreturn output;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -280,
+        220
+      ],
+      "id": "5648a0ca-cb6a-40e0-b99c-6d747ef2b2c2",
+      "name": "Validate and flatten jobs"
+    },
+    {
+      "parameters": {
+        "jsCode": "const state = $getWorkflowStaticData('global');\nconst now = Date.now();\nconst retentionMs = 90 * 24 * 60 * 60 * 1000;\nif (!state.seenJobs || typeof state.seenJobs !== 'object' || Array.isArray(state.seenJobs)) state.seenJobs = {};\nfor (const [key, timestamp] of Object.entries(state.seenJobs)) {\n  if (typeof timestamp !== 'number' || now - timestamp > retentionMs) delete state.seenJobs[key];\n}\nreturn $input.all().filter(item => !state.seenJobs[item.json.jobKey]);"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        20,
+        220
+      ],
+      "id": "cf526113-f909-419a-8874-25bd1cd80807",
+      "name": "Filter previously delivered jobs"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $('Configuration').first().json.googleSpreadsheetId }}",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "={{ $('Configuration').first().json.googleSheetName }}",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [
+            "jobKey"
+          ],
+          "schema": [
+            { "id": "schemaVersion", "displayName": "schemaVersion", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true, "removed": false },
+            { "id": "jobKey", "displayName": "jobKey", "required": false, "defaultMatch": true, "display": true, "type": "string", "canBeUsedToMatch": true, "removed": false },
+            { "id": "source", "displayName": "source", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true, "removed": false },
+            { "id": "identityExternalId", "displayName": "identityExternalId", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true, "removed": false },
+            { "id": "jobUrl", "displayName": "jobUrl", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true, "removed": false },
+            { "id": "title", "displayName": "title", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true, "removed": false },
+            { "id": "companyName", "displayName": "companyName", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true, "removed": false },
+            { "id": "companySourceId", "displayName": "companySourceId", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true, "removed": false },
+            { "id": "companyUrl", "displayName": "companyUrl", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true, "removed": false },
+            { "id": "locationText", "displayName": "locationText", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true, "removed": false },
+            { "id": "countryCode", "displayName": "countryCode", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true, "removed": false },
+            { "id": "city", "displayName": "city", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true, "removed": false },
+            { "id": "region", "displayName": "region", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true, "removed": false },
+            { "id": "workArrangements", "displayName": "workArrangements", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true, "removed": false },
+            { "id": "workSchedules", "displayName": "workSchedules", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true, "removed": false },
+            { "id": "contractTypes", "displayName": "contractTypes", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true, "removed": false },
+            { "id": "postedAt", "displayName": "postedAt", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true, "removed": false },
+            { "id": "applicationDeadline", "displayName": "applicationDeadline", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true, "removed": false },
+            { "id": "applicationUrl", "displayName": "applicationUrl", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true, "removed": false },
+            { "id": "applicationEmail", "displayName": "applicationEmail", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true, "removed": false },
+            { "id": "directApply", "displayName": "directApply", "required": false, "defaultMatch": false, "display": true, "type": "boolean", "canBeUsedToMatch": true, "removed": false },
+            { "id": "seniorityLevels", "displayName": "seniorityLevels", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true, "removed": false },
+            { "id": "industries", "displayName": "industries", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true, "removed": false },
+            { "id": "jobFunctions", "displayName": "jobFunctions", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true, "removed": false },
+            { "id": "salaryCurrency", "displayName": "salaryCurrency", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true, "removed": false },
+            { "id": "salaryExact", "displayName": "salaryExact", "required": false, "defaultMatch": false, "display": true, "type": "number", "canBeUsedToMatch": true, "removed": false },
+            { "id": "salaryMinimum", "displayName": "salaryMinimum", "required": false, "defaultMatch": false, "display": true, "type": "number", "canBeUsedToMatch": true, "removed": false },
+            { "id": "salaryMaximum", "displayName": "salaryMaximum", "required": false, "defaultMatch": false, "display": true, "type": "number", "canBeUsedToMatch": true, "removed": false },
+            { "id": "salaryPeriod", "displayName": "salaryPeriod", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true, "removed": false },
+            { "id": "salaryRaw", "displayName": "salaryRaw", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true, "removed": false },
+            { "id": "descriptionText", "displayName": "descriptionText", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true, "removed": false },
+            { "id": "llmStatus", "displayName": "llmStatus", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true, "removed": false }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        320,
+        220
+      ],
+      "id": "22ed46d8-9cc5-4263-8657-e7518f2e54b4",
+      "name": "Upsert jobs in Google Sheets"
+    },
+    {
+      "parameters": {
+        "jsCode": "const state = $getWorkflowStaticData('global');\nif (!state.seenJobs || typeof state.seenJobs !== 'object' || Array.isArray(state.seenJobs)) state.seenJobs = {};\nconst now = Date.now();\n// Read the original rows only after the Sheets node succeeds; its output shape can vary.\nconst items = $('Filter previously delivered jobs').all();\nfor (const item of items) {\n  if (item.json.jobKey) state.seenJobs[item.json.jobKey] = now;\n}\nconst newest = Object.entries(state.seenJobs).sort((a, b) => b[1] - a[1]).slice(0, 5000);\nstate.seenJobs = Object.fromEntries(newest);\nreturn items;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        620,
+        220
+      ],
+      "id": "52889673-0a36-4208-80b5-dc4c93d611b1",
+      "name": "Remember delivered jobs"
+    },
+    {
+      "parameters": {
+        "jsCode": "const rows = $input.all().map(item => item.json);\nconst escapeHtml = (value) => String(value ?? '').replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('\\\"', '&quot;');\nlet telegramText = `<b>${rows.length} new LinkedIn job${rows.length === 1 ? '' : 's'}</b>\\n`;\nfor (const row of rows) {\n  const title = escapeHtml(row.title || 'Untitled role');\n  const company = escapeHtml(row.companyName || 'Unknown company');\n  const location = escapeHtml(row.locationText || 'Location not specified');\n  const url = escapeHtml(row.jobUrl || '');\n  const block = `\\n<a href=\\\"${url}\\\"><b>${title}</b></a>\\n${company} - ${location}\\n`;\n  if (telegramText.length + block.length > 3500) {\n    telegramText += `\\n...and ${rows.length - rows.indexOf(row)} more in Google Sheets.`;\n    break;\n  }\n  telegramText += block;\n}\nconst emailText = rows.map(row => `${row.title || 'Untitled role'} | ${row.companyName || 'Unknown company'} | ${row.locationText || 'Location not specified'} | ${row.jobUrl || ''}`).join('\\n');\nreturn [{ json: { newJobCount: rows.length, telegramText, emailSubject: `${rows.length} new LinkedIn jobs`, emailText } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        920,
+        220
+      ],
+      "id": "3ba3ccec-169b-426c-8de6-9bd053d19542",
+      "name": "Build notification digest"
+    },
+    {
+      "parameters": {
+        "operation": "sendMessage",
+        "chatId": "={{ $('Configuration').first().json.telegramChatId }}",
+        "text": "={{ $json.telegramText }}",
+        "additionalFields": {
+          "appendAttribution": false,
+          "disable_web_page_preview": true,
+          "parse_mode": "HTML"
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1220,
+        220
+      ],
+      "id": "dfb97469-a78d-40b6-83c1-e2661979acb7",
+      "name": "Send Telegram digest",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "content": "## Setup before the first run\n\n1. Add an HTTP Header Auth credential to **Run Actor on Apify**: `Authorization` = `Bearer YOUR_APIFY_TOKEN`.\n2. Import `google-sheets-columns.csv` into a sheet named `Jobs`.\n3. Select your Google Sheets credential on **Upsert jobs in Google Sheets**.\n4. Edit the non-secret values in **Configuration**.\n5. Keep Telegram disabled for the first test. Configure its credential and chat ID, then enable it if wanted.\n6. Publish the workflow after a successful manual test so scheduled executions and persistent seen-state work.",
+        "height": 330,
+        "width": 700,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1140,
+        -280
+      ],
+      "id": "c516286b-7f1d-4aa2-b299-ce5b6b362819",
+      "name": "Setup notes"
+    }
+  ],
+  "connections": {
+    "Every day at 08:00 UTC": {
+      "main": [
+        [
+          {
+            "node": "Configuration",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Run manually": {
+      "main": [
+        [
+          {
+            "node": "Configuration",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Configuration": {
+      "main": [
+        [
+          {
+            "node": "Run Actor on Apify",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Run Actor on Apify": {
+      "main": [
+        [
+          {
+            "node": "Validate and flatten jobs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate and flatten jobs": {
+      "main": [
+        [
+          {
+            "node": "Filter previously delivered jobs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter previously delivered jobs": {
+      "main": [
+        [
+          {
+            "node": "Upsert jobs in Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upsert jobs in Google Sheets": {
+      "main": [
+        [
+          {
+            "node": "Remember delivered jobs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Remember delivered jobs": {
+      "main": [
+        [
+          {
+            "node": "Build notification digest",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build notification digest": {
+      "main": [
+        [
+          {
+            "node": "Send Telegram digest",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "UTC"
+  },
+  "versionId": "1815d7c6-a5cb-45af-8a73-c57060065224",
+  "meta": {
+    "templateCredsSetupCompleted": false
+  },
+  "tags": []
+}
