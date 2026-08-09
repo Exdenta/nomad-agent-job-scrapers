@@ -1,0 +1,7 @@
+{
+  "mcpServers": {
+    "apify-linkedin-jobs": {
+      "url": "https://mcp.apify.com?tools=fetch-actor-details,nomad-agent/linkedin-enrich-translate-normalize-scraper"
+    }
+  }
+}

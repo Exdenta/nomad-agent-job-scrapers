@@ -59,6 +59,8 @@
       "url": null,
       "email": null,
       "directApply": null,
+      "applyMethodRaw": null,
+      "availability": null,
       "hiringContacts": null,
       "eligibilityCriteria": null,
       "selectionProcess": null

@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 import sys
 from pathlib import Path
 from typing import Any, Mapping
@@ -13,6 +14,25 @@ from parse_output import load_records, validate_normalized_job
 
 
 FLAT_SCHEMA_VERSION = "nomad-agent-flat-job-v1"
+ARRAY_FIELDS = frozenset(
+    {
+        "workArrangements", "workSchedules", "contractTypes", "seniorityLevels",
+        "industries", "jobFunctions",
+    }
+)
+NUMBER_FIELDS = frozenset({"salaryExact", "salaryMinimum", "salaryMaximum"})
+BOOLEAN_FIELDS = frozenset({"directApply"})
+REQUIRED_FLAT_FIELDS = frozenset(
+    {
+        "schemaVersion", "jobKey", "source", "identityExternalId", "jobUrl", "title",
+        "companyName", "companySourceId", "companyUrl", "locationText", "countryCode",
+        "city", "region", "workArrangements", "workSchedules", "contractTypes",
+        "postedAt", "applicationDeadline", "applicationUrl", "applicationEmail",
+        "directApply", "seniorityLevels", "industries", "jobFunctions", "salaryCurrency",
+        "salaryExact", "salaryMinimum", "salaryMaximum", "salaryPeriod", "salaryRaw",
+        "descriptionText", "llmStatus",
+    }
+)
 
 
 def _mapping(value: Any) -> Mapping[str, Any]:
@@ -43,6 +63,55 @@ def _locations_text(value: Any) -> str | None:
         raise ValueError("data.locations must be an array or null")
     labels = [_location_label(_mapping(location)) for location in value]
     return " | ".join(label for label in labels if label)
+
+
+def validate_flat_job(value: Any, *, include_record_json: bool = False) -> Mapping[str, Any]:
+    """Validate the generated record against flat-job-v1's closed primitive shape."""
+    if not isinstance(value, Mapping):
+        raise ValueError("flat job must be an object")
+    expected = set(REQUIRED_FLAT_FIELDS)
+    if include_record_json:
+        expected.add("normalizedRecordJson")
+    if set(value) != expected:
+        raise ValueError(
+            f"flat job keys mismatch; missing={sorted(expected - set(value))}, "
+            f"extra={sorted(set(value) - expected)}"
+        )
+    if value["schemaVersion"] != FLAT_SCHEMA_VERSION:
+        raise ValueError(f"schemaVersion must be {FLAT_SCHEMA_VERSION}")
+    for field, item in value.items():
+        if field in NUMBER_FIELDS:
+            if item is not None and (
+                type(item) is bool
+                or not isinstance(item, (int, float))
+                or (isinstance(item, float) and not math.isfinite(item))
+            ):
+                raise ValueError(f"{field} must be a finite number or null")
+        elif field in BOOLEAN_FIELDS:
+            if item is not None and type(item) is not bool:
+                raise ValueError(f"{field} must be a boolean or null")
+        elif item is not None and not isinstance(item, str):
+            raise ValueError(f"{field} must be a string or null")
+    for field in ("jobKey", "source"):
+        if not value[field]:
+            raise ValueError(f"{field} must be a non-empty string")
+    for field in ARRAY_FIELDS:
+        if value[field] is not None:
+            try:
+                decoded = json.loads(value[field])
+            except json.JSONDecodeError as exc:
+                raise ValueError(f"{field} must contain a JSON array") from exc
+            if not isinstance(decoded, list):
+                raise ValueError(f"{field} must contain a JSON array")
+    if value["llmStatus"] not in {"not_requested", "completed", "failed"}:
+        raise ValueError("llmStatus has an unsupported value")
+    if include_record_json:
+        try:
+            normalized = json.loads(value["normalizedRecordJson"])
+        except json.JSONDecodeError as exc:
+            raise ValueError("normalizedRecordJson must contain valid JSON") from exc
+        validate_normalized_job(normalized)
+    return value
 
 
 def flatten_job(item: Any, *, include_record_json: bool = False) -> dict[str, Any]:
@@ -105,7 +174,7 @@ def flatten_job(item: Any, *, include_record_json: bool = False) -> dict[str, An
         flat["normalizedRecordJson"] = json.dumps(
             record, ensure_ascii=False, separators=(",", ":")
         )
-    return flat
+    return dict(validate_flat_job(flat, include_record_json=include_record_json))
 
 
 def main() -> int:

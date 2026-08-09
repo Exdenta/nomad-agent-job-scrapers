@@ -21,6 +21,8 @@ python3 scripts/install_skill.py --client codex --target /path/to/project
 ```
 
 The installer writes to `/path/to/project/.agents/skills`.
+Codex personal skills use `$HOME/.agents/skills`; copy the skill there only
+when it should be available in every project.
 
 ## Claude Code
 
@@ -31,7 +33,9 @@ python3 scripts/install_skill.py --client claude --target /path/to/project
 ```
 
 The installer writes to `/path/to/project/.claude/skills`. Restart Claude Code
-or begin a new session after installation.
+only if the top-level skills directory did not exist when the session started.
+Invoke the installed skill with
+`/linkedin-enrich-translate-normalize-scraper`.
 
 ## Both clients
 
@@ -45,3 +49,7 @@ dependencies.
 
 Installing the skill does not install MCP. Complete the client setup in
 [MCP quickstart](mcp.md) as a separate step.
+
+The installed skill also contains `references/client-setup.md`, so an agent can
+explain the Codex or Claude Code connection boundary without copying an Apify
+token into a prompt or repository.

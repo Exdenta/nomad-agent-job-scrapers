@@ -37,8 +37,9 @@ For LinkedIn, `identity.source` is `linkedin` and `custom` is `null`.
 - `employment`: workplace arrangements, applicant location constraints,
   schedules, contract types, duration, hours, and start date
 - `application`: posting date, deadline, reference, applicant snapshot,
-  external application URL/email, direct-apply flag, named hiring contacts,
-  eligibility criteria, and selection process
+  external application URL/email, direct-apply flag and raw method label,
+  point-in-time availability evidence, named hiring contacts, eligibility
+  criteria, and selection process
 - `seniority`: source labels and normalized levels
 - `requirements`: education paths, experience, languages, required/preferred
   skills, certifications, and source qualification prose

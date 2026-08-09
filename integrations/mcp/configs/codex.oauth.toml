@@ -1,0 +1,5 @@
+[mcp_servers.apify_linkedin_jobs]
+url = "https://mcp.apify.com?tools=fetch-actor-details,nomad-agent/linkedin-enrich-translate-normalize-scraper"
+auth = "oauth"
+default_tools_approval_mode = "prompt"
+tool_timeout_sec = 60

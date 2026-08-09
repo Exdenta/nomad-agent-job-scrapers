@@ -9,8 +9,7 @@ import sys
 from pathlib import Path
 from typing import Any, Iterable, Mapping
 
-
-EXPECTED_ROOTS = frozenset({"schemaVersion", "identity", "data", "custom", "llm", "raw"})
+from validate_contract import ContractValidationError, validate_linkedin_job
 
 
 class OutputContractError(ValueError):
@@ -24,31 +23,10 @@ def _mapping(value: Any, path: str) -> Mapping[str, Any]:
 
 
 def validate_normalized_job(item: Any) -> Mapping[str, Any]:
-    record = _mapping(item, "item")
-    keys = frozenset(record)
-    if keys != EXPECTED_ROOTS:
-        missing = sorted(EXPECTED_ROOTS - keys)
-        extra = sorted(keys - EXPECTED_ROOTS)
-        raise OutputContractError(f"unexpected top-level keys; missing={missing}, extra={extra}")
-    if record["schemaVersion"] != "nomad-agent-job-v1":
-        raise OutputContractError("schemaVersion must be nomad-agent-job-v1")
-
-    identity = _mapping(record["identity"], "identity")
-    if identity.get("source") != "linkedin":
-        raise OutputContractError("identity.source must be linkedin")
-    if record["custom"] is not None:
-        raise OutputContractError("custom must be null for LinkedIn")
-
-    data = _mapping(record["data"], "data")
-    _mapping(data.get("company"), "data.company")
-    _mapping(data.get("employment"), "data.employment")
-    _mapping(data.get("application"), "data.application")
-    _mapping(data.get("seniority"), "data.seniority")
-    _mapping(data.get("compensation"), "data.compensation")
-    _mapping(record["llm"], "llm")
-    if record["raw"] is not None:
-        _mapping(record["raw"], "raw")
-    return record
+    try:
+        return validate_linkedin_job(item)
+    except ContractValidationError as exc:
+        raise OutputContractError(str(exc)) from exc
 
 
 def parse_linkedin_output(item: Any) -> dict[str, Any]:

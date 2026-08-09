@@ -1,7 +1,8 @@
 # LinkedIn Actor input contract
 
-Target contract: `nomad-agent-job-search-input-v1` in the upcoming Actor `0.6`
-release.
+Expected contract: `nomad-agent-job-search-input-v1`. Inspect the deployed
+Actor tool schema before a paid run and stop if it does not match this
+reference.
 
 | Field | Type | Default | Rules |
 | --- | --- | --- | --- |
@@ -10,7 +11,7 @@ release.
 | `location` | string | empty | City, region, country, or broad geography |
 | `postedWithin` | enum | `30d` | `1h`, `24h`, `7d`, `30d`, or `any` |
 | `workArrangements` | string array | omitted | Any union of `remote`, `hybrid`, `onsite` |
-| `maxItems` | integer | `100` | 0 through 200; 0 requests the bounded 200-item window |
+| `maxItems` | integer | Actor default | Use 5 for a first run; 0 requests the bounded 200-item window |
 | `translateToEnglish` | boolean | `false` | Owner-managed, additional per-result charge |
 | `aiEnrichment` | boolean | `false` | Owner-managed null-only extraction, additional charge |
 | `includeRaw` | boolean | `true` | False returns top-level `raw: null` |

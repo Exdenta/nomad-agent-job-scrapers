@@ -1,0 +1,11 @@
+[
+  {"name": "numeric identity", "path": ["identity", "externalId"], "value": 4446226935, "error": "identity.externalId"},
+  {"name": "numeric title", "path": ["data", "title"], "value": 42, "error": "data.title"},
+  {"name": "string direct apply", "path": ["data", "application", "directApply"], "value": "yes", "error": "data.application.directApply"},
+  {"name": "invalid arrangement", "path": ["data", "employment", "workArrangements"], "value": ["sometimes"], "error": "workArrangements"},
+  {"name": "string salary", "path": ["data", "compensation", "minimum"], "value": "50000", "error": "data.compensation.minimum"},
+  {"name": "invalid llm status", "path": ["llm", "status"], "value": "done", "error": "llm.status"},
+  {"name": "space-separated captured datetime", "path": ["data", "application", "applicantSnapshot", "capturedAt"], "value": "2026-08-05 12:00:00+00:00", "error": "capturedAt"},
+  {"name": "relative contact photo URL", "path": ["data", "application", "hiringContacts"], "value": [{"name": "Recruiter", "title": null, "organization": null, "url": null, "photoUrl": "not-a-url", "email": null, "address": null}], "error": "photoUrl must be an absolute HTTP\\(S\\) URL"},
+  {"name": "open company object", "path": ["data", "company", "legacy"], "value": true, "error": "extra keys"}
+]
