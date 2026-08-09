@@ -1,5 +1,5 @@
 {
-  "name": "Nomad Agent LinkedIn jobs to Google Sheets and Telegram",
+  "name": "Find and save new LinkedIn jobs to Google Sheets with Apify",
   "nodes": [
     {
       "parameters": {
@@ -37,6 +37,12 @@
         "assignments": {
           "assignments": [
             {
+              "id": "69714966-f468-49d8-b4e6-4e4a3aaec30d",
+              "name": "actorBuild",
+              "value": "0.6.19",
+              "type": "string"
+            },
+            {
               "id": "8619485a-f06a-451d-917c-bc3ff0e55a9c",
               "name": "keyword",
               "value": "software engineer",
@@ -45,25 +51,25 @@
             {
               "id": "a97a35dc-3e7f-40b3-b3f4-576f98dba404",
               "name": "location",
-              "value": "Spain",
+              "value": "United States",
               "type": "string"
             },
             {
               "id": "49e57acf-98be-4984-8929-66ec6f3151ab",
               "name": "postedWithin",
-              "value": "7d",
+              "value": "30d",
               "type": "string"
             },
             {
               "id": "703d4a55-2842-4c5b-990f-25c11892520c",
               "name": "workArrangementsCsv",
-              "value": "remote,hybrid",
+              "value": "",
               "type": "string"
             },
             {
               "id": "6f1599da-7316-4d08-ad31-b62d89bc2fa8",
               "name": "maxItems",
-              "value": 50,
+              "value": 1,
               "type": "number"
             },
             {
@@ -106,6 +112,19 @@
     },
     {
       "parameters": {
+        "jsCode": "const cfg = $input.first().json;\nconst text = (value) => typeof value === 'string' ? value.trim() : '';\n\nif (!text(cfg.keyword)) throw new Error('Configuration: keyword is required');\nif (!new Set(['1h', '24h', '7d', '30d', 'any']).has(text(cfg.postedWithin))) {\n  throw new Error('Configuration: postedWithin must be 1h, 24h, 7d, 30d, or any');\n}\nconst arrangements = text(cfg.workArrangementsCsv).split(',').map(value => value.trim()).filter(Boolean);\nconst invalidArrangements = arrangements.filter(value => !new Set(['remote', 'hybrid', 'onsite']).has(value));\nif (invalidArrangements.length) throw new Error(`Configuration: invalid work arrangement(s): ${invalidArrangements.join(', ')}`);\nconst maxItems = Number(cfg.maxItems);\nif (!Number.isInteger(maxItems) || maxItems < 1 || maxItems > 100) {\n  throw new Error('Configuration: maxItems must be an integer from 1 to 100');\n}\nconst chargeCap = Number(cfg.maxTotalChargeUsd);\nif (!Number.isFinite(chargeCap) || chargeCap <= 0 || chargeCap > 10) {\n  throw new Error('Configuration: maxTotalChargeUsd must be greater than 0 and at most 10');\n}\nif (!/^\\d+\\.\\d+\\.\\d+$/.test(text(cfg.actorBuild))) {\n  throw new Error('Configuration: actorBuild must be a pinned version such as 0.6.19');\n}\nconst spreadsheetId = text(cfg.googleSpreadsheetId);\nif (spreadsheetId.startsWith('REPLACE_WITH_') || !/^[A-Za-z0-9_-]{20,}$/.test(spreadsheetId)) {\n  throw new Error('Configuration: replace googleSpreadsheetId with the ID from your Google Sheets URL');\n}\nif (!text(cfg.googleSheetName)) throw new Error('Configuration: googleSheetName is required');\nreturn $input.all();"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -580,
+        220
+      ],
+      "id": "319ee85f-65b2-40f7-94c9-8be40c2e6d45",
+      "name": "Validate template setup"
+    },
+    {
+      "parameters": {
         "method": "POST",
         "url": "https://api.apify.com/v2/acts/nomad-agent~linkedin-enrich-translate-normalize-scraper/run-sync-get-dataset-items",
         "authentication": "genericCredentialType",
@@ -132,6 +151,10 @@
             {
               "name": "maxTotalChargeUsd",
               "value": "={{ $('Configuration').first().json.maxTotalChargeUsd }}"
+            },
+            {
+              "name": "build",
+              "value": "={{ $('Configuration').first().json.actorBuild }}"
             }
           ]
         },
@@ -151,7 +174,7 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        -580,
+        -320,
         220
       ],
       "id": "a2dc2f8e-4d46-4447-aeac-23a580b61edc",
@@ -164,7 +187,7 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -280,
+        -40,
         220
       ],
       "id": "5648a0ca-cb6a-40e0-b99c-6d747ef2b2c2",
@@ -177,7 +200,7 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        20,
+        240,
         220
       ],
       "id": "cf526113-f909-419a-8874-25bd1cd80807",
@@ -244,7 +267,7 @@
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.7,
       "position": [
-        320,
+        520,
         220
       ],
       "id": "22ed46d8-9cc5-4263-8657-e7518f2e54b4",
@@ -257,7 +280,7 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        620,
+        820,
         220
       ],
       "id": "52889673-0a36-4208-80b5-dc4c93d611b1",
@@ -270,7 +293,7 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        920,
+        1120,
         220
       ],
       "id": "3ba3ccec-169b-426c-8de6-9bd053d19542",
@@ -290,7 +313,7 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        1220,
+        1420,
         220
       ],
       "id": "dfb97469-a78d-40b6-83c1-e2661979acb7",
@@ -299,7 +322,7 @@
     },
     {
       "parameters": {
-        "content": "## Setup before the first run\n\n1. Add an HTTP Header Auth credential to **Run Actor on Apify**: `Authorization` = `Bearer YOUR_APIFY_TOKEN`.\n2. Import `google-sheets-columns.csv` into a sheet named `Jobs`.\n3. Select your Google Sheets credential on **Upsert jobs in Google Sheets**.\n4. Edit the non-secret values in **Configuration**.\n5. Keep Telegram disabled for the first test. Configure its credential and chat ID, then enable it if wanted.\n6. Publish the workflow after a successful manual test so scheduled executions and persistent seen-state work.",
+        "content": "## Public template setup\n\n1. Create a scoped Apify token and add an n8n Header Auth credential: `Authorization` = `Bearer YOUR_APIFY_TOKEN`.\n2. Import `google-sheets-columns.csv` into a sheet named `Jobs`.\n3. Select your Google Sheets credential on **Upsert jobs in Google Sheets**.\n4. Replace the Google spreadsheet placeholder in **Configuration**.\n5. Run the one-job smoke test manually. Build `0.6.19` is pinned because it was live-tested with this workflow.\n6. Increase `maxItems` and adjust the search only after the smoke test succeeds.\n7. Telegram is optional and disabled. Configure it before enabling the node.\n8. Publish only after testing to enable the daily schedule and persistent seen-state.",
         "height": 330,
         "width": 700,
         "color": 5
@@ -338,6 +361,17 @@
       ]
     },
     "Configuration": {
+      "main": [
+        [
+          {
+            "node": "Validate template setup",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate template setup": {
       "main": [
         [
           {

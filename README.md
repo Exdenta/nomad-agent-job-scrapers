@@ -9,8 +9,9 @@ The first supported source is the Apify Actor
 [`nomad-agent/linkedin-enrich-translate-normalize-scraper`](https://apify.com/nomad-agent/linkedin-enrich-translate-normalize-scraper).
 
 The LinkedIn Actor's `0.6` base path is deployed and has been live-validated
-with a bounded production run. Destination-specific packs clearly distinguish
-offline structural validation from end-to-end validation in a user's account.
+with bounded production runs. The reusable n8n template is also live-validated
+through Google Sheets; destination-specific packs document the exact boundary
+of their end-to-end validation.
 
 ## Start with MCP
 
@@ -42,7 +43,7 @@ Codex instructions.
 
 | Priority | Pack | Workflow | Status |
 | --- | --- | --- | --- |
-| 1 | [n8n](integrations/n8n/README.md) | Schedule -> Actor -> flatten -> deduplicate -> Google Sheets -> email or Telegram | Importable; offline validated |
+| 1 | [n8n](integrations/n8n/README.md) | Schedule -> Actor -> flatten -> deduplicate -> Google Sheets -> email or Telegram | Public import; Apify + n8n Cloud + Google Sheets live-validated |
 | 2 | Make | Completed run -> dataset -> Sheets or Airtable -> Slack or email | Planned |
 | 3 | Airtable | Field mapping and duplicate detection using stable job identity | Planned |
 | 4 | MCP | ChatGPT, Claude, Cursor, Codex, or another MCP client | Initial implementation |

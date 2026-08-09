@@ -16,12 +16,32 @@ WORKFLOW_PATH = (
 )
 COLUMNS_PATH = ROOT / "integrations" / "n8n" / "google-sheets-columns.csv"
 FLAT_SCHEMA_PATH = ROOT / "integrations" / "shared" / "flat-job-v1.schema.json"
+LISTING_PATH = ROOT / "integrations" / "n8n" / "template-listing.md"
 
 
 class N8nPackTest(unittest.TestCase):
     def setUp(self) -> None:
         self.workflow = json.loads(WORKFLOW_PATH.read_text(encoding="utf-8"))
         self.nodes = {node["name"]: node for node in self.workflow["nodes"]}
+
+    def run_validation_node(self, config: dict[str, object]) -> subprocess.CompletedProcess[str]:
+        script = """
+const fs = require('fs');
+const workflow = JSON.parse(fs.readFileSync(process.argv[1], 'utf8'));
+const config = JSON.parse(process.argv[2]);
+const node = workflow.nodes.find(value => value.name === 'Validate template setup');
+global.$input = {
+  first: () => ({ json: config }),
+  all: () => [{ json: config }],
+};
+const output = new Function(node.parameters.jsCode)();
+process.stdout.write(JSON.stringify(output));
+"""
+        return subprocess.run(
+            ["node", "-e", script, str(WORKFLOW_PATH), json.dumps(config)],
+            capture_output=True,
+            text=True,
+        )
 
     def test_workflow_has_unique_nodes_and_valid_connections(self) -> None:
         self.assertEqual(len(self.nodes), len(self.workflow["nodes"]))
@@ -42,6 +62,16 @@ class N8nPackTest(unittest.TestCase):
             "n8n-nodes-base.manualTrigger",
         )
         self.assertFalse(self.workflow["active"])
+        self.assertEqual(
+            self.workflow["connections"]["Configuration"]["main"][0][0]["node"],
+            "Validate template setup",
+        )
+        self.assertEqual(
+            self.workflow["connections"]["Validate template setup"]["main"][0][0][
+                "node"
+            ],
+            "Run Actor on Apify",
+        )
 
     def test_apify_request_uses_header_auth_and_bounded_v1_input(self) -> None:
         node = self.nodes["Run Actor on Apify"]
@@ -66,6 +96,48 @@ class N8nPackTest(unittest.TestCase):
         }
         self.assertEqual(query["timeout"], "300")
         self.assertIn("maxTotalChargeUsd", query)
+        self.assertEqual(
+            query["build"], "={{ $('Configuration').first().json.actorBuild }}"
+        )
+
+        assignments = {
+            item["name"]: item["value"]
+            for item in self.nodes["Configuration"]["parameters"]["assignments"][
+                "assignments"
+            ]
+        }
+        self.assertEqual(assignments["actorBuild"], "0.6.19")
+        self.assertEqual(assignments["maxItems"], 1)
+        self.assertEqual(
+            assignments["googleSpreadsheetId"],
+            "REPLACE_WITH_GOOGLE_SPREADSHEET_ID",
+        )
+
+    def test_public_template_validates_setup_before_paid_actor_run(self) -> None:
+        validation = self.nodes["Validate template setup"]
+        self.assertEqual(validation["type"], "n8n-nodes-base.code")
+        script = validation["parameters"]["jsCode"]
+        self.assertIn("REPLACE_WITH_", script)
+        self.assertIn("maxItems must be an integer from 1 to 100", script)
+        self.assertIn("actorBuild must be a pinned version", script)
+        self.assertIn("remote", script)
+        self.assertIn("hybrid", script)
+        self.assertIn("onsite", script)
+
+        config = {
+            item["name"]: item["value"]
+            for item in self.nodes["Configuration"]["parameters"]["assignments"][
+                "assignments"
+            ]
+        }
+        rejected = self.run_validation_node(config)
+        self.assertNotEqual(rejected.returncode, 0)
+        self.assertIn("replace googleSpreadsheetId", rejected.stderr)
+
+        config["googleSpreadsheetId"] = "publicTemplateSpreadsheetId123"
+        accepted = self.run_validation_node(config)
+        self.assertEqual(accepted.returncode, 0, accepted.stderr)
+        self.assertEqual(json.loads(accepted.stdout)[0]["json"], config)
 
     def test_flattening_and_dedupe_are_contract_bound(self) -> None:
         flatten = self.nodes["Validate and flatten jobs"]["parameters"]["jsCode"]
@@ -131,7 +203,18 @@ process.stdout.write(JSON.stringify(output));
         rendered = json.dumps(self.workflow).lower()
         self.assertNotIn("token=", rendered)
         self.assertNotIn("apify_api_token", rendered)
+        self.assertNotIn("@gmail.com", rendered)
+        self.assertNotIn("@googlemail.com", rendered)
         self.assertIn("replace_with_telegram_chat_id", rendered)
+
+    def test_public_listing_matches_live_validation_boundary(self) -> None:
+        listing = LISTING_PATH.read_text(encoding="utf-8")
+        self.assertIn(
+            "Find and save new LinkedIn jobs to Google Sheets with Apify", listing
+        )
+        self.assertIn("n8n Cloud", listing)
+        self.assertIn("0.6.19", listing)
+        self.assertIn("Telegram and the published schedule were not", listing)
 
 
 if __name__ == "__main__":

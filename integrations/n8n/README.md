@@ -5,15 +5,29 @@ to run a bounded LinkedIn search every day, validate and flatten the normalized
 records, suppress previously delivered jobs, upsert rows in Google Sheets, and
 optionally send one Telegram digest.
 
-The Actor `0.6` API path and its base output were live-validated on Apify. The
-n8n workflow is structurally and contract tested offline; it has not been run
-inside a user's n8n, Google, or Telegram account because those destination
-credentials are deliberately not part of this repository.
+The public template was live-validated on 2026-08-09 with n8n Cloud, Apify
+Actor build `0.6.19`, and Google Sheets. The optional Telegram node remains
+disabled and has not been part of the live validation. No credentials or
+destination identifiers from that test are stored in this repository.
+
+## Import the public template
+
+Use n8n's **Import from URL** action with this public URL:
+
+```text
+https://raw.githubusercontent.com/Exdenta/nomad-agent-job-scrapers/main/integrations/n8n/linkedin-jobs-to-google-sheets-telegram.json
+```
+
+Alternatively, download the JSON and use **Import from File**. The workflow
+imports inactive, uses a one-result smoke test by default, validates required
+configuration before starting a paid Actor run, and cannot send Telegram
+messages until that node is explicitly configured and enabled.
 
 ## What the workflow does
 
 ```text
 Schedule or manual run
+  -> validate client configuration
   -> Apify synchronous Actor run
   -> strict six-root validation
   -> nomad-agent-flat-job-v1 projection
@@ -42,10 +56,10 @@ https://docs.google.com/spreadsheets/d/SPREADSHEET_ID/edit
 
 ## 2. Import the workflow
 
-In n8n, use **Import from File** and select
-`linkedin-jobs-to-google-sheets-telegram.json`. You can also import the raw
-GitHub file by URL. The workflow imports inactive and the Telegram node is
-disabled, so importing it cannot start a run or send a message.
+In n8n, use **Import from URL** with the URL above, or use **Import from File**
+and select `linkedin-jobs-to-google-sheets-telegram.json`. The workflow imports
+inactive and the Telegram node is disabled, so importing it cannot start a run
+or send a message.
 
 The workflow uses current built-in node types only; no community package is
 required.
@@ -63,6 +77,12 @@ Create an n8n **Header Auth** credential with:
 Select it in **Run Actor on Apify**. The workflow intentionally sends the
 token in an authorization header, not in the URL, and contains no token
 placeholder that could be mistaken for a real secret.
+
+For a dedicated token, keep **Limit token permissions** enabled, grant the
+account-level **Actors: Run** permission, allow default run storage access, and
+use **Full access** as the running-Actor permission mode because this is your
+explicitly trusted Actor. This does not make the token an unrestricted account
+token. Do not reuse your default Apify token for client installations.
 
 The HTTP node calls Apify's synchronous dataset endpoint with a five-minute
 HTTP/Actor timeout. Apify documents that this endpoint returns HTTP 408 when a
@@ -82,11 +102,14 @@ In **Configuration**, replace:
 
 Edit the non-secret fields in **Configuration**:
 
-- `keyword` and `location`;
+- `keyword` and `location` (leave `location` empty for no location filter);
+- `actorBuild`: pinned to the live-tested `0.6.19` build; change it only after
+  validating another deployed build;
 - `postedWithin`: `1h`, `24h`, `7d`, `30d`, or `any`;
 - `workArrangementsCsv`: any comma-separated combination of `remote`,
   `hybrid`, and `onsite`; use an empty string for no workplace filter;
-- `maxItems`: the result ceiling, with `50` as the conservative default;
+- `maxItems`: the result ceiling; the template starts at `1` for the smoke test
+  and can be raised after the first successful run;
 - `maxTotalChargeUsd`: the Apify per-run safety cap.
 
 The default run disables translation, AI enrichment, Actor-side cross-run
@@ -102,7 +125,8 @@ users can change the JSON body in **Run Actor on Apify** explicitly.
    row per `jobKey`.
 4. Run it again. Google Sheets should update matching rows rather than append
    duplicates.
-5. Publish the workflow to enable the schedule.
+5. Adjust the search and raise `maxItems` only after the bounded smoke test.
+6. Publish the workflow to enable the schedule.
 
 n8n does not persist workflow static data during manual tests. Once the
 workflow is published and invoked by its trigger, it retains up to 5,000 seen
@@ -141,6 +165,16 @@ validation, or Sheets step fails, n8n stops and does not mark those jobs as
 delivered. A retry can safely upsert the same keys. If Telegram fails after a
 successful Sheets write, the rows remain stored and the next scheduled run
 does not resend them automatically.
+
+## Live-validation boundary
+
+The reusable JSON was tested end to end on n8n Cloud using a dedicated scoped
+Apify Header Auth credential and a Google Sheets OAuth credential. Actor build
+`0.6.19` returned one canonical `nomad-agent-job-v1` record; the workflow
+validated and flattened it to `nomad-agent-flat-job-v1`, then wrote the row to
+Google Sheets with `jobKey` as the matching key. The workflow completed without
+an n8n node error. Schedule publishing and Telegram delivery were deliberately
+left out of that test.
 
 ## Security notes
 
