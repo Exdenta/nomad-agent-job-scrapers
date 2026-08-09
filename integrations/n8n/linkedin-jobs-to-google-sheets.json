@@ -89,12 +89,6 @@
               "name": "googleSheetName",
               "value": "Jobs",
               "type": "string"
-            },
-            {
-              "id": "7a2ea3da-d6ce-482d-ad82-18ade2ef066d",
-              "name": "telegramChatId",
-              "value": "REPLACE_WITH_TELEGRAM_CHAT_ID",
-              "type": "string"
             }
           ]
         },
@@ -195,19 +189,6 @@
     },
     {
       "parameters": {
-        "jsCode": "const state = $getWorkflowStaticData('global');\nconst now = Date.now();\nconst retentionMs = 90 * 24 * 60 * 60 * 1000;\nif (!state.seenJobs || typeof state.seenJobs !== 'object' || Array.isArray(state.seenJobs)) state.seenJobs = {};\nfor (const [key, timestamp] of Object.entries(state.seenJobs)) {\n  if (typeof timestamp !== 'number' || now - timestamp > retentionMs) delete state.seenJobs[key];\n}\nreturn $input.all().filter(item => !state.seenJobs[item.json.jobKey]);"
-      },
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        240,
-        220
-      ],
-      "id": "cf526113-f909-419a-8874-25bd1cd80807",
-      "name": "Filter previously delivered jobs"
-    },
-    {
-      "parameters": {
         "operation": "appendOrUpdate",
         "documentId": {
           "__rl": true,
@@ -267,7 +248,7 @@
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.7,
       "position": [
-        520,
+        240,
         220
       ],
       "id": "22ed46d8-9cc5-4263-8657-e7518f2e54b4",
@@ -275,54 +256,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const state = $getWorkflowStaticData('global');\nif (!state.seenJobs || typeof state.seenJobs !== 'object' || Array.isArray(state.seenJobs)) state.seenJobs = {};\nconst now = Date.now();\n// Read the original rows only after the Sheets node succeeds; its output shape can vary.\nconst items = $('Filter previously delivered jobs').all();\nfor (const item of items) {\n  if (item.json.jobKey) state.seenJobs[item.json.jobKey] = now;\n}\nconst newest = Object.entries(state.seenJobs).sort((a, b) => b[1] - a[1]).slice(0, 5000);\nstate.seenJobs = Object.fromEntries(newest);\nreturn items;"
-      },
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        820,
-        220
-      ],
-      "id": "52889673-0a36-4208-80b5-dc4c93d611b1",
-      "name": "Remember delivered jobs"
-    },
-    {
-      "parameters": {
-        "jsCode": "const rows = $input.all().map(item => item.json);\nconst escapeHtml = (value) => String(value ?? '').replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('\\\"', '&quot;');\nlet telegramText = `<b>${rows.length} new LinkedIn job${rows.length === 1 ? '' : 's'}</b>\\n`;\nfor (const row of rows) {\n  const title = escapeHtml(row.title || 'Untitled role');\n  const company = escapeHtml(row.companyName || 'Unknown company');\n  const location = escapeHtml(row.locationText || 'Location not specified');\n  const url = escapeHtml(row.jobUrl || '');\n  const block = `\\n<a href=\\\"${url}\\\"><b>${title}</b></a>\\n${company} - ${location}\\n`;\n  if (telegramText.length + block.length > 3500) {\n    telegramText += `\\n...and ${rows.length - rows.indexOf(row)} more in Google Sheets.`;\n    break;\n  }\n  telegramText += block;\n}\nconst emailText = rows.map(row => `${row.title || 'Untitled role'} | ${row.companyName || 'Unknown company'} | ${row.locationText || 'Location not specified'} | ${row.jobUrl || ''}`).join('\\n');\nreturn [{ json: { newJobCount: rows.length, telegramText, emailSubject: `${rows.length} new LinkedIn jobs`, emailText } }];"
-      },
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        1120,
-        220
-      ],
-      "id": "3ba3ccec-169b-426c-8de6-9bd053d19542",
-      "name": "Build notification digest"
-    },
-    {
-      "parameters": {
-        "operation": "sendMessage",
-        "chatId": "={{ $('Configuration').first().json.telegramChatId }}",
-        "text": "={{ $json.telegramText }}",
-        "additionalFields": {
-          "appendAttribution": false,
-          "disable_web_page_preview": true,
-          "parse_mode": "HTML"
-        }
-      },
-      "type": "n8n-nodes-base.telegram",
-      "typeVersion": 1.2,
-      "position": [
-        1420,
-        220
-      ],
-      "id": "dfb97469-a78d-40b6-83c1-e2661979acb7",
-      "name": "Send Telegram digest",
-      "disabled": true
-    },
-    {
-      "parameters": {
-        "content": "## Public template setup\n\n1. Create a scoped Apify token and add an n8n Header Auth credential: `Authorization` = `Bearer YOUR_APIFY_TOKEN`.\n2. Import `google-sheets-columns.csv` into a sheet named `Jobs`.\n3. Select your Google Sheets credential on **Upsert jobs in Google Sheets**.\n4. Replace the Google spreadsheet placeholder in **Configuration**.\n5. Run the one-job smoke test manually. Build `0.6.19` is pinned because it was live-tested with this workflow.\n6. Increase `maxItems` and adjust the search only after the smoke test succeeds.\n7. Telegram is optional and disabled. Configure it before enabling the node.\n8. Publish only after testing to enable the daily schedule and persistent seen-state.",
+        "content": "## Public template setup\n\n1. Create a scoped Apify token and add an n8n Header Auth credential: `Authorization` = `Bearer YOUR_APIFY_TOKEN`.\n2. Import `google-sheets-columns.csv` into a sheet named `Jobs`.\n3. Select your Google Sheets credential on **Upsert jobs in Google Sheets**.\n4. Replace the Google spreadsheet placeholder in **Configuration**.\n5. Run the one-job smoke test manually. Build `0.6.19` is pinned because it was live-tested with this workflow.\n6. Increase `maxItems` and adjust the search only after the smoke test succeeds.\n7. Publish only after testing to enable the daily schedule.",
         "height": 330,
         "width": 700,
         "color": 5
@@ -397,51 +331,7 @@
       "main": [
         [
           {
-            "node": "Filter previously delivered jobs",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Filter previously delivered jobs": {
-      "main": [
-        [
-          {
             "node": "Upsert jobs in Google Sheets",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Upsert jobs in Google Sheets": {
-      "main": [
-        [
-          {
-            "node": "Remember delivered jobs",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Remember delivered jobs": {
-      "main": [
-        [
-          {
-            "node": "Build notification digest",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Build notification digest": {
-      "main": [
-        [
-          {
-            "node": "Send Telegram digest",
             "type": "main",
             "index": 0
           }

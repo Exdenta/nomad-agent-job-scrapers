@@ -1,9 +1,7 @@
 # n8n template listing
 
-This file contains copy-ready metadata for GitHub, client handoffs, and a later
-submission through the n8n Creator Hub. Publishing to n8n's public template
-library is a separate reviewed action and is not implied by committing this
-repository asset.
+Copy-ready metadata for GitHub, client handoffs, and a later n8n Creator Hub
+submission. Publishing to n8n's template library is a separate reviewed action.
 
 ## Title
 
@@ -12,16 +10,15 @@ Find and save new LinkedIn jobs to Google Sheets with Apify
 ## Short description
 
 Run a scheduled LinkedIn job search with a normalized Apify Actor, validate and
-flatten the results, deduplicate them, and upsert new jobs into Google Sheets.
-Optionally send one Telegram digest.
+flatten the results, and append or update jobs in Google Sheets without
+duplicate rows.
 
 ## Who this is for
 
 - Job seekers maintaining a searchable job tracker.
 - Recruiters or sourcing teams collecting normalized LinkedIn vacancies.
-- Agencies installing a bounded, reusable job-monitoring workflow for clients.
-- Developers who want stable flat rows without giving up the canonical nested
-  source record at the Actor boundary.
+- Agencies installing a bounded job-search workflow for clients.
+- Developers who want stable flat rows in Google Sheets.
 
 ## What this workflow does
 
@@ -31,36 +28,30 @@ Optionally send one Telegram digest.
    Apify API using a Header Auth credential.
 4. Validates canonical `nomad-agent-job-v1` records and projects them to
    `nomad-agent-flat-job-v1` rows.
-5. Deduplicates by `jobKey = source:externalId` within the run and across
-   published workflow runs.
+5. Removes duplicate `jobKey` values within the Actor response.
 6. Appends or updates Google Sheets rows using `jobKey` as the match column.
-7. Marks a job as delivered only after the Sheet write succeeds.
-8. Builds an optional Telegram or email-friendly digest.
 
 ## Requirements
 
 - An Apify account with access to the LinkedIn Actor.
 - A dedicated Apify API token configured as an n8n Header Auth credential.
 - A Google account and an editable spreadsheet.
-- n8n Cloud or self-hosted n8n with the built-in HTTP Request, Code, Set,
-  Schedule Trigger, Manual Trigger, and Google Sheets nodes.
-- A Telegram bot only if Telegram delivery is enabled.
+- n8n Cloud or self-hosted n8n.
 
-No community node or AI-provider credential is required.
+No community node, messaging account, or AI-provider credential is required.
 
 ## Setup
 
-1. Import the workflow from the public raw GitHub URL documented in
+1. Import the workflow from the public raw GitHub URL in
    [README.md](README.md).
 2. Import [google-sheets-columns.csv](google-sheets-columns.csv) into a tab
    named `Jobs`.
 3. Add the Apify Header Auth credential to **Run Actor on Apify**.
 4. Add a Google Sheets OAuth credential to **Upsert jobs in Google Sheets**.
-5. Replace the spreadsheet placeholder and review the search values in
-   **Configuration**.
+5. Replace the spreadsheet placeholder and review **Configuration**.
 6. Run the default one-job smoke test manually.
 7. Confirm the row in Google Sheets, then increase `maxItems` if desired.
-8. Publish the workflow only when the test is successful.
+8. Publish only when the test is successful.
 
 ## Safe defaults
 
@@ -70,23 +61,19 @@ No community node or AI-provider credential is required.
 - `maxItems` starts at `1` and the Apify call has a `$0.10` charge cap.
 - Translation, AI enrichment, analytics, raw descriptions, and Actor-side
   cross-run deduplication are disabled.
-- Telegram is disabled and has no credential in the exported JSON.
 
-## Customization
+## Duplicate behavior
 
-- Change `keyword`, `location`, `postedWithin`, and `workArrangementsCsv` in
-  **Configuration**.
-- Raise `maxItems` only after the smoke test.
-- Replace Telegram with Gmail, SMTP, Slack, or another destination by mapping
-  the fields emitted by **Build notification digest**.
-- Keep `jobKey` as the Google Sheets matching column.
+Within-run duplicates are removed before Google Sheets. Recurring runs and
+retries use Google Sheets append-or-update on `jobKey`, so existing rows are
+refreshed instead of duplicated. The template has no separate delivery cache.
 
 ## Validation status
 
 Live-tested on 2026-08-09 with n8n Cloud, Apify build `0.6.19`, and Google
 Sheets. One canonical Actor result was flattened and written to the destination
-Sheet without an n8n node error. Telegram and the published schedule were not
-part of the live test.
+Sheet without an n8n node error. The published schedule was not part of the
+live test.
 
 ## Support and license
 

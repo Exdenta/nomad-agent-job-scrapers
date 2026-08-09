@@ -12,7 +12,7 @@ WORKFLOW_PATH = (
     ROOT
     / "integrations"
     / "n8n"
-    / "linkedin-jobs-to-google-sheets-telegram.json"
+    / "linkedin-jobs-to-google-sheets.json"
 )
 COLUMNS_PATH = ROOT / "integrations" / "n8n" / "google-sheets-columns.csv"
 FLAT_SCHEMA_PATH = ROOT / "integrations" / "shared" / "flat-job-v1.schema.json"
@@ -63,6 +63,19 @@ process.stdout.write(JSON.stringify(output));
         )
         self.assertFalse(self.workflow["active"])
         self.assertEqual(
+            set(self.nodes),
+            {
+                "Every day at 08:00 UTC",
+                "Run manually",
+                "Configuration",
+                "Validate template setup",
+                "Run Actor on Apify",
+                "Validate and flatten jobs",
+                "Upsert jobs in Google Sheets",
+                "Setup notes",
+            },
+        )
+        self.assertEqual(
             self.workflow["connections"]["Configuration"]["main"][0][0]["node"],
             "Validate template setup",
         )
@@ -72,6 +85,13 @@ process.stdout.write(JSON.stringify(output));
             ],
             "Run Actor on Apify",
         )
+        self.assertEqual(
+            self.workflow["connections"]["Validate and flatten jobs"]["main"][0][
+                0
+            ]["node"],
+            "Upsert jobs in Google Sheets",
+        )
+        self.assertNotIn("Upsert jobs in Google Sheets", self.workflow["connections"])
 
     def test_apify_request_uses_header_auth_and_bounded_v1_input(self) -> None:
         node = self.nodes["Run Actor on Apify"]
@@ -139,20 +159,14 @@ process.stdout.write(JSON.stringify(output));
         self.assertEqual(accepted.returncode, 0, accepted.stderr)
         self.assertEqual(json.loads(accepted.stdout)[0]["json"], config)
 
-    def test_flattening_and_dedupe_are_contract_bound(self) -> None:
+    def test_flattening_and_within_run_dedupe_are_contract_bound(self) -> None:
         flatten = self.nodes["Validate and flatten jobs"]["parameters"]["jsCode"]
         self.assertIn("nomad-agent-job-v1", flatten)
         self.assertIn("nomad-agent-flat-job-v1", flatten)
         self.assertIn("unexpected roots", flatten)
         self.assertIn("`${identity.source}:${stablePart}`", flatten)
         self.assertIn("JSON.stringify(value)", flatten)
-
-        before = self.nodes["Filter previously delivered jobs"]["parameters"]["jsCode"]
-        after = self.nodes["Remember delivered jobs"]["parameters"]["jsCode"]
-        self.assertIn("$getWorkflowStaticData('global')", before)
-        self.assertIn("$getWorkflowStaticData('global')", after)
-        self.assertIn("$('Filter previously delivered jobs').all()", after)
-        self.assertIn("5000", after)
+        self.assertIn("const seen = new Set()", flatten)
 
     def test_embedded_flatten_javascript_matches_shared_fixture(self) -> None:
         fixture_path = ROOT / "tests" / "fixtures" / "linkedin-job.json"
@@ -195,17 +209,18 @@ process.stdout.write(JSON.stringify(output));
         self.assertEqual(columns["matchingColumns"], ["jobKey"])
         self.assertEqual([field["id"] for field in columns["schema"]], expected)
 
-    def test_notifications_are_opt_in_and_no_credentials_are_committed(self) -> None:
-        telegram = self.nodes["Send Telegram digest"]
-        self.assertTrue(telegram["disabled"])
-        self.assertNotIn("credentials", telegram)
+    def test_basic_template_has_no_notifications_state_or_credentials(self) -> None:
         self.assertNotIn("credentials", self.nodes["Run Actor on Apify"])
         rendered = json.dumps(self.workflow).lower()
         self.assertNotIn("token=", rendered)
         self.assertNotIn("apify_api_token", rendered)
         self.assertNotIn("@gmail.com", rendered)
         self.assertNotIn("@googlemail.com", rendered)
-        self.assertIn("replace_with_telegram_chat_id", rendered)
+        self.assertNotIn("telegram", rendered)
+        self.assertNotIn("notification digest", rendered)
+        self.assertNotIn("$getworkflowstaticdata", rendered)
+        self.assertNotIn("previously delivered", rendered)
+        self.assertNotIn("remember delivered", rendered)
 
     def test_public_listing_matches_live_validation_boundary(self) -> None:
         listing = LISTING_PATH.read_text(encoding="utf-8")
@@ -214,7 +229,8 @@ process.stdout.write(JSON.stringify(output));
         )
         self.assertIn("n8n Cloud", listing)
         self.assertIn("0.6.19", listing)
-        self.assertIn("Telegram and the published schedule were not", listing)
+        self.assertIn("The published schedule was not", listing)
+        self.assertIn("no separate delivery cache", listing)
 
 
 if __name__ == "__main__":

@@ -43,7 +43,7 @@ Codex instructions.
 
 | Priority | Pack | Workflow | Status |
 | --- | --- | --- | --- |
-| 1 | [n8n](integrations/n8n/README.md) | Schedule -> Actor -> flatten -> deduplicate -> Google Sheets -> email or Telegram | Public import; Apify + n8n Cloud + Google Sheets live-validated |
+| 1 | [n8n](integrations/n8n/README.md) | Schedule -> Actor -> flatten -> Google Sheets append-or-update | Public import; Apify + n8n Cloud + Google Sheets live-validated |
 | 2 | Make | Completed run -> dataset -> Sheets or Airtable -> Slack or email | Planned |
 | 3 | Airtable | Field mapping and duplicate detection using stable job identity | Planned |
 | 4 | MCP | ChatGPT, Claude, Cursor, Codex, or another MCP client | Initial implementation |

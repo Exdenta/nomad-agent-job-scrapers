@@ -30,14 +30,13 @@ Deliverables:
 - [x] scheduled and manual triggers;
 - [x] Actor run plus complete dataset retrieval;
 - [x] flat projection in a Code node;
-- [x] duplicate suppression and upsert on `jobKey`;
+- [x] within-run duplicate suppression and Sheet upsert on `jobKey`;
 - [x] Google Sheets append/update;
-- [x] Telegram notification path and documented email alternative;
 - [x] partial-failure and rerun behavior.
 
-The importable pack and Sheet column order are offline tested. End-to-end
-destination proof still needs a disposable n8n instance, Apify connection,
-Google account, and Telegram bot or SMTP account.
+The basic importable pack and Sheet column order are offline tested. The Actor,
+n8n Cloud, and Google Sheets path is also live-validated. Notifications and a
+separate previously-delivered cache are intentionally outside this template.
 
 ## Pack 2: Make
 
@@ -114,7 +113,7 @@ Recommended defaults:
 | Visibility | Public |
 | License | MIT for unrestricted reuse, including commercial use |
 | Primary API examples | TypeScript and Python |
-| n8n default | Google Sheets + Telegram, with email variant |
+| n8n default | Basic Google Sheets append-or-update only |
 | Make default | Airtable + Slack, with Sheets/email substitutions |
 
 The repository can be published after the owner, visibility, and license are
