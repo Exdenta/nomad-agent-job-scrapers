@@ -48,6 +48,16 @@ In n8n, Make, or custom code, insert the incoming `jobKey` rather than the
 example value. Do not deduplicate by title, company, URL, or Airtable record
 ID.
 
+## Upstream retry boundary
+
+This Airtable preset is destination-only, so it cannot wait or start an Actor
+run itself. The n8n, Make, MCP, or API workflow feeding Airtable must inspect
+the successful run's structured `RUN-SUMMARY` before writing rows. If the exact
+v1 summary recommends a retry because the source was blocked, wait the
+specified time, repeat the same Actor input once, and upsert rows from the
+latest successful run. Never retry merely because the dataset is empty or
+because a run failed. See the [shared retry contract](../../docs/retry-contract.md).
+
 ## Field choices
 
 - URL fields use Airtable's URL type.
@@ -69,4 +79,3 @@ The workbook, field metadata, order, and example values are checked against
 the shared flat schema in repository tests. Creating an Airtable base and
 running an authenticated upsert are user-specific steps because the preset
 contains no Airtable credentials or base IDs.
-

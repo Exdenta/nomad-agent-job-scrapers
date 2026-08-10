@@ -3,13 +3,17 @@
   "flow": [
     {
       "id": 1,
-      "module": "apify:finishedActorRuns",
+      "module": "apify:finishedTaskRun",
       "version": 1,
       "parameters": {},
       "mapper": {},
       "metadata": {
-        "designer": { "x": 0, "y": 0, "name": "Watch completed LinkedIn Actor runs" },
-        "notes": "Create an Apify webhook for the LinkedIn Jobs Scraper — Normalized Contract Actor. The asynchronous trigger avoids Make's 120-second synchronous Actor limit."
+        "designer": {
+          "x": 0,
+          "y": 0,
+          "name": "Watch completed LinkedIn Task runs"
+        },
+        "notes": "Select the Apify Task that contains the LinkedIn Actor input. Task runs started by this scenario are identifiable as API-origin runs, which bounds automatic rescheduling to one retry."
       }
     },
     {
@@ -19,182 +23,177 @@
       "parameters": {},
       "mapper": {
         "variables": [
-          { "name": "maxitems", "value": "1" },
-          { "name": "googlespreadsheetid", "value": "REPLACE_WITH_GOOGLE_SPREADSHEET_ID" },
-          { "name": "googlesheetname", "value": "Jobs" }
+          {
+            "name": "maxitems",
+            "value": "1"
+          },
+          {
+            "name": "apifytaskid",
+            "value": "REPLACE_WITH_APIFY_TASK_ID"
+          },
+          {
+            "name": "googlespreadsheetid",
+            "value": "REPLACE_WITH_GOOGLE_SPREADSHEET_ID"
+          },
+          {
+            "name": "googlesheetname",
+            "value": "Jobs"
+          }
         ],
         "scope": "roundtrip"
       },
       "metadata": {
-        "designer": { "x": 300, "y": 0, "name": "Configuration" },
-        "notes": "Replace the spreadsheet ID. Keep maxitems=1 for the first completed-run smoke test."
+        "designer": {
+          "x": 300,
+          "y": 0,
+          "name": "Configuration"
+        },
+        "notes": "Replace the Apify Task ID and spreadsheet ID. Select the same Task in the trigger. Keep maxitems=1 for the first completed-run smoke test."
       }
     },
     {
       "id": 3,
-      "module": "apify:fetchDatasetItems",
-      "version": 1,
-      "parameters": {},
+      "module": "http:ActionSendData",
+      "version": 3,
+      "parameters": {
+        "handleErrors": false,
+        "useNewZLibDeCompress": true
+      },
+      "filter": {
+        "name": "Only successful Task runs",
+        "conditions": [
+          [
+            {
+              "a": "{{1.status}}",
+              "b": "SUCCEEDED",
+              "o": "text:equal"
+            }
+          ]
+        ]
+      },
       "mapper": {
-        "type": "clean",
-        "limit": "{{2.maxitems}}",
-        "format": "json",
-        "datasetId": "{{1.defaultDatasetId}}"
+        "url": "{{1.output.runSummary}}",
+        "serializeUrl": false,
+        "method": "get",
+        "headers": [],
+        "qs": [],
+        "bodyType": "",
+        "parseResponse": true,
+        "timeout": "40",
+        "shareCookies": false,
+        "ca": "",
+        "rejectUnauthorized": true,
+        "followRedirect": true,
+        "useQuerystring": false,
+        "gzip": true,
+        "useMtls": false,
+        "followAllRedirects": false
       },
       "metadata": {
-        "designer": { "x": 600, "y": 0, "name": "Get normalized jobs" },
-        "notes": "Use the same Apify connection as the Actor module. Each dataset item becomes one bundle."
+        "designer": {
+          "x": 600,
+          "y": 0,
+          "name": "Read structured RUN-SUMMARY"
+        },
+        "notes": "Reads the Actor's signed RUN-SUMMARY link. A missing record is returned as a non-2xx response and falls through to normal delivery without a retry."
       }
     },
     {
       "id": 4,
-      "module": "util:SetVariables",
-      "version": 1,
-      "parameters": {},
-      "filter": {
-        "name": "Skip empty Actor runs",
-        "conditions": [[
-          { "a": "{{3.identity.source}}", "o": "exist" },
-          { "a": "{{3.identity.externalId}}", "o": "exist" }
-        ]]
-      },
-      "mapper": {
-        "variables": [
-          { "name": "schemaVersion", "value": "nomad-agent-flat-job-v1" },
-          { "name": "jobKey", "value": "{{3.identity.source}}:{{3.identity.externalId}}" },
-          { "name": "source", "value": "{{3.identity.source}}" },
-          { "name": "identityExternalId", "value": "{{3.identity.externalId}}" },
-          { "name": "jobUrl", "value": "{{3.identity.url}}" },
-          { "name": "title", "value": "{{3.data.title}}" },
-          { "name": "companyName", "value": "{{3.data.company.name}}" },
-          { "name": "companySourceId", "value": "{{3.data.company.sourceId}}" },
-          { "name": "companyUrl", "value": "{{3.data.company.url}}" },
-          { "name": "locationText", "value": "{{get(first(3.data.locations); \"raw\")}}" },
-          { "name": "countryCode", "value": "{{get(first(3.data.locations); \"countryCode\")}}" },
-          { "name": "city", "value": "{{get(first(3.data.locations); \"city\")}}" },
-          { "name": "region", "value": "{{get(first(3.data.locations); \"region\")}}" },
-          { "name": "workArrangements", "value": "{{if(3.data.employment.workArrangements = null; null; if(length(3.data.employment.workArrangements) = 0; \"[]\"; join(add(emptyarray; \"[\\\"\"; join(3.data.employment.workArrangements; \"\\\",\\\"\"); \"\\\"]\"); emptystring)))}}" },
-          { "name": "workSchedules", "value": "{{if(3.data.employment.workSchedules = null; null; if(length(3.data.employment.workSchedules) = 0; \"[]\"; join(add(emptyarray; \"[\\\"\"; join(3.data.employment.workSchedules; \"\\\",\\\"\"); \"\\\"]\"); emptystring)))}}" },
-          { "name": "contractTypes", "value": "{{if(3.data.employment.contractTypes = null; null; if(length(3.data.employment.contractTypes) = 0; \"[]\"; join(add(emptyarray; \"[\\\"\"; join(3.data.employment.contractTypes; \"\\\",\\\"\"); \"\\\"]\"); emptystring)))}}" },
-          { "name": "postedAt", "value": "{{3.data.application.postedAt}}" },
-          { "name": "applicationDeadline", "value": "{{3.data.application.deadline}}" },
-          { "name": "applicationUrl", "value": "{{3.data.application.url}}" },
-          { "name": "applicationEmail", "value": "{{3.data.application.email}}" },
-          { "name": "directApply", "value": "{{3.data.application.directApply}}" },
-          { "name": "seniorityLevels", "value": "{{if(3.data.seniority.levels = null; null; if(length(3.data.seniority.levels) = 0; \"[]\"; join(add(emptyarray; \"[\\\"\"; join(3.data.seniority.levels; \"\\\",\\\"\"); \"\\\"]\"); emptystring)))}}" },
-          { "name": "industries", "value": "{{if(3.data.classification.industries = null; null; if(length(3.data.classification.industries) = 0; \"[]\"; join(add(emptyarray; \"[\\\"\"; join(3.data.classification.industries; \"\\\",\\\"\"); \"\\\"]\"); emptystring)))}}" },
-          { "name": "jobFunctions", "value": "{{if(3.data.classification.jobFunctions = null; null; if(length(3.data.classification.jobFunctions) = 0; \"[]\"; join(add(emptyarray; \"[\\\"\"; join(3.data.classification.jobFunctions; \"\\\",\\\"\"); \"\\\"]\"); emptystring)))}}" },
-          { "name": "salaryCurrency", "value": "{{3.data.compensation.currency}}" },
-          { "name": "salaryExact", "value": "{{3.data.compensation.exact}}" },
-          { "name": "salaryMinimum", "value": "{{3.data.compensation.minimum}}" },
-          { "name": "salaryMaximum", "value": "{{3.data.compensation.maximum}}" },
-          { "name": "salaryPeriod", "value": "{{3.data.compensation.period}}" },
-          { "name": "salaryRaw", "value": "{{3.data.compensation.raw}}" },
-          { "name": "descriptionText", "value": "{{3.data.descriptionText}}" },
-          { "name": "llmStatus", "value": "{{ifempty(3.llm.status; \"not_requested\")}}" }
-        ],
-        "scope": "roundtrip"
-      },
-      "metadata": {
-        "designer": { "x": 900, "y": 0, "name": "Flatten normalized job" },
-        "notes": "Creates the 32-column nomad-agent-flat-job-v1 projection with Make's free built-in Tools module. No paid Make Code app is required."
-      }
-    },
-    {
-      "id": 5,
-      "module": "google-sheets:filterRows",
-      "version": 2,
-      "parameters": {},
-      "mapper": {
-        "from": "drive",
-        "limit": "1",
-        "continue": true,
-        "filter": [
-          [
-            { "a": "B", "b": "{{4.jobKey}}", "o": "text:equal" }
-          ]
-        ],
-        "sheetId": "{{2.googlesheetname}}",
-        "sortOrder": "asc",
-        "spreadsheetId": "{{2.googlespreadsheetid}}",
-        "tableFirstRow": "A1:AF1",
-        "includesHeaders": true,
-        "valueRenderOption": "FORMATTED_VALUE",
-        "dateTimeRenderOption": "FORMATTED_STRING"
-      },
-      "metadata": {
-        "designer": { "x": 1200, "y": 0, "name": "Find row by jobKey" },
-        "notes": "Select your Google Sheets connection. Keep Continue execution when no results enabled so new jobs reach the Add Row branch."
-      }
-    },
-    {
-      "id": 6,
       "module": "builtin:BasicRouter",
       "version": 1,
       "parameters": {},
       "mapper": null,
       "metadata": {
-        "designer": { "x": 1500, "y": 150, "name": "Update or append" }
+        "designer": {
+          "x": 900,
+          "y": 150,
+          "name": "Retry or deliver"
+        },
+        "notes": "Only the exact run-summary schema can request one automatic retry. This basic one-scenario template accepts delays up to 240 seconds so it stays within Make's five-minute Free-plan execution limit."
       },
       "routes": [
         {
           "flow": [
             {
-              "id": 7,
-              "module": "google-sheets:updateRow",
-              "version": 2,
+              "id": 6,
+              "module": "util:FunctionSleep",
+              "version": 1,
               "parameters": {},
               "filter": {
-                "name": "Existing jobKey",
-                "conditions": [[{ "a": "{{5.__ROW_NUMBER__}}", "o": "exist" }]]
+                "name": "Retry once when the Actor requests it",
+                "conditions": [
+                  [
+                    {
+                      "a": "{{3.statusCode}}",
+                      "b": "200",
+                      "o": "number:equal"
+                    },
+                    {
+                      "a": "{{3.data.schemaVersion}}",
+                      "b": "nomad-agent-linkedin-run-summary-v1",
+                      "o": "text:equal"
+                    },
+                    {
+                      "a": "{{3.data.blocked}}",
+                      "b": true,
+                      "o": "boolean:equal"
+                    },
+                    {
+                      "a": "{{3.data.reschedule.recommended}}",
+                      "b": true,
+                      "o": "boolean:equal"
+                    },
+                    {
+                      "a": "{{3.data.reschedule.afterSeconds}}",
+                      "b": "1",
+                      "o": "number:greaterorequal"
+                    },
+                    {
+                      "a": "{{3.data.reschedule.afterSeconds}}",
+                      "b": "240",
+                      "o": "number:lessorequal"
+                    },
+                    {
+                      "a": "{{3.data.reschedule.notBefore}}",
+                      "o": "exist"
+                    },
+                    {
+                      "a": "{{1.meta.origin}}",
+                      "b": "API",
+                      "o": "text:notequal"
+                    }
+                  ]
+                ]
               },
               "mapper": {
-                "mode": "map",
-                "spreadsheetId": "{{2.googlespreadsheetid}}",
-                "sheetId": "{{2.googlesheetname}}",
-                "rowNumber": "{{5.__ROW_NUMBER__}}",
-                "tableFirstRow": "A1:AF1",
-                "includesHeaders": true,
-                "useColumnHeaders": false,
-                "valueInputOption": "USER_ENTERED",
-                "values": {
-                  "0": "{{4.schemaVersion}}",
-                  "1": "{{4.jobKey}}",
-                  "2": "{{4.source}}",
-                  "3": "{{4.identityExternalId}}",
-                  "4": "{{4.jobUrl}}",
-                  "5": "{{4.title}}",
-                  "6": "{{4.companyName}}",
-                  "7": "{{4.companySourceId}}",
-                  "8": "{{4.companyUrl}}",
-                  "9": "{{4.locationText}}",
-                  "10": "{{4.countryCode}}",
-                  "11": "{{4.city}}",
-                  "12": "{{4.region}}",
-                  "13": "{{4.workArrangements}}",
-                  "14": "{{4.workSchedules}}",
-                  "15": "{{4.contractTypes}}",
-                  "16": "{{4.postedAt}}",
-                  "17": "{{4.applicationDeadline}}",
-                  "18": "{{4.applicationUrl}}",
-                  "19": "{{4.applicationEmail}}",
-                  "20": "{{4.directApply}}",
-                  "21": "{{4.seniorityLevels}}",
-                  "22": "{{4.industries}}",
-                  "23": "{{4.jobFunctions}}",
-                  "24": "{{4.salaryCurrency}}",
-                  "25": "{{4.salaryExact}}",
-                  "26": "{{4.salaryMinimum}}",
-                  "27": "{{4.salaryMaximum}}",
-                  "28": "{{4.salaryPeriod}}",
-                  "29": "{{4.salaryRaw}}",
-                  "30": "{{4.descriptionText}}",
-                  "31": "{{4.llmStatus}}"
-                }
+                "duration": "{{3.data.reschedule.afterSeconds}}"
               },
               "metadata": {
-                "designer": { "x": 1800, "y": 0, "name": "Update existing job" },
-                "notes": "Refresh the existing row matched by jobKey."
+                "designer": {
+                  "x": 1500,
+                  "y": -300,
+                  "name": "Wait Actor-specified retry delay"
+                },
+                "notes": "Sleeps for the full afterSeconds recommendation when it is 1-240 seconds. Longer recommendations are not auto-retried by this basic Make template."
+              }
+            },
+            {
+              "id": 7,
+              "module": "apify:runTask",
+              "version": 1,
+              "parameters": {},
+              "mapper": {
+                "taskId": "{{2.apifytaskid}}",
+                "runSync": false
+              },
+              "metadata": {
+                "designer": {
+                  "x": 1800,
+                  "y": -300,
+                  "name": "Retry the same Apify Task once"
+                },
+                "notes": "Starts the configured Task asynchronously with its saved input. The completion trigger receives that API-origin run but will not retry it again."
               }
             }
           ]
@@ -203,61 +202,442 @@
           "flow": [
             {
               "id": 8,
-              "module": "google-sheets:addRow",
-              "version": 2,
+              "module": "apify:fetchDatasetItems",
+              "version": 1,
               "parameters": {},
-              "filter": {
-                "name": "New jobKey",
-                "conditions": [[{ "a": "{{5.__ROW_NUMBER__}}", "o": "notexist" }]]
-              },
               "mapper": {
-                "mode": "map",
-                "from": "drive",
-                "spreadsheetId": "{{2.googlespreadsheetid}}",
-                "sheetId": "{{2.googlesheetname}}",
-                "includesHeaders": true,
-                "insertUnformatted": false,
-                "insertDataOption": "INSERT_ROWS",
-                "valueInputOption": "USER_ENTERED",
-                "values": {
-                  "0": "{{4.schemaVersion}}",
-                  "1": "{{4.jobKey}}",
-                  "2": "{{4.source}}",
-                  "3": "{{4.identityExternalId}}",
-                  "4": "{{4.jobUrl}}",
-                  "5": "{{4.title}}",
-                  "6": "{{4.companyName}}",
-                  "7": "{{4.companySourceId}}",
-                  "8": "{{4.companyUrl}}",
-                  "9": "{{4.locationText}}",
-                  "10": "{{4.countryCode}}",
-                  "11": "{{4.city}}",
-                  "12": "{{4.region}}",
-                  "13": "{{4.workArrangements}}",
-                  "14": "{{4.workSchedules}}",
-                  "15": "{{4.contractTypes}}",
-                  "16": "{{4.postedAt}}",
-                  "17": "{{4.applicationDeadline}}",
-                  "18": "{{4.applicationUrl}}",
-                  "19": "{{4.applicationEmail}}",
-                  "20": "{{4.directApply}}",
-                  "21": "{{4.seniorityLevels}}",
-                  "22": "{{4.industries}}",
-                  "23": "{{4.jobFunctions}}",
-                  "24": "{{4.salaryCurrency}}",
-                  "25": "{{4.salaryExact}}",
-                  "26": "{{4.salaryMinimum}}",
-                  "27": "{{4.salaryMaximum}}",
-                  "28": "{{4.salaryPeriod}}",
-                  "29": "{{4.salaryRaw}}",
-                  "30": "{{4.descriptionText}}",
-                  "31": "{{4.llmStatus}}"
-                }
+                "type": "clean",
+                "limit": "{{2.maxitems}}",
+                "format": "json",
+                "datasetId": "{{1.defaultDatasetId}}"
               },
               "metadata": {
-                "designer": { "x": 1800, "y": 300, "name": "Append new job" },
-                "notes": "Append only when no row with this jobKey exists."
+                "designer": {
+                  "x": 1200,
+                  "y": 150,
+                  "name": "Get normalized jobs"
+                },
+                "notes": "Fetches the completed run's dataset when no retry is requested, the summary is unavailable or invalid, or this is the already-retried API-origin run."
+              },
+              "filter": {
+                "name": "Deliver when no valid first retry is pending",
+                "conditions": [
+                  [
+                    {
+                      "a": "{{3.statusCode}}",
+                      "b": "200",
+                      "o": "number:notequal"
+                    }
+                  ],
+                  [
+                    {
+                      "a": "{{3.data.schemaVersion}}",
+                      "b": "nomad-agent-linkedin-run-summary-v1",
+                      "o": "text:notequal"
+                    }
+                  ],
+                  [
+                    {
+                      "a": "{{3.data.blocked}}",
+                      "b": true,
+                      "o": "boolean:notequal"
+                    }
+                  ],
+                  [
+                    {
+                      "a": "{{3.data.reschedule.recommended}}",
+                      "b": true,
+                      "o": "boolean:notequal"
+                    }
+                  ],
+                  [
+                    {
+                      "a": "{{3.data.reschedule.afterSeconds}}",
+                      "b": "1",
+                      "o": "number:less"
+                    }
+                  ],
+                  [
+                    {
+                      "a": "{{3.data.reschedule.afterSeconds}}",
+                      "b": "240",
+                      "o": "number:greater"
+                    }
+                  ],
+                  [
+                    {
+                      "a": "{{3.data.reschedule.notBefore}}",
+                      "o": "notexist"
+                    }
+                  ],
+                  [
+                    {
+                      "a": "{{1.meta.origin}}",
+                      "b": "API",
+                      "o": "text:equal"
+                    }
+                  ]
+                ]
               }
+            },
+            {
+              "id": 9,
+              "module": "util:SetVariables",
+              "version": 1,
+              "parameters": {},
+              "filter": {
+                "name": "Skip empty Actor runs",
+                "conditions": [
+                  [
+                    {
+                      "a": "{{8.identity.source}}",
+                      "o": "exist"
+                    },
+                    {
+                      "a": "{{8.identity.externalId}}",
+                      "o": "exist"
+                    }
+                  ]
+                ]
+              },
+              "mapper": {
+                "variables": [
+                  {
+                    "name": "schemaVersion",
+                    "value": "nomad-agent-flat-job-v1"
+                  },
+                  {
+                    "name": "jobKey",
+                    "value": "{{8.identity.source}}:{{8.identity.externalId}}"
+                  },
+                  {
+                    "name": "source",
+                    "value": "{{8.identity.source}}"
+                  },
+                  {
+                    "name": "identityExternalId",
+                    "value": "{{8.identity.externalId}}"
+                  },
+                  {
+                    "name": "jobUrl",
+                    "value": "{{8.identity.url}}"
+                  },
+                  {
+                    "name": "title",
+                    "value": "{{8.data.title}}"
+                  },
+                  {
+                    "name": "companyName",
+                    "value": "{{8.data.company.name}}"
+                  },
+                  {
+                    "name": "companySourceId",
+                    "value": "{{8.data.company.sourceId}}"
+                  },
+                  {
+                    "name": "companyUrl",
+                    "value": "{{8.data.company.url}}"
+                  },
+                  {
+                    "name": "locationText",
+                    "value": "{{get(first(8.data.locations); \"raw\")}}"
+                  },
+                  {
+                    "name": "countryCode",
+                    "value": "{{get(first(8.data.locations); \"countryCode\")}}"
+                  },
+                  {
+                    "name": "city",
+                    "value": "{{get(first(8.data.locations); \"city\")}}"
+                  },
+                  {
+                    "name": "region",
+                    "value": "{{get(first(8.data.locations); \"region\")}}"
+                  },
+                  {
+                    "name": "workArrangements",
+                    "value": "{{if(8.data.employment.workArrangements = null; null; if(length(8.data.employment.workArrangements) = 0; \"[]\"; join(add(emptyarray; \"[\\\"\"; join(8.data.employment.workArrangements; \"\\\",\\\"\"); \"\\\"]\"); emptystring)))}}"
+                  },
+                  {
+                    "name": "workSchedules",
+                    "value": "{{if(8.data.employment.workSchedules = null; null; if(length(8.data.employment.workSchedules) = 0; \"[]\"; join(add(emptyarray; \"[\\\"\"; join(8.data.employment.workSchedules; \"\\\",\\\"\"); \"\\\"]\"); emptystring)))}}"
+                  },
+                  {
+                    "name": "contractTypes",
+                    "value": "{{if(8.data.employment.contractTypes = null; null; if(length(8.data.employment.contractTypes) = 0; \"[]\"; join(add(emptyarray; \"[\\\"\"; join(8.data.employment.contractTypes; \"\\\",\\\"\"); \"\\\"]\"); emptystring)))}}"
+                  },
+                  {
+                    "name": "postedAt",
+                    "value": "{{8.data.application.postedAt}}"
+                  },
+                  {
+                    "name": "applicationDeadline",
+                    "value": "{{8.data.application.deadline}}"
+                  },
+                  {
+                    "name": "applicationUrl",
+                    "value": "{{8.data.application.url}}"
+                  },
+                  {
+                    "name": "applicationEmail",
+                    "value": "{{8.data.application.email}}"
+                  },
+                  {
+                    "name": "directApply",
+                    "value": "{{8.data.application.directApply}}"
+                  },
+                  {
+                    "name": "seniorityLevels",
+                    "value": "{{if(8.data.seniority.levels = null; null; if(length(8.data.seniority.levels) = 0; \"[]\"; join(add(emptyarray; \"[\\\"\"; join(8.data.seniority.levels; \"\\\",\\\"\"); \"\\\"]\"); emptystring)))}}"
+                  },
+                  {
+                    "name": "industries",
+                    "value": "{{if(8.data.classification.industries = null; null; if(length(8.data.classification.industries) = 0; \"[]\"; join(add(emptyarray; \"[\\\"\"; join(8.data.classification.industries; \"\\\",\\\"\"); \"\\\"]\"); emptystring)))}}"
+                  },
+                  {
+                    "name": "jobFunctions",
+                    "value": "{{if(8.data.classification.jobFunctions = null; null; if(length(8.data.classification.jobFunctions) = 0; \"[]\"; join(add(emptyarray; \"[\\\"\"; join(8.data.classification.jobFunctions; \"\\\",\\\"\"); \"\\\"]\"); emptystring)))}}"
+                  },
+                  {
+                    "name": "salaryCurrency",
+                    "value": "{{8.data.compensation.currency}}"
+                  },
+                  {
+                    "name": "salaryExact",
+                    "value": "{{8.data.compensation.exact}}"
+                  },
+                  {
+                    "name": "salaryMinimum",
+                    "value": "{{8.data.compensation.minimum}}"
+                  },
+                  {
+                    "name": "salaryMaximum",
+                    "value": "{{8.data.compensation.maximum}}"
+                  },
+                  {
+                    "name": "salaryPeriod",
+                    "value": "{{8.data.compensation.period}}"
+                  },
+                  {
+                    "name": "salaryRaw",
+                    "value": "{{8.data.compensation.raw}}"
+                  },
+                  {
+                    "name": "descriptionText",
+                    "value": "{{8.data.descriptionText}}"
+                  },
+                  {
+                    "name": "llmStatus",
+                    "value": "{{ifempty(8.llm.status; \"not_requested\")}}"
+                  }
+                ],
+                "scope": "roundtrip"
+              },
+              "metadata": {
+                "designer": {
+                  "x": 1500,
+                  "y": 150,
+                  "name": "Flatten normalized job"
+                },
+                "notes": "Creates the 32-column nomad-agent-flat-job-v1 projection with Make's free built-in Tools module. No paid Make Code app is required."
+              }
+            },
+            {
+              "id": 10,
+              "module": "google-sheets:filterRows",
+              "version": 2,
+              "parameters": {},
+              "mapper": {
+                "from": "drive",
+                "limit": "1",
+                "continue": true,
+                "filter": [
+                  [
+                    {
+                      "a": "B",
+                      "b": "{{9.jobKey}}",
+                      "o": "text:equal"
+                    }
+                  ]
+                ],
+                "sheetId": "{{2.googlesheetname}}",
+                "sortOrder": "asc",
+                "spreadsheetId": "{{2.googlespreadsheetid}}",
+                "tableFirstRow": "A1:AF1",
+                "includesHeaders": true,
+                "valueRenderOption": "FORMATTED_VALUE",
+                "dateTimeRenderOption": "FORMATTED_STRING"
+              },
+              "metadata": {
+                "designer": {
+                  "x": 1800,
+                  "y": 150,
+                  "name": "Find row by jobKey"
+                },
+                "notes": "Select your Google Sheets connection. Keep Continue execution when no results enabled so new jobs reach the Add Row branch."
+              }
+            },
+            {
+              "id": 11,
+              "module": "builtin:BasicRouter",
+              "version": 1,
+              "parameters": {},
+              "mapper": null,
+              "metadata": {
+                "designer": {
+                  "x": 2100,
+                  "y": 300,
+                  "name": "Update or append"
+                }
+              },
+              "routes": [
+                {
+                  "flow": [
+                    {
+                      "id": 12,
+                      "module": "google-sheets:updateRow",
+                      "version": 2,
+                      "parameters": {},
+                      "filter": {
+                        "name": "Existing jobKey",
+                        "conditions": [
+                          [
+                            {
+                              "a": "{{10.__ROW_NUMBER__}}",
+                              "o": "exist"
+                            }
+                          ]
+                        ]
+                      },
+                      "mapper": {
+                        "mode": "map",
+                        "spreadsheetId": "{{2.googlespreadsheetid}}",
+                        "sheetId": "{{2.googlesheetname}}",
+                        "rowNumber": "{{10.__ROW_NUMBER__}}",
+                        "tableFirstRow": "A1:AF1",
+                        "includesHeaders": true,
+                        "useColumnHeaders": false,
+                        "valueInputOption": "USER_ENTERED",
+                        "values": {
+                          "0": "{{9.schemaVersion}}",
+                          "1": "{{9.jobKey}}",
+                          "2": "{{9.source}}",
+                          "3": "{{9.identityExternalId}}",
+                          "4": "{{9.jobUrl}}",
+                          "5": "{{9.title}}",
+                          "6": "{{9.companyName}}",
+                          "7": "{{9.companySourceId}}",
+                          "8": "{{9.companyUrl}}",
+                          "9": "{{9.locationText}}",
+                          "10": "{{9.countryCode}}",
+                          "11": "{{9.city}}",
+                          "12": "{{9.region}}",
+                          "13": "{{9.workArrangements}}",
+                          "14": "{{9.workSchedules}}",
+                          "15": "{{9.contractTypes}}",
+                          "16": "{{9.postedAt}}",
+                          "17": "{{9.applicationDeadline}}",
+                          "18": "{{9.applicationUrl}}",
+                          "19": "{{9.applicationEmail}}",
+                          "20": "{{9.directApply}}",
+                          "21": "{{9.seniorityLevels}}",
+                          "22": "{{9.industries}}",
+                          "23": "{{9.jobFunctions}}",
+                          "24": "{{9.salaryCurrency}}",
+                          "25": "{{9.salaryExact}}",
+                          "26": "{{9.salaryMinimum}}",
+                          "27": "{{9.salaryMaximum}}",
+                          "28": "{{9.salaryPeriod}}",
+                          "29": "{{9.salaryRaw}}",
+                          "30": "{{9.descriptionText}}",
+                          "31": "{{9.llmStatus}}"
+                        }
+                      },
+                      "metadata": {
+                        "designer": {
+                          "x": 2400,
+                          "y": 0,
+                          "name": "Update existing job"
+                        },
+                        "notes": "Refresh the existing row matched by jobKey."
+                      }
+                    }
+                  ]
+                },
+                {
+                  "flow": [
+                    {
+                      "id": 13,
+                      "module": "google-sheets:addRow",
+                      "version": 2,
+                      "parameters": {},
+                      "filter": {
+                        "name": "New jobKey",
+                        "conditions": [
+                          [
+                            {
+                              "a": "{{10.__ROW_NUMBER__}}",
+                              "o": "notexist"
+                            }
+                          ]
+                        ]
+                      },
+                      "mapper": {
+                        "mode": "map",
+                        "from": "drive",
+                        "spreadsheetId": "{{2.googlespreadsheetid}}",
+                        "sheetId": "{{2.googlesheetname}}",
+                        "includesHeaders": true,
+                        "insertUnformatted": false,
+                        "insertDataOption": "INSERT_ROWS",
+                        "valueInputOption": "USER_ENTERED",
+                        "values": {
+                          "0": "{{9.schemaVersion}}",
+                          "1": "{{9.jobKey}}",
+                          "2": "{{9.source}}",
+                          "3": "{{9.identityExternalId}}",
+                          "4": "{{9.jobUrl}}",
+                          "5": "{{9.title}}",
+                          "6": "{{9.companyName}}",
+                          "7": "{{9.companySourceId}}",
+                          "8": "{{9.companyUrl}}",
+                          "9": "{{9.locationText}}",
+                          "10": "{{9.countryCode}}",
+                          "11": "{{9.city}}",
+                          "12": "{{9.region}}",
+                          "13": "{{9.workArrangements}}",
+                          "14": "{{9.workSchedules}}",
+                          "15": "{{9.contractTypes}}",
+                          "16": "{{9.postedAt}}",
+                          "17": "{{9.applicationDeadline}}",
+                          "18": "{{9.applicationUrl}}",
+                          "19": "{{9.applicationEmail}}",
+                          "20": "{{9.directApply}}",
+                          "21": "{{9.seniorityLevels}}",
+                          "22": "{{9.industries}}",
+                          "23": "{{9.jobFunctions}}",
+                          "24": "{{9.salaryCurrency}}",
+                          "25": "{{9.salaryExact}}",
+                          "26": "{{9.salaryMinimum}}",
+                          "27": "{{9.salaryMaximum}}",
+                          "28": "{{9.salaryPeriod}}",
+                          "29": "{{9.salaryRaw}}",
+                          "30": "{{9.descriptionText}}",
+                          "31": "{{9.llmStatus}}"
+                        }
+                      },
+                      "metadata": {
+                        "designer": {
+                          "x": 2400,
+                          "y": 300,
+                          "name": "Append new job"
+                        },
+                        "notes": "Append only when no row with this jobKey exists."
+                      }
+                    }
+                  ]
+                }
+              ]
             }
           ]
         }
@@ -279,7 +659,9 @@
       "dlq": false,
       "freshVariables": false
     },
-    "designer": { "orphans": [] },
+    "designer": {
+      "orphans": []
+    },
     "zone": "eu1.make.com"
   }
 }

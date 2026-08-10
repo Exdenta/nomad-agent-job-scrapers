@@ -8,6 +8,7 @@ The maintained MCP v1 pack is
 - environment-backed token alternatives;
 - deployed Actor schema and pricing inspection with `fetch-actor-details`;
 - the current Actor tool and run/storage helper workflow;
+- structured `RUN-SUMMARY` handling with one bounded same-input retry;
 - bounded input and prompt examples;
 - explicit empty-result and failure behavior;
 - an offline validator and credential-safe live smoke script;

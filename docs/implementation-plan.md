@@ -17,8 +17,9 @@ Already scaffolded:
 Actor `0.6` release state:
 
 - local Actor tests passed;
-- deployment was explicitly authorized and the verified build was promoted;
-- a bounded production run returned a strict six-root normalized record;
+- private canary builds produced bounded strict six-root normalized records;
+- `0.6` is not represented by this repository as Store-promoted or generally
+  production-ready;
 - hosted MCP client-specific validation remains separate from Actor deployment.
 
 ## Pack 1: n8n

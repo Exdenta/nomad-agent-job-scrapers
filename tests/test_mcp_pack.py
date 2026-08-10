@@ -58,12 +58,15 @@ class McpPackTests(unittest.TestCase):
         )
         self.assertLessEqual(value["maxItems"], 5)
         self.assertFalse(value["translateToEnglish"])
-        self.assertFalse(value["aiEnrichment"])
+        self.assertEqual(
+            value["aiEnrichment"],
+            {"enabled": False, "accuracy": "silver"},
+        )
         self.assertFalse(value["includeRaw"])
         self.assertFalse(value["analyticsEnabled"])
         self.assertEqual(
             value["dedupe"],
-            {"enabled": False, "key": "", "stateResetAcknowledged": False},
+            {"enabled": False, "key": ""},
         )
 
     def test_smoke_response_decoder_accepts_json_and_sse(self):
@@ -74,6 +77,7 @@ class McpPackTests(unittest.TestCase):
         spec.loader.exec_module(module)
         self.assertEqual(module.SCOPED_URL, SCOPED_URL)
         self.assertIn("fetch-actor-details", module.REQUIRED_TOOLS)
+        self.assertIn("get-key-value-store-record", module.REQUIRED_TOOLS)
         direct = module._decode_response(
             b'{"jsonrpc":"2.0","id":7,"result":{"ok":true}}',
             "application/json",
@@ -86,6 +90,26 @@ class McpPackTests(unittest.TestCase):
             7,
         )
         self.assertEqual(sse["result"], {"ok": True})
+        self.assertEqual(
+            module._default_storage_id(
+                {
+                    "storages": {
+                        "keyValueStores": {"default": {"id": "store-1"}}
+                    }
+                },
+                "keyValueStores",
+                "defaultKeyValueStoreId",
+            ),
+            "store-1",
+        )
+
+    def test_smoke_script_honors_only_structured_bounded_retry(self):
+        text = (PACK / "scripts" / "smoke_test.py").read_text(encoding="utf-8")
+        self.assertIn('"get-key-value-store-record"', text)
+        self.assertIn('"recordKey": "RUN-SUMMARY"', text)
+        self.assertIn("evaluate_run_summary", text)
+        self.assertIn("--max-reschedule-retries", text)
+        self.assertIn("time.sleep(decision.delay_seconds)", text)
 
 
 if __name__ == "__main__":

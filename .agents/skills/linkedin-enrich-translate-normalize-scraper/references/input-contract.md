@@ -13,9 +13,9 @@ reference.
 | `workArrangements` | string array | omitted | Any union of `remote`, `hybrid`, `onsite` |
 | `maxItems` | integer | Actor default | Use 5 for a first run; 0 requests the bounded 200-item window |
 | `translateToEnglish` | boolean | `false` | Owner-managed, additional per-result charge |
-| `aiEnrichment` | boolean | `false` | Owner-managed null-only extraction, additional charge |
+| `aiEnrichment` | object | `{"enabled": false, "accuracy": "silver"}` | Owner-managed null-only extraction; Silver is the default tier and Gold is optional |
 | `includeRaw` | boolean | `true` | False returns top-level `raw: null` |
-| `dedupe` | object | disabled | Optional cross-run delivery ledger |
+| `dedupe` | object | `{"enabled": true, "key": ""}` | Optional cross-run delivery ledger; disable explicitly for one-off runs |
 | `filters` | object | omitted | Versioned normalized-field expression |
 | `linkedinSearch` | object | omitted | Versioned bounded multi-search plan |
 | `analyticsEnabled` | boolean | `false` | Explicit opt-in only |
@@ -72,13 +72,12 @@ against source-language values before optional translation.
 
 ## Cross-run dedupe
 
-Disabled default:
+Storage-free one-off input:
 
 ```json
 {
   "enabled": false,
-  "key": "",
-  "stateResetAcknowledged": false
+  "key": ""
 }
 ```
 
@@ -87,5 +86,5 @@ dedupe key. A stable opaque alert/profile key intentionally shares delivery
 history across searches for that profile. Do not use a global account-wide key
 for unrelated users or alerts.
 
-The current contract requires `stateResetAcknowledged: true` when enabling the
-new transactional ledger because older delivery history is not migrated.
+An optional nonempty `replayEpoch` starts a fresh delivery generation when an
+intentional replay is required.

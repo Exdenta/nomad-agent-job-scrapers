@@ -46,12 +46,11 @@ Always send the input contract discriminator:
   "workArrangements": ["remote", "hybrid"],
   "maxItems": 5,
   "translateToEnglish": false,
-  "aiEnrichment": false,
+  "aiEnrichment": {"enabled": false, "accuracy": "silver"},
   "includeRaw": false,
   "dedupe": {
     "enabled": false,
-    "key": "",
-    "stateResetAcknowledged": false
+    "key": ""
   },
   "analyticsEnabled": false
 }
@@ -66,11 +65,13 @@ Apply these rules:
 - Inspect the Actor details for current pricing before a paid run. Explain the
   larger result count and any additional per-result cost before increasing
   `maxItems` or enabling translation or AI enrichment.
+- AI enrichment accepts `{"enabled": true, "accuracy": "silver"}` or
+  `{"enabled": true, "accuracy": "gold"}`. Silver is the default accuracy
+  when enrichment is enabled; compare deployed prices before selecting Gold.
 - Do not request customer DeepL/OpenRouter keys. These features are
   owner-managed.
 - Leave cross-run dedupe disabled for one-off searches. Enabling it requires a
-  deliberate alert/profile scope and the reset acknowledgement defined by the
-  deployed input schema.
+  deliberate alert/profile scope defined by the deployed input schema.
 - Keep analytics off unless the user explicitly opts in.
 
 ## Execute with MCP
@@ -81,19 +82,30 @@ Apply these rules:
    its run ID with `get-actor-run` and follow `nextStep` until the run is
    terminal.
 3. Continue only when the terminal status is `SUCCEEDED`. Read the default
-   dataset ID from `storages.datasets.default.id`, then call
-   `get-dataset-items`. Paginate with the tool's offset/limit controls when the
-   requested result set exceeds one page; never treat an output preview as the
-   complete dataset.
-4. Treat `SUCCEEDED` with zero dataset items as a valid empty search. Report
+   key-value store ID from `storages.keyValueStores.default.id`, then call
+   `get-key-value-store-record` with `recordKey: RUN-SUMMARY`. For a valid
+   `nomad-agent-linkedin-run-summary-v1` record, retry only when `blocked` and
+   `reschedule.recommended` are both true, `afterSeconds` is an integer from 1
+   to 3600, and `notBefore` is valid. Wait the remaining specified time and
+   repeat the exact same input once. A second run can incur the same per-run
+   charge cap; never automatically retry it again.
+4. After any allowed retry, read the latest successful run's default dataset
+   ID from `storages.datasets.default.id`, then call `get-dataset-items`.
+   Paginate with the tool's offset/limit controls when the requested result set
+   exceeds one page; never treat an output preview as the complete dataset.
+5. Treat `SUCCEEDED` with zero dataset items as a valid empty search. Report
    that no matching rows were returned; do not invent a job or retry merely
    because the dataset is empty.
-5. Treat `FAILED`, `TIMED-OUT`, and `ABORTED` as errors. Report the run ID,
+6. Treat a missing `RUN-SUMMARY` or a non-blocking partial summary as no retry
+   recommendation. Do not parse the human-readable status message to infer a
+   delay. If the single retry also recommends rescheduling, report that the
+   automatic retry bound is exhausted and use the latest successful result.
+7. Treat `FAILED`, `TIMED-OUT`, and `ABORTED` as errors. Report the run ID,
    status, status message, and exit code. Do not fetch or present a partial
    dataset as a successful result.
-6. Treat MCP as the live authentication and execution layer. Do not read an
+8. Treat MCP as the live authentication and execution layer. Do not read an
    `APIFY_TOKEN` from project files or pass one as Actor input.
-7. Do not retry a paid run automatically after an ambiguous timeout. Inspect
+9. Do not retry a paid run automatically after an ambiguous timeout. Inspect
    the run first to avoid duplicate charges.
 
 If MCP is not configured, use `references/client-setup.md`. Never ask the user

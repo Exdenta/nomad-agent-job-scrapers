@@ -102,17 +102,15 @@ def validate() -> None:
     if not set(example["workArrangements"]) <= {"remote", "hybrid", "onsite"}:
         _fail("unsupported work arrangement")
     for key in (
-        "translateToEnglish",
-        "aiEnrichment",
-        "includeRaw",
-        "analyticsEnabled",
+        "translateToEnglish", "includeRaw", "analyticsEnabled",
     ):
         if example[key] is not False:
             _fail(f"bounded example must keep {key}=false")
+    if example["aiEnrichment"] != {"enabled": False, "accuracy": "silver"}:
+        _fail("bounded example must keep Silver AI enrichment disabled")
     if example["dedupe"] != {
         "enabled": False,
         "key": "",
-        "stateResetAcknowledged": False,
     }:
         _fail("bounded example must disable cross-run dedupe")
     if not 0 <= example["waitSecs"] <= 45:

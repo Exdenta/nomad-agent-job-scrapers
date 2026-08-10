@@ -9,12 +9,14 @@
   ],
   "maxItems": 5,
   "translateToEnglish": false,
-  "aiEnrichment": false,
+  "aiEnrichment": {
+    "enabled": false,
+    "accuracy": "silver"
+  },
   "includeRaw": false,
   "dedupe": {
     "enabled": false,
-    "key": "",
-    "stateResetAcknowledged": false
+    "key": ""
   },
   "analyticsEnabled": false,
   "waitSecs": 0

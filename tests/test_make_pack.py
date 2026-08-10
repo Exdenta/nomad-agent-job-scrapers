@@ -45,7 +45,7 @@ class MakePackTest(unittest.TestCase):
             "Find and upsert LinkedIn jobs to Google Sheets with Apify",
         )
         ids = [module["id"] for module in self.modules]
-        self.assertEqual(ids, list(range(1, 9)))
+        self.assertEqual(ids, [1, 2, 3, 4, 6, 7, 8, 9, 10, 11, 12, 13])
         self.assertEqual(len(ids), len(set(ids)))
         self.assertTrue(self.blueprint["metadata"]["scenario"]["sequential"])
         self.assertTrue(self.blueprint["metadata"]["instant"])
@@ -53,18 +53,16 @@ class MakePackTest(unittest.TestCase):
         self.assertEqual(
             [module["module"] for module in self.blueprint["flow"]],
             [
-                "apify:finishedActorRuns",
+                "apify:finishedTaskRun",
                 "util:SetVariables",
-                "apify:fetchDatasetItems",
-                "util:SetVariables",
-                "google-sheets:filterRows",
+                "http:ActionSendData",
                 "builtin:BasicRouter",
             ],
         )
 
-    def test_actor_completion_handoff_is_async_and_credential_free(self) -> None:
-        trigger = self.by_name["Watch completed LinkedIn Actor runs"]
-        self.assertEqual(trigger["module"], "apify:finishedActorRuns")
+    def test_task_completion_handoff_is_async_and_credential_free(self) -> None:
+        trigger = self.by_name["Watch completed LinkedIn Task runs"]
+        self.assertEqual(trigger["module"], "apify:finishedTaskRun")
         self.assertEqual(trigger["parameters"], {})
         self.assertEqual(trigger["mapper"], {})
 
@@ -73,6 +71,7 @@ class MakePackTest(unittest.TestCase):
             for item in self.by_name["Configuration"]["mapper"]["variables"]
         }
         self.assertEqual(config["maxitems"], "1")
+        self.assertEqual(config["apifytaskid"], "REPLACE_WITH_APIFY_TASK_ID")
         self.assertEqual(
             config["googlespreadsheetid"],
             "REPLACE_WITH_GOOGLE_SPREADSHEET_ID",
@@ -85,6 +84,63 @@ class MakePackTest(unittest.TestCase):
         )
         self.assertEqual(dataset["mapper"]["limit"], "{{2.maxitems}}")
 
+    def test_structured_summary_requests_at_most_one_delayed_retry(self) -> None:
+        summary = self.by_name["Read structured RUN-SUMMARY"]
+        self.assertEqual(summary["module"], "http:ActionSendData")
+        self.assertFalse(summary["parameters"]["handleErrors"])
+        self.assertTrue(summary["mapper"]["parseResponse"])
+        self.assertEqual(summary["mapper"]["url"], "{{1.output.runSummary}}")
+        self.assertEqual(summary["filter"]["conditions"][0][0], {
+            "a": "{{1.status}}",
+            "b": "SUCCEEDED",
+            "o": "text:equal",
+        })
+
+        sleep = self.by_name["Wait Actor-specified retry delay"]
+        self.assertEqual(sleep["module"], "util:FunctionSleep")
+        self.assertEqual(
+            sleep["mapper"]["duration"],
+            "{{3.data.reschedule.afterSeconds}}",
+        )
+        conditions = sleep["filter"]["conditions"][0]
+        self.assertIn({
+            "a": "{{3.statusCode}}",
+            "b": "200",
+            "o": "number:equal",
+        }, conditions)
+        self.assertIn({
+            "a": "{{3.data.schemaVersion}}",
+            "b": "nomad-agent-linkedin-run-summary-v1",
+            "o": "text:equal",
+        }, conditions)
+        self.assertIn({
+            "a": "{{3.data.reschedule.afterSeconds}}",
+            "b": "1",
+            "o": "number:greaterorequal",
+        }, conditions)
+        self.assertIn({
+            "a": "{{3.data.reschedule.afterSeconds}}",
+            "b": "240",
+            "o": "number:lessorequal",
+        }, conditions)
+        self.assertIn({
+            "a": "{{1.meta.origin}}",
+            "b": "API",
+            "o": "text:notequal",
+        }, conditions)
+
+        retry = self.by_name["Retry the same Apify Task once"]
+        self.assertEqual(retry["module"], "apify:runTask")
+        self.assertEqual(retry["mapper"]["taskId"], "{{2.apifytaskid}}")
+        self.assertFalse(retry["mapper"]["runSync"])
+        self.assertNotIn("filter", retry)
+
+        delivery = self.by_name["Get normalized jobs"]
+        rendered_filter = json.dumps(delivery["filter"])
+        self.assertIn("number:notequal", rendered_filter)
+        self.assertIn("boolean:notequal", rendered_filter)
+        self.assertIn("{{1.meta.origin}}", rendered_filter)
+
     def test_native_projection_matches_flat_schema_without_paid_code(self) -> None:
         projection = self.by_name["Flatten normalized job"]
         self.assertEqual(projection["module"], "util:SetVariables")
@@ -92,8 +148,8 @@ class MakePackTest(unittest.TestCase):
         self.assertEqual(projection["filter"], {
             "name": "Skip empty Actor runs",
             "conditions": [[
-                {"a": "{{3.identity.source}}", "o": "exist"},
-                {"a": "{{3.identity.externalId}}", "o": "exist"},
+                {"a": "{{8.identity.source}}", "o": "exist"},
+                {"a": "{{8.identity.externalId}}", "o": "exist"},
             ]],
         })
 
@@ -107,10 +163,10 @@ class MakePackTest(unittest.TestCase):
         self.assertEqual(by_name["schemaVersion"], "nomad-agent-flat-job-v1")
         self.assertEqual(
             by_name["jobKey"],
-            "{{3.identity.source}}:{{3.identity.externalId}}",
+            "{{8.identity.source}}:{{8.identity.externalId}}",
         )
-        self.assertEqual(by_name["title"], "{{3.data.title}}")
-        self.assertEqual(by_name["descriptionText"], "{{3.data.descriptionText}}")
+        self.assertEqual(by_name["title"], "{{8.data.title}}")
+        self.assertEqual(by_name["descriptionText"], "{{8.data.descriptionText}}")
 
         for field in (
             "workArrangements",
@@ -147,7 +203,7 @@ class MakePackTest(unittest.TestCase):
             self.assertEqual(list(values), [str(index) for index in range(32)])
             self.assertEqual(
                 list(values.values()),
-                [f"{{{{4.{field}}}}}" for field in expected],
+                [f"{{{{9.{field}}}}}" for field in expected],
             )
             self.assertEqual(
                 self.by_name[name]["mapper"]["valueInputOption"],
@@ -161,13 +217,13 @@ class MakePackTest(unittest.TestCase):
         self.assertTrue(lookup["mapper"]["continue"])
         self.assertEqual(lookup["mapper"]["filter"][0][0], {
             "a": "B",
-            "b": "{{4.jobKey}}",
+            "b": "{{9.jobKey}}",
             "o": "text:equal",
         })
 
         update = self.by_name["Update existing job"]
         append = self.by_name["Append new job"]
-        self.assertEqual(update["mapper"]["rowNumber"], "{{5.__ROW_NUMBER__}}")
+        self.assertEqual(update["mapper"]["rowNumber"], "{{10.__ROW_NUMBER__}}")
         self.assertEqual(
             update["filter"]["conditions"][0][0]["o"],
             "exist",

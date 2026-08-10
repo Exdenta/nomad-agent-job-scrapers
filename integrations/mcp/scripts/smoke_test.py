@@ -7,9 +7,14 @@ import json
 import os
 from pathlib import Path
 import sys
+import time
 from typing import Any
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
+
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "shared"))
+from retry_policy import RunSummaryError, evaluate_run_summary  # noqa: E402
 
 
 SCOPED_URL = (
@@ -23,6 +28,7 @@ REQUIRED_TOOLS = {
     ACTOR_TOOL,
     "get-actor-run",
     "get-dataset-items",
+    "get-key-value-store-record",
 }
 TERMINAL = {"SUCCEEDED", "FAILED", "ABORTED", "TIMED-OUT"}
 CANONICAL_ROOTS = {"custom", "data", "identity", "llm", "raw", "schemaVersion"}
@@ -142,6 +148,70 @@ def _call_tool(client: McpClient, name: str, arguments: dict[str, Any]):
     return client.call("tools/call", {"name": name, "arguments": arguments})
 
 
+def _default_storage_id(run: dict[str, Any], group: str, legacy_key: str) -> str:
+    storage = (((run.get("storages") or {}).get(group) or {}).get("default") or {})
+    value = storage.get("id") or run.get(legacy_key)
+    return value if isinstance(value, str) else ""
+
+
+def _run_to_terminal(
+    client: McpClient,
+    actor_input: dict[str, Any],
+    *,
+    max_polls: int,
+    poll_wait_secs: int,
+) -> dict[str, Any]:
+    run = _tool_payload(_call_tool(client, ACTOR_TOOL, actor_input))
+    run_id = run.get("runId") or run.get("id")
+    status = run.get("status")
+    if not isinstance(run_id, str) or not run_id:
+        raise RuntimeError("Actor tool returned no runId")
+    print(f"Actor run started: runId={run_id} status={status}")
+
+    for poll in range(1, max_polls + 1):
+        if status in TERMINAL:
+            break
+        run = _tool_payload(
+            _call_tool(
+                client,
+                "get-actor-run",
+                {"runId": run_id, "waitSecs": poll_wait_secs},
+            )
+        )
+        status = run.get("status")
+        print(f"Actor poll {poll}: status={status}")
+    if status not in TERMINAL:
+        raise RuntimeError("Actor did not reach a terminal status in the polling bound")
+    if status != "SUCCEEDED":
+        raise RuntimeError(
+            "Actor run failed: "
+            f"runId={run_id} status={status} "
+            f"statusMessage={run.get('statusMessage')} exitCode={run.get('exitCode')}"
+        )
+    return run
+
+
+def _run_summary(client: McpClient, run: dict[str, Any]) -> Any:
+    store_id = _default_storage_id(
+        run, "keyValueStores", "defaultKeyValueStoreId"
+    )
+    if not store_id:
+        return None
+    try:
+        payload = _tool_payload(
+            _call_tool(
+                client,
+                "get-key-value-store-record",
+                {"keyValueStoreId": store_id, "recordKey": "RUN-SUMMARY"},
+            )
+        )
+    except RuntimeError as exc:
+        if "not found" in str(exc).lower() or "does not exist" in str(exc).lower():
+            return None
+        raise
+    return payload.get("value")
+
+
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
     parser.add_argument("--run", action="store_true", help="start one bounded Actor run")
@@ -149,6 +219,12 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--max-polls", type=int, default=8)
     parser.add_argument("--poll-wait-secs", type=int, default=30)
     parser.add_argument("--request-timeout-secs", type=float, default=70)
+    parser.add_argument(
+        "--max-reschedule-retries",
+        type=int,
+        default=1,
+        help="honor at most one structured RUN-SUMMARY retry (default: 1)",
+    )
     return parser.parse_args()
 
 
@@ -163,6 +239,9 @@ def main() -> int:
         return 2
     if args.poll_wait_secs < 0 or args.poll_wait_secs > 60:
         print("--poll-wait-secs must be between 0 and 60", file=sys.stderr)
+        return 2
+    if args.max_reschedule_retries not in {0, 1}:
+        print("--max-reschedule-retries must be 0 or 1", file=sys.stderr)
         return 2
 
     try:
@@ -185,42 +264,39 @@ def main() -> int:
         if actor_input.get("maxItems", 0) > 5:
             raise RuntimeError("live smoke input may request at most 5 items")
         actor_input["waitSecs"] = 0
-        run = _tool_payload(_call_tool(client, ACTOR_TOOL, actor_input))
-        run_id = run.get("runId")
-        status = run.get("status")
-        if not isinstance(run_id, str) or not run_id:
-            raise RuntimeError("Actor tool returned no runId")
-        print(f"Actor run started: runId={run_id} status={status}")
-
-        for poll in range(1, args.max_polls + 1):
-            if status in TERMINAL:
-                break
-            run = _tool_payload(
-                _call_tool(
-                    client,
-                    "get-actor-run",
-                    {"runId": run_id, "waitSecs": args.poll_wait_secs},
-                )
-            )
-            status = run.get("status")
-            print(f"Actor poll {poll}: status={status}")
-        if status not in TERMINAL:
-            raise RuntimeError("Actor did not reach a terminal status in the polling bound")
-        if status != "SUCCEEDED":
-            print(
-                "Actor run failed: "
-                f"runId={run_id} status={status} "
-                f"statusMessage={run.get('statusMessage')} exitCode={run.get('exitCode')}",
-                file=sys.stderr,
-            )
-            return 1
-
-        dataset = (
-            ((run.get("storages") or {}).get("datasets") or {}).get("default") or {}
+        run = _run_to_terminal(
+            client,
+            actor_input,
+            max_polls=args.max_polls,
+            poll_wait_secs=args.poll_wait_secs,
         )
-        dataset_id = dataset.get("id")
-        item_count = dataset.get("itemCount", 0)
-        if not isinstance(dataset_id, str) or not dataset_id:
+        for retry_attempt in range(args.max_reschedule_retries + 1):
+            decision = evaluate_run_summary(_run_summary(client, run))
+            if not decision.recommended:
+                break
+            if retry_attempt >= args.max_reschedule_retries:
+                print(
+                    "Actor requested another retry, but the one-retry bound is exhausted; "
+                    "using the latest successful run",
+                    file=sys.stderr,
+                )
+                break
+            print(
+                "Actor RUN-SUMMARY requested one retry: "
+                f"waiting {decision.delay_seconds} seconds"
+            )
+            time.sleep(decision.delay_seconds)
+            run = _run_to_terminal(
+                client,
+                actor_input,
+                max_polls=args.max_polls,
+                poll_wait_secs=args.poll_wait_secs,
+            )
+
+        dataset_id = _default_storage_id(run, "datasets", "defaultDatasetId")
+        dataset = (((run.get("storages") or {}).get("datasets") or {}).get("default") or {})
+        item_count = dataset.get("itemCount", run.get("datasetItemCount", 0))
+        if not dataset_id:
             raise RuntimeError("successful run returned no default dataset ID")
         if item_count == 0:
             print("Actor run succeeded with an empty dataset: no matching jobs")
@@ -242,7 +318,14 @@ def main() -> int:
                 raise RuntimeError(f"dataset item {index} has unsupported schemaVersion")
         print(f"MCP end-to-end smoke passed: fetched={len(items)} canonical rows")
         return 0
-    except (HTTPError, URLError, OSError, RuntimeError, json.JSONDecodeError) as exc:
+    except (
+        HTTPError,
+        URLError,
+        OSError,
+        RuntimeError,
+        RunSummaryError,
+        json.JSONDecodeError,
+    ) as exc:
         if isinstance(exc, HTTPError):
             detail = f"HTTP {exc.code} {exc.reason}"
         else:

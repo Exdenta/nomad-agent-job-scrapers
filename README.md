@@ -5,13 +5,21 @@ Actors. The Actor implementations may be hosted services; this repository
 publishes their interoperability layer, not a claim that every scraper is open
 source.
 
+> **Unofficial integration.** This project and the linked Actor are
+> independently developed and are not affiliated with, endorsed by, or
+> sponsored by LinkedIn. LinkedIn is a trademark of its owner. Public page
+> access is not authorization to crawl; review LinkedIn's
+> [Crawling Terms](https://www.linkedin.com/legal/crawling-terms), other
+> applicable terms, and applicable law before use.
+
 The first supported source is the Apify Actor
 [`nomad-agent/linkedin-enrich-translate-normalize-scraper`](https://apify.com/nomad-agent/linkedin-enrich-translate-normalize-scraper).
 
-The LinkedIn Actor's `0.6` base path is deployed and has been live-validated
-with bounded production runs. The reusable n8n template is also live-validated
-through Google Sheets; destination-specific packs document the exact boundary
-of their end-to-end validation.
+Private `0.6.x` canary builds and selected destination workflows have bounded
+historical validation, but `0.6` is not represented here as Store-published or
+production-ready. The Store-facing build can differ from these pre-release
+contracts. Check the Actor page and each destination pack for the exact current
+boundary before use.
 
 ## Start with MCP
 
@@ -102,8 +110,10 @@ tests/            Offline contract and mapper tests
 ## Project status
 
 The integration repository is under active development. The LinkedIn Actor
-`0.6` base contract is live; MCP client-specific and destination-platform
-validation remains documented per pack.
+`0.6` is a pre-release contract in this repository. Private canary and
+destination-platform evidence remains documented per pack and is not proof of
+Store publication, general production readiness, current source authorization,
+or future source continuity.
 
 ## License
 

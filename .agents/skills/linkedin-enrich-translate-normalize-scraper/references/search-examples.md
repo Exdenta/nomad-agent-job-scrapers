@@ -4,10 +4,12 @@ Keep the first run small. These prompts assume the skill and Apify MCP server
 are already installed and authorized.
 
 For every search, poll a non-terminal run with `get-actor-run`. Only after
-`SUCCEEDED`, fetch `storages.datasets.default.id` with `get-dataset-items` and
-paginate when necessary. An empty successful dataset is valid. A failed,
-timed-out, or aborted run is an error; never present its partial rows as
-success.
+`SUCCEEDED`, read `RUN-SUMMARY` from the default key-value store. Honor one
+valid v1 structured blocked-run retry by waiting until `notBefore` and
+repeating the same input once. Then fetch the latest successful run's
+`storages.datasets.default.id` with `get-dataset-items` and paginate when
+necessary. An empty successful dataset is valid. A failed, timed-out, or
+aborted run is an error; never present its partial rows as success.
 
 ## Focused search
 

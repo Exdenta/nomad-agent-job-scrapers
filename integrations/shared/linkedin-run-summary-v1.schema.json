@@ -1,0 +1,105 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/nomad-agent/nomad-agent-job-scrapers/integrations/shared/linkedin-run-summary-v1.schema.json",
+  "title": "Nomad Agent LinkedIn run summary v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "coverageMode",
+    "resultState",
+    "partial",
+    "stale",
+    "blocked",
+    "stopReason",
+    "sourceAsOf",
+    "searchRequests",
+    "staleSearchPages",
+    "staleDetailPages",
+    "emittedItems",
+    "reschedule"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "nomad-agent-linkedin-run-summary-v1"
+    },
+    "coverageMode": {
+      "const": "bounded"
+    },
+    "resultState": {
+      "enum": [
+        "bounded-complete",
+        "partial",
+        "blocked",
+        "stale-partial"
+      ]
+    },
+    "partial": {
+      "type": "boolean"
+    },
+    "stale": {
+      "type": "boolean"
+    },
+    "blocked": {
+      "type": "boolean"
+    },
+    "stopReason": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "sourceAsOf": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    },
+    "searchRequests": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "staleSearchPages": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "staleDetailPages": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "emittedItems": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "reschedule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "recommended",
+        "afterSeconds",
+        "notBefore"
+      ],
+      "properties": {
+        "recommended": {
+          "type": "boolean"
+        },
+        "afterSeconds": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 1,
+          "maximum": 3600
+        },
+        "notBefore": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        }
+      }
+    }
+  }
+}

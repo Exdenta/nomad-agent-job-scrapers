@@ -35,6 +35,12 @@ is deployed and the `--run` smoke test below reaches `SUCCEEDED`.
 Tool discovery and client configuration are valid today. The temporary Actor
 runtime failure is not an OAuth, MCP transport, or input-schema error.
 
+The same deployment boundary applies to retry handling: a successful private
+`0.6.19` API-origin run had no `RUN-SUMMARY` record in its default key-value
+store. The smoke script safely treats that as no automatic retry. A later
+Actor build containing the checked-in summary persistence must be deployed and
+live-tested before the retry path is considered end-to-end verified.
+
 ## What MCP exposes
 
 The explicit metadata tool is:
@@ -66,6 +72,9 @@ abort-actor-run
 
 The Actor tool returns run metadata, not dataset rows. If its status is still
 `RUNNING`, follow `nextStep` and poll `get-actor-run`. After `SUCCEEDED`, pass
+`storages.keyValueStores.default.id` and `RUN-SUMMARY` to
+`get-key-value-store-record` before fetching the dataset. Honor one valid
+structured blocked-run recommendation, then pass
 `storages.datasets.default.id` to `get-dataset-items`. Do not depend on a
 `get-actor-output` tool: it was not present in the live scoped tool set.
 
@@ -153,11 +162,15 @@ posted in the last 7 days. Disable translation, AI enrichment, analytics, raw
 descriptions, and cross-run deduplication.
 
 If the Actor is still running, follow nextStep with get-actor-run until it is
-terminal. Only after SUCCEEDED, fetch up to 5 rows from the default dataset
-with get-dataset-items. Validate that every row is nomad-agent-job-v1 with
-exactly schemaVersion, identity, data, custom, llm, and raw at the top level.
-If the successful dataset is empty, report "no matching jobs" without making
-up a row or silently broadening the search.
+terminal. Only after SUCCEEDED, read RUN-SUMMARY from the run's default
+key-value store. If its exact v1 structured reschedule object recommends a
+retry because blocked=true, wait until notBefore and repeat the same request
+once; never retry more than once. Then fetch up to 5 rows from the latest
+successful run's default dataset with get-dataset-items. Validate that every
+row is nomad-agent-job-v1 with exactly schemaVersion, identity, data, custom,
+llm, and raw at the top level. If the successful dataset is empty and there is
+no retry recommendation, report "no matching jobs" without making up a row or
+silently broadening the search.
 ```
 
 The corresponding MCP tool arguments are in
@@ -171,6 +184,14 @@ contract. `0` starts the run without waiting; the client then polls explicitly.
   `nextStep`; do not fetch the dataset as if it were final.
 - `SUCCEEDED` with `itemCount: 0` is a valid empty search. It can mean no live
   matches or, when deliberately enabled, cross-run dedupe suppression.
+- After `SUCCEEDED`, read the default key-value-store record `RUN-SUMMARY`.
+  Retry only for the exact supported v1 schema with `blocked: true`,
+  `reschedule.recommended: true`, a 1–3600 second delay, and a valid
+  `notBefore`. Wait the remaining specified time and repeat the same input at
+  most once. A second run can incur the same per-run charge cap.
+- A missing summary, an empty dataset, or a non-blocking partial result is not
+  a retry request. If the retried run asks again, stop and report that the
+  automatic retry bound was exhausted.
 - `FAILED`, `TIMED-OUT`, and `ABORTED` are errors. Report the run ID, status,
   status message, and exit code. Do not return a partial dataset as success.
 - The narrow MCP URL does not include `get-actor-log`. Inspect the run in Apify
@@ -207,8 +228,11 @@ APIFY_TOKEN="$(apify auth token)" \
   python3 integrations/mcp/scripts/smoke_test.py --run
 ```
 
-The script never prints the token. It calls at most one Actor run, polls a
-bounded number of times, and fetches at most five dataset rows.
+The script never prints the token. It calls one Actor run and, only when that
+successful run's structured `RUN-SUMMARY` explicitly recommends it, waits and
+calls the same input once more. It polls a bounded number of times per run and
+fetches at most five rows from the delivery run. Pass
+`--max-reschedule-retries 0` to disable the possible second paid run.
 
 ## Primary documentation
 
