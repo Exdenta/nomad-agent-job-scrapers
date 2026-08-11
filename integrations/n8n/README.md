@@ -14,8 +14,9 @@ private deployment exposes `nomad-agent-job-search-input-v1`,
 `maxItems=5`, pins Actor version `1.0`, accepts EURAXESS date windows `24h`,
 `7d`, `30d`, or `any`, and never automatically starts another paid run.
 Importing the JSON supplies no Apify or Google credential and does not activate
-the workflow. This asset is offline-validated; it is not evidence of a live
-EURAXESS deployment or destination smoke test.
+the workflow. Private Actor build `1.0.4` now exposes the target contract under
+the `canary` tag, but this asset remains offline-validated only: no EURAXESS
+n8n/Google Sheets destination smoke test has completed.
 
 ## LinkedIn template
 

@@ -11,9 +11,10 @@ charge cap for the first smoke test.
 
 This blueprint requires a complete `nomad-agent-fleet-run-summary-v2`, accepts
 only EURAXESS canonical rows, and has no automatic paid-retry route. The
-blueprint contains no credential or account connection, imports inactive, and
-is offline-validated only; it is not evidence that the private Actor or Make
-delivery path has been live-tested.
+blueprint contains no credential or account connection and imports inactive.
+Private Actor build `1.0.4` now exposes the target contract under the `canary`
+tag, but the blueprint remains offline-validated only: no EURAXESS Make/Google
+Sheets destination smoke test has completed.
 
 ## LinkedIn blueprint
 

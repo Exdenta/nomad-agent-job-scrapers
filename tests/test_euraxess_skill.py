@@ -346,8 +346,10 @@ class EuraxessSkillTest(unittest.TestCase):
         agents = (ROOT / "docs" / "agent-skills.md").read_text(encoding="utf-8")
         self.assertIn("Actor catalog", readme)
         self.assertIn(SKILL_NAME, readme)
-        self.assertIn("known private `0.5.1`", readme)
-        self.assertIn("local clean-rewrite `1.0` candidate", guide)
+        self.assertIn("Build `1.0.4` is private and CI-qualified", readme)
+        self.assertIn("`latest` remains on legacy `0.5.1`", readme)
+        self.assertIn("Private canary\nbuild `1.0.4`", guide)
+        self.assertIn("CI run 31478518379", guide)
         self.assertIn(f"--skill {SKILL_NAME}", agents)
 
 

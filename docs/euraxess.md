@@ -3,10 +3,15 @@
 `nomad-agent/euraxess-enrich-translate-normalize-scraper` targets public
 EURAXESS PhD, postdoctoral, fellowship, research, and faculty vacancies.
 
-This repository documents the local clean-rewrite `1.0` candidate. The Actor
-currently deployed under that private name is older `0.5.1`; it is not proof
-that the schema, behavior, pricing, or MCP workflow below is live. The Actor is
-not represented here as Store-published or production-ready.
+This repository documents the clean-rewrite `1.0` contract. Private canary
+build `1.0.4` (`d4wNkTXaznxUSwjvQ`) was built on 2026-08-11 from exact commit
+`01d66f414c4f0c9685d77081cb0227de56e8a15c` after the lock, dependency audit,
+Python/container SBOMs, network-disabled image tests, and container scan passed
+in [CI run 31478518379](https://github.com/Exdenta/OinkJobSearch/actions/runs/31478518379).
+The Actor remains private and its `latest` tag remains on legacy `0.5.1`.
+Staged live canaries are still blocked on the source/privacy approval record and
+deployment of the capability-isolated owner gateway, so this is not a claim of
+Store publication or production readiness.
 
 ## What is shared with the normalized fleet
 
@@ -72,7 +77,8 @@ python3 scripts/install_skill.py \
 ```
 
 Before any live run, fetch Actor details and require the matching strict input
-schema. Stop on the known old deployment instead of guessing legacy fields.
+schema. Pin private qualification to version `1.0` or the `canary` tag; do not
+use `latest`, which intentionally remains on legacy `0.5.1` during cutover.
 
 ## Integration artifacts
 
@@ -86,5 +92,6 @@ The public pack includes source-specific, credential-free examples:
 The n8n and Make assets accept only complete `nomad-agent-fleet-run-summary-v2`
 outcomes and do not automatically start another paid run. They preserve the
 canonical Actor dataset and derive only the documented 32-column flat view for
-Google Sheets. Importing an asset never supplies credentials, activates a
-schedule, or proves that private Actor version `1.0` is deployed.
+Google Sheets. Importing an asset never supplies credentials or activates a
+schedule. The assets are offline-validated against the `1.0` contract, but no
+EURAXESS destination-platform smoke test has been completed yet.

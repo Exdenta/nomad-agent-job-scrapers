@@ -16,7 +16,7 @@ source.
 | Actor | Source focus | Contract represented here | Availability boundary |
 | --- | --- | --- | --- |
 | [`nomad-agent/linkedin-enrich-translate-normalize-scraper`](https://apify.com/nomad-agent/linkedin-enrich-translate-normalize-scraper) | LinkedIn jobs | Private `0.6.x` candidate | Bounded private canary and selected destination evidence; not represented as Store-published or generally production-ready |
-| `nomad-agent/euraxess-enrich-translate-normalize-scraper` | EURAXESS PhD, postdoc, fellowship, research, and faculty vacancies | Local clean-rewrite `1.0` candidate | Unreleased; the Actor currently deployed under this private name is older `0.5.1` and incompatible with the strict `1.0` skill |
+| `nomad-agent/euraxess-enrich-translate-normalize-scraper` | EURAXESS PhD, postdoc, fellowship, research, and faculty vacancies | Private `1.0` canary | Build `1.0.4` is private and CI-qualified; `latest` remains on legacy `0.5.1`, and live source/destination canaries are still blocked |
 
 Both target the six-root `nomad-agent-job-v1` envelope, but source-specific
 inputs, evidence, custom fields, run-summary versions, deployment state, and
@@ -37,9 +37,9 @@ EURAXESS compatibility-inspection endpoint:
 https://mcp.apify.com?tools=fetch-actor-details,nomad-agent/euraxess-enrich-translate-normalize-scraper
 ```
 
-Do not run the EURAXESS tool until its deployed schema advertises
-`nomad-agent-job-search-input-v1`; the known private `0.5.1` deployment does
-not represent the local `1.0` contract.
+Do not run the EURAXESS `latest` tag: it remains on legacy `0.5.1`. Inspect the
+Actor details and pin private qualification to version `1.0` or the `canary`
+tag, whose schema must advertise `nomad-agent-job-search-input-v1`.
 
 Or let the Apify CLI configure a supported client:
 
@@ -125,9 +125,10 @@ tests/            Offline contract and mapper tests
 ## Project status
 
 The integration repository is under active development. LinkedIn `0.6` and
-EURAXESS `1.0` are pre-release contracts here. The known EURAXESS deployment is
-private old `0.5.1`, not the documented rewrite. Private canary and
-destination-platform evidence remains documented per pack and is never proof
+EURAXESS `1.0` are pre-release contracts here. EURAXESS private canary build
+`1.0.4` now implements the documented rewrite, while `latest` deliberately
+remains on `0.5.1`. Private canary and destination-platform evidence remains
+documented per pack and is never proof
 of Store publication, general production readiness, current source
 authorization, or future source continuity.
 
