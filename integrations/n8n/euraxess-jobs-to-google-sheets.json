@@ -1,0 +1,743 @@
+{
+  "name": "EURAXESS normalized jobs to Google Sheets",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 8 * * *"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -1120,
+        120
+      ],
+      "id": "295697d6-65c8-46b3-98c0-525d14dcf99d",
+      "name": "Every day at 08:00 UTC"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -1120,
+        340
+      ],
+      "id": "e514f1e0-14e5-4773-8c3e-d8019f629fad",
+      "name": "Run manually"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "69714966-f468-49d8-b4e6-4e4a3aaec30d",
+              "name": "actorBuild",
+              "value": "1.0",
+              "type": "string"
+            },
+            {
+              "id": "8619485a-f06a-451d-917c-bc3ff0e55a9c",
+              "name": "keyword",
+              "value": "postdoctoral machine learning",
+              "type": "string"
+            },
+            {
+              "id": "a97a35dc-3e7f-40b3-b3f4-576f98dba404",
+              "name": "location",
+              "value": "Germany",
+              "type": "string"
+            },
+            {
+              "id": "49e57acf-98be-4984-8929-66ec6f3151ab",
+              "name": "postedWithin",
+              "value": "30d",
+              "type": "string"
+            },
+            {
+              "id": "703d4a55-2842-4c5b-990f-25c11892520c",
+              "name": "workArrangementsCsv",
+              "value": "",
+              "type": "string"
+            },
+            {
+              "id": "6f1599da-7316-4d08-ad31-b62d89bc2fa8",
+              "name": "maxItems",
+              "value": 5,
+              "type": "number"
+            },
+            {
+              "id": "35653c02-77ea-42e2-af7a-cf079e799c47",
+              "name": "maxTotalChargeUsd",
+              "value": 0.1,
+              "type": "number"
+            },
+            {
+              "id": "c9bb9cb5-172d-423d-a245-ddcfb89fa279",
+              "name": "googleSpreadsheetId",
+              "value": "REPLACE_WITH_GOOGLE_SPREADSHEET_ID",
+              "type": "string"
+            },
+            {
+              "id": "aac53089-cf1c-4ce6-8678-665398e75f70",
+              "name": "googleSheetName",
+              "value": "Jobs",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": false,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -860,
+        220
+      ],
+      "id": "8fd92c58-377b-48c1-ad4e-57edc55189c1",
+      "name": "Configuration"
+    },
+    {
+      "parameters": {
+        "jsCode": "const cfg = $input.first().json;\nconst text = (value) => typeof value === 'string' ? value.trim() : '';\n\nif (!text(cfg.keyword)) throw new Error('Configuration: keyword is required');\nif (!new Set(['24h', '7d', '30d', 'any']).has(text(cfg.postedWithin))) {\n  throw new Error('Configuration: postedWithin must be 24h, 7d, 30d, or any; EURAXESS has calendar-date granularity');\n}\nconst arrangements = text(cfg.workArrangementsCsv).split(',').map(value => value.trim()).filter(Boolean);\nconst invalidArrangements = arrangements.filter(value => !new Set(['remote', 'hybrid', 'onsite']).has(value));\nif (invalidArrangements.length) throw new Error(`Configuration: invalid work arrangement(s): ${invalidArrangements.join(', ')}`);\nconst maxItems = Number(cfg.maxItems);\nif (!Number.isInteger(maxItems) || maxItems < 1 || maxItems > 200) {\n  throw new Error('Configuration: maxItems must be an integer from 1 to 200');\n}\nconst chargeCap = Number(cfg.maxTotalChargeUsd);\nif (!Number.isFinite(chargeCap) || chargeCap <= 0 || chargeCap > 10) {\n  throw new Error('Configuration: maxTotalChargeUsd must be greater than 0 and at most 10');\n}\nif (!/^\\d+\\.\\d+(?:\\.\\d+)?$/.test(text(cfg.actorBuild))) {\n  throw new Error('Configuration: actorBuild must be a pinned version such as 1.0');\n}\nconst spreadsheetId = text(cfg.googleSpreadsheetId);\nif (spreadsheetId.startsWith('REPLACE_WITH_') || !/^[A-Za-z0-9_-]{20,}$/.test(spreadsheetId)) {\n  throw new Error('Configuration: replace googleSpreadsheetId with the ID from your Google Sheets URL');\n}\nif (!text(cfg.googleSheetName)) throw new Error('Configuration: googleSheetName is required');\nreturn $input.all();"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -580,
+        220
+      ],
+      "id": "319ee85f-65b2-40f7-94c9-8be40c2e6d45",
+      "name": "Validate template setup"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.apify.com/v2/acts/nomad-agent~euraxess-enrich-translate-normalize-scraper/runs",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "waitForFinish",
+              "value": "1800"
+            },
+            {
+              "name": "memory",
+              "value": "512"
+            },
+            {
+              "name": "maxTotalChargeUsd",
+              "value": "={{ $('Configuration').first().json.maxTotalChargeUsd }}"
+            },
+            {
+              "name": "build",
+              "value": "={{ $('Configuration').first().json.actorBuild }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "json",
+        "specifyBody": "json",
+        "jsonBody": "={{ { schemaVersion: 'nomad-agent-job-search-input-v1', keyword: $('Configuration').first().json.keyword, location: $('Configuration').first().json.location, postedWithin: $('Configuration').first().json.postedWithin, workArrangements: String($('Configuration').first().json.workArrangementsCsv || '').split(',').map(value => value.trim()).filter(Boolean), maxItems: Number($('Configuration').first().json.maxItems), translateToEnglish: false, aiEnrichment: { enabled: false, accuracy: 'silver' }, includeRaw: false, dedupe: { enabled: false, key: '' }, analyticsEnabled: false } }}",
+        "options": {
+          "timeout": 1800000,
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -320,
+        220
+      ],
+      "id": "a2dc2f8e-4d46-4447-aeac-23a580b61edc",
+      "name": "Run Actor on Apify"
+    },
+    {
+      "parameters": {
+        "url": "={{ 'https://api.apify.com/v2/actor-runs/' + (($json.data || $json).id) + '/key-value-store/records/RUN-SUMMARY' }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {
+          "timeout": 30000,
+          "response": {
+            "response": {
+              "neverError": true,
+              "responseFormat": "json"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -60,
+        220
+      ],
+      "id": "e5ed27d7-868a-4b65-a84e-468a9fc45b6b",
+      "name": "Read RUN-SUMMARY"
+    },
+    {
+      "parameters": {
+        "jsCode": "const envelope = $('Run Actor on Apify').item.json;\nconst run = envelope && typeof envelope === 'object' ? (envelope.data || envelope) : {};\nif (run.status !== 'SUCCEEDED' || run.exitCode !== 0) {\n  throw new Error(`Actor run ${run.id || 'unknown'} ended with ${run.status || 'unknown'}`);\n}\nconst summary = $input.first().json;\nif (!summary || summary.schemaVersion !== 'nomad-agent-fleet-run-summary-v2') {\n  throw new Error('Missing or unsupported fleet RUN-SUMMARY');\n}\nif (!new Set(['succeeded', 'empty']).has(summary.status) || summary.partial !== false) {\n  throw new Error(`EURAXESS run is degraded: ${summary.status || 'unknown'}`);\n}\nconst source = summary.sources && summary.sources.euraxess;\nif (!source || source.status !== summary.status) throw new Error('EURAXESS source summary mismatch');\nif (!Number.isInteger(summary.delivered) || summary.delivered !== source.delivered) {\n  throw new Error('RUN-SUMMARY delivered count mismatch');\n}\nreturn [{ json: {\n  runId: run.id,\n  defaultDatasetId: run.defaultDatasetId,\n  summaryStatus: summary.status,\n  delivered: summary.delivered\n} }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        200,
+        220
+      ],
+      "id": "e5e85dd7-8875-466b-91f9-623572ca8af7",
+      "name": "Validate fleet RUN-SUMMARY"
+    },
+    {
+      "parameters": {
+        "url": "={{ 'https://api.apify.com/v2/actor-runs/' + $json.runId + '/dataset/items' }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "format",
+              "value": "json"
+            },
+            {
+              "name": "clean",
+              "value": "true"
+            },
+            {
+              "name": "limit",
+              "value": "={{ $('Configuration').first().json.maxItems }}"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 30000,
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        460,
+        220
+      ],
+      "id": "25ce1070-541d-4879-8da5-3b12b67af617",
+      "name": "Get delivery run jobs"
+    },
+    {
+      "parameters": {
+        "jsCode": "const ROOTS = ['custom', 'data', 'identity', 'llm', 'raw', 'schemaVersion'];\n\nconst compactArray = (value, path) => {\n  if (value === null || value === undefined) return null;\n  if (!Array.isArray(value)) throw new Error(`${path} must be an array or null`);\n  return JSON.stringify(value);\n};\n\nconst objectOrEmpty = (value) => value && typeof value === 'object' && !Array.isArray(value) ? value : {};\n\nconst locationLabel = (location) => {\n  const value = objectOrEmpty(location);\n  if (typeof value.raw === 'string' && value.raw.trim()) return value.raw.trim();\n  return [...new Set([value.city, value.region, value.countryName].filter(part => typeof part === 'string' && part.trim()).map(part => part.trim()))].join(', ') || null;\n};\n\nconst incoming = $input.all().map(item => item.json);\nconst jobs = [];\nfor (const value of incoming) {\n  if (Array.isArray(value)) jobs.push(...value);\n  else if (value && Array.isArray(value.body)) jobs.push(...value.body);\n  else if (value && value.schemaVersion === 'nomad-agent-job-v1') jobs.push(value);\n  else if (value && Object.keys(value).length === 0) continue;\n  else throw new Error('Apify response did not contain nomad-agent-job-v1 records');\n}\n\nconst seen = new Set();\nconst output = [];\nfor (const record of jobs) {\n  if (!record || typeof record !== 'object' || Array.isArray(record)) throw new Error('Actor row must be an object');\n  const actualRoots = Object.keys(record).sort();\n  if (JSON.stringify(actualRoots) !== JSON.stringify(ROOTS)) throw new Error(`Actor row has unexpected roots: ${actualRoots.join(', ')}`);\n  if (record.schemaVersion !== 'nomad-agent-job-v1') throw new Error(`Unsupported schemaVersion: ${record.schemaVersion}`);\n  if (!record.identity || record.identity.source !== 'euraxess') throw new Error('Expected identity.source=euraxess');\n  if (!record.custom || typeof record.custom !== 'object') throw new Error('EURAXESS custom extension is required');\n\n  const identity = objectOrEmpty(record.identity);\n  const data = objectOrEmpty(record.data);\n  const company = objectOrEmpty(data.company);\n  const classification = objectOrEmpty(data.classification);\n  const employment = objectOrEmpty(data.employment);\n  const application = objectOrEmpty(data.application);\n  const seniority = objectOrEmpty(data.seniority);\n  const compensation = objectOrEmpty(data.compensation);\n  const llm = objectOrEmpty(record.llm);\n  const raw = objectOrEmpty(record.raw);\n  const locations = data.locations;\n  if (locations !== null && locations !== undefined && !Array.isArray(locations)) throw new Error('data.locations must be an array or null');\n  const firstLocation = Array.isArray(locations) && locations.length ? objectOrEmpty(locations[0]) : {};\n  const stablePart = identity.externalId || identity.url;\n  if (!identity.source || !stablePart) throw new Error('identity.source and identity.externalId or identity.url are required');\n  const jobKey = `${identity.source}:${stablePart}`;\n  if (seen.has(jobKey)) continue;\n  seen.add(jobKey);\n\n  output.push({ json: {\n    schemaVersion: 'nomad-agent-flat-job-v1',\n    jobKey,\n    source: identity.source,\n    identityExternalId: identity.externalId ?? null,\n    jobUrl: identity.url ?? null,\n    title: data.title ?? null,\n    companyName: company.name ?? null,\n    companySourceId: company.sourceId ?? null,\n    companyUrl: company.url ?? null,\n    locationText: Array.isArray(locations) ? locations.map(locationLabel).filter(Boolean).join(' | ') || null : null,\n    countryCode: firstLocation.countryCode ?? null,\n    city: firstLocation.city ?? null,\n    region: firstLocation.region ?? null,\n    workArrangements: compactArray(employment.workArrangements, 'data.employment.workArrangements'),\n    workSchedules: compactArray(employment.workSchedules, 'data.employment.workSchedules'),\n    contractTypes: compactArray(employment.contractTypes, 'data.employment.contractTypes'),\n    postedAt: application.postedAt ?? null,\n    applicationDeadline: application.deadline ?? null,\n    applicationUrl: application.url ?? null,\n    applicationEmail: application.email ?? null,\n    directApply: application.directApply ?? null,\n    seniorityLevels: compactArray(seniority.levels, 'data.seniority.levels'),\n    industries: compactArray(classification.industries, 'data.classification.industries'),\n    jobFunctions: compactArray(classification.jobFunctions, 'data.classification.jobFunctions'),\n    salaryCurrency: compensation.currency ?? null,\n    salaryExact: compensation.exact ?? null,\n    salaryMinimum: compensation.minimum ?? null,\n    salaryMaximum: compensation.maximum ?? null,\n    salaryPeriod: compensation.period ?? null,\n    salaryRaw: compensation.raw ?? null,\n    descriptionText: raw.description ?? null,\n    llmStatus: llm.status ?? null\n  } });\n}\nreturn output;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        720,
+        220
+      ],
+      "id": "5648a0ca-cb6a-40e0-b99c-6d747ef2b2c2",
+      "name": "Validate and flatten jobs"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $('Configuration').first().json.googleSpreadsheetId }}",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "={{ $('Configuration').first().json.googleSheetName }}",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [
+            "jobKey"
+          ],
+          "schema": [
+            {
+              "id": "schemaVersion",
+              "displayName": "schemaVersion",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "jobKey",
+              "displayName": "jobKey",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "source",
+              "displayName": "source",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "identityExternalId",
+              "displayName": "identityExternalId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "jobUrl",
+              "displayName": "jobUrl",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "title",
+              "displayName": "title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "companyName",
+              "displayName": "companyName",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "companySourceId",
+              "displayName": "companySourceId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "companyUrl",
+              "displayName": "companyUrl",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "locationText",
+              "displayName": "locationText",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "countryCode",
+              "displayName": "countryCode",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "city",
+              "displayName": "city",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "region",
+              "displayName": "region",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "workArrangements",
+              "displayName": "workArrangements",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "workSchedules",
+              "displayName": "workSchedules",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "contractTypes",
+              "displayName": "contractTypes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "postedAt",
+              "displayName": "postedAt",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "applicationDeadline",
+              "displayName": "applicationDeadline",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "applicationUrl",
+              "displayName": "applicationUrl",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "applicationEmail",
+              "displayName": "applicationEmail",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "directApply",
+              "displayName": "directApply",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "boolean",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "seniorityLevels",
+              "displayName": "seniorityLevels",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "industries",
+              "displayName": "industries",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "jobFunctions",
+              "displayName": "jobFunctions",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "salaryCurrency",
+              "displayName": "salaryCurrency",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "salaryExact",
+              "displayName": "salaryExact",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "salaryMinimum",
+              "displayName": "salaryMinimum",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "salaryMaximum",
+              "displayName": "salaryMaximum",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "salaryPeriod",
+              "displayName": "salaryPeriod",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "salaryRaw",
+              "displayName": "salaryRaw",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "descriptionText",
+              "displayName": "descriptionText",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "llmStatus",
+              "displayName": "llmStatus",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        980,
+        220
+      ],
+      "id": "22ed46d8-9cc5-4263-8657-e7518f2e54b4",
+      "name": "Upsert jobs in Google Sheets"
+    },
+    {
+      "parameters": {
+        "content": "## EURAXESS private Actor setup\n\n1. Verify the deployed Actor exposes strict input `nomad-agent-job-search-input-v1`, output `nomad-agent-job-v1`, and `RUN-SUMMARY` v2 before enabling this workflow.\n2. Add one scoped n8n Header Auth credential to all three Apify HTTP nodes: `Authorization: Bearer YOUR_APIFY_TOKEN`.\n3. Import `google-sheets-columns.csv` into a `Jobs` sheet and select your Google Sheets credential.\n4. Replace the spreadsheet placeholder, keep `maxItems=5`, optional AI/translation off, and cross-run dedupe disabled for the smoke.\n5. EURAXESS rejects `postedWithin=1h`; `24h` means the current and previous UTC calendar date.\n6. The fleet-v2 summary reports facts and never authorizes an automatic retry. Failed, partial, blocked, or deadline runs stop before Sheets writes.\n7. The Actor is private unless your Apify account has access. This template contains no credentials and is not proof of live deployment.",
+        "height": 390,
+        "width": 700,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1140,
+        -280
+      ],
+      "id": "c516286b-7f1d-4aa2-b299-ce5b6b362819",
+      "name": "Setup notes"
+    }
+  ],
+  "connections": {
+    "Every day at 08:00 UTC": {
+      "main": [
+        [
+          {
+            "node": "Configuration",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Run manually": {
+      "main": [
+        [
+          {
+            "node": "Configuration",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Configuration": {
+      "main": [
+        [
+          {
+            "node": "Validate template setup",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate template setup": {
+      "main": [
+        [
+          {
+            "node": "Run Actor on Apify",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Run Actor on Apify": {
+      "main": [
+        [
+          {
+            "node": "Read RUN-SUMMARY",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read RUN-SUMMARY": {
+      "main": [
+        [
+          {
+            "node": "Validate fleet RUN-SUMMARY",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get delivery run jobs": {
+      "main": [
+        [
+          {
+            "node": "Validate and flatten jobs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate and flatten jobs": {
+      "main": [
+        [
+          {
+            "node": "Upsert jobs in Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate fleet RUN-SUMMARY": {
+      "main": [
+        [
+          {
+            "node": "Get delivery run jobs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "UTC"
+  },
+  "versionId": "b6d2fbd6-b7a2-457d-875f-f5886b71446c",
+  "meta": {
+    "templateCredsSetupCompleted": false
+  },
+  "tags": []
+}

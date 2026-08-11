@@ -1,4 +1,29 @@
-# MCP v1: LinkedIn normalized job search
+# MCP: normalized job search
+
+## EURAXESS private `1.0` configuration
+
+Use the least-privilege endpoint:
+
+```text
+https://mcp.apify.com?tools=fetch-actor-details,nomad-agent/euraxess-enrich-translate-normalize-scraper
+```
+
+Credential-free OAuth examples are provided for
+[Codex](configs/euraxess/codex.oauth.toml),
+[Claude Code](configs/euraxess/claude-code.oauth.json), and
+[Cursor](configs/euraxess/cursor.oauth.json). A bounded tool argument example
+is in [euraxess-search.mcp.json](examples/euraxess-search.mcp.json).
+
+Call `fetch-actor-details` first. Do not start a paid search unless the private
+deployment advertises the strict `nomad-agent-job-search-input-v1` input,
+canonical `nomad-agent-job-v1` output, fleet-v2 run summary, and the intended
+pricing. After success, read `RUN-SUMMARY` from the run's default key-value
+store before fetching rows. Fleet-v2 contains no reschedule instruction, so an
+empty or degraded EURAXESS outcome must not trigger an automatic paid retry.
+These configuration files are offline-validated and are not proof of live MCP
+execution.
+
+## LinkedIn configuration
 
 Connect one Apify Actor to an MCP client, inspect its deployed contract and
 pricing, run bounded LinkedIn searches, and retrieve the canonical

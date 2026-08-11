@@ -44,19 +44,29 @@ after safely escaping any single quote in the incoming key:
 {jobKey} = 'linkedin:4446226935'
 ```
 
+For EURAXESS the same rule produces keys such as:
+
+```text
+{jobKey} = 'euraxess:452297'
+```
+
 In n8n, Make, or custom code, insert the incoming `jobKey` rather than the
 example value. Do not deduplicate by title, company, URL, or Airtable record
 ID.
+
+The source single-select preset includes both `linkedin` and `euraxess`.
+EURAXESS-specific research, funding, education, language, and application
+evidence remains in the canonical nested record; the 32-column destination
+view does not attempt to flatten every `custom` field.
 
 ## Upstream retry boundary
 
 This Airtable preset is destination-only, so it cannot wait or start an Actor
 run itself. The n8n, Make, MCP, or API workflow feeding Airtable must inspect
-the successful run's structured `RUN-SUMMARY` before writing rows. If the exact
-v1 summary recommends a retry because the source was blocked, wait the
-specified time, repeat the same Actor input once, and upsert rows from the
-latest successful run. Never retry merely because the dataset is empty or
-because a run failed. See the [shared retry contract](../../docs/retry-contract.md).
+the successful run's structured `RUN-SUMMARY` before writing rows. LinkedIn
+can expose an exact v1 retry recommendation; EURAXESS fleet-v2 does not. Never
+retry merely because the dataset is empty or because a run failed. See the
+[shared retry contract](../../docs/retry-contract.md).
 
 ## Field choices
 

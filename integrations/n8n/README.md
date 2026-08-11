@@ -1,4 +1,23 @@
-# Basic n8n template: LinkedIn jobs to Google Sheets
+# Basic n8n templates: normalized jobs to Google Sheets
+
+## EURAXESS private `1.0` template
+
+Import
+[euraxess-jobs-to-google-sheets.json](euraxess-jobs-to-google-sheets.json) for
+the strict EURAXESS `1.0` contract. It starts a bounded search, requires a
+complete `nomad-agent-fleet-run-summary-v2`, validates EURAXESS six-root rows,
+and appends or updates Google Sheets on `euraxess:<externalId>`.
+
+Before enabling the workflow, use `fetch-actor-details` and confirm the
+private deployment exposes `nomad-agent-job-search-input-v1`,
+`nomad-agent-job-v1`, and the fleet-v2 run summary. The template defaults to
+`maxItems=5`, pins Actor version `1.0`, accepts EURAXESS date windows `24h`,
+`7d`, `30d`, or `any`, and never automatically starts another paid run.
+Importing the JSON supplies no Apify or Google credential and does not activate
+the workflow. This asset is offline-validated; it is not evidence of a live
+EURAXESS deployment or destination smoke test.
+
+## LinkedIn template
 
 Import [linkedin-jobs-to-google-sheets.json](linkedin-jobs-to-google-sheets.json)
 to run a bounded LinkedIn job search, validate and flatten the normalized

@@ -1,0 +1,173 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/Exdenta/nomad-agent-job-scrapers/main/integrations/shared/fleet-run-summary-v2.schema.json",
+  "title": "Nomad Agent fleet run summary v2 structural schema",
+  "description": "Structural shape for a closed factual run summary from a standalone normalized Actor or multi-source fleet host. Cross-field invariants require integrations/shared/validate_fleet_run_summary.py. It contains no retry schedule.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "status",
+    "startedAt",
+    "finishedAt",
+    "partial",
+    "truncated",
+    "delivered",
+    "sources"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "nomad-agent-fleet-run-summary-v2"
+    },
+    "status": {
+      "$ref": "#/$defs/status"
+    },
+    "startedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "finishedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "partial": {
+      "type": "boolean"
+    },
+    "truncated": {
+      "type": "boolean"
+    },
+    "delivered": {
+      "$ref": "#/$defs/counter"
+    },
+    "sources": {
+      "type": "object",
+      "minProperties": 1,
+      "maxProperties": 128,
+      "propertyNames": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 64,
+        "pattern": "^[a-z0-9][a-z0-9._-]*$"
+      },
+      "additionalProperties": {
+        "$ref": "#/$defs/source"
+      }
+    }
+  },
+  "$defs": {
+    "status": {
+      "type": "string",
+      "enum": ["succeeded", "empty", "partial", "failed", "deadline"]
+    },
+    "counter": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 2147483647
+    },
+    "machineCode": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "pattern": "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$"
+    },
+    "error": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["code", "stage", "retryable"],
+      "properties": {
+        "code": {
+          "$ref": "#/$defs/machineCode"
+        },
+        "stage": {
+          "type": "string",
+          "enum": [
+            "validation",
+            "search",
+            "cards",
+            "details",
+            "normalization",
+            "filtering",
+            "enrichment",
+            "translation",
+            "deduplication",
+            "inventory",
+            "delivery",
+            "billing",
+            "summary",
+            "runtime"
+          ]
+        },
+        "retryable": {
+          "type": "boolean"
+        }
+      }
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "searchRequests",
+        "cardsSeen",
+        "detailsCompleted",
+        "normalized",
+        "afterFilters",
+        "deliveryEligible",
+        "delivered",
+        "stale",
+        "blocked",
+        "stopReason",
+        "errors"
+      ],
+      "properties": {
+        "status": {
+          "$ref": "#/$defs/status"
+        },
+        "searchRequests": {
+          "$ref": "#/$defs/counter"
+        },
+        "cardsSeen": {
+          "$ref": "#/$defs/counter"
+        },
+        "detailsCompleted": {
+          "$ref": "#/$defs/counter"
+        },
+        "normalized": {
+          "$ref": "#/$defs/counter"
+        },
+        "afterFilters": {
+          "$ref": "#/$defs/counter"
+        },
+        "deliveryEligible": {
+          "$ref": "#/$defs/counter"
+        },
+        "delivered": {
+          "$ref": "#/$defs/counter"
+        },
+        "stale": {
+          "type": "boolean"
+        },
+        "blocked": {
+          "type": "boolean"
+        },
+        "stopReason": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/machineCode"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "errors": {
+          "type": "array",
+          "maxItems": 32,
+          "items": {
+            "$ref": "#/$defs/error"
+          }
+        }
+      }
+    }
+  }
+}

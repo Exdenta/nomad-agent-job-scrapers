@@ -17,8 +17,15 @@ Static source values win. Optional LLM enrichment may fill only fields that
 remain `null`. Consumers must preserve `null` (unknown) versus `[]` (explicitly
 empty).
 
-See the skill's [output reference](../.agents/skills/linkedin-enrich-translate-normalize-scraper/references/output-contract.md)
-for the fields used by the LinkedIn Actor.
+See the source-specific output references for
+[LinkedIn](../.agents/skills/linkedin-enrich-translate-normalize-scraper/references/output-contract.md)
+and
+[EURAXESS](../.agents/skills/euraxess-enrich-translate-normalize-scraper/references/output-contract.md).
+LinkedIn uses `custom: null`; EURAXESS uses a separately versioned `custom`
+extension and must not flatten its academic taxonomy into education facts.
+The exact public mirror of the canonical extension is
+[`integrations/shared/euraxess-v1.schema.json`](../integrations/shared/euraxess-v1.schema.json);
+its canonical `$id` is intentionally unchanged.
 
 ## Flat integration projection
 
@@ -39,6 +46,27 @@ Important rules:
 Generate the projection with:
 
 ```bash
-python3 .agents/skills/linkedin-enrich-translate-normalize-scraper/scripts/flatten_output.py \
+python3 .agents/skills/euraxess-enrich-translate-normalize-scraper/scripts/flatten_output.py \
   actor-output.json --output flat-output.json
+```
+
+The same flat schema is reused by both skills, but the source validator is not
+interchangeable. The EURAXESS mapper first requires `identity.source` equal to
+`euraxess`, a named-person-only hiring-contact list, and the closed EURAXESS
+v1 custom extension.
+
+## Fleet run summary
+
+The EURAXESS `1.0` candidate uses the source-neutral
+[`nomad-agent-fleet-run-summary-v2`](../integrations/shared/fleet-run-summary-v2.schema.json)
+record under `RUN-SUMMARY`. It reports bounded source facts and has no retry
+schedule. This local contract has not been live-validated against the known
+private older EURAXESS deployment.
+
+The JSON Schema documents the closed structural shape. Cross-field facts such
+as monotonic funnel counts, status consistency, and aggregate delivered parity
+must also pass:
+
+```bash
+python3 integrations/shared/validate_fleet_run_summary.py run-summary.json
 ```

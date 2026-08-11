@@ -1,0 +1,18 @@
+{
+  "schemaVersion": "nomad-agent-job-search-input-v1",
+  "keyword": "postdoctoral machine learning",
+  "location": "Germany",
+  "postedWithin": "30d",
+  "maxItems": 5,
+  "dedupe": {
+    "enabled": false,
+    "key": ""
+  },
+  "aiEnrichment": {
+    "enabled": false,
+    "accuracy": "silver"
+  },
+  "translateToEnglish": false,
+  "includeRaw": false,
+  "analyticsEnabled": false
+}

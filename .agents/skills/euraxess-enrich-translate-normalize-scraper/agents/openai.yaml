@@ -1,0 +1,12 @@
+interface:
+  display_name: "EURAXESS Normalized Research Jobs"
+  short_description: "Search EURAXESS with the normalized Apify Actor contract"
+  default_prompt: "Use $euraxess-enrich-translate-normalize-scraper to prepare or validate a EURAXESS research-job search while preserving source semantics."
+
+dependencies:
+  tools:
+    - type: "mcp"
+      value: "apify"
+      description: "Inspect compatibility and, only for a matching deployment, run and retrieve the EURAXESS Actor"
+      transport: "streamable_http"
+      url: "https://mcp.apify.com?tools=fetch-actor-details,nomad-agent/euraxess-enrich-translate-normalize-scraper"

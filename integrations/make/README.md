@@ -1,4 +1,21 @@
-# Basic Make blueprint: LinkedIn jobs to Google Sheets
+# Basic Make blueprints: normalized jobs to Google Sheets
+
+## EURAXESS private `1.0` blueprint
+
+Import
+[euraxess-jobs-to-google-sheets.blueprint.json](euraxess-jobs-to-google-sheets.blueprint.json)
+to process completed runs from a private EURAXESS Apify Task. Replace
+`REPLACE_WITH_PRIVATE_EURAXESS_TASK_ID`, connect the Apify and Google Sheets
+modules, and keep the Task pinned to Actor version `1.0` with a small item and
+charge cap for the first smoke test.
+
+This blueprint requires a complete `nomad-agent-fleet-run-summary-v2`, accepts
+only EURAXESS canonical rows, and has no automatic paid-retry route. The
+blueprint contains no credential or account connection, imports inactive, and
+is offline-validated only; it is not evidence that the private Actor or Make
+delivery path has been live-tested.
+
+## LinkedIn blueprint
 
 Import
 [linkedin-jobs-to-google-sheets.blueprint.json](linkedin-jobs-to-google-sheets.blueprint.json)

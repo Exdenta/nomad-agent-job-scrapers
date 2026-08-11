@@ -13,7 +13,7 @@
   "fields": [
     {"name": "schemaVersion", "type": "singleLineText", "required": true, "description": "Flat integration contract version."},
     {"name": "jobKey", "type": "singleLineText", "required": true, "description": "Primary field and stable source:externalId deduplication key."},
-    {"name": "source", "type": "singleSelect", "required": true, "options": ["linkedin"], "description": "Source system slug."},
+    {"name": "source", "type": "singleSelect", "required": true, "options": ["linkedin", "euraxess"], "description": "Source system slug."},
     {"name": "identityExternalId", "type": "singleLineText", "required": false, "description": "Source-native job identifier."},
     {"name": "jobUrl", "type": "url", "required": false, "description": "Canonical public job URL."},
     {"name": "title", "type": "singleLineText", "required": false, "description": "Job title."},

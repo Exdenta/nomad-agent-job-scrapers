@@ -1,6 +1,6 @@
 # MCP quickstart
 
-The maintained MCP v1 pack is
+The maintained LinkedIn MCP v1 pack is
 [`integrations/mcp/README.md`](../integrations/mcp/README.md). It contains:
 
 - credential-free OAuth setup for Codex, Claude Code, Cursor, and eligible
@@ -22,3 +22,18 @@ https://mcp.apify.com?tools=fetch-actor-details,nomad-agent/linkedin-enrich-tran
 
 Start with OAuth and follow the complete
 [MCP v1 instructions](../integrations/mcp/README.md).
+
+## EURAXESS boundary
+
+EURAXESS has a separate repository skill and compatibility endpoint:
+
+```text
+https://mcp.apify.com?tools=fetch-actor-details,nomad-agent/euraxess-enrich-translate-normalize-scraper
+```
+
+Read the skill's
+[client setup](../.agents/skills/euraxess-enrich-translate-normalize-scraper/references/client-setup.md)
+before use. Its local `1.0` contract is unreleased and incompatible with the
+known private older `0.5.1` deployment. Do not reuse the LinkedIn input,
+LinkedIn run-summary retry policy, or destination live-validation claims for
+EURAXESS.

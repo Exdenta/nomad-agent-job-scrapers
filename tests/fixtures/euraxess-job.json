@@ -1,0 +1,136 @@
+{
+  "schemaVersion": "nomad-agent-job-v1",
+  "identity": {
+    "source": "euraxess",
+    "externalId": "452297",
+    "url": "https://euraxess.ec.europa.eu/jobs/452297"
+  },
+  "data": {
+    "title": "Researcher",
+    "company": {
+      "name": "Karolinska Institutet",
+      "sourceId": null,
+      "department": "Neuroscience",
+      "url": null,
+      "logoUrl": null
+    },
+    "classification": {
+      "industries": null,
+      "jobFunctions": null
+    },
+    "domains": ["Biological sciences", "Medical sciences", "Natural sciences"],
+    "domainsRaw": ["Biological sciences", "Medical sciences", "Natural sciences » Biological sciences"],
+    "locations": [
+      {
+        "raw": "Nobels väg 6, 171 77, Solna, Stockholm, Sweden",
+        "countryName": "Sweden",
+        "countryCode": "SE",
+        "city": "Solna",
+        "region": "Stockholm",
+        "postalCode": "171 77",
+        "streetAddress": "Nobels väg 6",
+        "facilityName": "Karolinska Institutet",
+        "positionsAvailable": 2,
+        "latitude": 59.363,
+        "longitude": 18.0328
+      }
+    ],
+    "employment": {
+      "workArrangements": null,
+      "applicantLocationRequirements": null,
+      "workSchedules": ["Full-time"],
+      "contractTypes": ["Temporary"],
+      "durationMonths": null,
+      "hoursPerWeek": 40,
+      "hoursPerWeekRaw": "40",
+      "startDate": null,
+      "startDateRaw": null
+    },
+    "application": {
+      "postedAt": "2026-08-01",
+      "deadline": "2026-08-10T12:00:00+00:00",
+      "referenceNumber": "KI-2026-01",
+      "referenceNumberIssuer": null,
+      "applicantSnapshot": null,
+      "url": "https://apply.test/452297",
+      "email": "apply@example.test",
+      "directApply": null,
+      "applyMethodRaw": null,
+      "availability": {
+        "status": "observed_available",
+        "evidence": [{"kind": "detail_http_status", "value": "200"}],
+        "observedAt": "2026-08-10T12:00:00Z"
+      },
+      "hiringContacts": [
+        {
+          "name": "Ada Example",
+          "title": null,
+          "organization": "Karolinska Institutet",
+          "url": "https://ki.se",
+          "photoUrl": null,
+          "email": "ada@example.test",
+          "address": {
+            "raw": "Nobels väg 6, 171 77, Solna, Stockholm, Sweden",
+            "countryName": "Sweden",
+            "countryCode": "SE",
+            "city": "Solna",
+            "region": "Stockholm",
+            "postalCode": "171 77",
+            "streetAddress": "Nobels väg 6"
+          }
+        }
+      ],
+      "eligibilityCriteria": "A completed master's degree.",
+      "selectionProcess": "CV review and interview."
+    },
+    "seniority": {
+      "raw": ["First Stage Researcher (R1)"],
+      "levels": ["R1"]
+    },
+    "requirements": {
+      "education": [{"level": "Master Degree or equivalent", "field": "Biological sciences", "yearsRequired": null, "preferred": false}],
+      "experience": [{"field": "Medical sciences", "minimumYears": 1, "maximumYears": 4, "raw": "1 - 4"}],
+      "languages": [{"language": "ENGLISH", "level": "Good", "required": true}],
+      "requiredSkills": null,
+      "preferredSkills": null,
+      "certifications": null,
+      "skillsQualifications": "Python and microscopy.",
+      "specificRequirements": "Experience with live cells."
+    },
+    "benefits": "Flexible working hours.",
+    "funding": {"programme": "Horizon Europe - MSCA"},
+    "compensation": {
+      "currency": null,
+      "exact": null,
+      "minimum": null,
+      "maximum": null,
+      "period": null,
+      "raw": null
+    },
+    "constraints": {
+      "visaSponsorship": null,
+      "workAuthorization": null,
+      "securityClearance": null,
+      "locationPreference": null
+    }
+  },
+  "custom": {
+    "schemaId": "https://raw.githubusercontent.com/Exdenta/OinkJobSearch/main/apify/job_custom_schemas/euraxess-v1.schema.json",
+    "data": {
+      "academicLevelRaw": ["PhD Positions"],
+      "researchInfrastructureStaffPosition": null,
+      "unmappedJobInformation": {"Future EURAXESS Label": ["Future value"]},
+      "unparsedGeofields": null
+    }
+  },
+  "llm": {
+    "status": "not_requested",
+    "requestedFields": [],
+    "filledFields": [],
+    "provider": null,
+    "model": null,
+    "promptVersion": null,
+    "completedAt": null
+  },
+  "raw": null
+}

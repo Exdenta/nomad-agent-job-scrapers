@@ -1,0 +1,2 @@
+[mcp_servers.apify_euraxess_jobs]
+url = "https://mcp.apify.com?tools=fetch-actor-details,nomad-agent/euraxess-enrich-translate-normalize-scraper"

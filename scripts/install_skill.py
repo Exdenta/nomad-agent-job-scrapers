@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Install this repository's LinkedIn Agent Skill into another project."""
+"""Install one of this repository's job-Actor Agent Skills."""
 
 from __future__ import annotations
 
@@ -13,6 +13,10 @@ from pathlib import Path
 
 
 SKILL_NAME = "linkedin-enrich-translate-normalize-scraper"
+SKILL_NAMES = (
+    SKILL_NAME,
+    "euraxess-enrich-translate-normalize-scraper",
+)
 
 
 class UnsafeDestinationError(ValueError):
@@ -27,6 +31,12 @@ class InstallPlan:
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "--skill",
+        choices=SKILL_NAMES,
+        default=SKILL_NAME,
+        help="Skill to install (default: LinkedIn)",
+    )
     parser.add_argument("--client", choices=("codex", "claude", "both"), required=True)
     parser.add_argument("--target", type=Path, required=True, help="Target project directory")
     parser.add_argument("--force", action="store_true", help="Replace an existing installed copy")
@@ -96,7 +106,13 @@ def _stage(source: Path, staging_root: Path, plans: list[InstallPlan]) -> dict[P
     return staged
 
 
-def _commit(target: Path, plans: list[InstallPlan], staged: dict[Path, Path]) -> None:
+def _commit(
+    target: Path,
+    plans: list[InstallPlan],
+    staged: dict[Path, Path],
+    *,
+    skill_name: str = SKILL_NAME,
+) -> None:
     installed: list[Path] = []
     backups: list[tuple[Path, Path]] = []
     created_parents: set[Path] = set()
@@ -110,7 +126,7 @@ def _commit(target: Path, plans: list[InstallPlan], staged: dict[Path, Path]) ->
 
             if destination.exists():
                 backup = destination.parent / (
-                    f".{SKILL_NAME}.backup-{uuid.uuid4().hex}"
+                    f".{skill_name}.backup-{uuid.uuid4().hex}"
                 )
                 destination.rename(backup)
                 backups.append((destination, backup))
@@ -138,23 +154,31 @@ def _commit(target: Path, plans: list[InstallPlan], staged: dict[Path, Path]) ->
             print(f"warning: could not remove backup {backup}: {exc}", file=sys.stderr)
 
 
-def install_all(source: Path, target: Path, plans: list[InstallPlan], *, force: bool) -> None:
+def install_all(
+    source: Path,
+    target: Path,
+    plans: list[InstallPlan],
+    *,
+    force: bool,
+    skill_name: str = SKILL_NAME,
+) -> None:
     """Preflight every client, stage every copy, then commit with rollback."""
     for plan in plans:
         _validate_destination(target, plan.destination, force=force)
 
     with tempfile.TemporaryDirectory(prefix=".nomad-skill-stage-", dir=target) as directory:
         staged = _stage(source, Path(directory), plans)
-        _commit(target, plans, staged)
+        _commit(target, plans, staged, skill_name=skill_name)
 
     for plan in plans:
-        print(f"installed {SKILL_NAME} -> {plan.destination}")
+        print(f"installed {skill_name} -> {plan.destination}")
 
 
 def main() -> int:
     args = parse_args()
     repository = Path(__file__).resolve().parents[1]
-    source = repository / ".agents" / "skills" / SKILL_NAME
+    skill_name = args.skill
+    source = repository / ".agents" / "skills" / skill_name
     if not source.is_dir():
         raise FileNotFoundError(f"source skill not found: {source}")
 
@@ -167,18 +191,18 @@ def main() -> int:
         plans.append(
             InstallPlan(
                 client="codex",
-                destination=target / ".agents" / "skills" / SKILL_NAME,
+                destination=target / ".agents" / "skills" / skill_name,
             )
         )
     if args.client in {"claude", "both"}:
         plans.append(
             InstallPlan(
                 client="claude",
-                destination=target / ".claude" / "skills" / SKILL_NAME,
+                destination=target / ".claude" / "skills" / skill_name,
             )
         )
 
-    install_all(source, target, plans, force=args.force)
+    install_all(source, target, plans, force=args.force, skill_name=skill_name)
     return 0
 
 

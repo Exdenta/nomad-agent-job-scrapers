@@ -5,29 +5,41 @@ Actors. The Actor implementations may be hosted services; this repository
 publishes their interoperability layer, not a claim that every scraper is open
 source.
 
-> **Unofficial integration.** This project and the linked Actor are
-> independently developed and are not affiliated with, endorsed by, or
-> sponsored by LinkedIn. LinkedIn is a trademark of its owner. Public page
-> access is not authorization to crawl; review LinkedIn's
-> [Crawling Terms](https://www.linkedin.com/legal/crawling-terms), other
-> applicable terms, and applicable law before use.
+> **Unofficial integrations.** This project and its Actors are independently
+> developed. They are not affiliated with or endorsed by LinkedIn, EURAXESS,
+> the European Commission, or source-site operators. Public page access is not
+> authorization to crawl or republish personal data; review source terms,
+> licensing, privacy obligations, and applicable law before use.
 
-The first supported source is the Apify Actor
-[`nomad-agent/linkedin-enrich-translate-normalize-scraper`](https://apify.com/nomad-agent/linkedin-enrich-translate-normalize-scraper).
+## Actor catalog
 
-Private `0.6.x` canary builds and selected destination workflows have bounded
-historical validation, but `0.6` is not represented here as Store-published or
-production-ready. The Store-facing build can differ from these pre-release
-contracts. Check the Actor page and each destination pack for the exact current
-boundary before use.
+| Actor | Source focus | Contract represented here | Availability boundary |
+| --- | --- | --- | --- |
+| [`nomad-agent/linkedin-enrich-translate-normalize-scraper`](https://apify.com/nomad-agent/linkedin-enrich-translate-normalize-scraper) | LinkedIn jobs | Private `0.6.x` candidate | Bounded private canary and selected destination evidence; not represented as Store-published or generally production-ready |
+| `nomad-agent/euraxess-enrich-translate-normalize-scraper` | EURAXESS PhD, postdoc, fellowship, research, and faculty vacancies | Local clean-rewrite `1.0` candidate | Unreleased; the Actor currently deployed under this private name is older `0.5.1` and incompatible with the strict `1.0` skill |
+
+Both target the six-root `nomad-agent-job-v1` envelope, but source-specific
+inputs, evidence, custom fields, run-summary versions, deployment state, and
+pricing must not be assumed interchangeable. See the
+[EURAXESS contract guide](docs/euraxess.md) for its exact boundary.
 
 ## Start with MCP
 
-Connect only this Actor to an MCP client:
+Connect only the Actor needed by the current task. LinkedIn candidate endpoint:
 
 ```text
 https://mcp.apify.com?tools=nomad-agent/linkedin-enrich-translate-normalize-scraper
 ```
+
+EURAXESS compatibility-inspection endpoint:
+
+```text
+https://mcp.apify.com?tools=fetch-actor-details,nomad-agent/euraxess-enrich-translate-normalize-scraper
+```
+
+Do not run the EURAXESS tool until its deployed schema advertises
+`nomad-agent-job-search-input-v1`; the known private `0.5.1` deployment does
+not represent the local `1.0` contract.
 
 Or let the Apify CLI configure a supported client:
 
@@ -45,16 +57,16 @@ compact table and keep the canonical normalized records available.
 ```
 
 See [the complete MCP setup](docs/mcp.md) for ChatGPT, Claude, Cursor, and
-Codex instructions.
+Codex instructions and per-Actor compatibility gates.
 
 ## Integration packs
 
 | Priority | Pack | Workflow | Status |
 | --- | --- | --- | --- |
-| 1 | [n8n](integrations/n8n/README.md) | Schedule -> Actor -> flatten -> Google Sheets append-or-update | Public import; Apify + n8n Cloud + Google Sheets live-validated |
-| 2 | [Make](integrations/make/README.md) | Completed Actor run -> flatten -> Google Sheets upsert | Free-plan blueprint; append/update live-validated |
-| 3 | [Airtable](integrations/airtable/README.md) | Import 32 fields and upsert on stable `jobKey` | Public workbook and typed field preset |
-| 4 | MCP | ChatGPT, Claude, Cursor, Codex, or another MCP client | Initial implementation |
+| 1 | [n8n](integrations/n8n/README.md) | Schedule -> Actor -> flatten -> Google Sheets append-or-update | Separate LinkedIn and EURAXESS imports; LinkedIn live-validated, EURAXESS offline-validated for the private `1.0` contract |
+| 2 | [Make](integrations/make/README.md) | Completed Actor run -> flatten -> Google Sheets upsert | Separate LinkedIn and EURAXESS blueprints; EURAXESS has no automatic paid retry |
+| 3 | [Airtable](integrations/airtable/README.md) | Import 32 fields and upsert on stable `jobKey` | Shared flat destination preset with `linkedin` and `euraxess` source choices |
+| 4 | [MCP](integrations/mcp/README.md) | ChatGPT, Claude, Cursor, Codex, or another MCP client | Scoped LinkedIn and EURAXESS configurations; deployed compatibility must be inspected before a paid run |
 | 5 | API/webhook | Custom job board, database, or internal application | Planned |
 
 ## Output policy
@@ -79,12 +91,14 @@ canonical record. In particular:
 
 ## Agent skills
 
-The repository-scoped Codex skill lives in
-`.agents/skills/linkedin-enrich-translate-normalize-scraper`. Claude Code users
-can install the same skill into `.claude/skills` with the included installer:
+Repository-scoped Codex skills live under `.agents/skills` for both normalized
+Actors. Claude Code users can install either into `.claude/skills`:
 
 ```bash
-python3 scripts/install_skill.py --client claude --target /path/to/your/project
+python3 scripts/install_skill.py --skill linkedin-enrich-translate-normalize-scraper \
+  --client claude --target /path/to/your/project
+python3 scripts/install_skill.py --skill euraxess-enrich-translate-normalize-scraper \
+  --client claude --target /path/to/your/project
 ```
 
 See [Agent skill setup](docs/agent-skills.md).
@@ -103,17 +117,19 @@ tests/            Offline contract and mapper tests
 
 - Prefer OAuth for the hosted Apify MCP server. Never commit an Apify token.
 - Use the least-privilege MCP URL above instead of exposing every Actor/tool.
-- Review LinkedIn's terms and applicable law for your use case.
+- Review the selected source's terms, licensing, privacy requirements, and
+  applicable law for your use case.
 - Do not publish personal data or raw descriptions to destination systems
   without confirming the destination's retention and access controls.
 
 ## Project status
 
-The integration repository is under active development. The LinkedIn Actor
-`0.6` is a pre-release contract in this repository. Private canary and
-destination-platform evidence remains documented per pack and is not proof of
-Store publication, general production readiness, current source authorization,
-or future source continuity.
+The integration repository is under active development. LinkedIn `0.6` and
+EURAXESS `1.0` are pre-release contracts here. The known EURAXESS deployment is
+private old `0.5.1`, not the documented rewrite. Private canary and
+destination-platform evidence remains documented per pack and is never proof
+of Store publication, general production readiness, current source
+authorization, or future source continuity.
 
 ## License
 
