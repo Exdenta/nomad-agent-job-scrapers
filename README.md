@@ -15,7 +15,7 @@ source.
 
 | Actor | Source focus | Contract represented here | Availability boundary |
 | --- | --- | --- | --- |
-| [`nomad-agent/linkedin-enrich-translate-normalize-scraper`](https://apify.com/nomad-agent/linkedin-enrich-translate-normalize-scraper) | LinkedIn jobs | Private `0.6.x` candidate | Bounded private canary and selected destination evidence; not represented as Store-published or generally production-ready |
+| [`nomad-agent/linkedin-enrich-translate-normalize-scraper`](https://apify.com/nomad-agent/linkedin-enrich-translate-normalize-scraper) | LinkedIn jobs | Public Store Actor (`0.6.24`) | Store-listed normalized Actor; `latest` and `canary` point to the validated `0.6.24` build |
 | `nomad-agent/euraxess-enrich-translate-normalize-scraper` | EURAXESS PhD, postdoc, fellowship, research, and faculty vacancies | Private `1.0` canary | Build `1.0.4` is private and CI-qualified; `latest` remains on legacy `0.5.1`, and live source/destination canaries are still blocked |
 
 Both target the six-root `nomad-agent-job-v1` envelope, but source-specific
