@@ -17,8 +17,8 @@ reference.
 | `companyProfileEnrichment` | boolean | `false` | Retrieve bounded public profiles linked by selected jobs |
 | `companyFilters` | object | omitted | Versioned public-company-fact expression; requires company profile enrichment |
 | `maxItems` | integer | `100` | Use 5 for exploratory runs; 0 requests the bounded 200-item window |
-| `translateToEnglish` | boolean | `false` | Owner-managed, additional per-result charge |
-| `aiEnrichment` | object | `{"enabled": false, "accuracy": "silver"}` | Owner-managed null-only extraction; Silver is the default tier and Gold is optional |
+| `translateToEnglish` | boolean | `false` | Managed optional translation; no customer provider key required |
+| `aiEnrichment` | object | `{"enabled": false, "accuracy": "silver"}` | Managed optional enrichment; Silver is the default tier and Gold is optional |
 | `includeRaw` | boolean | `true` | False returns top-level `raw: null` |
 | `dedupe` | object | `{"enabled": true, "key": ""}` | Optional cross-run delivery ledger; disable explicitly for one-off runs |
 | `analyticsEnabled` | boolean | `false` | Explicit opt-in only |
@@ -79,11 +79,10 @@ Filters use the separately versioned `nomad-agent-job-filter-v1` expression:
 }
 ```
 
-Use only paths and operators accepted by the deployed tool schema. Filters run
-against source-language values before optional translation.
+Use only paths and operators accepted by the deployed tool schema. Filters
+evaluate source-language values.
 
-`translateToEnglish` runs after normalization, optional enrichment, and exact
-filtering. In the current source candidate it covers title, classifications,
+In supported build `0.6.42`, `translateToEnglish` covers title, classifications,
 domains, applicant-requirement prose, benefits, eligibility and selection
 text, work authorization, security clearance, and location preference. It
 does not rewrite company or place names, identifiers, URLs, source-raw labels,

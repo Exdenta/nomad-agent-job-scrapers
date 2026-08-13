@@ -3,7 +3,7 @@
 Keep the first run small. These prompts assume the skill and Apify MCP server
 are already installed and authorized.
 
-For every search, use generic `call-actor` with exact build `0.6.41`, poll a
+For every search, use generic `call-actor` with exact build `0.6.42`, poll a
 non-terminal run with `get-actor-run`, and verify the authoritative run build.
 Only after `SUCCEEDED` with exit code 0, fetch that run's default dataset with
 `get-dataset-items` and paginate when necessary. An empty successful dataset

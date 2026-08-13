@@ -13,7 +13,7 @@
           "y": 0,
           "name": "Watch completed LinkedIn Task runs"
         },
-        "notes": "Select the Apify Task pinned to exact LinkedIn build 0.6.41. Only terminal successful runs are evaluated; one valid partial v4 outcome may repeat the same Task once."
+        "notes": "Select the Apify Task pinned to exact LinkedIn build 0.6.42. Only terminal successful runs are evaluated; one valid partial v4 outcome may repeat the same Task once."
       }
     },
     {
@@ -33,7 +33,7 @@
         },
           {
             "name": "actorbuild",
-            "value": "0.6.41"
+            "value": "0.6.42"
           },
           {
             "name": "googlespreadsheetid",
@@ -52,7 +52,7 @@
           "y": 0,
           "name": "Configuration"
         },
-    "notes": "Replace the Task ID and spreadsheet ID. Select the same Task pinned to exact build 0.6.41 in the trigger. Keep maxitems small for the first destination smoke test."
+    "notes": "Replace the Task ID and spreadsheet ID. Select the same Task pinned to exact build 0.6.42 in the trigger. Keep maxitems small for the first destination smoke test."
       }
     },
     {

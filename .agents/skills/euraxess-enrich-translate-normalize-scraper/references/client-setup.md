@@ -1,14 +1,14 @@
 # Codex and Claude MCP setup for EURAXESS
 
 Installing this skill adds contract instructions and offline parsers.
-Connecting MCP adds authenticated live tools. Neither step exposes a private
-Actor to an unauthorized account or deploys the local `1.0` rewrite.
+Connecting MCP adds authenticated live tools. Neither step changes Actor
+availability or deploys code.
 
-Private `latest` and `canary` currently resolve to `1.0.10`. Use generic
-`call-actor` with exact `callOptions.build: "1.0.10"` and verify the same build
+Use generic
+`call-actor` with exact `callOptions.build: "1.0.11"` and verify the same build
 number on the authoritative run; do not rely on either mutable tag.
 
-Candidate scoped endpoint:
+Scoped endpoint:
 
 ```text
 https://mcp.apify.com?tools=fetch-actor-details,call-actor,get-actor-run,get-dataset-items,get-key-value-store-record
@@ -62,9 +62,9 @@ intentional.
 1. Confirm the server is connected and the account may access the exact Actor.
 2. Fetch Actor details and pricing; verify the deployed schema before calling.
 3. Call generic `call-actor` with the canonical Actor name, strict v1 input,
-   `callOptions.build: "1.0.10"`, `callOptions.maxItems: 5`, and a conservative
+   `callOptions.build: "1.0.11"`, `callOptions.maxItems: 5`, and a conservative
    `callOptions.maxTotalChargeUsd`.
-4. Require the run response to report `buildNumber: "1.0.10"` and stop on any
+4. Require the run response to report `buildNumber: "1.0.11"` and stop on any
    mismatch.
 5. Keep dedupe, translation, enrichment, and analytics disabled for the first
    bounded run.

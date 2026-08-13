@@ -9,11 +9,11 @@ https://mcp.apify.com?tools=fetch-actor-details,call-actor,get-actor-run,get-dat
 
 | Profile | Actor | Exact build |
 | --- | --- | --- |
-| LinkedIn | `nomad-agent/linkedin-enrich-translate-normalize-scraper` | `0.6.41` |
-| EURAXESS | `nomad-agent/euraxess-enrich-translate-normalize-scraper` | `1.0.10` |
+| LinkedIn | `nomad-agent/linkedin-enrich-translate-normalize-scraper` | `0.6.42` |
+| EURAXESS | `nomad-agent/euraxess-enrich-translate-normalize-scraper` | `1.0.11` |
 
-Keep the build explicit even when a movable tag currently points to the same
-version. EURAXESS is private and requires account access.
+Keep the build explicit instead of relying on a movable tag. Confirm Actor
+availability and account access with `fetch-actor-details` before a paid run.
 
 ## Client configuration
 
@@ -81,17 +81,13 @@ build through REST, validates v4, honors at most one bounded retry, fetches at m
 rows, reconciles the delivered count, and validates the six-root dataset
 contract.
 
-## Current validation boundary
+## Validation boundary
 
-Apify metadata was checked on 2026-08-13: LinkedIn `latest` and `canary` point
-to `0.6.41`; EURAXESS `latest` and `canary` point to private build `1.0.10`.
-Actor/API canaries passed on 2026-08-13. LinkedIn run
-`3Q4yWRpCnbU8iYSVk` used exact build `0.6.41`, validated v4, and returned one
-reconciled canonical row; EURAXESS run `Fgo5aehGjDm3Q7GQF` used exact build
-`1.0.10`, validated v4, and returned a reconciled valid empty result. Prior
-hosted-MCP end-to-end smokes used LinkedIn `0.6.40` and EURAXESS `1.0.9` and
-validated the then-current v3 contract. The checked-in smoke script contains
-no credential.
+The maintained profiles and smoke harness target LinkedIn `0.6.42` and
+EURAXESS `1.0.11`. The harness contains no credential and verifies the exact
+build, terminal result, v4 completion record, delivered count, and canonical
+dataset rows.
 
-No n8n, Make, Google Sheets, Airtable, or webhook destination is validated by
-an MCP or Actor-only smoke.
+An MCP or Actor-only smoke does not validate n8n, Make, Google Sheets,
+Airtable, or webhook delivery. Test those destinations separately with the
+client's own credentials and disposable data.

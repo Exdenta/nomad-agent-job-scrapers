@@ -1,6 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://raw.githubusercontent.com/Exdenta/nomad-agent-job-scrapers/main/integrations/shared/run-summary-v3.schema.json",
+  "$comment": "Legacy compatibility only. New integrations must use nomad-agent-run-summary-v4.",
   "title": "Nomad Agent public run summary v3",
   "description": "Minimal public outcome for one completed Actor run. Internal source diagnostics are intentionally excluded.",
   "type": "object",

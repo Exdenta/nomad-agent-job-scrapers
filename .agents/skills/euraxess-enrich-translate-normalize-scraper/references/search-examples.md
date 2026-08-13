@@ -1,13 +1,13 @@
 # EURAXESS search examples
 
-These are bounded contract examples for private build `1.0.10`. Every MCP
-execution must use generic `call-actor` with `callOptions.build: "1.0.10"` and
+These are bounded contract examples for build `1.0.11`. Every MCP
+execution must use generic `call-actor` with `callOptions.build: "1.0.11"` and
 verify that exact authoritative run build rather than rely on a mutable tag.
 
 ## Focused research search
 
 ```text
-After confirming Actor access and current pricing, call exact build `1.0.10`
+After confirming Actor access and current pricing, call exact build `1.0.11`
 for up to 5 postdoctoral machine-learning positions in Germany
 posted within 30 days. Disable cross-run dedupe, translation, enrichment, and
 analytics. Fetch the complete successful dataset, validate nomad-agent-job-v1,
@@ -28,7 +28,7 @@ that requirement. Preserve null versus [].
 ## Multilingual keyword expansion
 
 ```text
-Explain the deployed price and owner-managed provider boundary first. If I
+Explain the deployed price and managed provider boundary first. If I
 confirm, enable euraxessSearch with schemaVersion
 nomad-agent-euraxess-search-v1 and translateKeywords true for the exact keyword
 "computational biology". Retain the original keyword, do not broaden the

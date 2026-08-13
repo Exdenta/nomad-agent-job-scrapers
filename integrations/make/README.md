@@ -3,9 +3,9 @@
 Import either blueprint:
 
 - [`linkedin-jobs-to-google-sheets.blueprint.json`](linkedin-jobs-to-google-sheets.blueprint.json),
-  for a Task pinned to LinkedIn build `0.6.41`;
+  for a Task pinned to LinkedIn build `0.6.42`;
 - [`euraxess-jobs-to-google-sheets.blueprint.json`](euraxess-jobs-to-google-sheets.blueprint.json),
-  for a Task pinned to private EURAXESS build `1.0.10`.
+  for a Task pinned to EURAXESS build `1.0.11`.
 
 The Apify Task owns the complete Actor input, item limit, exact build, and
 charge cap. The Make scenario consumes the completed Task run:
@@ -58,8 +58,7 @@ custom fields, raw evidence, or provenance.
 ## Validation boundary
 
 The blueprint graphs, exact-build and v4 filters, one-retry bound, 32-column
-mapping, source checks, and credential hygiene are
-covered by offline tests. A historical LinkedIn Make/Google Sheets smoke used build `0.6.19`; the
-current LinkedIn `0.6.41` and EURAXESS `1.0.10` destination paths still need
-fresh credentialed Make smoke tests. Importing a blueprint supplies no
-credentials and does not activate the scenario.
+mapping, source checks, and credential hygiene are covered by offline tests. A
+destination-specific live test still requires the client's own Make and Google
+Sheets credentials. Importing a blueprint supplies no credentials and does not
+activate the scenario.

@@ -18,7 +18,7 @@ HTTP with OAuth. Never ask for a token in chat or write one to a repository.
 ## Before a run
 
 1. Fetch the deployed Actor details or inspect its MCP tool schema. This skill
-   was synchronized to public `latest` build `0.6.41`; stop if the run resolves
+   was synchronized to exact supported build `0.6.42`; stop if the run resolves
    to another build until its contract has been checked.
 2. Confirm that the deployed input accepts
    `schemaVersion: nomad-agent-job-search-input-v1`. If it does not, explain
@@ -70,15 +70,15 @@ Apply these rules:
 - AI enrichment accepts `{"enabled": true, "accuracy": "silver"}` or
   `{"enabled": true, "accuracy": "gold"}`. Silver is the default accuracy
   when enrichment is enabled; compare deployed prices before selecting Gold.
-- Do not request customer DeepL/OpenRouter keys. These features are
-  owner-managed.
+- No customer model or translation provider keys are required for these
+  managed features.
 - Leave cross-run dedupe disabled for one-off searches. Enabling it requires a
   deliberate alert/profile scope defined by the deployed input schema.
 - Keep analytics off unless the user explicitly opts in.
 
 ## Execute with MCP
 
-1. Call generic `call-actor` with this outer envelope. Pin build `0.6.41` in
+1. Call generic `call-actor` with this outer envelope. Pin build `0.6.42` in
    `callOptions.build`; do not rely on a mutable tag or the direct Actor tool:
 
    ```json
@@ -86,14 +86,14 @@ Apply these rules:
      "actor": "nomad-agent/linkedin-enrich-translate-normalize-scraper",
      "input": {"schemaVersion": "nomad-agent-job-search-input-v1", "maxItems": 5},
      "waitSecs": 0,
-     "callOptions": {"build": "0.6.41", "maxItems": 5, "maxTotalChargeUsd": 0.1}
+     "callOptions": {"build": "0.6.42", "maxItems": 5, "maxTotalChargeUsd": 0.1}
    }
    ```
 2. If the returned run is `READY`, `RUNNING`, `TIMING-OUT`, or `ABORTING`, use
    its run ID with `get-actor-run` and follow `nextStep` until the run is
    terminal.
 3. Continue only when the authoritative terminal run has status `SUCCEEDED`,
-   exit code `0`, and build number `0.6.41`. If an MCP response omits
+   exit code `0`, and build number `0.6.42`. If an MCP response omits
    `buildNumber`, verify the same run through Apify's authenticated run API;
    omission is not proof of the requested build.
 4. Read that run's default key-value-store ID from
@@ -163,7 +163,7 @@ When answering a user:
 - call only named people hiring contacts;
 - distinguish the job URL (`identity.url`) from an external application URL
   (`data.application.url`);
-- say whether values came from static source parsing or optional null-only LLM
+- say whether values were source-established or added by optional null-only
   enrichment when provenance matters.
 
 ## Integration boundary

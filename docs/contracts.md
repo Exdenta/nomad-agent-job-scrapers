@@ -70,3 +70,10 @@ atomic retry invariants must also pass:
 ```bash
 python3 integrations/shared/validate_run_summary.py < run-summary.json
 ```
+
+### Legacy completion record
+
+`nomad-agent-run-summary-v3` is retained only so existing clients can identify
+historical saved records. New integrations must require
+`nomad-agent-run-summary-v4`; maintained templates and validators do not fall
+back to v3.

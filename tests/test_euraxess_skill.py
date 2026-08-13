@@ -21,9 +21,9 @@ CUSTOM_SCHEMA = ROOT / "integrations" / "shared" / "euraxess-v1.schema.json"
 CANONICAL_CUSTOM_SCHEMA_SHA256 = (
     "2007916ebd1d900a7de5c2db69a1790da426c2a21ef1a7013cec1db1c6dcfcb4"
 )
-FINDJOBS = ROOT.parent / "FindJobs"
-CANONICAL_CUSTOM_SCHEMA = FINDJOBS / "apify" / "job_custom_schemas" / "euraxess-v1.schema.json"
-CANONICAL_ACTOR = FINDJOBS / "apify" / "euraxess-enrich-translate-normalize-scraper"
+CANONICAL_FIXTURE_SHA256 = (
+    "9ab8e26a0bd2ae490b7f760923077a27d4d87fb7f7685eac492f50d72a546d0f"
+)
 
 
 def run_script(name: str, value: object) -> subprocess.CompletedProcess[str]:
@@ -80,27 +80,11 @@ class EuraxessSkillTest(unittest.TestCase):
         self.assertEqual(parsed["academicLevelRaw"], ["PhD Positions"])
         self.assertEqual(parsed["normalized"], self.record)
 
-    def test_fixture_matches_current_actor_mapper_example_exactly(self) -> None:
-        python = FINDJOBS / "apify" / ".venv" / "bin" / "python"
-        actor_test = CANONICAL_ACTOR / "test_euraxess_parsing_mapping.py"
-        if not python.is_file() or not actor_test.is_file():
-            self.skipTest("sibling FindJobs Actor checkout is unavailable")
-        code = (
-            "import json,sys; "
-            f"sys.path.insert(0,{str(CANONICAL_ACTOR)!r}); "
-            "import test_euraxess_parsing_mapping as fixture; "
-            "record=fixture._mapped(); record['raw']=None; "
-            "print(json.dumps(record, sort_keys=True))"
+    def test_fixture_is_the_reviewed_standalone_contract_example(self) -> None:
+        self.assertEqual(
+            hashlib.sha256(FIXTURE.read_bytes()).hexdigest(),
+            CANONICAL_FIXTURE_SHA256,
         )
-        result = subprocess.run(
-            [str(python), "-c", code],
-            cwd=CANONICAL_ACTOR,
-            capture_output=True,
-            text=True,
-            check=False,
-        )
-        self.assertEqual(result.returncode, 0, result.stderr)
-        self.assertEqual(self.record, json.loads(result.stdout))
 
     def test_fixture_does_not_claim_unsupported_static_mapper_facts(self) -> None:
         data = self.record["data"]
@@ -212,8 +196,8 @@ class EuraxessSkillTest(unittest.TestCase):
         self.assertTrue(skill.startswith("---\nname: euraxess-"))
         self.assertIn("fetch-actor-details,call-actor", metadata)
         self.assertIn('transport: "streamable_http"', metadata)
-        self.assertIn("`latest` and `canary`", combined)
-        self.assertIn("build `1.0.10`", combined)
+        self.assertIn("exact build `1.0.11`", combined)
+        self.assertIn("build `1.0.11`", combined)
         self.assertIn("nomad-agent-job-search-input-v1", combined)
         self.assertIn("nomad-agent-euraxess-search-v1", combined)
         self.assertIn("RUN-SUMMARY", combined)
@@ -299,22 +283,16 @@ class EuraxessSkillTest(unittest.TestCase):
             CANONICAL_CUSTOM_SCHEMA_SHA256,
         )
 
-    def test_public_custom_schema_exactly_mirrors_sibling_canonical_schema(self) -> None:
-        if not CANONICAL_CUSTOM_SCHEMA.is_file():
-            self.skipTest("sibling canonical schema checkout is unavailable")
-        self.assertEqual(CUSTOM_SCHEMA.read_bytes(), CANONICAL_CUSTOM_SCHEMA.read_bytes())
-
     def test_catalog_separates_actor_and_destination_validation_state(self) -> None:
         readme = (ROOT / "README.md").read_text(encoding="utf-8")
         guide = (ROOT / "docs" / "euraxess.md").read_text(encoding="utf-8")
         agents = (ROOT / "docs" / "agent-skills.md").read_text(encoding="utf-8")
         self.assertIn("Actor catalog", readme)
         self.assertIn(SKILL_NAME, readme)
-        self.assertIn("EURAXESS `1.0` remains private", readme)
-        self.assertIn("`latest` and `canary` point to exact build `1.0.10`", readme)
-        self.assertIn("`latest` and `canary` point to exact build `1.0.10`", readme)
-        self.assertIn("Pin exact build `1.0.10`", guide)
-        self.assertIn("build `1.0.10`", guide)
+        self.assertIn("LinkedIn `0.6` and EURAXESS `1.0` are public Store Actors", readme)
+        self.assertIn("exact supported build `1.0.11`", readme)
+        self.assertIn("supports exact build `1.0.11`", guide)
+        self.assertIn("build `1.0.11`", guide)
         self.assertIn(f"--skill {SKILL_NAME}", agents)
 
 

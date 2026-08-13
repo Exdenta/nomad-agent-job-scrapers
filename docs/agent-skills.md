@@ -57,12 +57,12 @@ dependencies.
 Installing the skill does not install MCP. Complete the client setup in
 [MCP quickstart](mcp.md) as a separate step.
 
-The EURAXESS skill documents the private `1.0` contract on exact build `1.0.10`.
+The EURAXESS skill documents the public `1.0` contract on exact build `1.0.11`.
 Its client setup uses generic `call-actor` to pin and verify that build rather
 than rely on mutable `latest` or `canary` tags. It then validates minimal v4
 `RUN-SUMMARY`, reconciles `delivered` with the dataset, and honors at most one
-bounded retry recommendation. Installing it is not evidence
-that the Actor is public, priced for a specific account, or authorized for the
+bounded retry recommendation. Installing it is not evidence that the Actor is
+currently available, priced for a specific account, or authorized for the
 current account.
 
 The installed skill also contains `references/client-setup.md`, so an agent can

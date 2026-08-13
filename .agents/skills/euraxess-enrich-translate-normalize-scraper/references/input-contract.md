@@ -1,29 +1,26 @@
 # EURAXESS Actor input contract
 
 Target contract: `nomad-agent-job-search-input-v1` with the optional closed
-`nomad-agent-euraxess-search-v1` extension. Private `latest` and `canary`
-currently resolve to build `1.0.10`. Pin `1.0.10`, inspect the deployed schema,
-and stop when it does not exactly match this reference.
+`nomad-agent-euraxess-search-v1` extension. Pin exact build `1.0.11`, inspect
+the deployed schema, and stop when it does not exactly match this reference.
 
 | Field | Type | Default | Rules |
 | --- | --- | --- | --- |
 | `schemaVersion` | string | required | Must be `nomad-agent-job-search-input-v1` |
 | `keyword` | string | empty | Title, discipline, skill, or research term |
-| `location` | string | empty | Case-insensitive match against location/country text on search cards |
+| `location` | string | empty | Case-insensitive match against published location/country text |
 | `euraxessSearch` | object | omitted | Separately versioned keyword-expansion extension |
 | `postedWithin` | enum | `24h` | `24h`, `7d`, `30d`, or `any`; EURAXESS rejects `1h` |
 | `workArrangements` | string array | omitted | Unique subset of `remote`, `hybrid`, `onsite`; unknown does not match |
 | `maxItems` | integer | `100` | Increase deliberately; `0` means the bounded 200-item window |
 | `dedupe` | object | enabled | Cross-run delivery suppression; explicitly disable for one-off use |
 | `filters` | object | omitted | Closed `nomad-agent-job-filter-v1` expression |
-| `aiEnrichment` | object | disabled Silver | Owner-managed null-only description extraction |
-| `translateToEnglish` | boolean | `false` | Owner-managed selected-field translation |
+| `aiEnrichment` | object | disabled Silver | Managed optional enrichment; no customer model key required |
+| `translateToEnglish` | boolean | `false` | Managed selected-field translation; no customer provider key required |
 | `includeRaw` | boolean | `true` | False emits top-level `raw: null` after any requested enrichment |
 | `analyticsEnabled` | boolean | `false` | Explicit privacy-preserving aggregate opt-in |
 
-Unknown and retired fields fail validation. Caller-supplied proxy selection,
-timeouts, retries, concurrency, cache lifetimes, provider models, and provider
-keys are not part of this contract.
+Unknown, retired, and unlisted fields fail validation.
 
 EURAXESS publishes posting dates as calendar dates (`YYYY-MM-DD`), without an
 hour or timezone. Therefore this source cannot honestly establish whether a
@@ -48,14 +45,13 @@ cutoff date. `any` applies no publication-date cutoff.
 }
 ```
 
-The original keyword is always retained. The owner-managed provider may add
+The original keyword is always retained. The managed provider may add
 faithful equivalents used across EURAXESS languages. Failure falls back to the
 original keyword. This option must not add adjacent roles or disciplines.
 
 ## Normalized filters
 
-Filters run on normalized, source-language facts before optional output
-translation:
+Filters evaluate normalized, source-language facts:
 
 ```json
 {
@@ -93,13 +89,12 @@ Enrichment is a strict object, not a boolean:
 }
 ```
 
-`accuracy` is `silver` or `gold`. Both profiles are owner-managed. They read
+`accuracy` is `silver` or `gold`. Both profiles are managed. They read
 only the complete public plain-text description, fill allowlisted still-null
 paths, and record provenance in `llm`. Provider failure preserves the base
 record and records `llm.status: failed` for that row.
 
-`translateToEnglish` runs after normalization, optional enrichment, and exact
-filtering. In the current source candidate it covers title, domains,
+In supported build `1.0.11`, `translateToEnglish` covers title, domains,
 applicant-requirement prose, benefits, eligibility and selection text, work
 authorization, security clearance, and location preference. It does not
 rewrite organisations or place names, identifiers, URLs, source-raw labels,

@@ -5,17 +5,17 @@ description: Find and integrate EURAXESS research and academic jobs with the Api
 
 # EURAXESS research and academic job search
 
-Use this skill for the strict `1.0` EURAXESS contract. Private `latest` and
-`canary` both resolve to build `1.0.10`. Installing this skill does not prove
-that the private Actor is accessible to the current user.
+Use this skill for the strict `1.0` EURAXESS contract. This skill supports
+exact build `1.0.11`. Verify Actor availability and the completed run's build
+before accepting results.
 
 Use Apify MCP through generic `call-actor` with
-`callOptions.build: "1.0.10"`; do not rely on a mutable tag. Keep the nested
+`callOptions.build: "1.0.11"`; do not rely on a mutable tag. Keep the nested
 normalized record as the system of record; flatten only for a
 destination that requires table-shaped values.
 
 The skill and MCP connection are separate. Installing this skill does not
-configure Apify, authorize an account, expose a private Actor, or store an API
+configure Apify, authorize an account, change Actor availability, or store an API
 token. If Apify tools are unavailable, read
 [references/client-setup.md](references/client-setup.md). Prefer hosted
 Streamable HTTP with OAuth. Never ask for a token in chat or write one to a
@@ -26,8 +26,8 @@ repository.
 1. Fetch the deployed Actor details to confirm account access and current
    pricing.
 2. Use only generic `call-actor` with exact
-   `callOptions.build: "1.0.10"`. Require the run response to report
-   `buildNumber: "1.0.10"` before accepting its output.
+   `callOptions.build: "1.0.11"`. Require the run response to report
+   `buildNumber: "1.0.11"` before accepting its output.
 3. Send `schemaVersion: nomad-agent-job-search-input-v1` and the closed
    `euraxessSearch` extension described in
    [references/input-contract.md](references/input-contract.md).
@@ -62,8 +62,8 @@ Always send the discriminator:
 
 Apply these rules:
 
-- `location` matches only location/country text established by a EURAXESS
-  search card. It is not a geocoder or evidence of on-site work.
+- `location` matches only published location/country text. It is not a
+  geocoder or evidence of on-site work.
 - Use `postedWithin`; do not invent `postedSince` or `timeFilter`. EURAXESS
   publication evidence has calendar-date (`YYYY-MM-DD`) granularity, so this
   Actor accepts `24h`, `7d`, `30d`, or `any` and rejects `1h`.
@@ -79,9 +79,9 @@ Apply these rules:
   `{"schemaVersion":"nomad-agent-euraxess-search-v1","translateKeywords":true}`.
   It retains the original keyword and requests faithful multilingual
   equivalents; it does not broaden the role or discipline.
-- Translation and Silver/Gold enrichment are owner-managed and may add
+- Translation and Silver/Gold enrichment are managed and may add
   pay-per-event charges. Inspect deployed pricing and ask before enabling
-  either. Never request customer DeepL or OpenRouter keys.
+  either. No customer model or translation provider keys are required.
 - Enrichment reads the complete plain-text description and fills only
   allowlisted fields that remain `null`. Static source facts and explicit
   empty arrays win.
@@ -102,13 +102,13 @@ this outer envelope; the documented bounded input above belongs under `input`:
   "actor": "nomad-agent/euraxess-enrich-translate-normalize-scraper",
   "input": {"schemaVersion": "nomad-agent-job-search-input-v1", "maxItems": 5},
   "waitSecs": 0,
-  "callOptions": {"build": "1.0.10", "maxItems": 5, "maxTotalChargeUsd": 0.1}
+  "callOptions": {"build": "1.0.11", "maxItems": 5, "maxTotalChargeUsd": 0.1}
 }
 ```
 
 1. Call generic `call-actor`; do not rely on the direct Actor tool or a mutable
    tag.
-2. Require the authoritative run to report `buildNumber: "1.0.10"`. If MCP
+2. Require the authoritative run to report `buildNumber: "1.0.11"`. If MCP
    omits that field, verify the same run through Apify's authenticated run API.
    A missing or different build is a compatibility failure.
 3. Poll `READY`, `RUNNING`, `TIMING-OUT`, or `ABORTING` runs by run ID with
@@ -169,9 +169,9 @@ When presenting results:
   `Contact` block stay in raw evidence and are not promoted;
 - distinguish the canonical posting URL from a separately established
   application URL or email;
-- never promote a search-card snippet to the complete raw description;
-- explain optional LLM-filled paths separately from deterministic source
-  facts when provenance matters.
+- do not treat incomplete description text as a complete raw description;
+- explain optional LLM-filled paths separately from source-established facts
+  when provenance matters.
 
 Read [references/output-contract.md](references/output-contract.md) for the
 normalized and EURAXESS-specific fields.

@@ -48,7 +48,7 @@ class EuraxessIntegrationPackTests(unittest.TestCase):
                 "assignments"
             ]
         }
-        self.assertEqual(config["actorBuild"], "1.0.10")
+        self.assertEqual(config["actorBuild"], "1.0.11")
         self.assertEqual(config["advancedInputJson"], "{}")
         self.assertEqual(config["maxItems"], 5)
         self.assertEqual(config["maxRescheduleRetries"], 1)
@@ -168,7 +168,7 @@ process.stdout.write(JSON.stringify(new Function(node.parameters.jsCode)()));
             for item in by_name["Configuration"]["mapper"]["variables"]
         }
         self.assertEqual(config["maxitems"], "5")
-        self.assertEqual(config["actorbuild"], "1.0.10")
+        self.assertEqual(config["actorbuild"], "1.0.11")
         self.assertEqual(config["apifytaskid"], "REPLACE_WITH_APIFY_TASK_ID")
         rendered = json.dumps(blueprint)
         self.assertIn("RUN-SUMMARY", rendered)
@@ -191,7 +191,7 @@ process.stdout.write(JSON.stringify(new Function(node.parameters.jsCode)()));
             )
         )
         self.assertEqual(example["actor"], "nomad-agent/euraxess-enrich-translate-normalize-scraper")
-        self.assertEqual(example["callOptions"]["build"], "1.0.10")
+        self.assertEqual(example["callOptions"]["build"], "1.0.11")
         self.assertLessEqual(example["callOptions"]["maxItems"], 5)
         self.assertLessEqual(example["input"]["maxItems"], 5)
         self.assertFalse(example["input"]["translateToEnglish"])
@@ -212,7 +212,7 @@ process.stdout.write(JSON.stringify(new Function(node.parameters.jsCode)()));
         combined = "\n".join(path.read_text() for path in config_dir.iterdir())
         self.assertNotIn("apify_api_", combined)
 
-    def test_docs_and_airtable_state_the_private_validation_boundary(self) -> None:
+    def test_docs_and_airtable_state_the_destination_validation_boundary(self) -> None:
         fields = json.loads(
             (ROOT / "integrations" / "airtable" / "airtable-fields.json").read_text()
         )
@@ -229,8 +229,8 @@ process.stdout.write(JSON.stringify(new Function(node.parameters.jsCode)()));
         )
         self.assertIn("euraxess-jobs-to-google-sheets.json", docs)
         self.assertIn("euraxess-jobs-to-google-sheets.blueprint.json", docs)
-        self.assertIn("offline-tested", docs)
-        self.assertIn("private", docs.lower())
+        self.assertIn("offline tests", docs)
+        self.assertIn("destination", docs.lower())
 
 
 if __name__ == "__main__":

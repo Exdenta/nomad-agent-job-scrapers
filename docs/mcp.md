@@ -24,7 +24,7 @@ https://mcp.apify.com?tools=fetch-actor-details,call-actor,get-actor-run,get-dat
 Start with OAuth and follow the complete
 [MCP v1 instructions](../integrations/mcp/README.md).
 
-## EURAXESS boundary
+## EURAXESS profile
 
 EURAXESS has a separate repository skill and compatibility endpoint:
 
@@ -35,17 +35,14 @@ https://mcp.apify.com?tools=fetch-actor-details,call-actor,get-actor-run,get-dat
 Read the skill's
 [client setup](../.agents/skills/euraxess-enrich-translate-normalize-scraper/references/client-setup.md)
 before use. Use generic `call-actor` with
-`callOptions.build: "1.0.10"`, `callOptions.maxItems`, and a conservative
-`callOptions.maxTotalChargeUsd`; require the run to report build `1.0.10`.
+`callOptions.build: "1.0.11"`, `callOptions.maxItems`, and a conservative
+`callOptions.maxTotalChargeUsd`; require the completed run to report build
+`1.0.11`.
 Validate terminal success and the exact build, read and validate minimal v4
 `RUN-SUMMARY`, honor at most one retry, then validate and reconcile the default dataset. Do not
-reuse LinkedIn source-specific input fields or destination live-validation
-claims for EURAXESS.
+reuse LinkedIn source-specific input fields for EURAXESS.
 
-Actor/API canaries passed for exact LinkedIn build `0.6.41` and EURAXESS build
-`1.0.10` on 2026-08-13. They validated v4 and reconciled the selected dataset,
-without starting a retry. LinkedIn run `3Q4yWRpCnbU8iYSVk` returned one row;
-EURAXESS run `Fgo5aehGjDm3Q7GQF` returned a valid empty result. Prior hosted-MCP
-end-to-end smokes used LinkedIn `0.6.40` and EURAXESS `1.0.9` with v3.
-Destination-platform credentials and writes remain separate validation
-boundaries.
+The maintained profiles and smoke harness target LinkedIn `0.6.42` and
+EURAXESS `1.0.11`. A successful Actor or MCP check confirms only the Actor,
+completion record, and dataset path. Destination-platform writes require a
+separate test with the client's own credentials and disposable destination.
