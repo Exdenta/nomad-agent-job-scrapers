@@ -43,7 +43,7 @@ PROFILES = {
     "linkedin": {
         "url": PINNED_URL,
         "tool": "call-actor",
-        "build": "0.6.39",
+        "build": "0.6.40",
         "source": "linkedin",
         "input": Path(__file__).resolve().parents[1] / "examples/linkedin-search.mcp.json",
     },

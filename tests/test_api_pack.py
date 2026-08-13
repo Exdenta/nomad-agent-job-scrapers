@@ -33,7 +33,7 @@ class ApiPackTests(unittest.TestCase):
     def test_readme_pins_both_builds_and_preserves_the_run_contract(self) -> None:
         text = (PACK / "README.md").read_text(encoding="utf-8")
         for required in (
-            "build=0.6.39",
+            "build=0.6.40",
             "build=1.0.9",
             "maxTotalChargeUsd",
             "Authorization: Bearer $APIFY_TOKEN",

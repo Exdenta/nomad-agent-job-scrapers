@@ -42,9 +42,9 @@ Validate terminal success and the exact build, read and validate minimal v3
 reuse LinkedIn source-specific input fields or destination live-validation
 claims for EURAXESS.
 
-Hosted MCP end-to-end smokes passed for exact LinkedIn build `0.6.39` and
+Hosted MCP end-to-end smokes passed for exact LinkedIn build `0.6.40` and
 EURAXESS build `1.0.9` on 2026-08-13. They validated the original run's factual
 v3 status and reconciled dataset, without starting a retry. LinkedIn run
-`2pImGZgoQ0a5jGIMW` returned five rows; EURAXESS run `iEv1eNiPgDmysJhAh`
+`fGUBRCL6PmDZbOzGr` returned five rows; EURAXESS run `iEv1eNiPgDmysJhAh`
 returned a valid empty result. Destination-platform credentials and writes
 remain separate validation boundaries.

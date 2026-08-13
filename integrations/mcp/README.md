@@ -9,7 +9,7 @@ https://mcp.apify.com?tools=fetch-actor-details,call-actor,get-actor-run,get-dat
 
 | Profile | Actor | Exact build |
 | --- | --- | --- |
-| LinkedIn | `nomad-agent/linkedin-enrich-translate-normalize-scraper` | `0.6.39` |
+| LinkedIn | `nomad-agent/linkedin-enrich-translate-normalize-scraper` | `0.6.40` |
 | EURAXESS | `nomad-agent/euraxess-enrich-translate-normalize-scraper` | `1.0.9` |
 
 Keep the build explicit even when a movable tag currently points to the same
@@ -84,10 +84,10 @@ contract.
 ## Current validation boundary
 
 Apify metadata was checked on 2026-08-13: LinkedIn `latest` and `canary` point
-to `0.6.39`; EURAXESS `latest` and `canary` point to private build `1.0.9`.
+to `0.6.40`; EURAXESS `latest` and `canary` point to private build `1.0.9`.
 Authenticated hosted-MCP discovery and end-to-end execution passed for both
 profiles with protocol `2025-06-18` on 2026-08-13. LinkedIn run
-`2pImGZgoQ0a5jGIMW` used exact build `0.6.39`, validated v3, and returned five
+`fGUBRCL6PmDZbOzGr` used exact build `0.6.40`, validated v3, and returned five
 reconciled canonical rows; EURAXESS run `iEv1eNiPgDmysJhAh` used exact build
 `1.0.9`, validated v3, and returned a reconciled valid empty result. The
 checked-in smoke script contains no credential.

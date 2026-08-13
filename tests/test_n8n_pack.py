@@ -53,7 +53,7 @@ const workflow = JSON.parse(fs.readFileSync(process.argv[1], 'utf8'));
 const run = JSON.parse(process.argv[2]);
 global.$input = { first: () => ({ json: { data: run } }) };
 global.$ = (name) => {
-  if (name === 'Configuration') return { first: () => ({ json: { actorBuild: '0.6.39' } }) };
+  if (name === 'Configuration') return { first: () => ({ json: { actorBuild: '0.6.40' } }) };
   throw new Error(`unexpected node reference: ${name}`);
 };
 const node = workflow.nodes.find(value => value.name === 'Validate terminal run');
@@ -227,7 +227,7 @@ process.stdout.write(JSON.stringify(output));
                 "assignments"
             ]
         }
-        self.assertEqual(assignments["actorBuild"], "0.6.39")
+        self.assertEqual(assignments["actorBuild"], "0.6.40")
         self.assertEqual(assignments["advancedInputJson"], "{}")
         self.assertEqual(assignments["maxItems"], 1)
         self.assertEqual(assignments["maxRescheduleRetries"], 1)
@@ -341,7 +341,7 @@ process.stdout.write(JSON.stringify(output));
             "id": "run-1",
             "status": "SUCCEEDED",
             "exitCode": 0,
-            "buildNumber": "0.6.39",
+            "buildNumber": "0.6.40",
             "defaultDatasetId": "dataset-1",
         })
         self.assertEqual(completed.returncode, 0, completed.stderr)
@@ -352,7 +352,7 @@ process.stdout.write(JSON.stringify(output));
     def test_failed_or_wrong_build_run_is_not_retried_or_delivered(self) -> None:
         failed = self.run_terminal_node({
             "id": "run-2", "status": "FAILED", "exitCode": 1,
-            "buildNumber": "0.6.39", "defaultDatasetId": "dataset-2",
+            "buildNumber": "0.6.40", "defaultDatasetId": "dataset-2",
         })
         self.assertNotEqual(failed.returncode, 0)
         self.assertIn("failed terminal runs cannot be retried", failed.stderr)
@@ -361,7 +361,7 @@ process.stdout.write(JSON.stringify(output));
             "buildNumber": "0.6.36", "defaultDatasetId": "dataset-3",
         })
         self.assertNotEqual(wrong_build.returncode, 0)
-        self.assertIn("expected 0.6.39", wrong_build.stderr)
+        self.assertIn("expected 0.6.40", wrong_build.stderr)
 
     def test_workflow_uses_v3_and_one_retry_nodes(self) -> None:
         rendered = json.dumps(self.workflow)
@@ -460,7 +460,7 @@ process.stdout.write(JSON.stringify(output));
             "Find and save new LinkedIn jobs to Google Sheets with Apify", listing
         )
         self.assertIn("n8n Cloud", listing)
-        self.assertIn("0.6.39", listing)
+        self.assertIn("0.6.40", listing)
         self.assertIn("The published schedule was not", listing)
         self.assertIn("no separate delivery cache", listing)
 

@@ -5,7 +5,7 @@ integration-specific subset. Pin the exact qualified build in the run query:
 
 | Actor | API Actor identifier | Required build |
 | --- | --- | --- |
-| LinkedIn | `nomad-agent~linkedin-enrich-translate-normalize-scraper` | `0.6.39` |
+| LinkedIn | `nomad-agent~linkedin-enrich-translate-normalize-scraper` | `0.6.40` |
 | EURAXESS | `nomad-agent~euraxess-enrich-translate-normalize-scraper` | `1.0.9` |
 
 EURAXESS is private, so the caller must have account access. Keep the exact
@@ -21,7 +21,7 @@ curl --request POST \
   --header "Authorization: Bearer $APIFY_TOKEN" \
   --header "Content-Type: application/json" \
   --data @integrations/api/linkedin-search.json \
-  "https://api.apify.com/v2/acts/nomad-agent~linkedin-enrich-translate-normalize-scraper/runs?build=0.6.39&maxTotalChargeUsd=0.10"
+  "https://api.apify.com/v2/acts/nomad-agent~linkedin-enrich-translate-normalize-scraper/runs?build=0.6.40&maxTotalChargeUsd=0.10"
 ```
 
 For EURAXESS, substitute its Actor identifier, body file, and

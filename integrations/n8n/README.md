@@ -3,7 +3,7 @@
 Import either inactive workflow:
 
 - [`linkedin-jobs-to-google-sheets.json`](linkedin-jobs-to-google-sheets.json),
-  pinned to LinkedIn build `0.6.39`;
+  pinned to LinkedIn build `0.6.40`;
 - [`euraxess-jobs-to-google-sheets.json`](euraxess-jobs-to-google-sheets.json),
   pinned to private EURAXESS build `1.0.9`.
 
@@ -59,6 +59,6 @@ custom fields, provenance, or the distinction between `null` and `[]`.
 The exported graphs, exact build selectors, terminal run gate, complete input
 pass-through, canonical validation, flat projection, and credential hygiene are
 covered by offline tests. A historical LinkedIn n8n Cloud/Google Sheets smoke
-used Actor build `0.6.19`; it does not validate the current `0.6.39` workflow.
+used Actor build `0.6.19`; it does not validate the current `0.6.40` workflow.
 No EURAXESS n8n/Google Sheets destination smoke has completed. Importing these
 files supplies no credentials and does not activate a schedule.

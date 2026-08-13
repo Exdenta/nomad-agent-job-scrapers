@@ -3,7 +3,7 @@
 Import either blueprint:
 
 - [`linkedin-jobs-to-google-sheets.blueprint.json`](linkedin-jobs-to-google-sheets.blueprint.json),
-  for a Task pinned to LinkedIn build `0.6.39`;
+  for a Task pinned to LinkedIn build `0.6.40`;
 - [`euraxess-jobs-to-google-sheets.blueprint.json`](euraxess-jobs-to-google-sheets.blueprint.json),
   for a Task pinned to private EURAXESS build `1.0.9`.
 
@@ -60,6 +60,6 @@ custom fields, raw evidence, or provenance.
 The blueprint graphs, exact-build and v3 filters, one-retry bound, 32-column
 mapping, source checks, and credential hygiene are
 covered by offline tests. A historical LinkedIn Make/Google Sheets smoke used build `0.6.19`; the
-current LinkedIn `0.6.39` and EURAXESS `1.0.9` destination paths still need
+current LinkedIn `0.6.40` and EURAXESS `1.0.9` destination paths still need
 fresh credentialed Make smoke tests. Importing a blueprint supplies no
 credentials and does not activate the scenario.
