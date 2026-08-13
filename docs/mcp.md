@@ -41,3 +41,8 @@ Validate terminal success and the exact build, read and validate factual
 fleet-v2 `RUN-SUMMARY`, then validate and reconcile the default dataset. Do not
 reuse LinkedIn source-specific input fields or destination live-validation
 claims for EURAXESS.
+
+Hosted MCP end-to-end smokes passed for exact LinkedIn build `0.6.38` and
+EURAXESS build `1.0.8` on 2026-08-13. They validated the original run's factual
+status and reconciled dataset, without starting a retry. Destination-platform
+credentials and writes remain separate validation boundaries.

@@ -85,14 +85,12 @@ contract. It never starts an automatic retry.
 
 Apify metadata was checked on 2026-08-13: LinkedIn `latest` and `canary` point
 to `0.6.38`; EURAXESS `latest` and `canary` point to private build `1.0.8`.
-Authenticated no-run MCP discovery passed for both profiles with protocol
-`2025-06-18`.
-
-A bounded LinkedIn `0.6.38` Actor run and a bounded EURAXESS `1.0.8` date-window
-Actor run passed on 2026-08-13. Both wrote valid factual fleet-v2 status and
-reconciled their default datasets. These were Actor/API release smokes, not
-MCP-client or destination-platform smokes; the checked-in MCP smoke script still
-needs a credentialed run through each client path.
+Authenticated hosted-MCP discovery and end-to-end execution passed for both
+profiles with protocol `2025-06-18` on 2026-08-13. LinkedIn run
+`Ok0j87ZgtlKctmzOe` used exact build `0.6.38` and returned five canonical rows;
+EURAXESS run `z9rKgE7pkjXJJ89DE` used exact build `1.0.8` and returned a valid
+empty result. Both runs validated factual fleet-v2 status and reconciled the
+default dataset count. The checked-in smoke script contains no credential.
 
 No n8n, Make, Google Sheets, Airtable, or webhook destination is validated by
-an MCP discovery or Actor-only smoke.
+an MCP or Actor-only smoke.

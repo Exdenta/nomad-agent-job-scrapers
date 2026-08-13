@@ -47,16 +47,17 @@ Repository tests cover configuration parsing, exact version selectors, all
 current input-key pass-through, terminal-run and fleet-v2 status gating,
 canonical output, flat projection, secret hygiene, and the absence of
 automatic retry routes. Apify metadata confirms the
-build/tag and input-schema facts above. Authenticated no-run MCP discovery on
-2026-08-11 passed for both profiles with protocol `2025-06-18` and their
-expected six-tool surfaces. LinkedIn's MCP-origin compatibility layer also
+build/tag and input-schema facts above. Authenticated hosted-MCP discovery and
+end-to-end execution passed on 2026-08-13 for both exact builds with protocol
+`2025-06-18`: LinkedIn returned five reconciled canonical rows and EURAXESS a
+reconciled valid empty result. LinkedIn's MCP-origin compatibility layer also
 passed 36 tests in the exact hash-locked Python 3.12 / Apify `2.7.3` runtime.
 
 Historical LinkedIn n8n and Make destination tests used older builds. The
 current `0.6.38` n8n/Make destination paths and all EURAXESS destinations still
-need credentialed live smoke tests. MCP discovery/run smoke tests require an
-`APIFY_TOKEN`; the checked-in scripts do not contain one. Actor/API release
-smokes passed for LinkedIn `0.6.38` and EURAXESS `1.0.8` on 2026-08-13, and
-both `latest` tags were moved to those builds. No task reconfiguration, n8n or
-Make destination activation, Airtable write, or Store publication was part of
-that Actor rollout.
+need credentialed live smoke tests. The MCP smoke harness requires an
+`APIFY_TOKEN`, but the checked-in scripts contain no credential. Actor/API and
+hosted-MCP release smokes passed for LinkedIn `0.6.38` and EURAXESS `1.0.8` on
+2026-08-13, and both `latest` tags were moved to those builds. No Task
+reconfiguration, n8n or Make destination activation, Airtable write, or Store
+publication was part of that Actor rollout.
