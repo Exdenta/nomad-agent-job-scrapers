@@ -50,7 +50,7 @@ class IntegrationCompatibilityTests(unittest.TestCase):
         make = (ROOT / "integrations" / "make" / "README.md").read_text()
         api = (ROOT / "integrations" / "api" / "README.md").read_text()
         for text in (make, api):
-            self.assertIn("`0.6.42`", text)
+            self.assertIn("`0.6.45`", text)
             self.assertIn("`1.0.13`", text)
         for field in (
             "linkedinSearch", "strictGeography", "companyProfileEnrichment",

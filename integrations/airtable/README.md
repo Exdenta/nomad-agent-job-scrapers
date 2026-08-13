@@ -59,7 +59,7 @@ EURAXESS-specific research, funding, education, language, and application
 evidence remains in the canonical nested record; the 32-column destination
 view does not attempt to flatten every `custom` field.
 
-All current LinkedIn `0.6.42` and EURAXESS `1.0.13` search features remain
+All current LinkedIn `0.6.45` and EURAXESS `1.0.13` search features remain
 available in the upstream n8n, Make, MCP, or API runner. Airtable receives the
 result projection only, so input features need no Airtable-specific mapping.
 Keep the canonical Actor dataset (or a separately access-controlled serialized

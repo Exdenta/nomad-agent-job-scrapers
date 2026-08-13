@@ -3,7 +3,7 @@
 Import either inactive workflow:
 
 - [`linkedin-jobs-to-google-sheets.json`](linkedin-jobs-to-google-sheets.json),
-  pinned to LinkedIn build `0.6.42`;
+  pinned to LinkedIn build `0.6.45`;
 - [`euraxess-jobs-to-google-sheets.json`](euraxess-jobs-to-google-sheets.json),
   pinned to EURAXESS build `1.0.13`.
 

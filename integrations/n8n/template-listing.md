@@ -59,7 +59,7 @@ No community node, messaging account, or AI-provider credential is required.
 
 - The workflow imports inactive.
 - The schedule does not run until the workflow is published.
-- The workflow pins exact supported build `0.6.42`.
+- The workflow pins exact supported build `0.6.45`.
 - `maxItems` starts at `1` and the Apify call has a `$0.10` charge cap.
 - The workflow validates minimal v4 `RUN-SUMMARY`, may repeat the exact run
   request once on a valid partial recommendation, and reconciles its
