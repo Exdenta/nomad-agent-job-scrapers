@@ -4,7 +4,7 @@
 
 ```text
 Use generic call-actor for
-nomad-agent/linkedin-enrich-translate-normalize-scraper at exact build 0.6.45.
+nomad-agent/linkedin-enrich-translate-normalize-scraper at exact build 0.6.42.
 Search for at most 5 remote or hybrid TypeScript developer jobs in Spain from
 the last 7 days. Disable translation, AI enrichment, analytics, raw output, and
 cross-run dedupe. Use a $0.10 charge cap and waitSecs 0.

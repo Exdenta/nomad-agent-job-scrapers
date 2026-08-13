@@ -82,7 +82,7 @@ Filters use the separately versioned `nomad-agent-job-filter-v1` expression:
 Use only paths and operators accepted by the deployed tool schema. Filters
 evaluate source-language values.
 
-In supported build `0.6.45`, `translateToEnglish` covers title, classifications,
+In supported build `0.6.42`, `translateToEnglish` covers title, classifications,
 domains, applicant-requirement prose, benefits, eligibility and selection
 text, work authorization, security clearance, and location preference. It
 does not rewrite company or place names, identifiers, URLs, source-raw labels,
