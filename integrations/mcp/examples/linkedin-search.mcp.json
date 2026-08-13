@@ -1,23 +1,31 @@
 {
-  "schemaVersion": "nomad-agent-job-search-input-v1",
-  "keyword": "TypeScript developer",
-  "location": "Spain",
-  "postedWithin": "7d",
-  "workArrangements": [
-    "remote",
-    "hybrid"
-  ],
-  "maxItems": 5,
-  "translateToEnglish": false,
-  "aiEnrichment": {
-    "enabled": false,
-    "accuracy": "silver"
+  "actor": "nomad-agent/linkedin-enrich-translate-normalize-scraper",
+  "input": {
+    "schemaVersion": "nomad-agent-job-search-input-v1",
+    "keyword": "TypeScript developer",
+    "location": "Spain",
+    "postedWithin": "7d",
+    "workArrangements": [
+      "remote",
+      "hybrid"
+    ],
+    "maxItems": 5,
+    "translateToEnglish": false,
+    "aiEnrichment": {
+      "enabled": false,
+      "accuracy": "silver"
+    },
+    "includeRaw": false,
+    "dedupe": {
+      "enabled": false,
+      "key": ""
+    },
+    "analyticsEnabled": false
   },
-  "includeRaw": false,
-  "dedupe": {
-    "enabled": false,
-    "key": ""
-  },
-  "analyticsEnabled": false,
-  "waitSecs": 0
+  "waitSecs": 0,
+  "callOptions": {
+    "build": "0.6.38",
+    "maxItems": 5,
+    "maxTotalChargeUsd": 0.1
+  }
 }

@@ -1,6 +1,6 @@
 {
   "mcpServers": {
-    "apify-linkedin-jobs": {
+    "apify-euraxess-jobs": {
       "url": "https://mcp.apify.com?tools=fetch-actor-details,call-actor,get-actor-run,get-dataset-items,get-key-value-store-record",
       "headers": {
         "Authorization": "Bearer ${env:APIFY_TOKEN}"

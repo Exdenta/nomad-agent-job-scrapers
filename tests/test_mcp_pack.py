@@ -11,10 +11,10 @@ import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
 PACK = ROOT / "integrations" / "mcp"
-SCOPED_URL = (
+PINNED_URL = (
     "https://mcp.apify.com?tools="
-    "fetch-actor-details,"
-    "nomad-agent/linkedin-enrich-translate-normalize-scraper"
+    "fetch-actor-details,call-actor,get-actor-run,get-dataset-items,"
+    "get-key-value-store-record"
 )
 
 
@@ -34,7 +34,7 @@ class McpPackTests(unittest.TestCase):
         for path in sorted((PACK / "configs").glob("*.json")):
             value = json.loads(path.read_text(encoding="utf-8"))
             server = value["mcpServers"]["apify-linkedin-jobs"]
-            self.assertEqual(server["url"], SCOPED_URL)
+            self.assertEqual(server["url"], PINNED_URL)
             self.assertNotIn("apify_api_", path.read_text(encoding="utf-8"))
         claude = json.loads(
             (PACK / "configs" / "claude-code.oauth.json").read_text(encoding="utf-8")
@@ -46,7 +46,7 @@ class McpPackTests(unittest.TestCase):
             (PACK / "configs" / "codex.token.toml").read_text(encoding="utf-8")
         )
         server = value["mcp_servers"]["apify_linkedin_jobs"]
-        self.assertEqual(server["url"], SCOPED_URL)
+        self.assertEqual(server["url"], PINNED_URL)
         self.assertEqual(server["bearer_token_env_var"], "APIFY_TOKEN")
         self.assertEqual(server["default_tools_approval_mode"], "prompt")
 
@@ -56,18 +56,66 @@ class McpPackTests(unittest.TestCase):
                 encoding="utf-8"
             )
         )
-        self.assertLessEqual(value["maxItems"], 5)
-        self.assertFalse(value["translateToEnglish"])
+        self.assertEqual(value["actor"], "nomad-agent/linkedin-enrich-translate-normalize-scraper")
+        self.assertEqual(value["callOptions"]["build"], "0.6.38")
+        actor_input = value["input"]
+        self.assertLessEqual(actor_input["maxItems"], 5)
+        self.assertFalse(actor_input["translateToEnglish"])
         self.assertEqual(
-            value["aiEnrichment"],
+            actor_input["aiEnrichment"],
             {"enabled": False, "accuracy": "silver"},
         )
-        self.assertFalse(value["includeRaw"])
-        self.assertFalse(value["analyticsEnabled"])
+        self.assertFalse(actor_input["includeRaw"])
+        self.assertFalse(actor_input["analyticsEnabled"])
         self.assertEqual(
-            value["dedupe"],
+            actor_input["dedupe"],
             {"enabled": False, "key": ""},
         )
+
+    def test_euraxess_configs_have_oauth_and_token_parity(self):
+        config_dir = PACK / "configs" / "euraxess"
+        self.assertEqual(
+            {path.name for path in config_dir.iterdir()},
+            {
+                "claude-code.oauth.json", "claude-code.token.json",
+                "codex.oauth.toml", "codex.token.toml",
+                "cursor.oauth.json", "cursor.token.json",
+            },
+        )
+        for filename in (
+            "claude-code.oauth.json", "claude-code.token.json",
+            "cursor.oauth.json", "cursor.token.json",
+        ):
+            value = json.loads((config_dir / filename).read_text(encoding="utf-8"))
+            server = value["mcpServers"]["apify-euraxess-jobs"]
+            self.assertEqual(server["url"], PINNED_URL)
+        for filename in ("codex.oauth.toml", "codex.token.toml"):
+            value = tomllib.loads((config_dir / filename).read_text(encoding="utf-8"))
+            server = value["mcp_servers"]["apify_euraxess_jobs"]
+            self.assertEqual(server["url"], PINNED_URL)
+            self.assertEqual(server["default_tools_approval_mode"], "prompt")
+        token = tomllib.loads((config_dir / "codex.token.toml").read_text(encoding="utf-8"))
+        self.assertEqual(
+            token["mcp_servers"]["apify_euraxess_jobs"]["bearer_token_env_var"],
+            "APIFY_TOKEN",
+        )
+
+    def test_euraxess_example_pins_current_canary_build_and_cost_caps(self):
+        value = json.loads(
+            (PACK / "examples" / "euraxess-search.mcp.json").read_text(encoding="utf-8")
+        )
+        self.assertEqual(
+            value["actor"],
+            "nomad-agent/euraxess-enrich-translate-normalize-scraper",
+        )
+        self.assertEqual(value["callOptions"], {
+            "build": "1.0.8",
+            "maxItems": 5,
+            "maxTotalChargeUsd": 0.1,
+        })
+        self.assertLessEqual(value["input"]["maxItems"], 5)
+        self.assertFalse(value["input"]["translateToEnglish"])
+        self.assertFalse(value["input"]["aiEnrichment"]["enabled"])
 
     def test_smoke_response_decoder_accepts_json_and_sse(self):
         path = PACK / "scripts" / "smoke_test.py"
@@ -75,8 +123,14 @@ class McpPackTests(unittest.TestCase):
         module = importlib.util.module_from_spec(spec)
         assert spec.loader is not None
         spec.loader.exec_module(module)
-        self.assertEqual(module.SCOPED_URL, SCOPED_URL)
+        self.assertEqual(module.SCOPED_URL, PINNED_URL)
+        self.assertEqual(module.PROFILES["linkedin"]["build"], "0.6.38")
+        self.assertEqual(module.PROFILES["linkedin"]["tool"], "call-actor")
+        self.assertEqual(module.PROFILES["euraxess"]["url"], PINNED_URL)
+        self.assertEqual(module.PROFILES["euraxess"]["tool"], "call-actor")
+        self.assertEqual(module.PROFILES["euraxess"]["build"], "1.0.8")
         self.assertIn("fetch-actor-details", module.REQUIRED_TOOLS)
+        self.assertIn("call-actor", module.REQUIRED_TOOLS)
         self.assertIn("get-key-value-store-record", module.REQUIRED_TOOLS)
         direct = module._decode_response(
             b'{"jsonrpc":"2.0","id":7,"result":{"ok":true}}',
@@ -103,13 +157,18 @@ class McpPackTests(unittest.TestCase):
             "store-1",
         )
 
-    def test_smoke_script_honors_only_structured_bounded_retry(self):
+    def test_smoke_script_uses_factual_status_and_dataset_without_summary_retry(self):
         text = (PACK / "scripts" / "smoke_test.py").read_text(encoding="utf-8")
         self.assertIn('"get-key-value-store-record"', text)
-        self.assertIn('"recordKey": "RUN-SUMMARY"', text)
-        self.assertIn("evaluate_run_summary", text)
-        self.assertIn("--max-reschedule-retries", text)
-        self.assertIn("time.sleep(decision.delay_seconds)", text)
+        self.assertIn("RUN-SUMMARY", text)
+        self.assertIn("validate_dataset_count", text)
+        self.assertNotIn("--max-reschedule-retries", text)
+        self.assertIn('"--profile"', text)
+        self.assertIn('"euraxess"', text)
+        self.assertIn('call_options.get("build")', text)
+        self.assertIn("_verified_rest_run", text)
+        self.assertIn("evaluate_terminal_run", text)
+        self.assertIn("_require_build(run", text)
 
 
 if __name__ == "__main__":

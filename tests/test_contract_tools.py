@@ -140,6 +140,8 @@ class ContractToolsTest(unittest.TestCase):
                 self.assertTrue((skill / "SKILL.md").is_file())
                 self.assertTrue((skill / "scripts" / "parse_output.py").is_file())
                 self.assertTrue((skill / "scripts" / "validate_contract.py").is_file())
+                self.assertTrue((skill / "scripts" / "validate_run_summary.py").is_file())
+                self.assertTrue((skill / "references" / "run-summary.md").is_file())
                 self.assertTrue((skill / "references" / "client-setup.md").is_file())
                 self.assertFalse(any(skill.rglob("*.pyc")))
                 self.assertFalse(any(path.name == "__pycache__" for path in skill.rglob("*")))
@@ -266,8 +268,8 @@ class ContractToolsTest(unittest.TestCase):
         metadata = (skill / "agents" / "openai.yaml").read_text(encoding="utf-8")
         scoped_url = (
             "https://mcp.apify.com?tools="
-            "fetch-actor-details,"
-            "nomad-agent/linkedin-enrich-translate-normalize-scraper"
+            "fetch-actor-details,call-actor,get-actor-run,get-dataset-items,"
+            "get-key-value-store-record"
         )
         self.assertIn('transport: "streamable_http"', metadata)
         self.assertIn(f'url: "{scoped_url}"', metadata)
@@ -280,6 +282,7 @@ class ContractToolsTest(unittest.TestCase):
         self.assertIn("Use `--scope local` (the default)", setup)
         self.assertIn("get-actor-run", setup)
         self.assertIn("get-dataset-items", setup)
+        self.assertIn("get-key-value-store-record", setup)
         self.assertNotIn("APIFY_TOKEN=", setup)
 
     def test_skill_uses_terminal_run_then_dataset_items_path(self) -> None:
@@ -295,6 +298,9 @@ class ContractToolsTest(unittest.TestCase):
             "get-actor-run",
             "SUCCEEDED",
             "storages.datasets.default.id",
+            "storages.keyValueStores.default.id",
+            "RUN-SUMMARY",
+            "nomad-agent-fleet-run-summary-v2",
             "get-dataset-items",
             "Paginate",
             "zero dataset items",

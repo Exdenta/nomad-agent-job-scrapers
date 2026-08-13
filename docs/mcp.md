@@ -7,8 +7,9 @@ The maintained LinkedIn MCP v1 pack is
   ChatGPT workspaces;
 - environment-backed token alternatives;
 - deployed Actor schema and pricing inspection with `fetch-actor-details`;
-- the current Actor tool and run/storage helper workflow;
-- structured `RUN-SUMMARY` handling with one bounded same-input retry;
+- exact-build `call-actor` and run/status/dataset helper workflow;
+- terminal Actor status, factual fleet-v2 `RUN-SUMMARY`, authoritative build,
+  and dataset-count verification with no automatic retry;
 - bounded input and prompt examples;
 - explicit empty-result and failure behavior;
 - an offline validator and credential-safe live smoke script;
@@ -17,7 +18,7 @@ The maintained LinkedIn MCP v1 pack is
 Use only the scoped hosted endpoint:
 
 ```text
-https://mcp.apify.com?tools=fetch-actor-details,nomad-agent/linkedin-enrich-translate-normalize-scraper
+https://mcp.apify.com?tools=fetch-actor-details,call-actor,get-actor-run,get-dataset-items,get-key-value-store-record
 ```
 
 Start with OAuth and follow the complete
@@ -28,12 +29,15 @@ Start with OAuth and follow the complete
 EURAXESS has a separate repository skill and compatibility endpoint:
 
 ```text
-https://mcp.apify.com?tools=fetch-actor-details,nomad-agent/euraxess-enrich-translate-normalize-scraper
+https://mcp.apify.com?tools=fetch-actor-details,call-actor,get-actor-run,get-dataset-items,get-key-value-store-record
 ```
 
 Read the skill's
 [client setup](../.agents/skills/euraxess-enrich-translate-normalize-scraper/references/client-setup.md)
-before use. Its local `1.0` contract is unreleased and incompatible with the
-known private older `0.5.1` deployment. Do not reuse the LinkedIn input,
-LinkedIn run-summary retry policy, or destination live-validation claims for
-EURAXESS.
+before use. Use generic `call-actor` with
+`callOptions.build: "1.0.8"`, `callOptions.maxItems`, and a conservative
+`callOptions.maxTotalChargeUsd`; require the run to report build `1.0.8`.
+Validate terminal success and the exact build, read and validate factual
+fleet-v2 `RUN-SUMMARY`, then validate and reconcile the default dataset. Do not
+reuse LinkedIn source-specific input fields or destination live-validation
+claims for EURAXESS.

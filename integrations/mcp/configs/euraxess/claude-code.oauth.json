@@ -2,7 +2,8 @@
   "mcpServers": {
     "apify-euraxess-jobs": {
       "type": "http",
-      "url": "https://mcp.apify.com?tools=fetch-actor-details,nomad-agent/euraxess-enrich-translate-normalize-scraper"
+      "url": "https://mcp.apify.com?tools=fetch-actor-details,call-actor,get-actor-run,get-dataset-items,get-key-value-store-record",
+      "timeout": 600000
     }
   }
 }

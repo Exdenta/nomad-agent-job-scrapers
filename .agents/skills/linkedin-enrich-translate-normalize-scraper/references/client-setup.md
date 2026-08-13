@@ -7,7 +7,7 @@ live tools. Neither step should copy a credential into the skill or repository.
 Use this scoped hosted endpoint:
 
 ```text
-https://mcp.apify.com?tools=fetch-actor-details,nomad-agent/linkedin-enrich-translate-normalize-scraper
+https://mcp.apify.com?tools=fetch-actor-details,call-actor,get-actor-run,get-dataset-items,get-key-value-store-record
 ```
 
 Hosted Streamable HTTP with OAuth is the default. Running Actors and reading
@@ -25,7 +25,7 @@ project's `.codex/config.toml`:
 
 ```toml
 [mcp_servers.apify]
-url = "https://mcp.apify.com?tools=fetch-actor-details,nomad-agent/linkedin-enrich-translate-normalize-scraper"
+url = "https://mcp.apify.com?tools=fetch-actor-details,call-actor,get-actor-run,get-dataset-items,get-key-value-store-record"
 ```
 
 Then run:
@@ -53,7 +53,7 @@ still completes OAuth for their own Apify account:
 
 ```bash
 claude mcp add --transport http --scope project apify \
-  "https://mcp.apify.com?tools=fetch-actor-details,nomad-agent/linkedin-enrich-translate-normalize-scraper"
+  "https://mcp.apify.com?tools=fetch-actor-details,call-actor,get-actor-run,get-dataset-items,get-key-value-store-record"
 claude mcp list
 ```
 
@@ -73,18 +73,24 @@ authorization header with a real token.
 ## Verification boundary
 
 1. Confirm the `apify` server is connected.
-2. Confirm `fetch-actor-details`, the exact Actor tool, `get-actor-run`, and
-   `get-dataset-items` are available.
+2. Confirm `fetch-actor-details` and generic `call-actor` are available. Use
+   the run-follow-up and dataset tools exposed by the returned `nextStep`.
 3. Fetch the deployed Actor details, pricing, and input schema before a
    paid run.
 4. Run a bounded `maxItems: 5` search with translation, AI enrichment,
    analytics, and cross-run dedupe disabled.
-5. Poll non-terminal runs with `get-actor-run`. Only after `SUCCEEDED`, pass
-   `storages.datasets.default.id` to `get-dataset-items` and paginate as
-   needed.
-6. Accept `SUCCEEDED` with zero items as a valid empty result. Treat `FAILED`,
+5. Call with `callOptions.build: "0.6.38"`. Poll non-terminal runs with
+   `get-actor-run`; if MCP omits `buildNumber`, verify the run through Apify's
+   authenticated run API. Only after exact-build `SUCCEEDED` with exit code 0,
+   read `RUN-SUMMARY` with `get-key-value-store-record` and validate
+   `nomad-agent-fleet-run-summary-v2`.
+6. Only for factual `succeeded` or `empty`, pass the default dataset ID to
+   `get-dataset-items`, paginate, and reconcile its row count with `delivered`.
+   Treat `FAILED`,
    `TIMED-OUT`, and `ABORTED` as errors and never present partial data as
    success.
+7. Missing, invalid, or degraded status stops delivery. Never start an
+   automatic paid retry; `errors[].retryable` is diagnostic only.
 
 If the deployed schema differs from the skill, stop before execution and show
 the mismatch. Installing the skill is not proof that the Actor or MCP server is

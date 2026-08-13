@@ -3,15 +3,10 @@
 `nomad-agent/euraxess-enrich-translate-normalize-scraper` targets public
 EURAXESS PhD, postdoctoral, fellowship, research, and faculty vacancies.
 
-This repository documents the clean-rewrite `1.0` contract. Private canary
-build `1.0.4` (`d4wNkTXaznxUSwjvQ`) was built on 2026-08-11 from exact commit
-`01d66f414c4f0c9685d77081cb0227de56e8a15c` after the lock, dependency audit,
-Python/container SBOMs, network-disabled image tests, and container scan passed
-in [CI run 31478518379](https://github.com/Exdenta/OinkJobSearch/actions/runs/31478518379).
-The Actor remains private and its `latest` tag remains on legacy `0.5.1`.
-Staged live canaries are still blocked on the source/privacy approval record and
-deployment of the capability-isolated owner gateway, so this is not a claim of
-Store publication or production readiness.
+This repository documents the strict `1.0` contract. The private Actor's
+`latest` and `canary` tags point to exact build `1.0.8`. These contract files
+describe expected inputs and outputs; they do not by themselves prove live
+source or destination behavior.
 
 ## What is shared with the normalized fleet
 
@@ -21,8 +16,7 @@ Store publication or production readiness.
 - optional owner-managed selected-field translation;
 - optional owner-managed Silver/Gold null-only enrichment;
 - explicit cross-run dedupe and aggregate analytics controls;
-- transactional delivery semantics in the Actor runtime;
-- factual `nomad-agent-fleet-run-summary-v2` source-health record.
+- transactional delivery semantics in the Actor runtime.
 
 ## What remains EURAXESS-specific
 
@@ -61,11 +55,9 @@ It contains:
 - exact public mirror of the canonical
   [EURAXESS v1 custom schema](../integrations/shared/euraxess-v1.schema.json),
   retaining its canonical `$id`;
-- factual [run-summary reference](../.agents/skills/euraxess-enrich-translate-normalize-scraper/references/run-summary.md);
 - MCP [client setup](../.agents/skills/euraxess-enrich-translate-normalize-scraper/references/client-setup.md);
 - bounded [search examples](../.agents/skills/euraxess-enrich-translate-normalize-scraper/references/search-examples.md);
-- dependency-free canonical job validator, fleet-summary semantic validator,
-  parser, and shared flat projection.
+- dependency-free canonical job validator, parser, and shared flat projection.
 
 Install it into another project with:
 
@@ -77,21 +69,24 @@ python3 scripts/install_skill.py \
 ```
 
 Before any live run, fetch Actor details and require the matching strict input
-schema. Pin private qualification to version `1.0` or the `canary` tag; do not
-use `latest`, which intentionally remains on legacy `0.5.1` during cutover.
+schema. Pin exact build `1.0.8`; do not rely on a movable tag in a client
+integration.
 
 ## Integration artifacts
 
-The public pack includes source-specific, credential-free examples:
+The public pack includes source-specific, credential-free, offline-tested
+examples:
 
 - [n8n to Google Sheets](../integrations/n8n/euraxess-jobs-to-google-sheets.json);
 - [Make to Google Sheets](../integrations/make/euraxess-jobs-to-google-sheets.blueprint.json);
 - [bounded MCP arguments](../integrations/mcp/examples/euraxess-search.mcp.json) and scoped OAuth configurations for Codex, Claude Code, and Cursor;
+- [exact-build REST API and webhook guidance](../integrations/api/README.md);
 - the shared [Airtable destination preset](../integrations/airtable/README.md), using `euraxess:<externalId>` as `jobKey`.
 
-The n8n and Make assets accept only complete `nomad-agent-fleet-run-summary-v2`
-outcomes and do not automatically start another paid run. They preserve the
-canonical Actor dataset and derive only the documented 32-column flat view for
-Google Sheets. Importing an asset never supplies credentials or activates a
-schedule. The assets are offline-validated against the `1.0` contract, but no
-EURAXESS destination-platform smoke test has been completed yet.
+The n8n and Make assets require terminal success, exact build `1.0.8`, a valid
+factual fleet-v2 `RUN-SUMMARY` status of `succeeded` or `empty`, and a default
+dataset reconciled with `delivered`. They do not automatically start another paid run.
+They preserve the canonical Actor dataset and derive only the documented
+32-column flat view for Google Sheets. Importing an asset never supplies
+credentials or activates a schedule. No EURAXESS destination-platform smoke
+test has been completed yet.

@@ -13,7 +13,7 @@
           "y": 0,
           "name": "Watch completed EURAXESS Task runs"
         },
-        "notes": "Select the Apify Task that contains the EURAXESS Actor input. This scenario never starts or retries an Actor run; it only processes completed runs."
+        "notes": "Select the Apify Task pinned to exact EURAXESS build 1.0.8. Only terminal successful runs are delivered; this scenario never starts another Actor run."
       }
     },
     {
@@ -28,8 +28,8 @@
             "value": "5"
           },
           {
-            "name": "apifytaskid",
-            "value": "REPLACE_WITH_PRIVATE_EURAXESS_TASK_ID"
+            "name": "actorbuild",
+            "value": "1.0.8"
           },
           {
             "name": "googlespreadsheetid",
@@ -48,7 +48,7 @@
           "y": 0,
           "name": "Configuration"
         },
-        "notes": "Replace the Apify Task ID and spreadsheet ID. Select the same Task in the trigger. Keep maxitems=1 for the first completed-run smoke test."
+        "notes": "Replace the spreadsheet ID. Select the Task pinned to exact build 1.0.8 in the trigger. Keep maxitems small for the first destination smoke test."
       }
     },
     {
@@ -56,46 +56,57 @@
       "module": "http:ActionSendData",
       "version": 3,
       "parameters": {
-        "handleErrors": false,
+        "handleErrors": true,
         "useNewZLibDeCompress": true
       },
+      "mapper": {
+        "ca": "",
+        "qs": [],
+        "url": "{{1.output.runSummary}}",
+        "gzip": true,
+        "method": "get",
+        "headers": [],
+        "timeout": "40",
+        "useMtls": false,
+        "authPass": "",
+        "authUser": "",
+        "bodyType": "",
+        "serializeUrl": false,
+        "shareCookies": false,
+        "parseResponse": true,
+        "followRedirect": true,
+        "useQuerystring": false,
+        "followAllRedirects": false,
+        "rejectUnauthorized": true
+      },
+      "metadata": {
+        "designer": {
+          "x": 600,
+          "y": 0,
+          "name": "Read factual RUN-SUMMARY"
+        },
+        "notes": "Reads the Actor output schema's signed runSummary link for the original run. Missing or malformed status stops the scenario; it never authorizes a retry."
+      },
       "filter": {
-        "name": "Only successful Task runs",
+        "name": "Read status only for the exact successful Actor build",
         "conditions": [
           [
             {
               "a": "{{1.status}}",
               "b": "SUCCEEDED",
               "o": "text:equal"
+            },
+            {
+              "a": "{{1.buildNumber}}",
+              "b": "{{2.actorbuild}}",
+              "o": "text:equal"
+            },
+            {
+              "a": "{{1.output.runSummary}}",
+              "o": "exist"
             }
           ]
         ]
-      },
-      "mapper": {
-        "url": "{{1.output.runSummary}}",
-        "serializeUrl": false,
-        "method": "get",
-        "headers": [],
-        "qs": [],
-        "bodyType": "",
-        "parseResponse": true,
-        "timeout": "40",
-        "shareCookies": false,
-        "ca": "",
-        "rejectUnauthorized": true,
-        "followRedirect": true,
-        "useQuerystring": false,
-        "gzip": true,
-        "useMtls": false,
-        "followAllRedirects": false
-      },
-      "metadata": {
-        "designer": {
-          "x": 600,
-          "y": 0,
-          "name": "Read structured RUN-SUMMARY"
-        },
-        "notes": "Reads the Actor's signed RUN-SUMMARY link. A missing or unsupported record stops delivery; this scenario never retries a paid run."
       }
     },
     {
@@ -106,11 +117,11 @@
       "mapper": null,
       "metadata": {
         "designer": {
-          "x": 900,
+          "x": 1200,
           "y": 150,
-          "name": "Validate and deliver"
+          "name": "Validate terminal run and deliver"
         },
-        "notes": "Requires a complete nomad-agent-fleet-run-summary-v2 outcome. This EURAXESS template never starts an automatic paid retry."
+        "notes": "Deliver only when the original run is terminal SUCCEEDED, its factual fleet-v2 RUN-SUMMARY is succeeded or empty, and the exact configured build matches. The scenario performs no automatic paid retry."
       },
       "routes": [
         {
@@ -128,21 +139,16 @@
               },
               "metadata": {
                 "designer": {
-                  "x": 1200,
+                  "x": 1500,
                   "y": 150,
                   "name": "Get normalized jobs"
                 },
-                "notes": "Fetches only complete succeeded or explicit-empty EURAXESS runs. Fleet-v2 provides no retry instruction; degraded runs stop here."
+                "notes": "Fetches the completed run default dataset only after factual RUN-SUMMARY validation. An empty status means no matching jobs; all degraded or invalid statuses stop without an automatic retry."
               },
               "filter": {
-                "name": "Deliver only a complete succeeded or explicit-empty fleet summary",
+                "name": "Deliver only a valid factual run status",
                 "conditions": [
                   [
-                    {
-                      "a": "{{3.statusCode}}",
-                      "b": "200",
-                      "o": "number:equal"
-                    },
                     {
                       "a": "{{3.data.schemaVersion}}",
                       "b": "nomad-agent-fleet-run-summary-v2",
@@ -154,28 +160,13 @@
                       "o": "text:equal"
                     },
                     {
-                      "a": "{{3.data.partial}}",
-                      "b": false,
-                      "o": "boolean:equal"
-                    },
-                    {
                       "a": "{{3.data.sources.euraxess.status}}",
                       "b": "succeeded",
                       "o": "text:equal"
-                    },
-                    {
-                      "a": "{{3.data.sources.euraxess.delivered}}",
-                      "b": "{{3.data.delivered}}",
-                      "o": "number:equal"
                     }
                   ],
                   [
                     {
-                      "a": "{{3.statusCode}}",
-                      "b": "200",
-                      "o": "number:equal"
-                    },
-                    {
                       "a": "{{3.data.schemaVersion}}",
                       "b": "nomad-agent-fleet-run-summary-v2",
                       "o": "text:equal"
@@ -186,19 +177,9 @@
                       "o": "text:equal"
                     },
                     {
-                      "a": "{{3.data.partial}}",
-                      "b": false,
-                      "o": "boolean:equal"
-                    },
-                    {
                       "a": "{{3.data.sources.euraxess.status}}",
                       "b": "empty",
                       "o": "text:equal"
-                    },
-                    {
-                      "a": "{{3.data.sources.euraxess.delivered}}",
-                      "b": "{{3.data.delivered}}",
-                      "o": "number:equal"
                     }
                   ]
                 ]

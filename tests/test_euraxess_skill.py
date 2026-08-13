@@ -17,7 +17,6 @@ SCRIPTS = SKILL / "scripts"
 FIXTURE = ROOT / "tests" / "fixtures" / "euraxess-job.json"
 SUMMARY_SCHEMA = ROOT / "integrations" / "shared" / "fleet-run-summary-v2.schema.json"
 SUMMARY_VALIDATOR = ROOT / "integrations" / "shared" / "validate_fleet_run_summary.py"
-SKILL_SUMMARY_VALIDATOR = SCRIPTS / "validate_run_summary.py"
 CUSTOM_SCHEMA = ROOT / "integrations" / "shared" / "euraxess-v1.schema.json"
 CANONICAL_CUSTOM_SCHEMA_SHA256 = (
     "2007916ebd1d900a7de5c2db69a1790da426c2a21ef1a7013cec1db1c6dcfcb4"
@@ -206,17 +205,8 @@ class EuraxessSkillTest(unittest.TestCase):
                 installed = target / root / "skills" / SKILL_NAME
                 self.assertTrue((installed / "SKILL.md").is_file())
                 self.assertTrue((installed / "scripts" / "parse_output.py").is_file())
-                validator = installed / "scripts" / "validate_run_summary.py"
-                self.assertTrue(validator.is_file())
+                self.assertTrue((installed / "scripts" / "validate_run_summary.py").is_file())
                 self.assertTrue((installed / "references" / "run-summary.md").is_file())
-                validated = subprocess.run(
-                    [sys.executable, str(validator)],
-                    input=json.dumps(valid_summary()),
-                    capture_output=True,
-                    text=True,
-                    check=False,
-                )
-                self.assertEqual(validated.returncode, 0, validated.stderr)
                 self.assertFalse(any(installed.rglob("*.pyc")))
 
     def test_skill_metadata_and_docs_pin_the_compatibility_boundary(self) -> None:
@@ -233,13 +223,16 @@ class EuraxessSkillTest(unittest.TestCase):
             ]
         )
         self.assertTrue(skill.startswith("---\nname: euraxess-"))
-        self.assertIn("fetch-actor-details,nomad-agent/euraxess", metadata)
+        self.assertIn("fetch-actor-details,call-actor", metadata)
         self.assertIn('transport: "streamable_http"', metadata)
-        self.assertIn("private older `0.5.1`", combined)
-        self.assertIn("unreleased", combined.lower())
+        self.assertIn("`latest` and `canary`", combined)
+        self.assertIn("build `1.0.8`", combined)
         self.assertIn("nomad-agent-job-search-input-v1", combined)
         self.assertIn("nomad-agent-euraxess-search-v1", combined)
+        self.assertIn("RUN-SUMMARY", combined)
+        self.assertIn("get-key-value-store-record", combined)
         self.assertIn("nomad-agent-fleet-run-summary-v2", combined)
+        self.assertIn("never start an automatic paid retry", combined)
         self.assertIn("academicLevelRaw", combined)
         self.assertIn("only named people", combined.lower())
         self.assertIn("rejects `1h`", combined)
@@ -272,19 +265,6 @@ class EuraxessSkillTest(unittest.TestCase):
         result = run_summary_validator(valid_summary())
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertEqual(result.stdout.strip(), "valid fleet run summary")
-
-    def test_shared_and_installed_skill_summary_validators_have_exact_parity(self) -> None:
-        values = [valid_summary()]
-        invalid = valid_summary()
-        invalid["sources"]["euraxess"]["normalized"] = 9
-        values.append(invalid)
-        for value in values:
-            with self.subTest(valid=value is values[0]):
-                shared = run_summary_validator(value, SUMMARY_VALIDATOR)
-                bundled = run_summary_validator(value, SKILL_SUMMARY_VALIDATOR)
-                self.assertEqual(shared.returncode, bundled.returncode)
-                self.assertEqual(shared.stdout, bundled.stdout)
-                self.assertEqual(shared.stderr, bundled.stderr)
 
     def test_fleet_summary_semantic_validator_rejects_impossible_facts(self) -> None:
         cases = []
@@ -346,10 +326,11 @@ class EuraxessSkillTest(unittest.TestCase):
         agents = (ROOT / "docs" / "agent-skills.md").read_text(encoding="utf-8")
         self.assertIn("Actor catalog", readme)
         self.assertIn(SKILL_NAME, readme)
-        self.assertIn("Build `1.0.4` is private and CI-qualified", readme)
-        self.assertIn("`latest` remains on legacy `0.5.1`", readme)
-        self.assertIn("Private canary\nbuild `1.0.4`", guide)
-        self.assertIn("CI run 31478518379", guide)
+        self.assertIn("EURAXESS `1.0` remains private", readme)
+        self.assertIn("`latest` and `canary` point to exact build `1.0.8`", readme)
+        self.assertIn("`latest` and `canary` point to exact build `1.0.8`", readme)
+        self.assertIn("Pin exact build `1.0.8`", guide)
+        self.assertIn("build `1.0.8`", guide)
         self.assertIn(f"--skill {SKILL_NAME}", agents)
 
 

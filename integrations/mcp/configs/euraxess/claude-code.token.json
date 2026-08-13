@@ -1,10 +1,12 @@
 {
   "mcpServers": {
-    "apify-linkedin-jobs": {
+    "apify-euraxess-jobs": {
+      "type": "http",
       "url": "https://mcp.apify.com?tools=fetch-actor-details,call-actor,get-actor-run,get-dataset-items,get-key-value-store-record",
       "headers": {
-        "Authorization": "Bearer ${env:APIFY_TOKEN}"
-      }
+        "Authorization": "Bearer ${APIFY_TOKEN}"
+      },
+      "timeout": 600000
     }
   }
 }

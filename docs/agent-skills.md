@@ -57,10 +57,13 @@ dependencies.
 Installing the skill does not install MCP. Complete the client setup in
 [MCP quickstart](mcp.md) as a separate step.
 
-The EURAXESS skill documents an unreleased local `1.0` contract. Its client
-setup requires a schema check and explicitly rejects the known private older
-`0.5.1` deployment. Installing it is not evidence that a compatible Actor is
-deployed, public, priced, or authorized for the current account.
+The EURAXESS skill documents the private `1.0` contract on exact build `1.0.8`.
+Its client setup uses generic `call-actor` to pin and verify that build rather
+than rely on mutable `latest` or `canary` tags. It then validates factual
+fleet-v2 `RUN-SUMMARY`, reconciles `delivered` with the dataset, and never
+automatically retries a paid run. Installing it is not evidence
+that the Actor is public, priced for a specific account, or authorized for the
+current account.
 
 The installed skill also contains `references/client-setup.md`, so an agent can
 explain the Codex or Claude Code connection boundary without copying an Apify

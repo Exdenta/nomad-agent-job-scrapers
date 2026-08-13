@@ -55,13 +55,14 @@ interchangeable. The EURAXESS mapper first requires `identity.source` equal to
 `euraxess`, a named-person-only hiring-contact list, and the closed EURAXESS
 v1 custom extension.
 
-## Fleet run summary
+## Run completion
 
-The EURAXESS `1.0` candidate uses the source-neutral
-[`nomad-agent-fleet-run-summary-v2`](../integrations/shared/fleet-run-summary-v2.schema.json)
-record under `RUN-SUMMARY`. It reports bounded source facts and has no retry
-schedule. This local contract has not been live-validated against the known
-private older EURAXESS deployment.
+Delivery uses terminal Actor status, exact build identity, the canonical
+factual `nomad-agent-fleet-run-summary-v2` record under `RUN-SUMMARY`, and the
+validated default dataset. Maintained integrations require the summary,
+continue only for `succeeded` or `empty`, and reconcile its `delivered` count
+with the dataset. It is never automatic retry authority. See the
+[run-completion policy](retry-contract.md).
 
 The JSON Schema documents the closed structural shape. Cross-field facts such
 as monotonic funnel counts, status consistency, and aggregate delivered parity

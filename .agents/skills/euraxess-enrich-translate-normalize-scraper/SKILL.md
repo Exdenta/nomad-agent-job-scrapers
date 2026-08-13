@@ -1,17 +1,17 @@
 ---
 name: euraxess-enrich-translate-normalize-scraper
-description: Search, parse, validate, or integrate normalized EURAXESS research jobs with the Apify Actor nomad-agent/euraxess-enrich-translate-normalize-scraper. Use when an agent needs to prepare a bounded EURAXESS search, inspect the strict v1 input, interpret nomad-agent-job-v1 and EURAXESS custom taxonomy, read fleet-v2 RUN-SUMMARY facts, flatten results for a table, or diagnose deployment-contract mismatches.
+description: Find and integrate EURAXESS research and academic jobs with the Apify Actor nomad-agent/euraxess-enrich-translate-normalize-scraper. Use to build bounded searches, preserve and validate nomad-agent-job-v1 plus EURAXESS taxonomy, flatten results for tables, or check deployment compatibility.
 ---
 
-# EURAXESS normalized research-job search
+# EURAXESS research and academic job search
 
-Use this skill for the clean `1.0` EURAXESS contract. The source currently
-deployed under this Actor name is a private older `0.5.1` build; the local
-`1.0` rewrite described here is not deployed or Store-published. Never treat
-installing this skill as proof that a compatible Actor is available.
+Use this skill for the strict `1.0` EURAXESS contract. Private `latest` and
+`canary` both resolve to build `1.0.8`. Installing this skill does not prove
+that the private Actor is accessible to the current user.
 
-Use Apify MCP when it exposes the exact Actor and current schema. Keep the
-nested normalized record as the system of record; flatten only for a
+Use Apify MCP through generic `call-actor` with
+`callOptions.build: "1.0.8"`; do not rely on a mutable tag. Keep the nested
+normalized record as the system of record; flatten only for a
 destination that requires table-shaped values.
 
 The skill and MCP connection are separate. Installing this skill does not
@@ -23,18 +23,23 @@ repository.
 
 ## Compatibility gate before every run
 
-1. Fetch the deployed Actor details or inspect its MCP tool schema.
-2. Require `schemaVersion: nomad-agent-job-search-input-v1` and the closed
+1. Fetch the deployed Actor details to confirm account access and current
+   pricing.
+2. Use only generic `call-actor` with exact
+   `callOptions.build: "1.0.8"`. Require the run response to report
+   `buildNumber: "1.0.8"` before accepting its output.
+3. Send `schemaVersion: nomad-agent-job-search-input-v1` and the closed
    `euraxessSearch` extension described in
    [references/input-contract.md](references/input-contract.md).
-3. Stop before execution when the deployed schema differs. In particular, do
-   not send this skill's input to the known older `0.5.1` deployment.
-4. Inspect current pricing and availability. Local source metadata is not
+4. Stop before dataset retrieval when the run build differs.
+5. Inspect current pricing and availability. Local source metadata is not
    evidence of deployed pay-per-event prices or public access.
-5. Ask only for material missing choices: research keyword, card location,
+6. Ask only for material missing choices: research keyword, card location,
    freshness, explicit workplace arrangement, and maximum results.
-6. Start exploratory runs at `maxItems: 5`. Leave optional paid or stateful
-   features off unless requested.
+7. Start exploratory runs at `maxItems: 5`, set both Actor input `maxItems: 5`
+   and `callOptions.maxItems: 5`, and use a conservative
+   `callOptions.maxTotalChargeUsd`. Leave optional paid or stateful features
+   off unless requested.
 
 ## Build a bounded input
 
@@ -45,7 +50,7 @@ Always send the discriminator:
   "schemaVersion": "nomad-agent-job-search-input-v1",
   "keyword": "postdoctoral machine learning",
   "location": "Germany",
-  "postedWithin": "30d",
+  "postedWithin": "24h",
   "maxItems": 5,
   "dedupe": {"enabled": false, "key": ""},
   "aiEnrichment": {"enabled": false, "accuracy": "silver"},
@@ -89,39 +94,46 @@ filters, keyword expansion, enrichment, translation, or dedupe.
 
 ## Execute through MCP
 
-Only after the compatibility gate passes:
+Only after the compatibility gate passes. Call the MCP tool `call-actor` with
+this outer envelope; the documented bounded input above belongs under `input`:
 
-1. Call `nomad-agent/euraxess-enrich-translate-normalize-scraper`.
-2. Poll `READY`, `RUNNING`, `TIMING-OUT`, or `ABORTING` runs by run ID with
+```json
+{
+  "actor": "nomad-agent/euraxess-enrich-translate-normalize-scraper",
+  "input": {"schemaVersion": "nomad-agent-job-search-input-v1", "maxItems": 5},
+  "waitSecs": 0,
+  "callOptions": {"build": "1.0.8", "maxItems": 5, "maxTotalChargeUsd": 0.1}
+}
+```
+
+1. Call generic `call-actor`; do not rely on the direct Actor tool or a mutable
+   tag.
+2. Require the authoritative run to report `buildNumber: "1.0.8"`. If MCP
+   omits that field, verify the same run through Apify's authenticated run API.
+   A missing or different build is a compatibility failure.
+3. Poll `READY`, `RUNNING`, `TIMING-OUT`, or `ABORTING` runs by run ID with
    `get-actor-run` until terminal.
-3. Once terminal, read `RUN-SUMMARY` from the run's default key-value store
-   when that storage ID is available. Require
-   `nomad-agent-fleet-run-summary-v2` and interpret it using
-   [references/run-summary.md](references/run-summary.md). The v2 summary
-   reports facts; it does not schedule or recommend a retry.
-4. Continue to dataset retrieval only after `SUCCEEDED`. Treat `FAILED`,
-   `TIMED-OUT`, and `ABORTED` as errors, report the run ID, status, status
-   message, exit code, and any valid structured summary, and never present a
-   partial dataset as success.
-5. Fetch the default dataset ID from the same successful run and paginate with
+4. Continue to dataset retrieval only after `SUCCEEDED` with exit code `0`.
+   Treat `FAILED`, `TIMED-OUT`, and `ABORTED` as errors, report the run ID,
+   status, status message, and exit code, and never present a partial dataset
+   as success.
+5. Read the same run's default key-value-store `RUN-SUMMARY` with
+   `get-key-value-store-record`. Validate it with
+   `scripts/validate_run_summary.py`; continue only when root status and
+   `sources.euraxess.status` are `succeeded` or `empty`.
+6. Fetch the default dataset ID from the same successful run and paginate with
    `get-dataset-items`. An output preview is not the complete dataset.
-6. Accept a successful, explicitly empty run as a valid empty search. Never
-   invent a job or retry merely because zero rows were returned.
-7. For `partial`, `failed`, or `deadline` summary state, report the bounded
-   source facts. Do not parse logs or human messages to invent a retry delay.
-8. A missing summary means no structured source-health record was available.
-   It is not permission to infer success, blocking, or a retry instruction.
-9. Do not automatically retry a paid ambiguous timeout or degraded run.
+7. Require the complete dataset row count to equal `RUN-SUMMARY.delivered`.
+   Accept validated `empty` plus zero rows as a valid empty search.
+8. `RUN-SUMMARY` reports facts only. Missing, invalid, `partial`, `failed`, or
+   `deadline` status stops delivery. `errors[].retryable` never authorizes or
+   schedules a new paid run.
+   Maintained integrations never start an automatic paid retry.
+9. Never automatically retry an empty, failed, timed-out, or degraded paid
+   run. Inspect the original run; only an explicit caller decision may start a
+   new charged execution.
 10. Treat MCP as the live authentication layer. Never read an `APIFY_TOKEN`
     from project files or pass one in Actor input.
-
-Validate a retrieved summary with the validator bundled in every installed
-copy of this skill:
-
-```bash
-python3 .agents/skills/euraxess-enrich-translate-normalize-scraper/scripts/validate_run_summary.py \
-  run-summary.json
-```
 
 See [references/search-examples.md](references/search-examples.md) for bounded
 prompts. They are contract examples, not live-validation claims.
@@ -166,6 +178,8 @@ When presenting results:
 
 Read [references/output-contract.md](references/output-contract.md) for the
 normalized and EURAXESS-specific fields.
+Read [references/run-summary.md](references/run-summary.md) for the factual
+status contract and its no-automatic-retry boundary.
 
 ## Integration boundary
 

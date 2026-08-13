@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import csv
-from datetime import datetime, timedelta, timezone
 import json
 import subprocess
 import unittest
@@ -44,41 +43,25 @@ process.stdout.write(JSON.stringify(output));
             text=True,
         )
 
-    def run_retry_node(
+    def run_terminal_node(
         self,
         run: dict[str, object],
-        summary: dict[str, object],
-        *,
-        run_index: int = 0,
-        retry_limit: int = 1,
     ) -> subprocess.CompletedProcess[str]:
         script = """
 const fs = require('fs');
 const workflow = JSON.parse(fs.readFileSync(process.argv[1], 'utf8'));
 const run = JSON.parse(process.argv[2]);
-const summary = JSON.parse(process.argv[3]);
-global.$runIndex = Number(process.argv[4]);
-global.$input = { first: () => ({ json: summary }) };
+global.$input = { first: () => ({ json: { data: run } }) };
 global.$ = (name) => {
-  if (name === 'Run Actor on Apify') return { item: { json: { data: run } } };
-  if (name === 'Configuration') return { first: () => ({ json: { maxRescheduleRetries: Number(process.argv[5]) } }) };
+  if (name === 'Configuration') return { first: () => ({ json: { actorBuild: '0.6.38' } }) };
   throw new Error(`unexpected node reference: ${name}`);
 };
-const node = workflow.nodes.find(value => value.name === 'Evaluate retry recommendation');
+const node = workflow.nodes.find(value => value.name === 'Validate terminal run');
 const output = new Function(node.parameters.jsCode)();
 process.stdout.write(JSON.stringify(output));
 """
         return subprocess.run(
-            [
-                "node",
-                "-e",
-                script,
-                str(WORKFLOW_PATH),
-                json.dumps(run),
-                json.dumps(summary),
-                str(run_index),
-                str(retry_limit),
-            ],
+            ["node", "-e", script, str(WORKFLOW_PATH), json.dumps(run)],
             capture_output=True,
             text=True,
         )
@@ -110,11 +93,14 @@ process.stdout.write(JSON.stringify(output));
                 "Configuration",
                 "Validate template setup",
                 "Run Actor on Apify",
-                "Read RUN-SUMMARY",
-                "Evaluate retry recommendation",
-                "Retry requested?",
-                "Wait before one retry",
+                "Select current run",
+                "Run is terminal?",
+                "Poll same Actor run",
+                "Validate terminal run",
+                "Read factual RUN-SUMMARY",
+                "Validate run status",
                 "Get delivery run jobs",
+                "Reconcile run status and dataset",
                 "Validate and flatten jobs",
                 "Upsert jobs in Google Sheets",
                 "Setup notes",
@@ -134,15 +120,51 @@ process.stdout.write(JSON.stringify(output));
             self.workflow["connections"]["Run Actor on Apify"]["main"][0][0][
                 "node"
             ],
-            "Read RUN-SUMMARY",
+            "Select current run",
         )
         self.assertEqual(
-            self.workflow["connections"]["Retry requested?"]["main"][0][0]["node"],
-            "Wait before one retry",
+            self.workflow["connections"]["Select current run"]["main"][0][0][
+                "node"
+            ],
+            "Run is terminal?",
         )
         self.assertEqual(
-            self.workflow["connections"]["Retry requested?"]["main"][1][0]["node"],
+            self.workflow["connections"]["Run is terminal?"]["main"][0][0][
+                "node"
+            ],
+            "Validate terminal run",
+        )
+        self.assertEqual(
+            self.workflow["connections"]["Run is terminal?"]["main"][1][0][
+                "node"
+            ],
+            "Poll same Actor run",
+        )
+        self.assertEqual(
+            self.workflow["connections"]["Poll same Actor run"]["main"][0][0][
+                "node"
+            ],
+            "Select current run",
+        )
+        self.assertEqual(
+            self.workflow["connections"]["Validate terminal run"]["main"][0][0]["node"],
+            "Read factual RUN-SUMMARY",
+        )
+        self.assertEqual(
+            self.workflow["connections"]["Read factual RUN-SUMMARY"]["main"][0][0]["node"],
+            "Validate run status",
+        )
+        self.assertEqual(
+            self.workflow["connections"]["Validate run status"]["main"][0][0]["node"],
             "Get delivery run jobs",
+        )
+        self.assertEqual(
+            self.workflow["connections"]["Get delivery run jobs"]["main"][0][0]["node"],
+            "Reconcile run status and dataset",
+        )
+        self.assertEqual(
+            self.workflow["connections"]["Reconcile run status and dataset"]["main"][0][0]["node"],
+            "Validate and flatten jobs",
         )
         self.assertEqual(
             self.workflow["connections"]["Validate and flatten jobs"]["main"][0][0]["node"],
@@ -162,22 +184,28 @@ process.stdout.write(JSON.stringify(output));
             params["url"],
         )
         self.assertNotIn("token=", params["url"].lower())
-        body = params["jsonBody"]
-        self.assertIn("nomad-agent-job-search-input-v1", body)
-        self.assertIn("translateToEnglish: false", body)
-        self.assertIn(
-            "aiEnrichment: { enabled: false, accuracy: 'silver' }", body,
+        self.assertEqual(
+            params["jsonBody"],
+            "={{ $('Validate template setup').first().json.actorInput }}",
         )
-        self.assertIn("includeRaw: false", body)
         query = {
             item["name"]: item["value"]
             for item in params["queryParameters"]["parameters"]
         }
-        self.assertEqual(query["waitForFinish"], "300")
+        self.assertNotIn("waitForFinish", query)
         self.assertIn("maxTotalChargeUsd", query)
         self.assertEqual(
             query["build"], "={{ $('Configuration').first().json.actorBuild }}"
         )
+        poll = self.nodes["Poll same Actor run"]["parameters"]
+        self.assertIn("actor-runs/", poll["url"])
+        self.assertIn("$json.id", poll["url"])
+        poll_query = {
+            item["name"]: item["value"]
+            for item in poll["queryParameters"]["parameters"]
+        }
+        self.assertEqual(poll_query, {"waitForFinish": "60"})
+        self.assertEqual(poll["options"]["timeout"], 70_000)
 
         assignments = {
             item["name"]: item["value"]
@@ -185,9 +213,10 @@ process.stdout.write(JSON.stringify(output));
                 "assignments"
             ]
         }
-        self.assertEqual(assignments["actorBuild"], "0.6.19")
+        self.assertEqual(assignments["actorBuild"], "0.6.38")
+        self.assertEqual(assignments["advancedInputJson"], "{}")
         self.assertEqual(assignments["maxItems"], 1)
-        self.assertEqual(assignments["maxRescheduleRetries"], 1)
+        self.assertNotIn("maxRescheduleRetries", assignments)
         self.assertEqual(
             assignments["googleSpreadsheetId"],
             "REPLACE_WITH_GOOGLE_SPREADSHEET_ID",
@@ -198,9 +227,11 @@ process.stdout.write(JSON.stringify(output));
         self.assertEqual(validation["type"], "n8n-nodes-base.code")
         script = validation["parameters"]["jsCode"]
         self.assertIn("REPLACE_WITH_", script)
-        self.assertIn("maxItems must be an integer from 1 to 100", script)
-        self.assertIn("maxRescheduleRetries must be 0 or 1", script)
+        self.assertIn("maxItems must be an integer from 0 to 200", script)
+        self.assertNotIn("maxRescheduleRetries", script)
         self.assertIn("actorBuild must be a pinned version", script)
+        self.assertIn("advancedInputJson", script)
+        self.assertIn("actorInput", script)
         self.assertIn("remote", script)
         self.assertIn("hybrid", script)
         self.assertIn("onsite", script)
@@ -218,64 +249,124 @@ process.stdout.write(JSON.stringify(output));
         config["googleSpreadsheetId"] = "publicTemplateSpreadsheetId123"
         accepted = self.run_validation_node(config)
         self.assertEqual(accepted.returncode, 0, accepted.stderr)
-        self.assertEqual(json.loads(accepted.stdout)[0]["json"], config)
+        value = json.loads(accepted.stdout)[0]["json"]
+        self.assertEqual(
+            {key: value[key] for key in config},
+            config,
+        )
+        self.assertEqual(value["actorInput"], {
+            "schemaVersion": "nomad-agent-job-search-input-v1",
+            "keyword": "software engineer",
+            "location": "United States",
+            "postedWithin": "30d",
+            "workArrangements": [],
+            "maxItems": 1,
+            "translateToEnglish": False,
+            "aiEnrichment": {"enabled": False, "accuracy": "silver"},
+            "includeRaw": False,
+            "dedupe": {"enabled": False, "key": ""},
+            "analyticsEnabled": False,
+        })
 
-    def test_structured_run_summary_retries_once_and_only_when_blocked(self) -> None:
-        not_before = (datetime.now(timezone.utc) + timedelta(seconds=60)).isoformat()
-        retry_summary = {
-            "schemaVersion": "nomad-agent-linkedin-run-summary-v1",
-            "resultState": "blocked",
-            "blocked": True,
-            "reschedule": {
-                "recommended": True,
-                "afterSeconds": 60,
-                "notBefore": not_before,
-            },
+    def test_advanced_input_json_passes_every_current_linkedin_feature(self) -> None:
+        config = {
+            item["name"]: item["value"]
+            for item in self.nodes["Configuration"]["parameters"]["assignments"][
+                "assignments"
+            ]
         }
-        run = {
+        config["googleSpreadsheetId"] = "publicTemplateSpreadsheetId123"
+        advanced = {
+            "keyword": "",
+            "location": "",
+            "linkedinSearch": {
+                "schemaVersion": "nomad-agent-linkedin-search-v1",
+                "searches": [{"keyword": "data engineer", "location": "Spain"}],
+                "orderBy": "newest",
+            },
+            "strictGeography": {
+                "schemaVersion": "nomad-agent-linkedin-strict-geography-v1",
+                "countries": ["ES"],
+                "unknownPolicy": "exclude",
+            },
+            "filters": {
+                "schemaVersion": "nomad-agent-job-filter-v1",
+                "expression": {"field": "data.title", "operator": "contains", "value": "engineer"},
+            },
+            "companyProfileEnrichment": True,
+            "companyFilters": {
+                "schemaVersion": "nomad-agent-linkedin-company-filter-v1",
+                "expression": {"field": "industry", "operator": "contains", "value": "software"},
+                "unknownPolicy": "exclude",
+            },
+            "postedWithin": "7d",
+            "workArrangements": ["remote", "hybrid"],
+            "maxItems": 0,
+            "translateToEnglish": True,
+            "aiEnrichment": {"enabled": True, "accuracy": "gold"},
+            "includeRaw": True,
+            "dedupe": {"enabled": True, "key": "profile-opaque"},
+            "analyticsEnabled": True,
+        }
+        config["advancedInputJson"] = json.dumps(advanced)
+        accepted = self.run_validation_node(config)
+        self.assertEqual(accepted.returncode, 0, accepted.stderr)
+        actor_input = json.loads(accepted.stdout)[0]["json"]["actorInput"]
+        self.assertEqual(set(actor_input), {
+            "schemaVersion", "keyword", "location", "linkedinSearch",
+            "strictGeography", "filters", "companyProfileEnrichment",
+            "companyFilters", "postedWithin", "workArrangements", "maxItems",
+            "translateToEnglish", "aiEnrichment", "includeRaw", "dedupe",
+            "analyticsEnabled",
+        })
+        for key, expected in advanced.items():
+            self.assertEqual(actor_input[key], expected)
+
+    def test_terminal_success_selects_the_exact_run_dataset(self) -> None:
+        completed = self.run_terminal_node({
             "id": "run-1",
             "status": "SUCCEEDED",
+            "exitCode": 0,
+            "buildNumber": "0.6.38",
             "defaultDatasetId": "dataset-1",
-        }
+        })
+        self.assertEqual(completed.returncode, 0, completed.stderr)
+        value = json.loads(completed.stdout)[0]["json"]
+        self.assertEqual(value["runId"], "run-1")
+        self.assertEqual(value["defaultDatasetId"], "dataset-1")
 
-        first = self.run_retry_node(run, retry_summary)
-        self.assertEqual(first.returncode, 0, first.stderr)
-        first_value = json.loads(first.stdout)[0]["json"]
-        self.assertTrue(first_value["retryRecommended"])
-        self.assertGreaterEqual(first_value["retryAfterSeconds"], 1)
-        self.assertLessEqual(first_value["retryAfterSeconds"], 60)
-
-        second = self.run_retry_node(run, retry_summary, run_index=1)
-        self.assertEqual(second.returncode, 0, second.stderr)
-        second_value = json.loads(second.stdout)[0]["json"]
-        self.assertFalse(second_value["retryRecommended"])
-        self.assertTrue(second_value["retryExhausted"])
-
-        no_retry = self.run_retry_node(run, {})
-        self.assertEqual(no_retry.returncode, 0, no_retry.stderr)
-        self.assertFalse(json.loads(no_retry.stdout)[0]["json"]["retryRecommended"])
-
-    def test_failed_run_is_not_blindly_retried(self) -> None:
-        failed = self.run_retry_node(
-            {"id": "run-2", "status": "FAILED"},
-            {},
-        )
+    def test_failed_or_wrong_build_run_is_not_retried_or_delivered(self) -> None:
+        failed = self.run_terminal_node({
+            "id": "run-2", "status": "FAILED", "exitCode": 1,
+            "buildNumber": "0.6.38", "defaultDatasetId": "dataset-2",
+        })
         self.assertNotEqual(failed.returncode, 0)
-        self.assertIn("automatic retry is allowed only after SUCCEEDED", failed.stderr)
+        self.assertIn("no automatic retry is started", failed.stderr)
+        wrong_build = self.run_terminal_node({
+            "id": "run-3", "status": "SUCCEEDED", "exitCode": 0,
+            "buildNumber": "0.6.36", "defaultDatasetId": "dataset-3",
+        })
+        self.assertNotEqual(wrong_build.returncode, 0)
+        self.assertIn("expected 0.6.38", wrong_build.stderr)
 
-    def test_retry_nodes_use_kvs_then_wait_then_fetch_delivery_dataset(self) -> None:
-        summary = self.nodes["Read RUN-SUMMARY"]
-        self.assertIn("key-value-store/records/RUN-SUMMARY", summary["parameters"]["url"])
-        self.assertTrue(
-            summary["parameters"]["options"]["response"]["response"]["neverError"]
+    def test_workflow_uses_factual_summary_and_no_retry_nodes(self) -> None:
+        rendered = json.dumps(self.workflow)
+        self.assertIn("key-value-store/records/RUN-SUMMARY", rendered)
+        self.assertIn("nomad-agent-fleet-run-summary-v2", rendered)
+        self.assertNotIn("reschedule", rendered)
+        self.assertNotIn("maxRescheduleRetries", rendered)
+        self.assertIn("Poll same Actor run", self.nodes)
+        self.assertEqual(
+            self.nodes["Run is terminal?"]["type"], "n8n-nodes-base.if"
         )
-        wait = self.nodes["Wait before one retry"]
-        self.assertEqual(wait["type"], "n8n-nodes-base.wait")
-        self.assertEqual(wait["parameters"]["unit"], "seconds")
-        self.assertIn("retryAfterSeconds", wait["parameters"]["amount"])
         dataset = self.nodes["Get delivery run jobs"]
         self.assertIn("actor-runs/", dataset["parameters"]["url"])
         self.assertIn("/dataset/items", dataset["parameters"]["url"])
+        status = self.nodes["Validate run status"]["parameters"]["jsCode"]
+        self.assertIn("expectedSource = 'linkedin'", status)
+        self.assertIn("no automatic retry", status)
+        reconcile = self.nodes["Reconcile run status and dataset"]["parameters"]["jsCode"]
+        self.assertIn("runSummary.delivered", reconcile)
 
     def test_flattening_and_within_run_dedupe_are_contract_bound(self) -> None:
         flatten = self.nodes["Validate and flatten jobs"]["parameters"]["jsCode"]
@@ -330,7 +421,7 @@ process.stdout.write(JSON.stringify(output));
     def test_basic_template_has_no_notifications_state_or_credentials(self) -> None:
         for name in (
             "Run Actor on Apify",
-            "Read RUN-SUMMARY",
+            "Poll same Actor run",
             "Get delivery run jobs",
         ):
             self.assertNotIn("credentials", self.nodes[name])
@@ -351,7 +442,7 @@ process.stdout.write(JSON.stringify(output));
             "Find and save new LinkedIn jobs to Google Sheets with Apify", listing
         )
         self.assertIn("n8n Cloud", listing)
-        self.assertIn("0.6.19", listing)
+        self.assertIn("0.6.38", listing)
         self.assertIn("The published schedule was not", listing)
         self.assertIn("no separate delivery cache", listing)
 

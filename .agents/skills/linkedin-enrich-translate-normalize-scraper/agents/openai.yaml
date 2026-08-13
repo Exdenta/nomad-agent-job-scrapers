@@ -1,12 +1,12 @@
 interface:
-  display_name: "LinkedIn Normalized Job Search"
-  short_description: "Search LinkedIn jobs with the normalized Apify Actor"
-  default_prompt: "Use $linkedin-enrich-translate-normalize-scraper to search LinkedIn jobs and preserve the normalized contract."
+  display_name: "LinkedIn Jobs — Structured Search"
+  short_description: "Find public LinkedIn jobs as consistent structured records"
+  default_prompt: "Use $linkedin-enrich-translate-normalize-scraper to find LinkedIn jobs and preserve the complete structured record."
 
 dependencies:
   tools:
     - type: "mcp"
       value: "apify"
-      description: "Inspect pricing, poll the LinkedIn Actor run, and retrieve its dataset"
+      description: "Inspect pricing, poll the LinkedIn run, validate factual RUN-SUMMARY, and retrieve its dataset"
       transport: "streamable_http"
-      url: "https://mcp.apify.com?tools=fetch-actor-details,nomad-agent/linkedin-enrich-translate-normalize-scraper"
+      url: "https://mcp.apify.com?tools=fetch-actor-details,call-actor,get-actor-run,get-dataset-items,get-key-value-store-record"

@@ -39,7 +39,7 @@
             {
               "id": "69714966-f468-49d8-b4e6-4e4a3aaec30d",
               "name": "actorBuild",
-              "value": "1.0",
+              "value": "1.0.8",
               "type": "string"
             },
             {
@@ -64,6 +64,12 @@
               "id": "703d4a55-2842-4c5b-990f-25c11892520c",
               "name": "workArrangementsCsv",
               "value": "",
+              "type": "string"
+            },
+            {
+              "id": "e9b3b392-8925-4c10-a358-2426daec45e2",
+              "name": "advancedInputJson",
+              "value": "{}",
               "type": "string"
             },
             {
@@ -106,7 +112,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const cfg = $input.first().json;\nconst text = (value) => typeof value === 'string' ? value.trim() : '';\n\nif (!text(cfg.keyword)) throw new Error('Configuration: keyword is required');\nif (!new Set(['24h', '7d', '30d', 'any']).has(text(cfg.postedWithin))) {\n  throw new Error('Configuration: postedWithin must be 24h, 7d, 30d, or any; EURAXESS has calendar-date granularity');\n}\nconst arrangements = text(cfg.workArrangementsCsv).split(',').map(value => value.trim()).filter(Boolean);\nconst invalidArrangements = arrangements.filter(value => !new Set(['remote', 'hybrid', 'onsite']).has(value));\nif (invalidArrangements.length) throw new Error(`Configuration: invalid work arrangement(s): ${invalidArrangements.join(', ')}`);\nconst maxItems = Number(cfg.maxItems);\nif (!Number.isInteger(maxItems) || maxItems < 1 || maxItems > 200) {\n  throw new Error('Configuration: maxItems must be an integer from 1 to 200');\n}\nconst chargeCap = Number(cfg.maxTotalChargeUsd);\nif (!Number.isFinite(chargeCap) || chargeCap <= 0 || chargeCap > 10) {\n  throw new Error('Configuration: maxTotalChargeUsd must be greater than 0 and at most 10');\n}\nif (!/^\\d+\\.\\d+(?:\\.\\d+)?$/.test(text(cfg.actorBuild))) {\n  throw new Error('Configuration: actorBuild must be a pinned version such as 1.0');\n}\nconst spreadsheetId = text(cfg.googleSpreadsheetId);\nif (spreadsheetId.startsWith('REPLACE_WITH_') || !/^[A-Za-z0-9_-]{20,}$/.test(spreadsheetId)) {\n  throw new Error('Configuration: replace googleSpreadsheetId with the ID from your Google Sheets URL');\n}\nif (!text(cfg.googleSheetName)) throw new Error('Configuration: googleSheetName is required');\nreturn $input.all();"
+        "jsCode": "const cfg = $input.first().json;\nconst text = (value) => typeof value === 'string' ? value.trim() : '';\nlet advancedInput;\ntry {\n  advancedInput = JSON.parse(text(cfg.advancedInputJson) || '{}');\n} catch (error) {\n  throw new Error(`Configuration: advancedInputJson must be valid JSON (${error.message})`);\n}\nif (!advancedInput || typeof advancedInput !== 'object' || Array.isArray(advancedInput)) {\n  throw new Error('Configuration: advancedInputJson must contain one JSON object');\n}\nconst actorInput = {\n  schemaVersion: 'nomad-agent-job-search-input-v1',\n  keyword: text(cfg.keyword),\n  location: text(cfg.location),\n  postedWithin: text(cfg.postedWithin),\n  workArrangements: text(cfg.workArrangementsCsv).split(',').map(value => value.trim()).filter(Boolean),\n  maxItems: Number(cfg.maxItems),\n  translateToEnglish: false,\n  aiEnrichment: { enabled: false, accuracy: 'silver' },\n  includeRaw: false,\n  dedupe: { enabled: false, key: '' },\n  analyticsEnabled: false,\n  ...advancedInput,\n};\nif (actorInput.schemaVersion !== 'nomad-agent-job-search-input-v1') {\n  throw new Error('Configuration: actor input schemaVersion must be nomad-agent-job-search-input-v1');\n}\nif (!new Set(['24h', '7d', '30d', 'any']).has(actorInput.postedWithin)) {\n  throw new Error('Configuration: postedWithin must be 24h, 7d, 30d, or any; EURAXESS has calendar-date granularity');\n}\nif (!Array.isArray(actorInput.workArrangements)) {\n  throw new Error('Configuration: workArrangements must be an array');\n}\nconst invalidArrangements = actorInput.workArrangements.filter(value => !new Set(['remote', 'hybrid', 'onsite']).has(value));\nif (invalidArrangements.length) throw new Error(`Configuration: invalid work arrangement(s): ${invalidArrangements.join(', ')}`);\nif (!Number.isInteger(actorInput.maxItems) || actorInput.maxItems < 0 || actorInput.maxItems > 200) {\n  throw new Error('Configuration: maxItems must be an integer from 0 to 200');\n}\nconst chargeCap = Number(cfg.maxTotalChargeUsd);\nif (!Number.isFinite(chargeCap) || chargeCap <= 0 || chargeCap > 10) {\n  throw new Error('Configuration: maxTotalChargeUsd must be greater than 0 and at most 10');\n}\nif (!/^\\d+\\.\\d+\\.\\d+$/.test(text(cfg.actorBuild))) {\n  throw new Error('Configuration: actorBuild must be a pinned version such as 1.0.8');\n}\nconst spreadsheetId = text(cfg.googleSpreadsheetId);\nif (spreadsheetId.startsWith('REPLACE_WITH_') || !/^[A-Za-z0-9_-]{20,}$/.test(spreadsheetId)) {\n  throw new Error('Configuration: replace googleSpreadsheetId with the ID from your Google Sheets URL');\n}\nif (!text(cfg.googleSheetName)) throw new Error('Configuration: googleSheetName is required');\nreturn [{ json: { ...cfg, actorInput } }];"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -127,10 +133,6 @@
         "queryParameters": {
           "parameters": [
             {
-              "name": "waitForFinish",
-              "value": "1800"
-            },
-            {
               "name": "memory",
               "value": "512"
             },
@@ -147,9 +149,9 @@
         "sendBody": true,
         "contentType": "json",
         "specifyBody": "json",
-        "jsonBody": "={{ { schemaVersion: 'nomad-agent-job-search-input-v1', keyword: $('Configuration').first().json.keyword, location: $('Configuration').first().json.location, postedWithin: $('Configuration').first().json.postedWithin, workArrangements: String($('Configuration').first().json.workArrangementsCsv || '').split(',').map(value => value.trim()).filter(Boolean), maxItems: Number($('Configuration').first().json.maxItems), translateToEnglish: false, aiEnrichment: { enabled: false, accuracy: 'silver' }, includeRaw: false, dedupe: { enabled: false, key: '' }, analyticsEnabled: false } }}",
+        "jsonBody": "={{ $('Validate template setup').first().json.actorInput }}",
         "options": {
-          "timeout": 1800000,
+          "timeout": 30000,
           "response": {
             "response": {
               "responseFormat": "json"
@@ -168,14 +170,26 @@
     },
     {
       "parameters": {
-        "url": "={{ 'https://api.apify.com/v2/actor-runs/' + (($json.data || $json).id) + '/key-value-store/records/RUN-SUMMARY' }}",
+        "jsCode": "const envelope = $input.first().json;\nconst run = envelope && typeof envelope === 'object' ? (envelope.data || envelope) : {};\nconst expectedBuild = String($('Configuration').first().json.actorBuild || '').trim();\nif (run.status !== 'SUCCEEDED' || run.exitCode !== 0) {\n  throw new Error(`Actor run ${run.id || 'unknown'} ended with ${run.status || 'unknown'} (exitCode=${run.exitCode ?? 'unknown'}); no automatic retry is started`);\n}\nif (run.buildNumber !== expectedBuild) {\n  throw new Error(`Actor run used build ${run.buildNumber || 'unknown'}; expected ${expectedBuild}`);\n}\nif (!run.id || !run.defaultDatasetId) {\n  throw new Error('Successful Actor run is missing its run ID or default dataset ID');\n}\nreturn [{ json: {\n  runId: run.id,\n  defaultDatasetId: run.defaultDatasetId,\n  datasetItemCount: run.stats && Number.isInteger(run.stats.datasetItems) ? run.stats.datasetItems : null\n} }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        420,
+        100
+      ],
+      "id": "e5e85dd7-8875-466b-91f9-623572ca8af7",
+      "name": "Validate terminal run"
+    },
+    {
+      "parameters": {
+        "url": "={{ 'https://api.apify.com/v2/actor-runs/' + $json.runId + '/key-value-store/records/RUN-SUMMARY' }}",
         "authentication": "genericCredentialType",
         "genericAuthType": "httpHeaderAuth",
         "options": {
           "timeout": 30000,
           "response": {
             "response": {
-              "neverError": true,
               "responseFormat": "json"
             }
           }
@@ -183,25 +197,19 @@
       },
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
-      "position": [
-        -60,
-        220
-      ],
-      "id": "e5ed27d7-868a-4b65-a84e-468a9fc45b6b",
-      "name": "Read RUN-SUMMARY"
+      "position": [680, 100],
+      "id": "a2d4c0bb-8056-4714-b9e7-0f474eeb189d",
+      "name": "Read factual RUN-SUMMARY"
     },
     {
       "parameters": {
-        "jsCode": "const envelope = $('Run Actor on Apify').item.json;\nconst run = envelope && typeof envelope === 'object' ? (envelope.data || envelope) : {};\nif (run.status !== 'SUCCEEDED' || run.exitCode !== 0) {\n  throw new Error(`Actor run ${run.id || 'unknown'} ended with ${run.status || 'unknown'}`);\n}\nconst summary = $input.first().json;\nif (!summary || summary.schemaVersion !== 'nomad-agent-fleet-run-summary-v2') {\n  throw new Error('Missing or unsupported fleet RUN-SUMMARY');\n}\nif (!new Set(['succeeded', 'empty']).has(summary.status) || summary.partial !== false) {\n  throw new Error(`EURAXESS run is degraded: ${summary.status || 'unknown'}`);\n}\nconst source = summary.sources && summary.sources.euraxess;\nif (!source || source.status !== summary.status) throw new Error('EURAXESS source summary mismatch');\nif (!Number.isInteger(summary.delivered) || summary.delivered !== source.delivered) {\n  throw new Error('RUN-SUMMARY delivered count mismatch');\n}\nreturn [{ json: {\n  runId: run.id,\n  defaultDatasetId: run.defaultDatasetId,\n  summaryStatus: summary.status,\n  delivered: summary.delivered\n} }];"
+        "jsCode": "const envelope = $input.first().json;\nconst summary = envelope && typeof envelope === 'object' ? (envelope.body || envelope.data || envelope) : null;\nconst expectedSource = 'euraxess';\nconst exactKeys = (value, expected, path) => {\n  if (!value || typeof value !== 'object' || Array.isArray(value)) throw new Error(`${path} must be an object`);\n  const actual = Object.keys(value).sort();\n  const wanted = [...expected].sort();\n  if (JSON.stringify(actual) !== JSON.stringify(wanted)) throw new Error(`${path} is not a closed fleet-v2 object`);\n};\nconst count = (value, path) => {\n  if (!Number.isInteger(value) || value < 0 || value > 2147483647) throw new Error(`${path} must be a nonnegative integer`);\n  return value;\n};\nconst statuses = new Set(['succeeded', 'empty', 'partial', 'failed', 'deadline']);\nexactKeys(summary, ['schemaVersion', 'status', 'startedAt', 'finishedAt', 'partial', 'truncated', 'delivered', 'sources'], 'RUN-SUMMARY');\nif (summary.schemaVersion !== 'nomad-agent-fleet-run-summary-v2') throw new Error(`Unsupported RUN-SUMMARY schema: ${summary.schemaVersion}`);\nif (!statuses.has(summary.status)) throw new Error('RUN-SUMMARY status is unsupported');\nif (!Number.isFinite(Date.parse(summary.startedAt)) || !Number.isFinite(Date.parse(summary.finishedAt)) || Date.parse(summary.finishedAt) < Date.parse(summary.startedAt)) throw new Error('RUN-SUMMARY timestamps are invalid');\nif (typeof summary.partial !== 'boolean' || typeof summary.truncated !== 'boolean') throw new Error('RUN-SUMMARY flags must be boolean');\nconst delivered = count(summary.delivered, 'RUN-SUMMARY.delivered');\nexactKeys(summary.sources, [expectedSource], 'RUN-SUMMARY.sources');\nconst source = summary.sources[expectedSource];\nexactKeys(source, ['status', 'searchRequests', 'cardsSeen', 'detailsCompleted', 'normalized', 'afterFilters', 'deliveryEligible', 'delivered', 'stale', 'blocked', 'stopReason', 'errors'], `RUN-SUMMARY.sources.${expectedSource}`);\nif (!statuses.has(source.status)) throw new Error('RUN-SUMMARY source status is unsupported');\ncount(source.searchRequests, 'source.searchRequests');\nconst funnel = ['cardsSeen', 'detailsCompleted', 'normalized', 'afterFilters', 'deliveryEligible', 'delivered'].map(name => count(source[name], `source.${name}`));\nif (funnel.some((value, index) => index > 0 && value > funnel[index - 1])) throw new Error('RUN-SUMMARY source funnel is not monotonic');\nif (source.delivered !== delivered) throw new Error('RUN-SUMMARY delivered total does not match its source');\nif (typeof source.stale !== 'boolean' || typeof source.blocked !== 'boolean' || !Array.isArray(source.errors) || source.errors.length > 32) throw new Error('RUN-SUMMARY source degradation fields are invalid');\nif (!['succeeded', 'empty'].includes(summary.status)) throw new Error(`RUN-SUMMARY status is ${summary.status}; dataset delivery is stopped and no automatic retry is started`);\nif (summary.partial) throw new Error('Deliverable RUN-SUMMARY cannot be partial');\nreturn [{ json: { ...$('Validate terminal run').first().json, runSummary: summary } }];"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [
-        200,
-        220
-      ],
-      "id": "e5e85dd7-8875-466b-91f9-623572ca8af7",
-      "name": "Validate fleet RUN-SUMMARY"
+      "position": [940, 100],
+      "id": "9c3ee62d-0420-485e-bb77-1b085f94a0bd",
+      "name": "Validate run status"
     },
     {
       "parameters": {
@@ -237,11 +245,21 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        460,
-        220
+        680,
+        100
       ],
       "id": "25ce1070-541d-4879-8da5-3b12b67af617",
       "name": "Get delivery run jobs"
+    },
+    {
+      "parameters": {
+        "jsCode": "const incoming = $input.all();\nlet count = 0;\nfor (const item of incoming) {\n  const value = item.json;\n  if (Array.isArray(value)) count += value.length;\n  else if (value && Array.isArray(value.body)) count += value.body.length;\n  else if (value && value.schemaVersion === 'nomad-agent-job-v1') count += 1;\n  else if (value && Object.keys(value).length === 0) continue;\n  else throw new Error('Dataset response shape is invalid');\n}\nconst expected = $('Validate run status').first().json.runSummary.delivered;\nif (count !== expected) throw new Error(`RUN-SUMMARY delivered=${expected} but fetched dataset contains ${count} jobs`);\nreturn incoming;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1460, 100],
+      "id": "6eb4e66a-893c-48bb-a0d9-2b232441d2a6",
+      "name": "Reconcile run status and dataset"
     },
     {
       "parameters": {
@@ -250,8 +268,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        720,
-        220
+        940,
+        100
       ],
       "id": "5648a0ca-cb6a-40e0-b99c-6d747ef2b2c2",
       "name": "Validate and flatten jobs"
@@ -605,15 +623,15 @@
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.7,
       "position": [
-        980,
-        220
+        1200,
+        100
       ],
       "id": "22ed46d8-9cc5-4263-8657-e7518f2e54b4",
       "name": "Upsert jobs in Google Sheets"
     },
     {
       "parameters": {
-        "content": "## EURAXESS private Actor setup\n\n1. Verify the deployed Actor exposes strict input `nomad-agent-job-search-input-v1`, output `nomad-agent-job-v1`, and `RUN-SUMMARY` v2 before enabling this workflow.\n2. Add one scoped n8n Header Auth credential to all three Apify HTTP nodes: `Authorization: Bearer YOUR_APIFY_TOKEN`.\n3. Import `google-sheets-columns.csv` into a `Jobs` sheet and select your Google Sheets credential.\n4. Replace the spreadsheet placeholder, keep `maxItems=5`, optional AI/translation off, and cross-run dedupe disabled for the smoke.\n5. EURAXESS rejects `postedWithin=1h`; `24h` means the current and previous UTC calendar date.\n6. The fleet-v2 summary reports facts and never authorizes an automatic retry. Failed, partial, blocked, or deadline runs stop before Sheets writes.\n7. The Actor is private unless your Apify account has access. This template contains no credentials and is not proof of live deployment.",
+        "content": "## EURAXESS private Actor setup\n\n1. This workflow pins exact build `1.0.8`. Verify the deployed Actor exposes strict input `nomad-agent-job-search-input-v1`, factual status `nomad-agent-fleet-run-summary-v2`, and output `nomad-agent-job-v1` before enabling it.\n2. Add one scoped n8n Header Auth credential to all four Apify HTTP nodes: `Authorization: Bearer YOUR_APIFY_TOKEN`.\n3. Import `google-sheets-columns.csv` into a `Jobs` sheet and select your Google Sheets credential.\n4. Replace the spreadsheet placeholder, keep `maxItems=5`, optional AI/translation off, and cross-run dedupe disabled for the smoke. Use `advancedInputJson` for `euraxessSearch`, filters, enrichment, translation, raw output, dedupe, analytics, or any shared override.\n5. EURAXESS rejects `postedWithin=1h`; `24h` means the current and previous UTC calendar date.\n6. The workflow polls only the original run ID. Delivery requires terminal `SUCCEEDED`, exit code 0, the exact pinned build, a valid factual `RUN-SUMMARY` status of `succeeded` or `empty`, and a EURAXESS dataset whose row count matches `delivered`. It never starts an automatic paid retry.\n7. The Actor is private unless your Apify account has access. This template contains no credentials and is not proof of a live destination test.",
         "height": 390,
         "width": 700,
         "color": 5
@@ -626,6 +644,85 @@
       ],
       "id": "c516286b-7f1d-4aa2-b299-ce5b6b362819",
       "name": "Setup notes"
+    },
+    {
+      "parameters": {
+        "jsCode": "const envelope = $input.first().json;\nconst run = envelope && typeof envelope === 'object' ? (envelope.data || envelope) : {};\nif (!run.id || typeof run.status !== 'string') {\n  throw new Error('Apify returned no run ID or run status');\n}\nreturn [{ json: run }];"
+      },
+      "id": "072373a3-78fb-467e-aefd-b39755c7aa23",
+      "name": "Select current run",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -80,
+        220
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "68e33744-5298-4977-a119-18988cfa7cc7-condition",
+              "leftValue": "={{ ['SUCCEEDED', 'FAILED', 'ABORTED', 'TIMED-OUT'].includes($json.status) }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "68e33744-5298-4977-a119-18988cfa7cc7",
+      "name": "Run is terminal?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        160,
+        220
+      ]
+    },
+    {
+      "parameters": {
+        "url": "={{ 'https://api.apify.com/v2/actor-runs/' + $json.id }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "waitForFinish",
+              "value": "60"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 70000,
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          }
+        }
+      },
+      "id": "1fc4a22a-6bbf-471e-8b7b-f43b73ec83e7",
+      "name": "Poll same Actor run",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        420,
+        380
+      ]
     }
   ],
   "connections": {
@@ -677,18 +774,7 @@
       "main": [
         [
           {
-            "node": "Read RUN-SUMMARY",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Read RUN-SUMMARY": {
-      "main": [
-        [
-          {
-            "node": "Validate fleet RUN-SUMMARY",
+            "node": "Select current run",
             "type": "main",
             "index": 0
           }
@@ -696,6 +782,17 @@
       ]
     },
     "Get delivery run jobs": {
+      "main": [
+        [
+          {
+            "node": "Reconcile run status and dataset",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Reconcile run status and dataset": {
       "main": [
         [
           {
@@ -717,11 +814,73 @@
         ]
       ]
     },
-    "Validate fleet RUN-SUMMARY": {
+    "Validate terminal run": {
+      "main": [
+        [
+          {
+            "node": "Read factual RUN-SUMMARY",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read factual RUN-SUMMARY": {
+      "main": [
+        [
+          {
+            "node": "Validate run status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate run status": {
       "main": [
         [
           {
             "node": "Get delivery run jobs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Select current run": {
+      "main": [
+        [
+          {
+            "node": "Run is terminal?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Run is terminal?": {
+      "main": [
+        [
+          {
+            "node": "Validate terminal run",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Poll same Actor run",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Poll same Actor run": {
+      "main": [
+        [
+          {
+            "node": "Select current run",
             "type": "main",
             "index": 0
           }

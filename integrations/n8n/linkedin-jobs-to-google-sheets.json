@@ -39,7 +39,7 @@
             {
               "id": "69714966-f468-49d8-b4e6-4e4a3aaec30d",
               "name": "actorBuild",
-              "value": "0.6.19",
+              "value": "0.6.38",
               "type": "string"
             },
             {
@@ -67,6 +67,12 @@
               "type": "string"
             },
             {
+              "id": "e9b3b392-8925-4c10-a358-2426daec45e2",
+              "name": "advancedInputJson",
+              "value": "{}",
+              "type": "string"
+            },
+            {
               "id": "6f1599da-7316-4d08-ad31-b62d89bc2fa8",
               "name": "maxItems",
               "value": 1,
@@ -76,12 +82,6 @@
               "id": "35653c02-77ea-42e2-af7a-cf079e799c47",
               "name": "maxTotalChargeUsd",
               "value": 0.1,
-              "type": "number"
-            },
-            {
-              "id": "cf9fcf08-ad3e-45ce-b5a3-b7182bafaf01",
-              "name": "maxRescheduleRetries",
-              "value": 1,
               "type": "number"
             },
             {
@@ -112,7 +112,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const cfg = $input.first().json;\nconst text = (value) => typeof value === 'string' ? value.trim() : '';\n\nif (!text(cfg.keyword)) throw new Error('Configuration: keyword is required');\nif (!new Set(['1h', '24h', '7d', '30d', 'any']).has(text(cfg.postedWithin))) {\n  throw new Error('Configuration: postedWithin must be 1h, 24h, 7d, 30d, or any');\n}\nconst arrangements = text(cfg.workArrangementsCsv).split(',').map(value => value.trim()).filter(Boolean);\nconst invalidArrangements = arrangements.filter(value => !new Set(['remote', 'hybrid', 'onsite']).has(value));\nif (invalidArrangements.length) throw new Error(`Configuration: invalid work arrangement(s): ${invalidArrangements.join(', ')}`);\nconst maxItems = Number(cfg.maxItems);\nif (!Number.isInteger(maxItems) || maxItems < 1 || maxItems > 100) {\n  throw new Error('Configuration: maxItems must be an integer from 1 to 100');\n}\nconst chargeCap = Number(cfg.maxTotalChargeUsd);\nif (!Number.isFinite(chargeCap) || chargeCap <= 0 || chargeCap > 10) {\n  throw new Error('Configuration: maxTotalChargeUsd must be greater than 0 and at most 10');\n}\nconst retryLimit = Number(cfg.maxRescheduleRetries);\nif (!Number.isInteger(retryLimit) || retryLimit < 0 || retryLimit > 1) {\n  throw new Error('Configuration: maxRescheduleRetries must be 0 or 1');\n}\nif (!/^\\d+\\.\\d+\\.\\d+$/.test(text(cfg.actorBuild))) {\n  throw new Error('Configuration: actorBuild must be a pinned version such as 0.6.19');\n}\nconst spreadsheetId = text(cfg.googleSpreadsheetId);\nif (spreadsheetId.startsWith('REPLACE_WITH_') || !/^[A-Za-z0-9_-]{20,}$/.test(spreadsheetId)) {\n  throw new Error('Configuration: replace googleSpreadsheetId with the ID from your Google Sheets URL');\n}\nif (!text(cfg.googleSheetName)) throw new Error('Configuration: googleSheetName is required');\nreturn $input.all();"
+        "jsCode": "const cfg = $input.first().json;\nconst text = (value) => typeof value === 'string' ? value.trim() : '';\nlet advancedInput;\ntry {\n  advancedInput = JSON.parse(text(cfg.advancedInputJson) || '{}');\n} catch (error) {\n  throw new Error(`Configuration: advancedInputJson must be valid JSON (${error.message})`);\n}\nif (!advancedInput || typeof advancedInput !== 'object' || Array.isArray(advancedInput)) {\n  throw new Error('Configuration: advancedInputJson must contain one JSON object');\n}\nconst actorInput = {\n  schemaVersion: 'nomad-agent-job-search-input-v1',\n  keyword: text(cfg.keyword),\n  location: text(cfg.location),\n  postedWithin: text(cfg.postedWithin),\n  workArrangements: text(cfg.workArrangementsCsv).split(',').map(value => value.trim()).filter(Boolean),\n  maxItems: Number(cfg.maxItems),\n  translateToEnglish: false,\n  aiEnrichment: { enabled: false, accuracy: 'silver' },\n  includeRaw: false,\n  dedupe: { enabled: false, key: '' },\n  analyticsEnabled: false,\n  ...advancedInput,\n};\nif (actorInput.schemaVersion !== 'nomad-agent-job-search-input-v1') {\n  throw new Error('Configuration: actor input schemaVersion must be nomad-agent-job-search-input-v1');\n}\nif (!new Set(['1h', '24h', '7d', '30d', 'any']).has(actorInput.postedWithin)) {\n  throw new Error('Configuration: postedWithin must be 1h, 24h, 7d, 30d, or any');\n}\nif (!Array.isArray(actorInput.workArrangements)) {\n  throw new Error('Configuration: workArrangements must be an array');\n}\nconst invalidArrangements = actorInput.workArrangements.filter(value => !new Set(['remote', 'hybrid', 'onsite']).has(value));\nif (invalidArrangements.length) throw new Error(`Configuration: invalid work arrangement(s): ${invalidArrangements.join(', ')}`);\nif (!Number.isInteger(actorInput.maxItems) || actorInput.maxItems < 0 || actorInput.maxItems > 200) {\n  throw new Error('Configuration: maxItems must be an integer from 0 to 200');\n}\nconst chargeCap = Number(cfg.maxTotalChargeUsd);\nif (!Number.isFinite(chargeCap) || chargeCap <= 0 || chargeCap > 10) {\n  throw new Error('Configuration: maxTotalChargeUsd must be greater than 0 and at most 10');\n}\nif (!/^\\d+\\.\\d+\\.\\d+$/.test(text(cfg.actorBuild))) {\n  throw new Error('Configuration: actorBuild must be a pinned version such as 0.6.38');\n}\nconst spreadsheetId = text(cfg.googleSpreadsheetId);\nif (spreadsheetId.startsWith('REPLACE_WITH_') || !/^[A-Za-z0-9_-]{20,}$/.test(spreadsheetId)) {\n  throw new Error('Configuration: replace googleSpreadsheetId with the ID from your Google Sheets URL');\n}\nif (!text(cfg.googleSheetName)) throw new Error('Configuration: googleSheetName is required');\nreturn [{ json: { ...cfg, actorInput } }];"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -133,10 +133,6 @@
         "queryParameters": {
           "parameters": [
             {
-              "name": "waitForFinish",
-              "value": "300"
-            },
-            {
               "name": "memory",
               "value": "512"
             },
@@ -153,9 +149,9 @@
         "sendBody": true,
         "contentType": "json",
         "specifyBody": "json",
-        "jsonBody": "={{ { schemaVersion: 'nomad-agent-job-search-input-v1', keyword: $('Configuration').first().json.keyword, location: $('Configuration').first().json.location, postedWithin: $('Configuration').first().json.postedWithin, workArrangements: String($('Configuration').first().json.workArrangementsCsv || '').split(',').map(value => value.trim()).filter(Boolean), maxItems: Number($('Configuration').first().json.maxItems), translateToEnglish: false, aiEnrichment: { enabled: false, accuracy: 'silver' }, includeRaw: false, dedupe: { enabled: false, key: '' }, analyticsEnabled: false } }}",
+        "jsonBody": "={{ $('Validate template setup').first().json.actorInput }}",
         "options": {
-          "timeout": 300000,
+          "timeout": 30000,
           "response": {
             "response": {
               "responseFormat": "json"
@@ -174,14 +170,26 @@
     },
     {
       "parameters": {
-        "url": "={{ 'https://api.apify.com/v2/actor-runs/' + (($json.data || $json).id) + '/key-value-store/records/RUN-SUMMARY' }}",
+        "jsCode": "const envelope = $input.first().json;\nconst run = envelope && typeof envelope === 'object' ? (envelope.data || envelope) : {};\nconst expectedBuild = String($('Configuration').first().json.actorBuild || '').trim();\nif (run.status !== 'SUCCEEDED' || run.exitCode !== 0) {\n  throw new Error(`Actor run ${run.id || 'unknown'} ended with ${run.status || 'unknown'} (exitCode=${run.exitCode ?? 'unknown'}); no automatic retry is started`);\n}\nif (run.buildNumber !== expectedBuild) {\n  throw new Error(`Actor run used build ${run.buildNumber || 'unknown'}; expected ${expectedBuild}`);\n}\nif (!run.id || !run.defaultDatasetId) {\n  throw new Error('Successful Actor run is missing its run ID or default dataset ID');\n}\nreturn [{ json: {\n  runId: run.id,\n  defaultDatasetId: run.defaultDatasetId,\n  datasetItemCount: run.stats && Number.isInteger(run.stats.datasetItems) ? run.stats.datasetItems : null\n} }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        420,
+        100
+      ],
+      "id": "e5e85dd7-8875-466b-91f9-623572ca8af7",
+      "name": "Validate terminal run"
+    },
+    {
+      "parameters": {
+        "url": "={{ 'https://api.apify.com/v2/actor-runs/' + $json.runId + '/key-value-store/records/RUN-SUMMARY' }}",
         "authentication": "genericCredentialType",
         "genericAuthType": "httpHeaderAuth",
         "options": {
           "timeout": 30000,
           "response": {
             "response": {
-              "neverError": true,
               "responseFormat": "json"
             }
           }
@@ -189,74 +197,19 @@
       },
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
-      "position": [
-        -60,
-        220
-      ],
-      "id": "e5ed27d7-868a-4b65-a84e-468a9fc45b6b",
-      "name": "Read RUN-SUMMARY"
+      "position": [680, 100],
+      "id": "a2d4c0bb-8056-4714-b9e7-0f474eeb189d",
+      "name": "Read factual RUN-SUMMARY"
     },
     {
       "parameters": {
-        "jsCode": "const envelope = $('Run Actor on Apify').item.json;\nconst run = envelope && typeof envelope === 'object' ? (envelope.data || envelope) : {};\nif (run.status !== 'SUCCEEDED') {\n  throw new Error(`Actor run ${run.id || 'unknown'} ended with ${run.status || 'unknown'}; automatic retry is allowed only after SUCCEEDED`);\n}\n\nconst summary = $input.first().json;\nconst retryLimit = Number($('Configuration').first().json.maxRescheduleRetries);\nlet retryRequested = false;\nlet retryAfterSeconds = 0;\nlet retryNotBefore = null;\n\nif (summary && summary.schemaVersion !== undefined) {\n  if (summary.schemaVersion !== 'nomad-agent-linkedin-run-summary-v1') {\n    throw new Error(`Unsupported RUN-SUMMARY schema: ${summary.schemaVersion}`);\n  }\n  if (typeof summary.blocked !== 'boolean' || !summary.reschedule || typeof summary.reschedule !== 'object') {\n    throw new Error('RUN-SUMMARY has invalid retry fields');\n  }\n  if (typeof summary.reschedule.recommended !== 'boolean') {\n    throw new Error('RUN-SUMMARY reschedule.recommended must be boolean');\n  }\n  if (summary.reschedule.recommended) {\n    const afterSeconds = summary.reschedule.afterSeconds;\n    const notBeforeMs = Date.parse(summary.reschedule.notBefore);\n    if (summary.blocked !== true) throw new Error('Recommended retry requires RUN-SUMMARY blocked=true');\n    if (!Number.isInteger(afterSeconds) || afterSeconds < 1 || afterSeconds > 3600) {\n      throw new Error('RUN-SUMMARY reschedule.afterSeconds must be an integer from 1 to 3600');\n    }\n    if (!Number.isFinite(notBeforeMs)) throw new Error('RUN-SUMMARY reschedule.notBefore must be an ISO date-time');\n    retryRequested = true;\n    retryAfterSeconds = Math.min(afterSeconds, Math.max(0, Math.ceil((notBeforeMs - Date.now()) / 1000)));\n    retryNotBefore = summary.reschedule.notBefore;\n  }\n}\n\nconst retryRecommended = retryRequested && $runIndex < retryLimit;\nreturn [{ json: {\n  runId: run.id,\n  defaultDatasetId: run.defaultDatasetId,\n  retryRecommended,\n  retryAfterSeconds,\n  retryNotBefore,\n  retryAttempt: $runIndex,\n  retryExhausted: retryRequested && !retryRecommended,\n  resultState: summary && summary.schemaVersion === 'nomad-agent-linkedin-run-summary-v1' ? summary.resultState : null\n} }];"
+        "jsCode": "const envelope = $input.first().json;\nconst summary = envelope && typeof envelope === 'object' ? (envelope.body || envelope.data || envelope) : null;\nconst expectedSource = 'linkedin';\nconst exactKeys = (value, expected, path) => {\n  if (!value || typeof value !== 'object' || Array.isArray(value)) throw new Error(`${path} must be an object`);\n  const actual = Object.keys(value).sort();\n  const wanted = [...expected].sort();\n  if (JSON.stringify(actual) !== JSON.stringify(wanted)) throw new Error(`${path} is not a closed fleet-v2 object`);\n};\nconst count = (value, path) => {\n  if (!Number.isInteger(value) || value < 0 || value > 2147483647) throw new Error(`${path} must be a nonnegative integer`);\n  return value;\n};\nconst statuses = new Set(['succeeded', 'empty', 'partial', 'failed', 'deadline']);\nexactKeys(summary, ['schemaVersion', 'status', 'startedAt', 'finishedAt', 'partial', 'truncated', 'delivered', 'sources'], 'RUN-SUMMARY');\nif (summary.schemaVersion !== 'nomad-agent-fleet-run-summary-v2') throw new Error(`Unsupported RUN-SUMMARY schema: ${summary.schemaVersion}`);\nif (!statuses.has(summary.status)) throw new Error('RUN-SUMMARY status is unsupported');\nif (!Number.isFinite(Date.parse(summary.startedAt)) || !Number.isFinite(Date.parse(summary.finishedAt)) || Date.parse(summary.finishedAt) < Date.parse(summary.startedAt)) throw new Error('RUN-SUMMARY timestamps are invalid');\nif (typeof summary.partial !== 'boolean' || typeof summary.truncated !== 'boolean') throw new Error('RUN-SUMMARY flags must be boolean');\nconst delivered = count(summary.delivered, 'RUN-SUMMARY.delivered');\nexactKeys(summary.sources, [expectedSource], 'RUN-SUMMARY.sources');\nconst source = summary.sources[expectedSource];\nexactKeys(source, ['status', 'searchRequests', 'cardsSeen', 'detailsCompleted', 'normalized', 'afterFilters', 'deliveryEligible', 'delivered', 'stale', 'blocked', 'stopReason', 'errors'], `RUN-SUMMARY.sources.${expectedSource}`);\nif (!statuses.has(source.status)) throw new Error('RUN-SUMMARY source status is unsupported');\ncount(source.searchRequests, 'source.searchRequests');\nconst funnel = ['cardsSeen', 'detailsCompleted', 'normalized', 'afterFilters', 'deliveryEligible', 'delivered'].map(name => count(source[name], `source.${name}`));\nif (funnel.some((value, index) => index > 0 && value > funnel[index - 1])) throw new Error('RUN-SUMMARY source funnel is not monotonic');\nif (source.delivered !== delivered) throw new Error('RUN-SUMMARY delivered total does not match its source');\nif (typeof source.stale !== 'boolean' || typeof source.blocked !== 'boolean' || !Array.isArray(source.errors) || source.errors.length > 32) throw new Error('RUN-SUMMARY source degradation fields are invalid');\nif (!['succeeded', 'empty'].includes(summary.status)) throw new Error(`RUN-SUMMARY status is ${summary.status}; dataset delivery is stopped and no automatic retry is started`);\nif (summary.partial) throw new Error('Deliverable RUN-SUMMARY cannot be partial');\nreturn [{ json: { ...$('Validate terminal run').first().json, runSummary: summary } }];"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [
-        200,
-        220
-      ],
-      "id": "e5e85dd7-8875-466b-91f9-623572ca8af7",
-      "name": "Evaluate retry recommendation"
-    },
-    {
-      "parameters": {
-        "conditions": {
-          "options": {
-            "caseSensitive": true,
-            "leftValue": "",
-            "typeValidation": "strict",
-            "version": 2
-          },
-          "conditions": [
-            {
-              "id": "c2f3e22f-8b06-419c-b588-f728576f4a1e",
-              "leftValue": "={{ $json.retryRecommended }}",
-              "rightValue": true,
-              "operator": {
-                "type": "boolean",
-                "operation": "true",
-                "singleValue": true
-              }
-            }
-          ],
-          "combinator": "and"
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.if",
-      "typeVersion": 2.2,
-      "position": [
-        460,
-        220
-      ],
-      "id": "d59ef0bb-cbec-4f33-bcfb-dfdb532f0b75",
-      "name": "Retry requested?"
-    },
-    {
-      "parameters": {
-        "amount": "={{ $json.retryAfterSeconds }}",
-        "unit": "seconds"
-      },
-      "type": "n8n-nodes-base.wait",
-      "typeVersion": 1.1,
-      "position": [
-        460,
-        20
-      ],
-      "id": "96844cef-9280-467e-85f3-96c88ea21edc",
-      "name": "Wait before one retry",
-      "webhookId": "6b673c65-a169-47e1-a7bd-7cb3cc6630d7"
+      "position": [940, 100],
+      "id": "9c3ee62d-0420-485e-bb77-1b085f94a0bd",
+      "name": "Validate run status"
     },
     {
       "parameters": {
@@ -292,11 +245,21 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        720,
-        320
+        680,
+        100
       ],
       "id": "25ce1070-541d-4879-8da5-3b12b67af617",
       "name": "Get delivery run jobs"
+    },
+    {
+      "parameters": {
+        "jsCode": "const incoming = $input.all();\nlet count = 0;\nfor (const item of incoming) {\n  const value = item.json;\n  if (Array.isArray(value)) count += value.length;\n  else if (value && Array.isArray(value.body)) count += value.body.length;\n  else if (value && value.schemaVersion === 'nomad-agent-job-v1') count += 1;\n  else if (value && Object.keys(value).length === 0) continue;\n  else throw new Error('Dataset response shape is invalid');\n}\nconst expected = $('Validate run status').first().json.runSummary.delivered;\nif (count !== expected) throw new Error(`RUN-SUMMARY delivered=${expected} but fetched dataset contains ${count} jobs`);\nreturn incoming;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1460, 100],
+      "id": "6eb4e66a-893c-48bb-a0d9-2b232441d2a6",
+      "name": "Reconcile run status and dataset"
     },
     {
       "parameters": {
@@ -305,8 +268,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        980,
-        320
+        940,
+        100
       ],
       "id": "5648a0ca-cb6a-40e0-b99c-6d747ef2b2c2",
       "name": "Validate and flatten jobs"
@@ -331,38 +294,326 @@
             "jobKey"
           ],
           "schema": [
-            { "id": "schemaVersion", "displayName": "schemaVersion", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true, "removed": false },
-            { "id": "jobKey", "displayName": "jobKey", "required": false, "defaultMatch": true, "display": true, "type": "string", "canBeUsedToMatch": true, "removed": false },
-            { "id": "source", "displayName": "source", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true, "removed": false },
-            { "id": "identityExternalId", "displayName": "identityExternalId", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true, "removed": false },
-            { "id": "jobUrl", "displayName": "jobUrl", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true, "removed": false },
-            { "id": "title", "displayName": "title", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true, "removed": false },
-            { "id": "companyName", "displayName": "companyName", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true, "removed": false },
-            { "id": "companySourceId", "displayName": "companySourceId", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true, "removed": false },
-            { "id": "companyUrl", "displayName": "companyUrl", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true, "removed": false },
-            { "id": "locationText", "displayName": "locationText", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true, "removed": false },
-            { "id": "countryCode", "displayName": "countryCode", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true, "removed": false },
-            { "id": "city", "displayName": "city", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true, "removed": false },
-            { "id": "region", "displayName": "region", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true, "removed": false },
-            { "id": "workArrangements", "displayName": "workArrangements", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true, "removed": false },
-            { "id": "workSchedules", "displayName": "workSchedules", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true, "removed": false },
-            { "id": "contractTypes", "displayName": "contractTypes", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true, "removed": false },
-            { "id": "postedAt", "displayName": "postedAt", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true, "removed": false },
-            { "id": "applicationDeadline", "displayName": "applicationDeadline", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true, "removed": false },
-            { "id": "applicationUrl", "displayName": "applicationUrl", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true, "removed": false },
-            { "id": "applicationEmail", "displayName": "applicationEmail", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true, "removed": false },
-            { "id": "directApply", "displayName": "directApply", "required": false, "defaultMatch": false, "display": true, "type": "boolean", "canBeUsedToMatch": true, "removed": false },
-            { "id": "seniorityLevels", "displayName": "seniorityLevels", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true, "removed": false },
-            { "id": "industries", "displayName": "industries", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true, "removed": false },
-            { "id": "jobFunctions", "displayName": "jobFunctions", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true, "removed": false },
-            { "id": "salaryCurrency", "displayName": "salaryCurrency", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true, "removed": false },
-            { "id": "salaryExact", "displayName": "salaryExact", "required": false, "defaultMatch": false, "display": true, "type": "number", "canBeUsedToMatch": true, "removed": false },
-            { "id": "salaryMinimum", "displayName": "salaryMinimum", "required": false, "defaultMatch": false, "display": true, "type": "number", "canBeUsedToMatch": true, "removed": false },
-            { "id": "salaryMaximum", "displayName": "salaryMaximum", "required": false, "defaultMatch": false, "display": true, "type": "number", "canBeUsedToMatch": true, "removed": false },
-            { "id": "salaryPeriod", "displayName": "salaryPeriod", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true, "removed": false },
-            { "id": "salaryRaw", "displayName": "salaryRaw", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true, "removed": false },
-            { "id": "descriptionText", "displayName": "descriptionText", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true, "removed": false },
-            { "id": "llmStatus", "displayName": "llmStatus", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true, "removed": false }
+            {
+              "id": "schemaVersion",
+              "displayName": "schemaVersion",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "jobKey",
+              "displayName": "jobKey",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "source",
+              "displayName": "source",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "identityExternalId",
+              "displayName": "identityExternalId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "jobUrl",
+              "displayName": "jobUrl",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "title",
+              "displayName": "title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "companyName",
+              "displayName": "companyName",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "companySourceId",
+              "displayName": "companySourceId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "companyUrl",
+              "displayName": "companyUrl",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "locationText",
+              "displayName": "locationText",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "countryCode",
+              "displayName": "countryCode",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "city",
+              "displayName": "city",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "region",
+              "displayName": "region",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "workArrangements",
+              "displayName": "workArrangements",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "workSchedules",
+              "displayName": "workSchedules",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "contractTypes",
+              "displayName": "contractTypes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "postedAt",
+              "displayName": "postedAt",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "applicationDeadline",
+              "displayName": "applicationDeadline",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "applicationUrl",
+              "displayName": "applicationUrl",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "applicationEmail",
+              "displayName": "applicationEmail",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "directApply",
+              "displayName": "directApply",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "boolean",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "seniorityLevels",
+              "displayName": "seniorityLevels",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "industries",
+              "displayName": "industries",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "jobFunctions",
+              "displayName": "jobFunctions",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "salaryCurrency",
+              "displayName": "salaryCurrency",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "salaryExact",
+              "displayName": "salaryExact",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "salaryMinimum",
+              "displayName": "salaryMinimum",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "salaryMaximum",
+              "displayName": "salaryMaximum",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "salaryPeriod",
+              "displayName": "salaryPeriod",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "salaryRaw",
+              "displayName": "salaryRaw",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "descriptionText",
+              "displayName": "descriptionText",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "llmStatus",
+              "displayName": "llmStatus",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
           ],
           "attemptToConvertTypes": false,
           "convertFieldsToString": true
@@ -372,15 +623,15 @@
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.7,
       "position": [
-        1240,
-        320
+        1200,
+        100
       ],
       "id": "22ed46d8-9cc5-4263-8657-e7518f2e54b4",
       "name": "Upsert jobs in Google Sheets"
     },
     {
       "parameters": {
-        "content": "## Public template setup\n\n1. Create a scoped Apify token and add the same n8n Header Auth credential to all three Apify HTTP nodes: `Authorization` = `Bearer YOUR_APIFY_TOKEN`.\n2. Import `google-sheets-columns.csv` into a sheet named `Jobs`.\n3. Select your Google Sheets credential on **Upsert jobs in Google Sheets**.\n4. Replace the Google spreadsheet placeholder in **Configuration**.\n5. Run the one-job smoke test manually. Build `0.6.19` is pinned for the already live-tested normal-delivery path; it does not persist `RUN-SUMMARY`. Pin a later summary-capable build only after deploying and smoke-testing it.\n6. A valid structured blocked result waits until the Actor's `notBefore` time and retries once. That second run can incur the same charge cap. Empty or failed runs are never blindly retried.\n7. Increase `maxItems` and adjust the search only after the smoke test succeeds.\n8. Publish only after testing to enable the daily schedule.",
+        "content": "## Public template setup\n\n1. Create a scoped Apify token and add the same n8n Header Auth credential to all four Apify HTTP nodes: `Authorization` = `Bearer YOUR_APIFY_TOKEN`.\n2. Import `google-sheets-columns.csv` into a sheet named `Jobs`.\n3. Select your Google Sheets credential on **Upsert jobs in Google Sheets**.\n4. Replace the Google spreadsheet placeholder in **Configuration**.\n5. Build `0.6.38` is pinned. Run the one-job smoke test manually before enabling the schedule.\n6. Use `advancedInputJson` for any current Actor option not exposed as a simple field, including `linkedinSearch`, `strictGeography`, normalized `filters`, company enrichment/filtering, translation, AI enrichment, raw output, dedupe, and analytics. Values there override the simple fields after local validation.\n7. The workflow polls only the original run ID. Delivery requires terminal `SUCCEEDED`, exit code 0, the exact pinned build, a valid factual `nomad-agent-fleet-run-summary-v2` status of `succeeded` or `empty`, and a default dataset whose row count matches `delivered`. It never starts an automatic paid retry.\n8. Increase `maxItems` and adjust the search only after the smoke test succeeds. Publish only after testing to enable the daily schedule.",
         "height": 390,
         "width": 700,
         "color": 5
@@ -393,6 +644,85 @@
       ],
       "id": "c516286b-7f1d-4aa2-b299-ce5b6b362819",
       "name": "Setup notes"
+    },
+    {
+      "parameters": {
+        "jsCode": "const envelope = $input.first().json;\nconst run = envelope && typeof envelope === 'object' ? (envelope.data || envelope) : {};\nif (!run.id || typeof run.status !== 'string') {\n  throw new Error('Apify returned no run ID or run status');\n}\nreturn [{ json: run }];"
+      },
+      "id": "663c90ec-f723-4ad9-97c8-67c8fbfa758d",
+      "name": "Select current run",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -80,
+        220
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "b56eaf6a-745d-4efc-819f-d7057b0d6ca0-condition",
+              "leftValue": "={{ ['SUCCEEDED', 'FAILED', 'ABORTED', 'TIMED-OUT'].includes($json.status) }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "b56eaf6a-745d-4efc-819f-d7057b0d6ca0",
+      "name": "Run is terminal?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        160,
+        220
+      ]
+    },
+    {
+      "parameters": {
+        "url": "={{ 'https://api.apify.com/v2/actor-runs/' + $json.id }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "waitForFinish",
+              "value": "60"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 70000,
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          }
+        }
+      },
+      "id": "ef5d35ed-a2dc-49f4-88d9-a91d7655a6c4",
+      "name": "Poll same Actor run",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        420,
+        380
+      ]
     }
   ],
   "connections": {
@@ -444,58 +774,7 @@
       "main": [
         [
           {
-            "node": "Read RUN-SUMMARY",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Read RUN-SUMMARY": {
-      "main": [
-        [
-          {
-            "node": "Evaluate retry recommendation",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Evaluate retry recommendation": {
-      "main": [
-        [
-          {
-            "node": "Retry requested?",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Retry requested?": {
-      "main": [
-        [
-          {
-            "node": "Wait before one retry",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "Get delivery run jobs",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Wait before one retry": {
-      "main": [
-        [
-          {
-            "node": "Run Actor on Apify",
+            "node": "Select current run",
             "type": "main",
             "index": 0
           }
@@ -503,6 +782,17 @@
       ]
     },
     "Get delivery run jobs": {
+      "main": [
+        [
+          {
+            "node": "Reconcile run status and dataset",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Reconcile run status and dataset": {
       "main": [
         [
           {
@@ -518,6 +808,79 @@
         [
           {
             "node": "Upsert jobs in Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate terminal run": {
+      "main": [
+        [
+          {
+            "node": "Read factual RUN-SUMMARY",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read factual RUN-SUMMARY": {
+      "main": [
+        [
+          {
+            "node": "Validate run status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate run status": {
+      "main": [
+        [
+          {
+            "node": "Get delivery run jobs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Select current run": {
+      "main": [
+        [
+          {
+            "node": "Run is terminal?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Run is terminal?": {
+      "main": [
+        [
+          {
+            "node": "Validate terminal run",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Poll same Actor run",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Poll same Actor run": {
+      "main": [
+        [
+          {
+            "node": "Select current run",
             "type": "main",
             "index": 0
           }

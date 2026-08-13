@@ -1,14 +1,14 @@
 # EURAXESS search examples
 
-These are bounded contract examples for a future compatible `1.0` deployment.
-The current private Actor is an older `0.5.1` build, so an agent must inspect
-the deployed schema and stop rather than execute when it differs.
+These are bounded contract examples for private build `1.0.8`. Every MCP
+execution must use generic `call-actor` with `callOptions.build: "1.0.8"` and
+verify that exact authoritative run build rather than rely on a mutable tag.
 
 ## Focused research search
 
 ```text
-After confirming the deployed Actor accepts nomad-agent-job-search-input-v1,
-search EURAXESS for up to 5 postdoctoral machine-learning positions in Germany
+After confirming Actor access and current pricing, call exact build `1.0.8`
+for up to 5 postdoctoral machine-learning positions in Germany
 posted within 30 days. Disable cross-run dedupe, translation, enrichment, and
 analytics. Fetch the complete successful dataset, validate nomad-agent-job-v1,
 and show title, organisation, research domains, location, explicit workplace
@@ -55,7 +55,8 @@ not title or organisation.
 ## Stateful alert
 
 ```text
-Explain tenant/query scope and replayEpoch before enabling cross-run dedupe for
-this specific alert. Ask me to confirm one stable opaque profile key. Do not
-share a global account-wide key across unrelated alerts or users.
+Explain tenant/query scope before enabling cross-run dedupe for this specific
+alert. Ask me to confirm one stable opaque profile key. Use a new explicit key
+only for intentional redelivery; do not share a global account-wide key across
+unrelated alerts or users.
 ```

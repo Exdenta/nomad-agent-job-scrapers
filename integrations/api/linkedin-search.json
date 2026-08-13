@@ -1,0 +1,22 @@
+{
+  "schemaVersion": "nomad-agent-job-search-input-v1",
+  "keyword": "typescript developer",
+  "location": "Spain",
+  "postedWithin": "7d",
+  "workArrangements": [
+    "remote",
+    "hybrid"
+  ],
+  "maxItems": 5,
+  "translateToEnglish": false,
+  "aiEnrichment": {
+    "enabled": false,
+    "accuracy": "silver"
+  },
+  "includeRaw": false,
+  "dedupe": {
+    "enabled": false,
+    "key": ""
+  },
+  "analyticsEnabled": false
+}

@@ -1,18 +1,27 @@
 {
-  "schemaVersion": "nomad-agent-job-search-input-v1",
-  "keyword": "postdoctoral machine learning",
-  "location": "Germany",
-  "postedWithin": "30d",
-  "maxItems": 5,
-  "dedupe": {
-    "enabled": false,
-    "key": ""
+  "actor": "nomad-agent/euraxess-enrich-translate-normalize-scraper",
+  "input": {
+    "schemaVersion": "nomad-agent-job-search-input-v1",
+    "keyword": "postdoctoral machine learning",
+    "location": "Germany",
+    "postedWithin": "30d",
+    "maxItems": 5,
+    "dedupe": {
+      "enabled": false,
+      "key": ""
+    },
+    "aiEnrichment": {
+      "enabled": false,
+      "accuracy": "silver"
+    },
+    "translateToEnglish": false,
+    "includeRaw": false,
+    "analyticsEnabled": false
   },
-  "aiEnrichment": {
-    "enabled": false,
-    "accuracy": "silver"
-  },
-  "translateToEnglish": false,
-  "includeRaw": false,
-  "analyticsEnabled": false
+  "waitSecs": 0,
+  "callOptions": {
+    "build": "1.0.8",
+    "maxItems": 5,
+    "maxTotalChargeUsd": 0.1
+  }
 }

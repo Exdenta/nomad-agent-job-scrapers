@@ -4,14 +4,14 @@ Installing this skill adds contract instructions and offline parsers.
 Connecting MCP adds authenticated live tools. Neither step exposes a private
 Actor to an unauthorized account or deploys the local `1.0` rewrite.
 
-The Actor currently deployed under this name is a private older `0.5.1`
-version. Do not execute it with this skill's strict `1.0` input. First fetch
-Actor details and require a compatible schema.
+Private `latest` and `canary` currently resolve to `1.0.8`. Use generic
+`call-actor` with exact `callOptions.build: "1.0.8"` and verify the same build
+number on the authoritative run; do not rely on either mutable tag.
 
 Candidate scoped endpoint:
 
 ```text
-https://mcp.apify.com?tools=fetch-actor-details,nomad-agent/euraxess-enrich-translate-normalize-scraper
+https://mcp.apify.com?tools=fetch-actor-details,call-actor,get-actor-run,get-dataset-items,get-key-value-store-record
 ```
 
 Hosted Streamable HTTP with OAuth is preferred. If policy requires an Apify
@@ -22,7 +22,8 @@ the value in a skill, prompt, repository, or Actor input.
 
 ```toml
 [mcp_servers.apify]
-url = "https://mcp.apify.com?tools=fetch-actor-details,nomad-agent/euraxess-enrich-translate-normalize-scraper"
+url = "https://mcp.apify.com?tools=fetch-actor-details,call-actor,get-actor-run,get-dataset-items,get-key-value-store-record"
+default_tools_approval_mode = "prompt"
 ```
 
 Then authenticate and verify:
@@ -42,7 +43,7 @@ $euraxess-enrich-translate-normalize-scraper
 
 ```bash
 claude mcp add --transport http --scope project apify \
-  "https://mcp.apify.com?tools=fetch-actor-details,nomad-agent/euraxess-enrich-translate-normalize-scraper"
+  "https://mcp.apify.com?tools=fetch-actor-details,call-actor,get-actor-run,get-dataset-items,get-key-value-store-record"
 claude mcp list
 ```
 
@@ -59,16 +60,23 @@ intentional.
 ## Verification boundary
 
 1. Confirm the server is connected and the account may access the exact Actor.
-2. Fetch Actor details, pricing, build/version, and input schema.
-3. Require `nomad-agent-job-search-input-v1` plus the closed EURAXESS
-   extension. Stop on the known older schema.
-4. Only after a compatible build exists, run a bounded `maxItems: 5` search
-   with dedupe, translation, enrichment, and analytics disabled.
-5. Poll to terminal and read `RUN-SUMMARY` when the run exposes a default
-   key-value store. Retrieve a dataset only after `SUCCEEDED`; never present a
-   failed run's partial rows as success.
-6. Validate every successful row as `nomad-agent-job-v1` with
+2. Fetch Actor details and pricing; verify the deployed schema before calling.
+3. Call generic `call-actor` with the canonical Actor name, strict v1 input,
+   `callOptions.build: "1.0.8"`, `callOptions.maxItems: 5`, and a conservative
+   `callOptions.maxTotalChargeUsd`.
+4. Require the run response to report `buildNumber: "1.0.8"` and stop on any
+   mismatch.
+5. Keep dedupe, translation, enrichment, and analytics disabled for the first
+   bounded run.
+6. Poll to terminal. If MCP omits `buildNumber`, verify the same run through
+   Apify's authenticated run API. After exact-build `SUCCEEDED` with exit code
+   0, read and validate fleet-v2 `RUN-SUMMARY`.
+7. Continue only for factual `succeeded` or `empty`; retrieve the default
+   dataset, reconcile its row count with `delivered`, and validate every row as `nomad-agent-job-v1` with
    `identity.source` equal to `euraxess` and the versioned EURAXESS custom
    extension.
+8. Missing, invalid, or degraded status stops delivery. Never start an
+   automatic paid retry; `errors[].retryable` is diagnostic only.
 
-No live-compatible EURAXESS `1.0` MCP run is claimed by this repository yet.
+The repository records live and offline verification separately; a successful
+older run is not proof that a newly edited integration is live-compatible.

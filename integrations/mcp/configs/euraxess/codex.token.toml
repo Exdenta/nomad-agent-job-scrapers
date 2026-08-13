@@ -1,5 +1,6 @@
+# Set APIFY_TOKEN in the environment that starts Codex. Never put its value here.
 [mcp_servers.apify_euraxess_jobs]
 url = "https://mcp.apify.com?tools=fetch-actor-details,call-actor,get-actor-run,get-dataset-items,get-key-value-store-record"
-auth = "oauth"
+bearer_token_env_var = "APIFY_TOKEN"
 default_tools_approval_mode = "prompt"
 tool_timeout_sec = 60

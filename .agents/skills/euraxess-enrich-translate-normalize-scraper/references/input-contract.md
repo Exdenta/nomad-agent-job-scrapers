@@ -1,9 +1,9 @@
 # EURAXESS Actor input contract
 
 Target contract: `nomad-agent-job-search-input-v1` with the optional closed
-`nomad-agent-euraxess-search-v1` extension. The local `1.0` rewrite is
-unreleased, while the private deployed Actor is an older `0.5.1` build. Inspect
-the deployed schema and stop when it does not exactly match this reference.
+`nomad-agent-euraxess-search-v1` extension. Private `latest` and `canary`
+currently resolve to build `1.0.8`. Pin `1.0.8`, inspect the deployed schema,
+and stop when it does not exactly match this reference.
 
 | Field | Type | Default | Rules |
 | --- | --- | --- | --- |
@@ -11,9 +11,9 @@ the deployed schema and stop when it does not exactly match this reference.
 | `keyword` | string | empty | Title, discipline, skill, or research term |
 | `location` | string | empty | Case-insensitive match against location/country text on search cards |
 | `euraxessSearch` | object | omitted | Separately versioned keyword-expansion extension |
-| `postedWithin` | enum | `30d` | `24h`, `7d`, `30d`, or `any`; EURAXESS rejects `1h` |
+| `postedWithin` | enum | `24h` | `24h`, `7d`, `30d`, or `any`; EURAXESS rejects `1h` |
 | `workArrangements` | string array | omitted | Unique subset of `remote`, `hybrid`, `onsite`; unknown does not match |
-| `maxItems` | integer | `100` | Use 5 first; `0` means the bounded 200-item window |
+| `maxItems` | integer | `100` | Increase deliberately; `0` means the bounded 200-item window |
 | `dedupe` | object | enabled | Cross-run delivery suppression; explicitly disable for one-off use |
 | `filters` | object | omitted | Closed `nomad-agent-job-filter-v1` expression |
 | `aiEnrichment` | object | disabled Silver | Owner-managed null-only description extraction |
@@ -99,10 +99,13 @@ paths, and record provenance in `llm`. Provider failure preserves the base
 record and records `llm.status: failed` for that row.
 
 `translateToEnglish` runs after normalization, optional enrichment, and exact
-filtering. It is limited to title, skills/qualifications, specific
-requirements, benefits, eligibility criteria, and selection process. It does
-not rewrite organisations, research domains, locations, URLs, identifiers,
-raw descriptions/HTML, or LLM provenance.
+filtering. In the current source candidate it covers title, domains,
+applicant-requirement prose, benefits, eligibility and selection text, work
+authorization, security clearance, and location preference. It does not
+rewrite organisations or place names, identifiers, URLs, source-raw labels,
+skills, qualifications, certifications, programme names, raw descriptions or
+HTML, or LLM provenance. Verify the deployed Actor schema/build before relying
+on the expanded fields.
 
 ## Cross-run dedupe
 
@@ -119,9 +122,9 @@ One-off, storage-free input:
 
 When enabled with an empty key, scope is derived from the Apify user and the
 canonical search/filter input. A nonempty public opaque key intentionally
-shares history for one alert/profile within that user. An optional nonempty
-`replayEpoch` starts an intentional new delivery generation. Do not use one
-global account-wide key for unrelated searches or users.
+shares history for one alert/profile within that user. Use a new explicit key
+for an intentional redelivery; retired replay fields are rejected. Do not use
+one global account-wide key for unrelated searches or users.
 
 Availability observations are a separate evidence layer; they do not act as
 the delivery ledger.

@@ -1,0 +1,23 @@
+{
+  "schemaVersion": "nomad-agent-job-search-input-v1",
+  "keyword": "postdoctoral machine learning",
+  "location": "Germany",
+  "euraxessSearch": {
+    "schemaVersion": "nomad-agent-euraxess-search-v1",
+    "translateKeywords": false
+  },
+  "postedWithin": "7d",
+  "workArrangements": [],
+  "maxItems": 5,
+  "translateToEnglish": false,
+  "aiEnrichment": {
+    "enabled": false,
+    "accuracy": "silver"
+  },
+  "includeRaw": false,
+  "dedupe": {
+    "enabled": false,
+    "key": ""
+  },
+  "analyticsEnabled": false
+}

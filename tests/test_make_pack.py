@@ -45,7 +45,7 @@ class MakePackTest(unittest.TestCase):
             "Find and upsert LinkedIn jobs to Google Sheets with Apify",
         )
         ids = [module["id"] for module in self.modules]
-        self.assertEqual(ids, [1, 2, 3, 4, 6, 7, 8, 9, 10, 11, 12, 13])
+        self.assertEqual(ids, [1, 2, 3, 4, 8, 9, 10, 11, 12, 13])
         self.assertEqual(len(ids), len(set(ids)))
         self.assertTrue(self.blueprint["metadata"]["scenario"]["sequential"])
         self.assertTrue(self.blueprint["metadata"]["instant"])
@@ -71,7 +71,8 @@ class MakePackTest(unittest.TestCase):
             for item in self.by_name["Configuration"]["mapper"]["variables"]
         }
         self.assertEqual(config["maxitems"], "1")
-        self.assertEqual(config["apifytaskid"], "REPLACE_WITH_APIFY_TASK_ID")
+        self.assertEqual(config["actorbuild"], "0.6.38")
+        self.assertNotIn("apifytaskid", config)
         self.assertEqual(
             config["googlespreadsheetid"],
             "REPLACE_WITH_GOOGLE_SPREADSHEET_ID",
@@ -84,62 +85,27 @@ class MakePackTest(unittest.TestCase):
         )
         self.assertEqual(dataset["mapper"]["limit"], "{{2.maxitems}}")
 
-    def test_structured_summary_requests_at_most_one_delayed_retry(self) -> None:
-        summary = self.by_name["Read structured RUN-SUMMARY"]
-        self.assertEqual(summary["module"], "http:ActionSendData")
-        self.assertFalse(summary["parameters"]["handleErrors"])
-        self.assertTrue(summary["mapper"]["parseResponse"])
-        self.assertEqual(summary["mapper"]["url"], "{{1.output.runSummary}}")
-        self.assertEqual(summary["filter"]["conditions"][0][0], {
-            "a": "{{1.status}}",
-            "b": "SUCCEEDED",
-            "o": "text:equal",
+    def test_delivery_requires_exact_success_and_has_no_paid_retry_route(self) -> None:
+        status = self.by_name["Read factual RUN-SUMMARY"]
+        self.assertEqual(status["mapper"]["url"], "{{1.output.runSummary}}")
+        self.assertFalse(status["mapper"]["serializeUrl"])
+        self.assertEqual(status["filter"], {
+            "name": "Read status only for the exact successful Actor build",
+            "conditions": [[
+                {"a": "{{1.status}}", "b": "SUCCEEDED", "o": "text:equal"},
+                {"a": "{{1.buildNumber}}", "b": "{{2.actorbuild}}", "o": "text:equal"},
+                {"a": "{{1.output.runSummary}}", "o": "exist"},
+            ]],
         })
-
-        sleep = self.by_name["Wait Actor-specified retry delay"]
-        self.assertEqual(sleep["module"], "util:FunctionSleep")
-        self.assertEqual(
-            sleep["mapper"]["duration"],
-            "{{3.data.reschedule.afterSeconds}}",
-        )
-        conditions = sleep["filter"]["conditions"][0]
-        self.assertIn({
-            "a": "{{3.statusCode}}",
-            "b": "200",
-            "o": "number:equal",
-        }, conditions)
-        self.assertIn({
-            "a": "{{3.data.schemaVersion}}",
-            "b": "nomad-agent-linkedin-run-summary-v1",
-            "o": "text:equal",
-        }, conditions)
-        self.assertIn({
-            "a": "{{3.data.reschedule.afterSeconds}}",
-            "b": "1",
-            "o": "number:greaterorequal",
-        }, conditions)
-        self.assertIn({
-            "a": "{{3.data.reschedule.afterSeconds}}",
-            "b": "240",
-            "o": "number:lessorequal",
-        }, conditions)
-        self.assertIn({
-            "a": "{{1.meta.origin}}",
-            "b": "API",
-            "o": "text:notequal",
-        }, conditions)
-
-        retry = self.by_name["Retry the same Apify Task once"]
-        self.assertEqual(retry["module"], "apify:runTask")
-        self.assertEqual(retry["mapper"]["taskId"], "{{2.apifytaskid}}")
-        self.assertFalse(retry["mapper"]["runSync"])
-        self.assertNotIn("filter", retry)
-
         delivery = self.by_name["Get normalized jobs"]
-        rendered_filter = json.dumps(delivery["filter"])
-        self.assertIn("number:notequal", rendered_filter)
-        self.assertIn("boolean:notequal", rendered_filter)
-        self.assertIn("{{1.meta.origin}}", rendered_filter)
+        self.assertEqual(delivery["filter"]["name"], "Deliver only a valid factual run status")
+        self.assertIn("nomad-agent-fleet-run-summary-v2", json.dumps(delivery["filter"]))
+        self.assertIn("sources.linkedin.status", json.dumps(delivery["filter"]))
+        rendered = json.dumps(self.blueprint)
+        self.assertIn("RUN-SUMMARY", rendered)
+        self.assertNotIn("reschedule", rendered)
+        self.assertNotIn("apify:runTask", rendered)
+        self.assertNotIn("util:FunctionSleep", rendered)
 
     def test_native_projection_matches_flat_schema_without_paid_code(self) -> None:
         projection = self.by_name["Flatten normalized job"]
@@ -166,7 +132,7 @@ class MakePackTest(unittest.TestCase):
             "{{8.identity.source}}:{{8.identity.externalId}}",
         )
         self.assertEqual(by_name["title"], "{{8.data.title}}")
-        self.assertEqual(by_name["descriptionText"], "{{8.data.descriptionText}}")
+        self.assertEqual(by_name["descriptionText"], "{{8.raw.description}}")
 
         for field in (
             "workArrangements",

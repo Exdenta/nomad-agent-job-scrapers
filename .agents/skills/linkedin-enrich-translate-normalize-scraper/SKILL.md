@@ -1,9 +1,9 @@
 ---
 name: linkedin-enrich-translate-normalize-scraper
-description: Search, parse, validate, or integrate normalized LinkedIn jobs with the Apify Actor nomad-agent/linkedin-enrich-translate-normalize-scraper. Use when a Codex or Claude agent needs to find LinkedIn jobs through Apify MCP, configure a bounded Actor run, interpret nomad-agent-job-v1 output, flatten results for a table, or troubleshoot this Actor's input, authentication, run, or dataset contract.
+description: Find and integrate public LinkedIn jobs with the Apify Actor nomad-agent/linkedin-enrich-translate-normalize-scraper. Use to build bounded searches, preserve and validate nomad-agent-job-v1 records, connect through Apify MCP, flatten results for tables, or troubleshoot the Actor contract.
 ---
 
-# LinkedIn normalized job search
+# LinkedIn job search with structured output
 
 Use the Apify Actor through MCP when available. Keep its nested normalized
 record as the system of record; flatten only for a destination that requires
@@ -17,7 +17,9 @@ HTTP with OAuth. Never ask for a token in chat or write one to a repository.
 
 ## Before a run
 
-1. Fetch the deployed Actor details or inspect its MCP tool schema.
+1. Fetch the deployed Actor details or inspect its MCP tool schema. This skill
+   was synchronized to public `latest` build `0.6.38`; stop if the run resolves
+   to another build until its contract has been checked.
 2. Confirm that the deployed input accepts
    `schemaVersion: nomad-agent-job-search-input-v1`. If it does not, explain
    that the deployed schema differs from this skill and do not guess field
@@ -30,8 +32,8 @@ HTTP with OAuth. Never ask for a token in chat or write one to a repository.
    them.
 
 Read [references/input-contract.md](references/input-contract.md) when building
-an input or explaining filters, multi-search, translation, enrichment, or
-dedupe.
+an input or explaining filters, multi-search, strict geography, public company
+profiles/filters, translation, enrichment, or dedupe.
 
 ## Build the input
 
@@ -76,37 +78,49 @@ Apply these rules:
 
 ## Execute with MCP
 
-1. Call the exact Actor
-   `nomad-agent/linkedin-enrich-translate-normalize-scraper`.
+1. Call generic `call-actor` with this outer envelope. Pin build `0.6.38` in
+   `callOptions.build`; do not rely on a mutable tag or the direct Actor tool:
+
+   ```json
+   {
+     "actor": "nomad-agent/linkedin-enrich-translate-normalize-scraper",
+     "input": {"schemaVersion": "nomad-agent-job-search-input-v1", "maxItems": 5},
+     "waitSecs": 0,
+     "callOptions": {"build": "0.6.38", "maxItems": 5, "maxTotalChargeUsd": 0.1}
+   }
+   ```
 2. If the returned run is `READY`, `RUNNING`, `TIMING-OUT`, or `ABORTING`, use
    its run ID with `get-actor-run` and follow `nextStep` until the run is
    terminal.
-3. Continue only when the terminal status is `SUCCEEDED`. Read the default
-   key-value store ID from `storages.keyValueStores.default.id`, then call
-   `get-key-value-store-record` with `recordKey: RUN-SUMMARY`. For a valid
-   `nomad-agent-linkedin-run-summary-v1` record, retry only when `blocked` and
-   `reschedule.recommended` are both true, `afterSeconds` is an integer from 1
-   to 3600, and `notBefore` is valid. Wait the remaining specified time and
-   repeat the exact same input once. A second run can incur the same per-run
-   charge cap; never automatically retry it again.
-4. After any allowed retry, read the latest successful run's default dataset
-   ID from `storages.datasets.default.id`, then call `get-dataset-items`.
+3. Continue only when the authoritative terminal run has status `SUCCEEDED`,
+   exit code `0`, and build number `0.6.38`. If an MCP response omits
+   `buildNumber`, verify the same run through Apify's authenticated run API;
+   omission is not proof of the requested build.
+4. Read that run's default key-value-store ID from
+   `storages.keyValueStores.default.id` or `defaultKeyValueStoreId`. Call
+   `get-key-value-store-record` for `RUN-SUMMARY`, validate it with
+   `scripts/validate_run_summary.py`, and continue only when the root and
+   `sources.linkedin` status are `succeeded` or `empty`.
+5. Read that successful run's default dataset ID from
+   `storages.datasets.default.id` or `defaultDatasetId`, then call
+   `get-dataset-items`.
    Paginate with the tool's offset/limit controls when the requested result set
    exceeds one page; never treat an output preview as the complete dataset.
-5. Treat `SUCCEEDED` with zero dataset items as a valid empty search. Report
-   that no matching rows were returned; do not invent a job or retry merely
-   because the dataset is empty.
-6. Treat a missing `RUN-SUMMARY` or a non-blocking partial summary as no retry
-   recommendation. Do not parse the human-readable status message to infer a
-   delay. If the single retry also recommends rescheduling, report that the
-   automatic retry bound is exhausted and use the latest successful result.
-7. Treat `FAILED`, `TIMED-OUT`, and `ABORTED` as errors. Report the run ID,
+6. Require the complete dataset row count to equal `RUN-SUMMARY.delivered`.
+   Treat validated `empty` plus zero dataset items as no matching jobs.
+7. Treat `RUN-SUMMARY` as factual status only. Missing, invalid, `partial`,
+   `failed`, or `deadline` status stops delivery. `errors[].retryable` never
+   authorizes or schedules another run.
+8. This integration never starts an automatic retry. A caller may choose a
+   new paid run only after investigating the original run and explicitly
+   authorizing the additional charge.
+9. Treat `FAILED`, `TIMED-OUT`, and `ABORTED` as errors. Report the run ID,
    status, status message, and exit code. Do not fetch or present a partial
    dataset as a successful result.
-8. Treat MCP as the live authentication and execution layer. Do not read an
+10. Treat MCP as the live authentication and execution layer. Do not read an
    `APIFY_TOKEN` from project files or pass one as Actor input.
-9. Do not retry a paid run automatically after an ambiguous timeout. Inspect
-   the run first to avoid duplicate charges.
+11. After an ambiguous timeout, inspect the existing run by ID before proposing
+   any new paid execution, to avoid duplicate charges.
 
 If MCP is not configured, use `references/client-setup.md`. Never ask the user
 to paste an Apify token into chat or source files.
@@ -138,6 +152,8 @@ python3 scripts/flatten_output.py actor-output.json --output flat.json
 
 Read [references/output-contract.md](references/output-contract.md) when
 interpreting nested values or debugging a rejected record.
+Read [references/run-summary.md](references/run-summary.md) when interpreting
+run status or explaining why delivery stopped.
 
 When answering a user:
 

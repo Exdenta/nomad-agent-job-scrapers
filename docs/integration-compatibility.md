@@ -1,0 +1,62 @@
+# Integration compatibility matrix
+
+Snapshot verified against Apify metadata on 2026-08-13.
+
+| Actor | Supported build | Default-tag boundary | Current input fields |
+| --- | --- | --- | --- |
+| LinkedIn | `0.6.38` (`9LCEO7j0U235CQChh`) | Public `latest` points to `0.6.38` | `schemaVersion`, `keyword`, `location`, `linkedinSearch`, `strictGeography`, `workArrangements`, `postedWithin`, `filters`, `companyProfileEnrichment`, `companyFilters`, `maxItems`, `translateToEnglish`, `aiEnrichment`, `includeRaw`, `dedupe`, `analyticsEnabled` |
+| EURAXESS | `1.0.8` (`zps06fBljgdqb7aI6`) | Private `latest` and `canary` point to `1.0.8` | `schemaVersion`, `keyword`, `location`, `euraxessSearch`, `workArrangements`, `postedWithin`, `filters`, `maxItems`, `translateToEnglish`, `aiEnrichment`, `includeRaw`, `dedupe`, `analyticsEnabled` |
+
+The two Actors share the six-root `nomad-agent-job-v1` dataset-row envelope and
+the same factual `nomad-agent-fleet-run-summary-v2` delivery gate. Their source
+extensions remain different.
+
+## Integration parity
+
+| Integration | LinkedIn build selection | EURAXESS build selection | Full current input support | Output boundary |
+| --- | --- | --- | --- | --- |
+| n8n | Workflow pins `0.6.38` | Workflow pins `1.0.8` | Yes. Simple safe fields plus `advancedInputJson`, merged and validated before the paid call | Polls the same run; validates fleet-v2 status; reconciles and projects the dataset |
+| Make | Apify Task must pin `0.6.38` | Apify Task must pin `1.0.8` | Yes. The Task owns the complete Actor input; the blueprint consumes its completed run | Reads fleet-v2 status before projecting dataset rows |
+| MCP | Generic `call-actor` pins `callOptions.build: "0.6.38"` | Generic `call-actor` pins `callOptions.build: "1.0.8"` | Yes. Actor input is passed without a reduced integration schema | REST-verified terminal run; validated fleet-v2 status; reconciled canonical rows |
+| REST API and webhooks | `build=0.6.38` | `build=1.0.8` | Yes. JSON request body is the Actor input | Poll/read the exact run, factual status, and dataset; a webhook is only a completion signal |
+| Agent skills | LinkedIn pinned generic MCP profile | EURAXESS pinned generic MCP profile | Yes. Each skill documents its source-specific contract | Canonical-first; flatten only for a destination |
+| Python parser and flat mapper | Caller verifies the originating run | Caller verifies the originating run | Not applicable: post-run processing | Source-specific canonical validation plus the same flat projection for both Actors |
+| Airtable | Upstream runner chooses build | Upstream runner chooses build | Not applicable: destination-only | Shared 32-field projection; retain the canonical record elsewhere when deeper fields are needed |
+
+## Feature transport rules
+
+- n8n's explicit fields form a safe starter input. `advancedInputJson` may
+  override them and carries every field listed above. The validation node
+  rejects malformed JSON, an unsupported shared schema, invalid freshness or
+  workplace values, an unbounded `maxItems`, or a non-version build selector.
+- Make blueprints deliberately do not copy Actor input. Configure every input
+  feature, exact build, item cap, and charge cap in the Apify Task. That keeps
+  every completion bound to the same saved request.
+- Both MCP profiles use the generic `call-actor` envelope with an exact build
+  and cost caps. The smoke script re-reads authoritative run metadata through
+  REST because the MCP run projection can omit `buildNumber`.
+- API clients send the same input JSON as Apify Console. The integration does
+  not rename or drop Actor fields.
+- Airtable and Google Sheets are flat destinations. The projection cannot
+  represent every nested `custom`, provenance, or raw value; it therefore does
+  not replace the canonical dataset.
+
+## Validation boundary
+
+Repository tests cover configuration parsing, exact version selectors, all
+current input-key pass-through, terminal-run and fleet-v2 status gating,
+canonical output, flat projection, secret hygiene, and the absence of
+automatic retry routes. Apify metadata confirms the
+build/tag and input-schema facts above. Authenticated no-run MCP discovery on
+2026-08-11 passed for both profiles with protocol `2025-06-18` and their
+expected six-tool surfaces. LinkedIn's MCP-origin compatibility layer also
+passed 36 tests in the exact hash-locked Python 3.12 / Apify `2.7.3` runtime.
+
+Historical LinkedIn n8n and Make destination tests used older builds. The
+current `0.6.38` n8n/Make destination paths and all EURAXESS destinations still
+need credentialed live smoke tests. MCP discovery/run smoke tests require an
+`APIFY_TOKEN`; the checked-in scripts do not contain one. Actor/API release
+smokes passed for LinkedIn `0.6.38` and EURAXESS `1.0.8` on 2026-08-13, and
+both `latest` tags were moved to those builds. No task reconfiguration, n8n or
+Make destination activation, Airtable write, or Store publication was part of
+that Actor rollout.
