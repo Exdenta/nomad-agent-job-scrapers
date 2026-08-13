@@ -1,4 +1,4 @@
-# Factual run completion and no-automatic-retry policy
+# Public run completion and one-retry policy
 
 LinkedIn and EURAXESS integrations use the same delivery gate:
 
@@ -7,21 +7,22 @@ LinkedIn and EURAXESS integrations use the same delivery gate:
 3. Continue only for `SUCCEEDED` with exit code `0` when the API exposes it.
 4. Verify the run used the requested exact build.
 5. Read and semantically validate the same run's default key-value-store
-   `RUN-SUMMARY` as `nomad-agent-fleet-run-summary-v2`.
-6. Continue only for root and selected-source status `succeeded` or `empty`.
+   `RUN-SUMMARY` as `nomad-agent-run-summary-v3`.
+6. For `partial`, honor `retry.recommended` at most once, using the same exact
+   Actor input, build, item cap, and charge cap. Never retry `empty` or a failed
+   Apify run.
 7. Fetch that run's default dataset and require its total item count to equal
    `RUN-SUMMARY.delivered`.
 8. Validate every row as the six-root `nomad-agent-job-v1` contract and require
    the expected `identity.source`.
 9. Treat a valid `empty` summary plus zero dataset rows as “no matching jobs.”
 
-The checked-in integrations never start an automatic second paid run. They use
-`RUN-SUMMARY` only as factual delivery evidence, never as retry authority.
-`errors[].retryable` means the failed operation might succeed if a caller later
-chooses another run; it does not schedule or authorize that run. Human status
-messages, empty output, failed runs, timeouts, and partial rows are not retry
-signals. A caller may retry only after an explicit user or operator decision.
+The retry tuple is atomic. `recommended: false` requires both timing fields to
+be `null`. `recommended: true` is valid only for a usable `partial` outcome and
+requires `afterSeconds` from 1 through 3600 plus an aware `notBefore` timestamp.
+Each maintained integration enforces a hard maximum of one automatic retry.
+After that bound, the latest usable partial dataset may be delivered after its
+row count is reconciled. Missing or invalid summaries stop delivery.
 
-Missing, invalid, `partial`, `failed`, or `deadline` summaries stop delivery.
-This keeps degraded source outcomes distinct from a positively established
-empty search even when the outer Apify run itself is `SUCCEEDED`.
+The public summary intentionally contains no source names, funnel counters,
+blocking reasons, errors, exception text, requests, responses, or raw data.

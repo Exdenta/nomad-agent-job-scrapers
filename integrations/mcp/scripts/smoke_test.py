@@ -3,10 +3,12 @@
 from __future__ import annotations
 
 import argparse
+from http.client import IncompleteRead, RemoteDisconnected
 import json
 import os
 from pathlib import Path
 import sys
+import time
 from typing import Any
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
@@ -31,18 +33,24 @@ COMMON_TOOLS = {
     "get-key-value-store-record",
 }
 REQUIRED_TOOLS = COMMON_TOOLS
+READ_ONLY_TOOLS = {
+    "fetch-actor-details",
+    "get-actor-run",
+    "get-dataset-items",
+    "get-key-value-store-record",
+}
 PROFILES = {
     "linkedin": {
         "url": PINNED_URL,
         "tool": "call-actor",
-        "build": "0.6.38",
+        "build": "0.6.39",
         "source": "linkedin",
         "input": Path(__file__).resolve().parents[1] / "examples/linkedin-search.mcp.json",
     },
     "euraxess": {
         "url": PINNED_URL,
         "tool": "call-actor",
-        "build": "1.0.8",
+        "build": "1.0.9",
         "source": "euraxess",
         "input": Path(__file__).resolve().parents[1] / "examples/euraxess-search.mcp.json",
     },
@@ -162,7 +170,27 @@ def _dataset_items(result: dict[str, Any]) -> list[dict[str, Any]]:
 
 
 def _call_tool(client: McpClient, name: str, arguments: dict[str, Any]):
-    return client.call("tools/call", {"name": name, "arguments": arguments})
+    attempts = 3 if name in READ_ONLY_TOOLS else 1
+    for attempt in range(1, attempts + 1):
+        try:
+            return client.call(
+                "tools/call", {"name": name, "arguments": arguments}
+            )
+        except (
+            IncompleteRead,
+            RemoteDisconnected,
+            URLError,
+            TimeoutError,
+            ConnectionError,
+        ):
+            if attempt == attempts:
+                raise
+            print(
+                f"Transient MCP read failure for {name}; "
+                f"retrying read {attempt}/{attempts - 1}"
+            )
+            time.sleep(1)
+    raise AssertionError("unreachable")
 
 
 def _default_storage_id(run: dict[str, Any], group: str, legacy_key: str) -> str:
@@ -236,7 +264,7 @@ def _verified_rest_run(token: str, run_id: str, timeout: float) -> dict[str, Any
 
 
 def _run_summary(client: McpClient, run: dict[str, Any]) -> Any:
-    """Read the original run's factual fleet-v2 record without retrying it."""
+    """Read one run's minimal public v3 outcome."""
     store_id = _default_storage_id(run, "keyValueStores", "defaultKeyValueStoreId")
     if not store_id:
         return None
@@ -272,6 +300,12 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--max-polls", type=int, default=8)
     parser.add_argument("--poll-wait-secs", type=int, default=30)
     parser.add_argument("--request-timeout-secs", type=float, default=70)
+    parser.add_argument(
+        "--max-reschedule-retries",
+        type=int,
+        default=1,
+        help="honor at most one valid RUN-SUMMARY v3 retry (default: 1)",
+    )
     return parser.parse_args()
 
 
@@ -287,6 +321,9 @@ def main() -> int:
         return 2
     if args.poll_wait_secs < 0 or args.poll_wait_secs > 60:
         print("--poll-wait-secs must be between 0 and 60", file=sys.stderr)
+        return 2
+    if args.max_reschedule_retries not in {0, 1}:
+        print("--max-reschedule-retries must be 0 or 1", file=sys.stderr)
         return 2
     try:
         client = McpClient(token, args.request_timeout_secs, str(profile["url"]))
@@ -329,22 +366,41 @@ def main() -> int:
         run = _verified_rest_run(token, run_id, args.request_timeout_secs)
         _require_build(run, str(profile["build"]))
 
-        summary = _run_summary(client, run)
-        decision = evaluate_terminal_run(run, summary)
-        if not decision.fetch_dataset:
-            raise RuntimeError(
-                f"delivery stopped: {decision.reason}; no automatic retry is started"
+        summary = None
+        for retry_attempt in range(args.max_reschedule_retries + 1):
+            summary = _run_summary(client, run)
+            decision = evaluate_terminal_run(
+                run,
+                summary,
+                retry_attempt=retry_attempt,
+                max_retries=args.max_reschedule_retries,
             )
-        sources = summary.get("sources") if isinstance(summary, dict) else None
-        expected_source = str(profile["source"])
-        if not isinstance(sources, dict) or set(sources) != {expected_source}:
-            raise RuntimeError(
-                f"RUN-SUMMARY must contain only sources.{expected_source}"
-            )
-        if sources[expected_source].get("status") not in {"succeeded", "empty"}:
-            raise RuntimeError(
-                f"RUN-SUMMARY sources.{expected_source}.status blocks delivery"
-            )
+            if decision.automatic_retry:
+                print(
+                    "Actor RUN-SUMMARY requested one retry: "
+                    f"waiting {decision.delay_seconds} seconds"
+                )
+                time.sleep(decision.delay_seconds)
+                run = _run_to_terminal(
+                    client,
+                    str(profile["tool"]),
+                    tool_arguments,
+                    max_polls=args.max_polls,
+                    poll_wait_secs=args.poll_wait_secs,
+                )
+                retry_run_id = run.get("runId") or run.get("id")
+                if not isinstance(retry_run_id, str) or not retry_run_id:
+                    raise RuntimeError("retried Actor run returned no run ID")
+                run = _verified_rest_run(
+                    token, retry_run_id, args.request_timeout_secs,
+                )
+                _require_build(run, str(profile["build"]))
+                continue
+            if not decision.fetch_dataset:
+                raise RuntimeError(f"delivery stopped: {decision.reason}")
+            break
+        if summary is None:
+            raise RuntimeError("RUN-SUMMARY was not evaluated")
 
         dataset_id = _default_storage_id(run, "datasets", "defaultDatasetId")
         if not dataset_id:
@@ -376,6 +432,8 @@ def main() -> int:
         return 0
     except (
         HTTPError,
+        IncompleteRead,
+        RemoteDisconnected,
         URLError,
         OSError,
         RuntimeError,

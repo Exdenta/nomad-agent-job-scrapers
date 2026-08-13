@@ -1,0 +1,112 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/Exdenta/nomad-agent-job-scrapers/main/integrations/shared/run-summary-v3.schema.json",
+  "title": "Nomad Agent public run summary v3",
+  "description": "Minimal public outcome for one completed Actor run. Internal source diagnostics are intentionally excluded.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "status",
+    "startedAt",
+    "finishedAt",
+    "truncated",
+    "delivered",
+    "retry"
+  ],
+  "properties": {
+    "schemaVersion": {"const": "nomad-agent-run-summary-v3"},
+    "status": {
+      "type": "string",
+      "enum": ["succeeded", "empty", "partial"]
+    },
+    "startedAt": {"type": "string", "format": "date-time"},
+    "finishedAt": {"type": "string", "format": "date-time"},
+    "truncated": {"type": "boolean"},
+    "delivered": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 2147483647
+    },
+    "retry": {"$ref": "#/$defs/retry"}
+  },
+  "$defs": {
+    "retry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["recommended", "afterSeconds", "notBefore"],
+      "properties": {
+        "recommended": {"type": "boolean"},
+        "afterSeconds": {
+          "type": ["integer", "null"],
+          "minimum": 1,
+          "maximum": 3600
+        },
+        "notBefore": {
+          "type": ["string", "null"],
+          "format": "date-time"
+        }
+      },
+      "oneOf": [
+        {
+          "properties": {
+            "recommended": {"const": false},
+            "afterSeconds": {"const": null},
+            "notBefore": {"const": null}
+          }
+        },
+        {
+          "properties": {
+            "recommended": {"const": true},
+            "afterSeconds": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 3600
+            },
+            "notBefore": {"type": "string", "format": "date-time"}
+          }
+        }
+      ]
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {"status": {"const": "succeeded"}},
+        "required": ["status"]
+      },
+      "then": {
+        "properties": {
+          "delivered": {"minimum": 1},
+          "retry": {
+            "properties": {"recommended": {"const": false}}
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {"status": {"const": "empty"}},
+        "required": ["status"]
+      },
+      "then": {
+        "properties": {
+          "delivered": {"const": 0},
+          "truncated": {"const": false},
+          "retry": {
+            "properties": {"recommended": {"const": false}}
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {"status": {"const": "partial"}},
+        "required": ["status"]
+      },
+      "then": {
+        "properties": {"delivered": {"minimum": 1}}
+      }
+    }
+  ]
+}

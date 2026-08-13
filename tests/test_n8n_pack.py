@@ -53,7 +53,7 @@ const workflow = JSON.parse(fs.readFileSync(process.argv[1], 'utf8'));
 const run = JSON.parse(process.argv[2]);
 global.$input = { first: () => ({ json: { data: run } }) };
 global.$ = (name) => {
-  if (name === 'Configuration') return { first: () => ({ json: { actorBuild: '0.6.38' } }) };
+  if (name === 'Configuration') return { first: () => ({ json: { actorBuild: '0.6.39' } }) };
   throw new Error(`unexpected node reference: ${name}`);
 };
 const node = workflow.nodes.find(value => value.name === 'Validate terminal run');
@@ -99,6 +99,8 @@ process.stdout.write(JSON.stringify(output));
                 "Validate terminal run",
                 "Read factual RUN-SUMMARY",
                 "Validate run status",
+                "Retry requested?",
+                "Wait before one retry",
                 "Get delivery run jobs",
                 "Reconcile run status and dataset",
                 "Validate and flatten jobs",
@@ -156,7 +158,19 @@ process.stdout.write(JSON.stringify(output));
         )
         self.assertEqual(
             self.workflow["connections"]["Validate run status"]["main"][0][0]["node"],
+            "Retry requested?",
+        )
+        self.assertEqual(
+            self.workflow["connections"]["Retry requested?"]["main"][0][0]["node"],
+            "Wait before one retry",
+        )
+        self.assertEqual(
+            self.workflow["connections"]["Retry requested?"]["main"][1][0]["node"],
             "Get delivery run jobs",
+        )
+        self.assertEqual(
+            self.workflow["connections"]["Wait before one retry"]["main"][0][0]["node"],
+            "Run Actor on Apify",
         )
         self.assertEqual(
             self.workflow["connections"]["Get delivery run jobs"]["main"][0][0]["node"],
@@ -213,10 +227,10 @@ process.stdout.write(JSON.stringify(output));
                 "assignments"
             ]
         }
-        self.assertEqual(assignments["actorBuild"], "0.6.38")
+        self.assertEqual(assignments["actorBuild"], "0.6.39")
         self.assertEqual(assignments["advancedInputJson"], "{}")
         self.assertEqual(assignments["maxItems"], 1)
-        self.assertNotIn("maxRescheduleRetries", assignments)
+        self.assertEqual(assignments["maxRescheduleRetries"], 1)
         self.assertEqual(
             assignments["googleSpreadsheetId"],
             "REPLACE_WITH_GOOGLE_SPREADSHEET_ID",
@@ -228,7 +242,7 @@ process.stdout.write(JSON.stringify(output));
         script = validation["parameters"]["jsCode"]
         self.assertIn("REPLACE_WITH_", script)
         self.assertIn("maxItems must be an integer from 0 to 200", script)
-        self.assertNotIn("maxRescheduleRetries", script)
+        self.assertIn("maxRescheduleRetries must be 0 or 1", script)
         self.assertIn("actorBuild must be a pinned version", script)
         self.assertIn("advancedInputJson", script)
         self.assertIn("actorInput", script)
@@ -327,7 +341,7 @@ process.stdout.write(JSON.stringify(output));
             "id": "run-1",
             "status": "SUCCEEDED",
             "exitCode": 0,
-            "buildNumber": "0.6.38",
+            "buildNumber": "0.6.39",
             "defaultDatasetId": "dataset-1",
         })
         self.assertEqual(completed.returncode, 0, completed.stderr)
@@ -338,23 +352,26 @@ process.stdout.write(JSON.stringify(output));
     def test_failed_or_wrong_build_run_is_not_retried_or_delivered(self) -> None:
         failed = self.run_terminal_node({
             "id": "run-2", "status": "FAILED", "exitCode": 1,
-            "buildNumber": "0.6.38", "defaultDatasetId": "dataset-2",
+            "buildNumber": "0.6.39", "defaultDatasetId": "dataset-2",
         })
         self.assertNotEqual(failed.returncode, 0)
-        self.assertIn("no automatic retry is started", failed.stderr)
+        self.assertIn("failed terminal runs cannot be retried", failed.stderr)
         wrong_build = self.run_terminal_node({
             "id": "run-3", "status": "SUCCEEDED", "exitCode": 0,
             "buildNumber": "0.6.36", "defaultDatasetId": "dataset-3",
         })
         self.assertNotEqual(wrong_build.returncode, 0)
-        self.assertIn("expected 0.6.38", wrong_build.stderr)
+        self.assertIn("expected 0.6.39", wrong_build.stderr)
 
-    def test_workflow_uses_factual_summary_and_no_retry_nodes(self) -> None:
+    def test_workflow_uses_v3_and_one_retry_nodes(self) -> None:
         rendered = json.dumps(self.workflow)
         self.assertIn("key-value-store/records/RUN-SUMMARY", rendered)
-        self.assertIn("nomad-agent-fleet-run-summary-v2", rendered)
-        self.assertNotIn("reschedule", rendered)
-        self.assertNotIn("maxRescheduleRetries", rendered)
+        self.assertIn("nomad-agent-run-summary-v3", rendered)
+        self.assertNotIn("nomad-agent-fleet-run-summary-v2", rendered)
+        self.assertNotIn("sources.linkedin", rendered)
+        self.assertIn("maxRescheduleRetries", rendered)
+        self.assertIn("Wait before one retry", self.nodes)
+        self.assertIn("Retry requested?", self.nodes)
         self.assertIn("Poll same Actor run", self.nodes)
         self.assertEqual(
             self.nodes["Run is terminal?"]["type"], "n8n-nodes-base.if"
@@ -363,8 +380,9 @@ process.stdout.write(JSON.stringify(output));
         self.assertIn("actor-runs/", dataset["parameters"]["url"])
         self.assertIn("/dataset/items", dataset["parameters"]["url"])
         status = self.nodes["Validate run status"]["parameters"]["jsCode"]
-        self.assertIn("expectedSource = 'linkedin'", status)
-        self.assertIn("no automatic retry", status)
+        self.assertIn("retry.recommended", status)
+        self.assertIn("retryAttempt < retryLimit", status)
+        self.assertIn("closed v3 object", status)
         reconcile = self.nodes["Reconcile run status and dataset"]["parameters"]["jsCode"]
         self.assertIn("runSummary.delivered", reconcile)
 
@@ -442,7 +460,7 @@ process.stdout.write(JSON.stringify(output));
             "Find and save new LinkedIn jobs to Google Sheets with Apify", listing
         )
         self.assertIn("n8n Cloud", listing)
-        self.assertIn("0.6.38", listing)
+        self.assertIn("0.6.39", listing)
         self.assertIn("The published schedule was not", listing)
         self.assertIn("no separate delivery cache", listing)
 

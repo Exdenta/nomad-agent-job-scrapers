@@ -79,18 +79,19 @@ authorization header with a real token.
    paid run.
 4. Run a bounded `maxItems: 5` search with translation, AI enrichment,
    analytics, and cross-run dedupe disabled.
-5. Call with `callOptions.build: "0.6.38"`. Poll non-terminal runs with
+5. Call with `callOptions.build: "0.6.39"`. Poll non-terminal runs with
    `get-actor-run`; if MCP omits `buildNumber`, verify the run through Apify's
    authenticated run API. Only after exact-build `SUCCEEDED` with exit code 0,
    read `RUN-SUMMARY` with `get-key-value-store-record` and validate
-   `nomad-agent-fleet-run-summary-v2`.
-6. Only for factual `succeeded` or `empty`, pass the default dataset ID to
+   `nomad-agent-run-summary-v3`.
+6. If a usable `partial` result recommends a retry, wait the bounded timing and
+   repeat the exact request at most once. Then pass the selected default dataset ID to
    `get-dataset-items`, paginate, and reconcile its row count with `delivered`.
    Treat `FAILED`,
    `TIMED-OUT`, and `ABORTED` as errors and never present partial data as
    success.
-7. Missing, invalid, or degraded status stops delivery. Never start an
-   automatic paid retry; `errors[].retryable` is diagnostic only.
+7. Missing or invalid status stops delivery. Failed, timed-out, and aborted
+   Apify runs are never retried from `RUN-SUMMARY`.
 
 If the deployed schema differs from the skill, stop before execution and show
 the mismatch. Installing the skill is not proof that the Actor or MCP server is

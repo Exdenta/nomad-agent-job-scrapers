@@ -17,8 +17,8 @@ PINNED_URL = (
 )
 LINKEDIN_ACTOR = "nomad-agent/linkedin-enrich-translate-normalize-scraper"
 EURAXESS_ACTOR = "nomad-agent/euraxess-enrich-translate-normalize-scraper"
-LINKEDIN_BUILD = "0.6.38"
-EURAXESS_BUILD = "1.0.8"
+LINKEDIN_BUILD = "0.6.39"
+EURAXESS_BUILD = "1.0.9"
 CANONICAL_ROOTS = {"custom", "data", "identity", "llm", "raw", "schemaVersion"}
 INPUT_KEYS = {
     "schemaVersion",
@@ -230,11 +230,11 @@ def validate() -> None:
         "get-dataset-items",
         "get-key-value-store-record",
         "RUN-SUMMARY",
-        "nomad-agent-fleet-run-summary-v2",
+        "nomad-agent-run-summary-v3",
         "SUCCEEDED",
         "RUN-SUMMARY.delivered",
         "terminal run status",
-        "no automatic retry",
+        "one bounded retry",
         "ChatGPT web",
         "Business, Enterprise, and Edu",
     ):

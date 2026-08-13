@@ -3,9 +3,9 @@
 Import either inactive workflow:
 
 - [`linkedin-jobs-to-google-sheets.json`](linkedin-jobs-to-google-sheets.json),
-  pinned to LinkedIn build `0.6.38`;
+  pinned to LinkedIn build `0.6.39`;
 - [`euraxess-jobs-to-google-sheets.json`](euraxess-jobs-to-google-sheets.json),
-  pinned to private EURAXESS build `1.0.8`.
+  pinned to private EURAXESS build `1.0.9`.
 
 Both workflows follow the same path:
 
@@ -15,17 +15,18 @@ schedule/manual trigger
   -> run the exact Actor build with a charge cap
   -> poll that same run ID until terminal
   -> require SUCCEEDED, exit code 0, and the exact build
-  -> read and validate factual fleet-v2 RUN-SUMMARY
-  -> fetch that run's default dataset
+  -> read and validate minimal RUN-SUMMARY v3
+  -> wait and repeat the exact paid request at most once when recommended
+  -> fetch the selected run's default dataset
   -> reconcile delivered count, validate, and flatten nomad-agent-job-v1
   -> append or update Google Sheets by jobKey
 ```
 
-They poll only the originally charged run. They require factual
-`nomad-agent-fleet-run-summary-v2` status `succeeded` or `empty` and never start
-an automatic paid retry. Missing, invalid, degraded, wrong-build, failed, or
-count-mismatched runs stop before Sheets. A validated `empty` status writes no
-rows.
+They poll each exact run ID and require `nomad-agent-run-summary-v3`. Only a
+valid usable `partial` outcome can request one automatic retry; the same input,
+build, item cap, and charge cap are reused. Missing, invalid, wrong-build,
+failed, or count-mismatched runs stop before Sheets. A validated `empty` status
+writes no rows.
 
 ## Setup
 
@@ -58,6 +59,6 @@ custom fields, provenance, or the distinction between `null` and `[]`.
 The exported graphs, exact build selectors, terminal run gate, complete input
 pass-through, canonical validation, flat projection, and credential hygiene are
 covered by offline tests. A historical LinkedIn n8n Cloud/Google Sheets smoke
-used Actor build `0.6.19`; it does not validate the current `0.6.38` workflow.
+used Actor build `0.6.19`; it does not validate the current `0.6.39` workflow.
 No EURAXESS n8n/Google Sheets destination smoke has completed. Importing these
 files supplies no credentials and does not activate a schedule.

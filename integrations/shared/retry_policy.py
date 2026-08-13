@@ -1,18 +1,14 @@
-"""Factual run-status policy shared by LinkedIn and EURAXESS integrations.
-
-Automatic paid retries are deliberately disabled. A caller may deliver only a
-terminal successful Actor run whose fleet-v2 RUN-SUMMARY is valid and whose
-status is ``succeeded`` or ``empty``. The summary reports facts; no field in it
-authorizes another run.
-"""
+"""Strict one-retry policy for the minimal public RUN-SUMMARY v3."""
 from __future__ import annotations
 
 from dataclasses import dataclass
+from datetime import datetime, timezone
+from math import ceil
 from typing import Any
 
-from validate_fleet_run_summary import (
-    FleetRunSummaryValidationError,
-    validate_fleet_run_summary,
+from validate_run_summary import (
+    RunSummaryValidationError,
+    validate_run_summary,
 )
 
 
@@ -29,9 +25,17 @@ class RunDecision:
     automatic_retry: bool
     reason: str
     summary_status: str | None = None
+    delay_seconds: int = 0
 
 
-def evaluate_terminal_run(run: Any, summary: Any = None) -> RunDecision:
+def evaluate_terminal_run(
+    run: Any,
+    summary: Any = None,
+    *,
+    retry_attempt: int = 0,
+    max_retries: int = 1,
+    now: datetime | None = None,
+) -> RunDecision:
     """Return the fail-closed dataset action for one Actor run.
 
     ``exitCode`` may be absent from some MCP projections; Apify's terminal
@@ -52,26 +56,43 @@ def evaluate_terminal_run(run: Any, summary: Any = None) -> RunDecision:
         return RunDecision(False, False, status.lower())
     if summary is None:
         return RunDecision(False, False, "missing-run-summary")
+    if type(retry_attempt) is not int or type(max_retries) is not int:
+        raise RunStateError("retry bounds must be integers")
+    if retry_attempt < 0 or max_retries not in {0, 1} or retry_attempt > max_retries:
+        raise RunStateError("retry bounds allow at most one retry")
     try:
-        validated = validate_fleet_run_summary(summary)
-    except FleetRunSummaryValidationError as exc:
+        validated = validate_run_summary(summary)
+    except RunSummaryValidationError as exc:
         raise RunStateError(f"invalid RUN-SUMMARY: {exc}") from exc
     summary_status = str(validated["status"])
-    if summary_status not in {"succeeded", "empty"}:
+    retry = validated["retry"]
+    if retry["recommended"] and retry_attempt < max_retries:
+        not_before = datetime.fromisoformat(
+            str(retry["notBefore"]).replace("Z", "+00:00")
+        ).astimezone(timezone.utc)
+        current = (now or datetime.now(timezone.utc)).astimezone(timezone.utc)
+        remaining = max(0, ceil((not_before - current).total_seconds()))
+        delay = min(int(retry["afterSeconds"]), remaining)
         return RunDecision(
             False,
-            False,
-            f"run-summary-{summary_status}",
+            True,
+            "retry-recommended",
             summary_status,
+            delay,
         )
-    return RunDecision(True, False, "succeeded", summary_status)
+    reason = (
+        "retry-bound-exhausted"
+        if retry["recommended"] and retry_attempt >= max_retries
+        else summary_status
+    )
+    return RunDecision(True, False, reason, summary_status)
 
 
 def validate_dataset_count(summary: Any, item_count: Any) -> None:
     """Require one fetched dataset item for every summary-delivered row."""
     try:
-        validated = validate_fleet_run_summary(summary)
-    except FleetRunSummaryValidationError as exc:
+        validated = validate_run_summary(summary)
+    except RunSummaryValidationError as exc:
         raise RunStateError(f"invalid RUN-SUMMARY: {exc}") from exc
     if type(item_count) is not int or item_count < 0:
         raise RunStateError("dataset item count must be a nonnegative integer")

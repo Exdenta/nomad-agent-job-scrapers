@@ -15,8 +15,8 @@ SKILL_NAME = "euraxess-enrich-translate-normalize-scraper"
 SKILL = ROOT / ".agents" / "skills" / SKILL_NAME
 SCRIPTS = SKILL / "scripts"
 FIXTURE = ROOT / "tests" / "fixtures" / "euraxess-job.json"
-SUMMARY_SCHEMA = ROOT / "integrations" / "shared" / "fleet-run-summary-v2.schema.json"
-SUMMARY_VALIDATOR = ROOT / "integrations" / "shared" / "validate_fleet_run_summary.py"
+SUMMARY_SCHEMA = ROOT / "integrations" / "shared" / "run-summary-v3.schema.json"
+SUMMARY_VALIDATOR = ROOT / "integrations" / "shared" / "validate_run_summary.py"
 CUSTOM_SCHEMA = ROOT / "integrations" / "shared" / "euraxess-v1.schema.json"
 CANONICAL_CUSTOM_SCHEMA_SHA256 = (
     "2007916ebd1d900a7de5c2db69a1790da426c2a21ef1a7013cec1db1c6dcfcb4"
@@ -51,28 +51,16 @@ def run_summary_validator(
 
 def valid_summary() -> dict[str, object]:
     return {
-        "schemaVersion": "nomad-agent-fleet-run-summary-v2",
+        "schemaVersion": "nomad-agent-run-summary-v3",
         "status": "succeeded",
         "startedAt": "2026-08-10T10:00:00Z",
         "finishedAt": "2026-08-10T10:02:00Z",
-        "partial": False,
         "truncated": False,
         "delivered": 2,
-        "sources": {
-            "euraxess": {
-                "status": "succeeded",
-                "searchRequests": 3,
-                "cardsSeen": 10,
-                "detailsCompleted": 8,
-                "normalized": 8,
-                "afterFilters": 5,
-                "deliveryEligible": 2,
-                "delivered": 2,
-                "stale": False,
-                "blocked": False,
-                "stopReason": None,
-                "errors": [],
-            }
+        "retry": {
+            "recommended": False,
+            "afterSeconds": None,
+            "notBefore": None,
         },
     }
 
@@ -226,13 +214,13 @@ class EuraxessSkillTest(unittest.TestCase):
         self.assertIn("fetch-actor-details,call-actor", metadata)
         self.assertIn('transport: "streamable_http"', metadata)
         self.assertIn("`latest` and `canary`", combined)
-        self.assertIn("build `1.0.8`", combined)
+        self.assertIn("build `1.0.9`", combined)
         self.assertIn("nomad-agent-job-search-input-v1", combined)
         self.assertIn("nomad-agent-euraxess-search-v1", combined)
         self.assertIn("RUN-SUMMARY", combined)
         self.assertIn("get-key-value-store-record", combined)
-        self.assertIn("nomad-agent-fleet-run-summary-v2", combined)
-        self.assertIn("never start an automatic paid retry", combined)
+        self.assertIn("nomad-agent-run-summary-v3", combined)
+        self.assertIn("at most once", combined.lower())
         self.assertIn("academicLevelRaw", combined)
         self.assertIn("only named people", combined.lower())
         self.assertIn("rejects `1h`", combined)
@@ -245,56 +233,54 @@ class EuraxessSkillTest(unittest.TestCase):
         self.assertNotIn("live-validated EURAXESS", combined)
         self.assertNotIn("APIFY_TOKEN=", combined)
 
-    def test_fleet_summary_schema_is_closed_and_has_no_retry_schedule(self) -> None:
+    def test_run_summary_v3_schema_is_closed_and_minimal(self) -> None:
         schema = json.loads(SUMMARY_SCHEMA.read_text(encoding="utf-8"))
         self.assertFalse(schema["additionalProperties"])
         self.assertEqual(
             schema["properties"]["schemaVersion"]["const"],
-            "nomad-agent-fleet-run-summary-v2",
+            "nomad-agent-run-summary-v3",
         )
-        source = schema["$defs"]["source"]
-        self.assertFalse(source["additionalProperties"])
-        self.assertEqual(source["properties"]["errors"]["maxItems"], 32)
-        self.assertIn("structural", schema["title"].lower())
-        self.assertIn("validate_fleet_run_summary.py", schema["description"])
+        self.assertEqual(schema["properties"]["retry"], {"$ref": "#/$defs/retry"})
+        retry = schema["$defs"]["retry"]
+        self.assertFalse(retry["additionalProperties"])
+        self.assertEqual(set(retry["required"]), {"recommended", "afterSeconds", "notBefore"})
         rendered = json.dumps(schema)
-        for forbidden in ("reschedule", "afterSeconds", "notBefore", "message"):
+        for forbidden in ("sources", "searchRequests", "cardsSeen", "errors", "message"):
             self.assertNotIn(forbidden, rendered)
+        self.assertIn("afterSeconds", rendered)
+        self.assertIn("notBefore", rendered)
 
     def test_fleet_summary_semantic_validator_accepts_canonical_example(self) -> None:
         result = run_summary_validator(valid_summary())
         self.assertEqual(result.returncode, 0, result.stderr)
-        self.assertEqual(result.stdout.strip(), "valid fleet run summary")
+        self.assertEqual(result.stdout.strip(), "valid run summary")
 
     def test_fleet_summary_semantic_validator_rejects_impossible_facts(self) -> None:
         cases = []
 
-        nonmonotonic = valid_summary()
-        nonmonotonic["sources"]["euraxess"]["detailsCompleted"] = 11
-        cases.append((nonmonotonic, "monotonically non-increasing"))
+        internal_leak = valid_summary()
+        internal_leak["sources"] = {}
+        cases.append((internal_leak, "closed object"))
 
-        empty_with_cards = valid_summary()
-        empty_with_cards.update(status="empty", delivered=0)
-        source = empty_with_cards["sources"]["euraxess"]
-        source.update(
-            status="empty",
-            cardsSeen=1,
-            detailsCompleted=0,
-            normalized=0,
-            afterFilters=0,
-            deliveryEligible=0,
-            delivered=0,
-        )
-        cases.append((empty_with_cards, "empty status cannot report cards"))
+        empty_with_delivery = valid_summary()
+        empty_with_delivery.update(status="empty", delivered=1)
+        cases.append((empty_with_delivery, "empty requires delivered=0"))
 
-        succeeded_and_blocked = valid_summary()
-        source = succeeded_and_blocked["sources"]["euraxess"]
-        source.update(blocked=True, stopReason="access-blocked")
-        cases.append((succeeded_and_blocked, "blocked requires partial"))
+        succeeded_retry = valid_summary()
+        succeeded_retry["retry"] = {
+            "recommended": True,
+            "afterSeconds": 60,
+            "notBefore": "2026-08-10T10:03:00Z",
+        }
+        cases.append((succeeded_retry, "succeeded cannot recommend"))
 
-        aggregate_mismatch = valid_summary()
-        aggregate_mismatch["delivered"] = 1
-        cases.append((aggregate_mismatch, "must equal the sum"))
+        false_with_timing = valid_summary()
+        false_with_timing["retry"]["afterSeconds"] = 60
+        cases.append((false_with_timing, "requires null timing fields"))
+
+        partial_without_jobs = valid_summary()
+        partial_without_jobs.update(status="partial", delivered=0)
+        cases.append((partial_without_jobs, "require at least one delivered job"))
 
         for summary, expected in cases:
             with self.subTest(expected=expected):
@@ -327,10 +313,10 @@ class EuraxessSkillTest(unittest.TestCase):
         self.assertIn("Actor catalog", readme)
         self.assertIn(SKILL_NAME, readme)
         self.assertIn("EURAXESS `1.0` remains private", readme)
-        self.assertIn("`latest` and `canary` point to exact build `1.0.8`", readme)
-        self.assertIn("`latest` and `canary` point to exact build `1.0.8`", readme)
-        self.assertIn("Pin exact build `1.0.8`", guide)
-        self.assertIn("build `1.0.8`", guide)
+        self.assertIn("`latest` and `canary` point to exact build `1.0.9`", readme)
+        self.assertIn("`latest` and `canary` point to exact build `1.0.9`", readme)
+        self.assertIn("Pin exact build `1.0.9`", guide)
+        self.assertIn("build `1.0.9`", guide)
         self.assertIn(f"--skill {SKILL_NAME}", agents)
 
 

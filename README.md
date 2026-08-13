@@ -20,8 +20,8 @@ English translation without requiring customer model or translation keys.
 
 | Actor | Best for | Key advantages | Availability boundary |
 | --- | --- | --- | --- |
-| [`LinkedIn Jobs Scraper — Structured Job Data`](https://apify.com/nomad-agent/linkedin-enrich-translate-normalize-scraper) | Public LinkedIn job search | Full descriptions, normalized company/location/application facts, strict filters, cross-run deduplication, optional public company profiles, enrichment, and translation | Public Store Actor; `latest` points to `0.6.38`, while `canary` also points to `0.6.38` |
-| `EURAXESS Jobs Scraper — Research & Academic Jobs` | PhD, postdoc, fellowship, research, and faculty vacancies | Research domains, requirements, funding, deadlines, contacts, multilingual keyword expansion, strict filters, deduplication, optional enrichment, and translation | Private Actor; `latest` and `canary` point to exact build `1.0.8` |
+| [`LinkedIn Jobs Scraper — Structured Job Data`](https://apify.com/nomad-agent/linkedin-enrich-translate-normalize-scraper) | Public LinkedIn job search | Full descriptions, normalized company/location/application facts, strict filters, cross-run deduplication, optional public company profiles, enrichment, and translation | Public Store Actor; `latest` points to `0.6.39`, while `canary` also points to `0.6.39` |
+| `EURAXESS Jobs Scraper — Research & Academic Jobs` | PhD, postdoc, fellowship, research, and faculty vacancies | Research domains, requirements, funding, deadlines, contacts, multilingual keyword expansion, strict filters, deduplication, optional enrichment, and translation | Private Actor; `latest` and `canary` point to exact build `1.0.9` |
 
 Both target the six-root `nomad-agent-job-v1` envelope, but source-specific
 inputs, evidence, custom fields, deployment state, and
@@ -39,9 +39,9 @@ Connect only the tools needed by the current task. Both profiles use generic
 https://mcp.apify.com?tools=fetch-actor-details,call-actor,get-actor-run,get-dataset-items,get-key-value-store-record
 ```
 
-Inspect Actor details, then use generic `call-actor` with build `0.6.38` for
-LinkedIn or `1.0.8` for EURAXESS. Confirm terminal success, verify the exact
-build through the Apify run API, validate factual fleet-v2 `RUN-SUMMARY`, and
+Inspect Actor details, then use generic `call-actor` with build `0.6.39` for
+LinkedIn or `1.0.9` for EURAXESS. Confirm terminal success, verify the exact
+build through the Apify run API, validate minimal v3 `RUN-SUMMARY`, and
 reconcile the default dataset.
 
 Or let the Apify CLI configure a supported client:
@@ -66,8 +66,8 @@ Codex instructions and per-Actor compatibility gates.
 
 | Priority | Pack | Workflow | Status |
 | --- | --- | --- | --- |
-| 1 | [n8n](integrations/n8n/README.md) | Schedule -> Actor -> flatten -> Google Sheets append-or-update | Exact LinkedIn `0.6.38` and EURAXESS `1.0.8` pins; all current input fields supported |
-| 2 | [Make](integrations/make/README.md) | Completed Actor run -> flatten -> Google Sheets upsert | Task-owned complete inputs; exact LinkedIn `0.6.38` and EURAXESS `1.0.8` pins required |
+| 1 | [n8n](integrations/n8n/README.md) | Schedule -> Actor -> flatten -> Google Sheets append-or-update | Exact LinkedIn `0.6.39` and EURAXESS `1.0.9` pins; all current input fields supported |
+| 2 | [Make](integrations/make/README.md) | Completed Actor run -> flatten -> Google Sheets upsert | Task-owned complete inputs; exact LinkedIn `0.6.39` and EURAXESS `1.0.9` pins required |
 | 3 | [Airtable](integrations/airtable/README.md) | Import 32 fields and upsert on stable `jobKey` | Shared flat destination preset with `linkedin` and `euraxess` source choices |
 | 4 | [MCP](integrations/mcp/README.md) | ChatGPT, Claude, Cursor, Codex, or another MCP client | Exact-build generic calls, terminal-status checks, and validated datasets for both |
 | 5 | [API/webhook](integrations/api/README.md) | Custom job board, database, or internal application | Exact-build, bounded REST and idempotent webhook recipes for both Actors |

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import importlib.util
+from datetime import datetime, timezone
 from pathlib import Path
 import sys
 import unittest
@@ -18,33 +19,23 @@ spec.loader.exec_module(retry_policy)
 
 class RetryPolicyTest(unittest.TestCase):
     @staticmethod
-    def summary(status: str = "succeeded", delivered: int = 1) -> dict:
-        source_status = status
-        cards = 0 if status == "empty" else delivered
-        degraded = status in {"partial", "failed", "deadline"}
+    def summary(
+        status: str = "succeeded",
+        delivered: int = 1,
+        *,
+        retry: bool = False,
+    ) -> dict:
         return {
-            "schemaVersion": "nomad-agent-fleet-run-summary-v2",
+            "schemaVersion": "nomad-agent-run-summary-v3",
             "status": status,
             "startedAt": "2026-08-13T10:00:00Z",
             "finishedAt": "2026-08-13T10:01:00Z",
-            "partial": status in {"partial", "deadline"},
             "truncated": False,
             "delivered": delivered,
-            "sources": {
-                "linkedin": {
-                    "status": source_status,
-                    "searchRequests": 1,
-                    "cardsSeen": cards,
-                    "detailsCompleted": cards,
-                    "normalized": cards,
-                    "afterFilters": cards,
-                    "deliveryEligible": delivered,
-                    "delivered": delivered,
-                    "stale": False,
-                    "blocked": False,
-                    "stopReason": "source-failure" if degraded else None,
-                    "errors": [],
-                }
+            "retry": {
+                "recommended": retry,
+                "afterSeconds": 60 if retry else None,
+                "notBefore": "2026-08-13T10:02:00Z" if retry else None,
             },
         }
 
@@ -63,18 +54,42 @@ class RetryPolicyTest(unittest.TestCase):
         self.assertTrue(decision.fetch_dataset)
         self.assertFalse(decision.automatic_retry)
 
-    def test_missing_or_degraded_summary_blocks_delivery_without_retry(self) -> None:
+    def test_missing_summary_blocks_delivery(self) -> None:
         missing = retry_policy.evaluate_terminal_run({"status": "SUCCEEDED"})
         self.assertFalse(missing.fetch_dataset)
         self.assertFalse(missing.automatic_retry)
         self.assertEqual(missing.reason, "missing-run-summary")
-        for status in ("partial", "failed", "deadline"):
-            with self.subTest(status=status):
-                decision = retry_policy.evaluate_terminal_run(
-                    {"status": "SUCCEEDED"}, self.summary(status, 0),
-                )
-                self.assertFalse(decision.fetch_dataset)
-                self.assertFalse(decision.automatic_retry)
+
+    def test_partial_can_request_one_bounded_retry(self) -> None:
+        now = datetime(2026, 8, 13, 10, 1, tzinfo=timezone.utc)
+        summary = self.summary("partial", 1, retry=True)
+        first = retry_policy.evaluate_terminal_run(
+            {"status": "SUCCEEDED", "exitCode": 0},
+            summary,
+            retry_attempt=0,
+            now=now,
+        )
+        self.assertFalse(first.fetch_dataset)
+        self.assertTrue(first.automatic_retry)
+        self.assertEqual(first.delay_seconds, 60)
+
+        exhausted = retry_policy.evaluate_terminal_run(
+            {"status": "SUCCEEDED", "exitCode": 0},
+            summary,
+            retry_attempt=1,
+            now=now,
+        )
+        self.assertTrue(exhausted.fetch_dataset)
+        self.assertFalse(exhausted.automatic_retry)
+        self.assertEqual(exhausted.reason, "retry-bound-exhausted")
+
+    def test_partial_without_retry_is_usable(self) -> None:
+        decision = retry_policy.evaluate_terminal_run(
+            {"status": "SUCCEEDED", "exitCode": 0},
+            self.summary("partial", 1),
+        )
+        self.assertTrue(decision.fetch_dataset)
+        self.assertFalse(decision.automatic_retry)
 
     def test_dataset_count_must_equal_summary_delivered(self) -> None:
         retry_policy.validate_dataset_count(self.summary(delivered=2), 2)

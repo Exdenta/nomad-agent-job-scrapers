@@ -1,27 +1,27 @@
-# Factual fleet-v2 RUN-SUMMARY
+# Minimal public RUN-SUMMARY v3
 
-Every non-cancelled Actor run attempts to write `RUN-SUMMARY` in its default
-key-value store. The record uses the closed discriminator
-`nomad-agent-fleet-run-summary-v2`.
+A completed usable Actor run writes `RUN-SUMMARY` in its default key-value
+store with discriminator `nomad-agent-run-summary-v3`.
 
-The root and each selected source use one of: `succeeded`, `empty`,
-`partial`, `failed`, or `deadline`. Only `succeeded` and `empty` are
-eligible for dataset delivery.
+The closed public record contains only:
 
-- `empty` is a positively established empty source result, not merely zero
-  delivered rows.
-- `partial` preserves surviving rows plus degradation.
-- `failed` and `deadline` preserve terminal failure facts.
-- Funnel counts are monotonically non-increasing from `cardsSeen` through
-  `delivered`.
-- Root `delivered` equals the sum of source delivered counts and must equal
-  the complete default dataset row count before delivery.
-- Missing or invalid status stops delivery.
+- `schemaVersion`
+- `status`: `succeeded`, `empty`, or usable `partial`
+- `startedAt` and `finishedAt`
+- `truncated`
+- `delivered`, which must equal the complete selected dataset row count
+- atomic `retry`: `recommended`, `afterSeconds`, and `notBefore`
 
-`errors[].retryable` is a diagnostic fact about the failed operation. The
-summary contains no retry schedule, does not authorize another paid run, and
-must never be converted into an automatic retry. Only an explicit caller or
-operator decision may start a new run.
+`succeeded` and `partial` require at least one delivered job. `empty`
+requires zero delivered jobs, no truncation, and no retry. A recommended retry
+is valid only for `partial`, uses a delay from 1 through 3600 seconds, and may
+be honored at most once with the exact same input, build, item cap, and charge
+cap.
+
+Source names, funnel counters, blocking reasons, errors, exception text,
+requests, responses, and raw source data are not public summary fields. Failed,
+timed-out, and aborted Apify runs are governed by terminal run metadata and are
+never retried from `RUN-SUMMARY`.
 
 Validate a downloaded record from the installed skill directory:
 

@@ -45,7 +45,7 @@ class MakePackTest(unittest.TestCase):
             "Find and upsert LinkedIn jobs to Google Sheets with Apify",
         )
         ids = [module["id"] for module in self.modules]
-        self.assertEqual(ids, [1, 2, 3, 4, 8, 9, 10, 11, 12, 13])
+        self.assertEqual(ids, [1, 2, 3, 4, 6, 7, 8, 9, 10, 11, 12, 13])
         self.assertEqual(len(ids), len(set(ids)))
         self.assertTrue(self.blueprint["metadata"]["scenario"]["sequential"])
         self.assertTrue(self.blueprint["metadata"]["instant"])
@@ -71,8 +71,8 @@ class MakePackTest(unittest.TestCase):
             for item in self.by_name["Configuration"]["mapper"]["variables"]
         }
         self.assertEqual(config["maxitems"], "1")
-        self.assertEqual(config["actorbuild"], "0.6.38")
-        self.assertNotIn("apifytaskid", config)
+        self.assertEqual(config["actorbuild"], "0.6.39")
+        self.assertEqual(config["apifytaskid"], "REPLACE_WITH_APIFY_TASK_ID")
         self.assertEqual(
             config["googlespreadsheetid"],
             "REPLACE_WITH_GOOGLE_SPREADSHEET_ID",
@@ -85,8 +85,8 @@ class MakePackTest(unittest.TestCase):
         )
         self.assertEqual(dataset["mapper"]["limit"], "{{2.maxitems}}")
 
-    def test_delivery_requires_exact_success_and_has_no_paid_retry_route(self) -> None:
-        status = self.by_name["Read factual RUN-SUMMARY"]
+    def test_delivery_uses_closed_v3_status_and_one_bounded_retry_route(self) -> None:
+        status = self.by_name["Read public RUN-SUMMARY v3"]
         self.assertEqual(status["mapper"]["url"], "{{1.output.runSummary}}")
         self.assertFalse(status["mapper"]["serializeUrl"])
         self.assertEqual(status["filter"], {
@@ -97,15 +97,29 @@ class MakePackTest(unittest.TestCase):
                 {"a": "{{1.output.runSummary}}", "o": "exist"},
             ]],
         })
+        wait = self.by_name["Wait bounded v3 retry delay"]
+        retry = self.by_name["Retry the same Apify Task once"]
+        self.assertEqual(wait["module"], "util:FunctionSleep")
+        self.assertEqual(wait["mapper"]["duration"], "{{3.data.retry.afterSeconds}}")
+        retry_filter = json.dumps(wait["filter"])
+        self.assertIn("nomad-agent-run-summary-v3", retry_filter)
+        self.assertIn("{{1.meta.origin}}", retry_filter)
+        self.assertIn('"b": "240"', retry_filter)
+        self.assertEqual(retry["module"], "apify:runTask")
+        self.assertEqual(retry["mapper"], {
+            "taskId": "{{2.apifytaskid}}",
+            "runSync": False,
+        })
         delivery = self.by_name["Get normalized jobs"]
-        self.assertEqual(delivery["filter"]["name"], "Deliver only a valid factual run status")
-        self.assertIn("nomad-agent-fleet-run-summary-v2", json.dumps(delivery["filter"]))
-        self.assertIn("sources.linkedin.status", json.dumps(delivery["filter"]))
+        self.assertEqual(
+            delivery["filter"]["name"],
+            "Deliver a valid v3 outcome when no first retry is pending",
+        )
+        self.assertIn("nomad-agent-run-summary-v3", json.dumps(delivery["filter"]))
         rendered = json.dumps(self.blueprint)
         self.assertIn("RUN-SUMMARY", rendered)
-        self.assertNotIn("reschedule", rendered)
-        self.assertNotIn("apify:runTask", rendered)
-        self.assertNotIn("util:FunctionSleep", rendered)
+        self.assertNotIn("nomad-agent-fleet-run-summary-v2", rendered)
+        self.assertNotIn("sources.linkedin", rendered)
 
     def test_native_projection_matches_flat_schema_without_paid_code(self) -> None:
         projection = self.by_name["Flatten normalized job"]

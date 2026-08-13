@@ -1,13 +1,11 @@
 #!/usr/bin/env python3
-"""Validate the minimal public nomad-agent-run-summary-v3 contract."""
+"""Validate the minimal public ``nomad-agent-run-summary-v3`` contract."""
 from __future__ import annotations
 
-import argparse
 import datetime
 import json
 import sys
 from collections.abc import Mapping
-from pathlib import Path
 from typing import Any
 
 
@@ -17,13 +15,15 @@ ROOT_KEYS = {
 }
 RETRY_KEYS = {"recommended", "afterSeconds", "notBefore"}
 STATUSES = {"succeeded", "empty", "partial"}
+MAX_COUNTER = 2_147_483_647
+MAX_RETRY_AFTER_SECONDS = 3_600
 
 
 class RunSummaryValidationError(ValueError):
-    pass
+    """Raised when the public run outcome is malformed or contradictory."""
 
 
-def _object(value: Any, path: str, keys: set[str]) -> Mapping[str, Any]:
+def _closed(value: Any, path: str, keys: set[str]) -> Mapping[str, Any]:
     if not isinstance(value, Mapping) or set(value) != keys:
         raise RunSummaryValidationError(f"{path} must be a closed object")
     return value
@@ -44,13 +44,13 @@ def _time(value: Any, path: str) -> datetime.datetime:
 
 
 def _count(value: Any, path: str) -> int:
-    if type(value) is not int or not 0 <= value <= 2_147_483_647:
+    if type(value) is not int or not 0 <= value <= MAX_COUNTER:
         raise RunSummaryValidationError(f"{path} must be a nonnegative integer")
     return value
 
 
 def validate_run_summary(value: Any) -> Mapping[str, Any]:
-    summary = _object(value, "summary", ROOT_KEYS)
+    summary = _closed(value, "summary", ROOT_KEYS)
     if summary["schemaVersion"] != "nomad-agent-run-summary-v3":
         raise RunSummaryValidationError("summary.schemaVersion is unsupported")
     status = summary["status"]
@@ -59,21 +59,26 @@ def validate_run_summary(value: Any) -> Mapping[str, Any]:
     started = _time(summary["startedAt"], "summary.startedAt")
     finished = _time(summary["finishedAt"], "summary.finishedAt")
     if finished < started:
-        raise RunSummaryValidationError("summary timestamps are reversed")
+        raise RunSummaryValidationError("summary.finishedAt cannot precede startedAt")
     if type(summary["truncated"]) is not bool:
         raise RunSummaryValidationError("summary.truncated must be boolean")
     delivered = _count(summary["delivered"], "summary.delivered")
-    retry = _object(summary["retry"], "summary.retry", RETRY_KEYS)
+
+    retry = _closed(summary["retry"], "summary.retry", RETRY_KEYS)
     recommended = retry["recommended"]
     if type(recommended) is not bool:
         raise RunSummaryValidationError("summary.retry.recommended must be boolean")
     if recommended:
         after = retry["afterSeconds"]
-        if type(after) is not int or not 1 <= after <= 3_600:
+        if (
+            type(after) is not int
+            or not 1 <= after <= MAX_RETRY_AFTER_SECONDS
+        ):
             raise RunSummaryValidationError(
                 "summary.retry.afterSeconds must be an integer from 1 through 3600"
             )
-        if _time(retry["notBefore"], "summary.retry.notBefore") < finished:
+        not_before = _time(retry["notBefore"], "summary.retry.notBefore")
+        if not_before < finished:
             raise RunSummaryValidationError(
                 "summary.retry.notBefore cannot precede finishedAt"
             )
@@ -81,6 +86,7 @@ def validate_run_summary(value: Any) -> Mapping[str, Any]:
         raise RunSummaryValidationError(
             "a non-recommended retry requires null timing fields"
         )
+
     if status == "empty":
         if delivered != 0 or summary["truncated"] or recommended:
             raise RunSummaryValidationError(
@@ -88,7 +94,7 @@ def validate_run_summary(value: Any) -> Mapping[str, Any]:
             )
     elif delivered < 1:
         raise RunSummaryValidationError(
-            "succeeded and partial require at least one delivered job"
+            "succeeded and partial outcomes require at least one delivered job"
         )
     if status == "succeeded" and recommended:
         raise RunSummaryValidationError("succeeded cannot recommend a retry")
@@ -96,13 +102,9 @@ def validate_run_summary(value: Any) -> Mapping[str, Any]:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("input", nargs="?", type=Path)
-    args = parser.parse_args()
     try:
-        text = args.input.read_text(encoding="utf-8") if args.input else sys.stdin.read()
-        validate_run_summary(json.loads(text))
-    except (OSError, json.JSONDecodeError, RunSummaryValidationError) as exc:
+        validate_run_summary(json.load(sys.stdin))
+    except (json.JSONDecodeError, RunSummaryValidationError) as exc:
         print(f"invalid run summary: {exc}", file=sys.stderr)
         return 1
     print("valid run summary")

@@ -59,7 +59,7 @@ EURAXESS-specific research, funding, education, language, and application
 evidence remains in the canonical nested record; the 32-column destination
 view does not attempt to flatten every `custom` field.
 
-All current LinkedIn `0.6.38` and EURAXESS `1.0.8` search features remain
+All current LinkedIn `0.6.39` and EURAXESS `1.0.9` search features remain
 available in the upstream n8n, Make, MCP, or API runner. Airtable receives the
 result projection only, so input features need no Airtable-specific mapping.
 Keep the canonical Actor dataset (or a separately access-controlled serialized
@@ -69,10 +69,9 @@ source extensions, or raw content that the 32 fields do not contain.
 ## Upstream run boundary
 
 This Airtable preset is destination-only. The n8n, Make, MCP, or API workflow
-feeding it must require terminal success, the exact build, a valid factual
-fleet-v2 `RUN-SUMMARY` with `succeeded` or `empty` status, and a reconciled
-default dataset before writing rows. The checked-in workflows start no
-automatic paid retry. See the
+feeding it must require terminal success, the exact build, a valid minimal v3
+`RUN-SUMMARY`, the hard one-retry bound, and a reconciled default dataset
+before writing rows. See the
 [shared run-completion policy](../../docs/retry-contract.md).
 
 ## Field choices

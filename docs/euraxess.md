@@ -4,7 +4,7 @@
 EURAXESS PhD, postdoctoral, fellowship, research, and faculty vacancies.
 
 This repository documents the strict `1.0` contract. The private Actor's
-`latest` and `canary` tags point to exact build `1.0.8`. These contract files
+`latest` and `canary` tags point to exact build `1.0.9`. These contract files
 describe expected inputs and outputs; they do not by themselves prove live
 source or destination behavior.
 
@@ -69,7 +69,7 @@ python3 scripts/install_skill.py \
 ```
 
 Before any live run, fetch Actor details and require the matching strict input
-schema. Pin exact build `1.0.8`; do not rely on a movable tag in a client
+schema. Pin exact build `1.0.9`; do not rely on a movable tag in a client
 integration.
 
 ## Integration artifacts
@@ -83,9 +83,9 @@ examples:
 - [exact-build REST API and webhook guidance](../integrations/api/README.md);
 - the shared [Airtable destination preset](../integrations/airtable/README.md), using `euraxess:<externalId>` as `jobKey`.
 
-The n8n and Make assets require terminal success, exact build `1.0.8`, a valid
-factual fleet-v2 `RUN-SUMMARY` status of `succeeded` or `empty`, and a default
-dataset reconciled with `delivered`. They do not automatically start another paid run.
+The n8n and Make assets require terminal success, exact build `1.0.9`, a valid
+minimal v3 `RUN-SUMMARY`, the hard one-retry bound, and a default dataset
+reconciled with `delivered`.
 They preserve the canonical Actor dataset and derive only the documented
 32-column flat view for Google Sheets. Importing an asset never supplies
 credentials or activates a schedule. No EURAXESS destination-platform smoke

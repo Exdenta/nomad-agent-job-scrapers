@@ -300,7 +300,7 @@ class ContractToolsTest(unittest.TestCase):
             "storages.datasets.default.id",
             "storages.keyValueStores.default.id",
             "RUN-SUMMARY",
-            "nomad-agent-fleet-run-summary-v2",
+            "nomad-agent-run-summary-v3",
             "get-dataset-items",
             "Paginate",
             "zero dataset items",

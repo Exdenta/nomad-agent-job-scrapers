@@ -58,16 +58,15 @@ v1 custom extension.
 ## Run completion
 
 Delivery uses terminal Actor status, exact build identity, the canonical
-factual `nomad-agent-fleet-run-summary-v2` record under `RUN-SUMMARY`, and the
+minimal `nomad-agent-run-summary-v3` record under `RUN-SUMMARY`, and the
 validated default dataset. Maintained integrations require the summary,
-continue only for `succeeded` or `empty`, and reconcile its `delivered` count
-with the dataset. It is never automatic retry authority. See the
+reconcile its `delivered` count with the dataset, and honor at most one atomic
+bounded retry recommendation for a usable `partial` result. See the
 [run-completion policy](retry-contract.md).
 
-The JSON Schema documents the closed structural shape. Cross-field facts such
-as monotonic funnel counts, status consistency, and aggregate delivered parity
-must also pass:
+The JSON Schema documents the closed structural shape. Cross-field outcome and
+atomic retry invariants must also pass:
 
 ```bash
-python3 integrations/shared/validate_fleet_run_summary.py run-summary.json
+python3 integrations/shared/validate_run_summary.py < run-summary.json
 ```

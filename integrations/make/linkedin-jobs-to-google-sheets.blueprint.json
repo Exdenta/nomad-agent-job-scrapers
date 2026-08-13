@@ -13,7 +13,7 @@
           "y": 0,
           "name": "Watch completed LinkedIn Task runs"
         },
-        "notes": "Select the Apify Task pinned to exact LinkedIn build 0.6.38. Only terminal successful runs are delivered; this scenario never starts another Actor run."
+        "notes": "Select the Apify Task pinned to exact LinkedIn build 0.6.39. Only terminal successful runs are evaluated; one valid partial v3 outcome may repeat the same Task once."
       }
     },
     {
@@ -23,13 +23,17 @@
       "parameters": {},
       "mapper": {
         "variables": [
-          {
-            "name": "maxitems",
-            "value": "1"
-          },
+        {
+          "name": "maxitems",
+          "value": "1"
+        },
+        {
+          "name": "apifytaskid",
+          "value": "REPLACE_WITH_APIFY_TASK_ID"
+        },
           {
             "name": "actorbuild",
-            "value": "0.6.38"
+            "value": "0.6.39"
           },
           {
             "name": "googlespreadsheetid",
@@ -48,7 +52,7 @@
           "y": 0,
           "name": "Configuration"
         },
-        "notes": "Replace the spreadsheet ID. Select the Task pinned to exact build 0.6.38 in the trigger. Keep maxitems small for the first destination smoke test."
+    "notes": "Replace the Task ID and spreadsheet ID. Select the same Task pinned to exact build 0.6.39 in the trigger. Keep maxitems small for the first destination smoke test."
       }
     },
     {
@@ -83,9 +87,9 @@
         "designer": {
           "x": 600,
           "y": 0,
-          "name": "Read factual RUN-SUMMARY"
+          "name": "Read public RUN-SUMMARY v3"
         },
-        "notes": "Reads the Actor output schema's signed runSummary link for the original run. Missing or malformed status stops the scenario; it never authorizes a retry."
+        "notes": "Reads the Actor output schema's signed runSummary link. Missing or malformed v3 stops the scenario; one valid partial outcome may authorize the bounded retry route."
       },
       "filter": {
         "name": "Read status only for the exact successful Actor build",
@@ -121,11 +125,102 @@
           "y": 150,
           "name": "Validate terminal run and deliver"
         },
-        "notes": "Deliver only when the original run is terminal SUCCEEDED, its factual fleet-v2 RUN-SUMMARY is succeeded or empty, and the exact configured build matches. The scenario performs no automatic paid retry."
+      "notes": "Validate minimal RUN-SUMMARY v3. A usable partial outcome may repeat the same saved Task once; API-origin retry completions cannot retry again."
+    },
+    "routes": [
+      {
+        "flow": [
+          {
+            "id": 6,
+            "module": "util:FunctionSleep",
+            "version": 1,
+            "parameters": {},
+            "filter": {
+              "name": "Retry one valid partial v3 outcome",
+              "conditions": [
+                [
+                  {
+                    "a": "{{3.statusCode}}",
+                    "b": "200",
+                    "o": "number:equal"
+                  },
+                  {
+                    "a": "{{3.data.schemaVersion}}",
+                    "b": "nomad-agent-run-summary-v3",
+                    "o": "text:equal"
+                  },
+                  {
+                    "a": "{{3.data.status}}",
+                    "b": "partial",
+                    "o": "text:equal"
+                  },
+                  {
+                    "a": "{{3.data.delivered}}",
+                    "b": "1",
+                    "o": "number:greaterorequal"
+                  },
+                  {
+                    "a": "{{3.data.retry.recommended}}",
+                    "b": true,
+                    "o": "boolean:equal"
+                  },
+                  {
+                    "a": "{{3.data.retry.afterSeconds}}",
+                    "b": "1",
+                    "o": "number:greaterorequal"
+                  },
+                  {
+                    "a": "{{3.data.retry.afterSeconds}}",
+                    "b": "240",
+                    "o": "number:lessorequal"
+                  },
+                  {
+                    "a": "{{3.data.retry.notBefore}}",
+                    "o": "exist"
+                  },
+                  {
+                    "a": "{{1.meta.origin}}",
+                    "b": "API",
+                    "o": "text:notequal"
+                  }
+                ]
+              ]
+            },
+            "mapper": {
+              "duration": "{{3.data.retry.afterSeconds}}"
+            },
+            "metadata": {
+              "designer": {
+                "x": 1500,
+                "y": -300,
+                "name": "Wait bounded v3 retry delay"
+              },
+              "notes": "Make's basic in-scenario wait is bounded to 240 seconds. Longer valid v3 recommendations are delivered as usable partial output without an automatic retry."
+            }
+          },
+          {
+            "id": 7,
+            "module": "apify:runTask",
+            "version": 1,
+            "parameters": {},
+            "mapper": {
+              "taskId": "{{2.apifytaskid}}",
+              "runSync": false
+            },
+            "metadata": {
+              "designer": {
+                "x": 1800,
+                "y": -300,
+                "name": "Retry the same Apify Task once"
+              },
+              "notes": "Starts the same saved Task asynchronously. Its API-origin completion cannot enter the retry route again."
+            }
+          }
+        ]
       },
-      "routes": [
-        {
-          "flow": [
+
+      {
+        "flow": [
             {
               "id": 8,
               "module": "apify:fetchDatasetItems",
@@ -143,15 +238,20 @@
                   "y": 150,
                   "name": "Get normalized jobs"
                 },
-                "notes": "Fetches the completed run default dataset only after factual RUN-SUMMARY validation. An empty status means no matching jobs; all degraded or invalid statuses stop without an automatic retry."
+                "notes": "Fetches the selected run dataset after minimal v3 validation. A valid partial recommendation retries once when its delay fits the bounded Make route; the retried or otherwise usable partial dataset can then be delivered."
               },
               "filter": {
-                "name": "Deliver only a valid factual run status",
+                "name": "Deliver a valid v3 outcome when no first retry is pending",
                 "conditions": [
                   [
                     {
+                      "a": "{{3.statusCode}}",
+                      "b": "200",
+                      "o": "number:equal"
+                    },
+                    {
                       "a": "{{3.data.schemaVersion}}",
-                      "b": "nomad-agent-fleet-run-summary-v2",
+                      "b": "nomad-agent-run-summary-v3",
                       "o": "text:equal"
                     },
                     {
@@ -160,26 +260,170 @@
                       "o": "text:equal"
                     },
                     {
-                      "a": "{{3.data.sources.linkedin.status}}",
-                      "b": "succeeded",
+                      "a": "{{3.data.delivered}}",
+                      "b": "1",
+                      "o": "number:greaterorequal"
+                    },
+                    {
+                      "a": "{{3.data.retry.recommended}}",
+                      "b": false,
+                      "o": "boolean:equal"
+                    },
+                    {
+                      "a": "{{1.stats.datasetItems}}",
+                      "b": "{{3.data.delivered}}",
+                      "o": "number:equal"
+                    }
+                  ],
+                  [
+                    {
+                      "a": "{{3.statusCode}}",
+                      "b": "200",
+                      "o": "number:equal"
+                    },
+                    {
+                      "a": "{{3.data.schemaVersion}}",
+                      "b": "nomad-agent-run-summary-v3",
                       "o": "text:equal"
+                    },
+                    {
+                      "a": "{{3.data.status}}",
+                      "b": "empty",
+                      "o": "text:equal"
+                    },
+                    {
+                      "a": "{{3.data.delivered}}",
+                      "b": "0",
+                      "o": "number:equal"
+                    },
+                    {
+                      "a": "{{3.data.truncated}}",
+                      "b": false,
+                      "o": "boolean:equal"
+                    },
+                    {
+                      "a": "{{3.data.retry.recommended}}",
+                      "b": false,
+                      "o": "boolean:equal"
+                    },
+                    {
+                      "a": "{{1.stats.datasetItems}}",
+                      "b": "0",
+                      "o": "number:equal"
+                    }
+                  ],
+                  [
+                    {
+                      "a": "{{3.statusCode}}",
+                      "b": "200",
+                      "o": "number:equal"
+                    },
+                    {
+                      "a": "{{3.data.schemaVersion}}",
+                      "b": "nomad-agent-run-summary-v3",
+                      "o": "text:equal"
+                    },
+                    {
+                      "a": "{{3.data.status}}",
+                      "b": "partial",
+                      "o": "text:equal"
+                    },
+                    {
+                      "a": "{{3.data.delivered}}",
+                      "b": "1",
+                      "o": "number:greaterorequal"
+                    },
+                    {
+                      "a": "{{3.data.retry.recommended}}",
+                      "b": false,
+                      "o": "boolean:equal"
+                    },
+                    {
+                      "a": "{{1.stats.datasetItems}}",
+                      "b": "{{3.data.delivered}}",
+                      "o": "number:equal"
                     }
                   ],
                   [
                     {
                       "a": "{{3.data.schemaVersion}}",
-                      "b": "nomad-agent-fleet-run-summary-v2",
+                      "b": "nomad-agent-run-summary-v3",
                       "o": "text:equal"
                     },
                     {
                       "a": "{{3.data.status}}",
-                      "b": "empty",
+                      "b": "partial",
                       "o": "text:equal"
                     },
                     {
-                      "a": "{{3.data.sources.linkedin.status}}",
-                      "b": "empty",
+                      "a": "{{3.data.delivered}}",
+                      "b": "1",
+                      "o": "number:greaterorequal"
+                    },
+                    {
+                      "a": "{{3.data.retry.recommended}}",
+                      "b": true,
+                      "o": "boolean:equal"
+                    },
+                    {
+                      "a": "{{3.data.retry.afterSeconds}}",
+                      "b": "1",
+                      "o": "number:greaterorequal"
+                    },
+                    {
+                      "a": "{{3.data.retry.notBefore}}",
+                      "o": "exist"
+                    },
+                    {
+                      "a": "{{1.meta.origin}}",
+                      "b": "API",
                       "o": "text:equal"
+                    },
+                    {
+                      "a": "{{1.stats.datasetItems}}",
+                      "b": "{{3.data.delivered}}",
+                      "o": "number:equal"
+                    }
+                  ],
+                  [
+                    {
+                      "a": "{{3.data.schemaVersion}}",
+                      "b": "nomad-agent-run-summary-v3",
+                      "o": "text:equal"
+                    },
+                    {
+                      "a": "{{3.data.status}}",
+                      "b": "partial",
+                      "o": "text:equal"
+                    },
+                    {
+                      "a": "{{3.data.delivered}}",
+                      "b": "1",
+                      "o": "number:greaterorequal"
+                    },
+                    {
+                      "a": "{{3.data.retry.recommended}}",
+                      "b": true,
+                      "o": "boolean:equal"
+                    },
+                    {
+                      "a": "{{3.data.retry.afterSeconds}}",
+                      "b": "240",
+                      "o": "number:greater"
+                    },
+                    {
+                      "a": "{{3.data.retry.afterSeconds}}",
+                      "b": "3600",
+                      "o": "number:lessorequal"
+                    },
+                    {
+                      "a": "{{3.data.retry.notBefore}}",
+                      "o": "exist"
+                    },
+                    {
+                      "a": "{{1.stats.datasetItems}}",
+                      "b": "{{3.data.delivered}}",
+                      "o": "number:equal"
                     }
                   ]
                 ]

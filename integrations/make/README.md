@@ -3,9 +3,9 @@
 Import either blueprint:
 
 - [`linkedin-jobs-to-google-sheets.blueprint.json`](linkedin-jobs-to-google-sheets.blueprint.json),
-  for a Task pinned to LinkedIn build `0.6.38`;
+  for a Task pinned to LinkedIn build `0.6.39`;
 - [`euraxess-jobs-to-google-sheets.blueprint.json`](euraxess-jobs-to-google-sheets.blueprint.json),
-  for a Task pinned to private EURAXESS build `1.0.8`.
+  for a Task pinned to private EURAXESS build `1.0.9`.
 
 The Apify Task owns the complete Actor input, item limit, exact build, and
 charge cap. The Make scenario consumes the completed Task run:
@@ -13,19 +13,19 @@ charge cap. The Make scenario consumes the completed Task run:
 ```text
 completed Task run
   -> require SUCCEEDED and the configured exact build
-  -> read factual fleet-v2 RUN-SUMMARY from the original run store
-  -> require root and source status succeeded or empty
-  -> fetch that run's default dataset
+  -> read minimal RUN-SUMMARY v3 from the completed run store
+  -> wait and repeat the same Task at most once when v3 recommends it
+  -> fetch the selected run's default dataset
   -> validate source identity and flatten each job
   -> find by jobKey
   -> update the existing row or append a new row
 ```
 
 The blueprints read `RUN-SUMMARY` through the Actor output schema's signed
-`output.runSummary` link and contain no sleep or Task-run module. They never
-start an automatic second paid run. A valid `empty` status writes no rows;
-missing, invalid, degraded, failed, aborted, timed-out, or wrong-build runs do
-not enter delivery.
+`output.runSummary` link. Only a valid usable `partial` v3 outcome can pass the
+one bounded sleep-and-retry route; API-origin retried Task runs cannot enter
+that route again. A valid `empty` status writes no rows; missing, invalid,
+failed, aborted, timed-out, or wrong-build runs do not enter delivery.
 
 ## Setup
 
@@ -57,9 +57,9 @@ custom fields, raw evidence, or provenance.
 
 ## Validation boundary
 
-The blueprint graphs, exact-build and factual-status filters, absence of paid
-retry modules, 32-column mapping, source checks, and credential hygiene are
+The blueprint graphs, exact-build and v3 filters, one-retry bound, 32-column
+mapping, source checks, and credential hygiene are
 covered by offline tests. A historical LinkedIn Make/Google Sheets smoke used build `0.6.19`; the
-current LinkedIn `0.6.38` and EURAXESS `1.0.8` destination paths still need
+current LinkedIn `0.6.39` and EURAXESS `1.0.9` destination paths still need
 fresh credentialed Make smoke tests. Importing a blueprint supplies no
 credentials and does not activate the scenario.

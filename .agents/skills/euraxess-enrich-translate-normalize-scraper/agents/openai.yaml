@@ -7,6 +7,6 @@ dependencies:
   tools:
     - type: "mcp"
       value: "apify"
-      description: "Inspect compatibility, call exact EURAXESS build 1.0.8, validate factual RUN-SUMMARY, and retrieve its dataset"
+      description: "Inspect compatibility, call exact EURAXESS build 1.0.9, validate factual RUN-SUMMARY, and retrieve its dataset"
       transport: "streamable_http"
       url: "https://mcp.apify.com?tools=fetch-actor-details,call-actor,get-actor-run,get-dataset-items,get-key-value-store-record"

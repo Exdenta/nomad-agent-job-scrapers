@@ -6,11 +6,11 @@ description: Find and integrate EURAXESS research and academic jobs with the Api
 # EURAXESS research and academic job search
 
 Use this skill for the strict `1.0` EURAXESS contract. Private `latest` and
-`canary` both resolve to build `1.0.8`. Installing this skill does not prove
+`canary` both resolve to build `1.0.9`. Installing this skill does not prove
 that the private Actor is accessible to the current user.
 
 Use Apify MCP through generic `call-actor` with
-`callOptions.build: "1.0.8"`; do not rely on a mutable tag. Keep the nested
+`callOptions.build: "1.0.9"`; do not rely on a mutable tag. Keep the nested
 normalized record as the system of record; flatten only for a
 destination that requires table-shaped values.
 
@@ -26,8 +26,8 @@ repository.
 1. Fetch the deployed Actor details to confirm account access and current
    pricing.
 2. Use only generic `call-actor` with exact
-   `callOptions.build: "1.0.8"`. Require the run response to report
-   `buildNumber: "1.0.8"` before accepting its output.
+   `callOptions.build: "1.0.9"`. Require the run response to report
+   `buildNumber: "1.0.9"` before accepting its output.
 3. Send `schemaVersion: nomad-agent-job-search-input-v1` and the closed
    `euraxessSearch` extension described in
    [references/input-contract.md](references/input-contract.md).
@@ -102,13 +102,13 @@ this outer envelope; the documented bounded input above belongs under `input`:
   "actor": "nomad-agent/euraxess-enrich-translate-normalize-scraper",
   "input": {"schemaVersion": "nomad-agent-job-search-input-v1", "maxItems": 5},
   "waitSecs": 0,
-  "callOptions": {"build": "1.0.8", "maxItems": 5, "maxTotalChargeUsd": 0.1}
+  "callOptions": {"build": "1.0.9", "maxItems": 5, "maxTotalChargeUsd": 0.1}
 }
 ```
 
 1. Call generic `call-actor`; do not rely on the direct Actor tool or a mutable
    tag.
-2. Require the authoritative run to report `buildNumber: "1.0.8"`. If MCP
+2. Require the authoritative run to report `buildNumber: "1.0.9"`. If MCP
    omits that field, verify the same run through Apify's authenticated run API.
    A missing or different build is a compatibility failure.
 3. Poll `READY`, `RUNNING`, `TIMING-OUT`, or `ABORTING` runs by run ID with
@@ -119,19 +119,16 @@ this outer envelope; the documented bounded input above belongs under `input`:
    as success.
 5. Read the same run's default key-value-store `RUN-SUMMARY` with
    `get-key-value-store-record`. Validate it with
-   `scripts/validate_run_summary.py`; continue only when root status and
-   `sources.euraxess.status` are `succeeded` or `empty`.
+   `scripts/validate_run_summary.py`.
 6. Fetch the default dataset ID from the same successful run and paginate with
    `get-dataset-items`. An output preview is not the complete dataset.
 7. Require the complete dataset row count to equal `RUN-SUMMARY.delivered`.
    Accept validated `empty` plus zero rows as a valid empty search.
-8. `RUN-SUMMARY` reports facts only. Missing, invalid, `partial`, `failed`, or
-   `deadline` status stops delivery. `errors[].retryable` never authorizes or
-   schedules a new paid run.
-   Maintained integrations never start an automatic paid retry.
-9. Never automatically retry an empty, failed, timed-out, or degraded paid
-   run. Inspect the original run; only an explicit caller decision may start a
-   new charged execution.
+8. If a valid usable `partial` outcome has `retry.recommended: true`, wait the
+   bounded v3 timing and repeat the exact input, build, item cap, and charge cap
+   at most once. Never retry an empty, failed, timed-out, or aborted run.
+9. After the one-retry bound, use the latest valid usable dataset and reconcile
+   its row count. Missing or invalid summaries stop delivery.
 10. Treat MCP as the live authentication layer. Never read an `APIFY_TOKEN`
     from project files or pass one in Actor input.
 
@@ -179,7 +176,7 @@ When presenting results:
 Read [references/output-contract.md](references/output-contract.md) for the
 normalized and EURAXESS-specific fields.
 Read [references/run-summary.md](references/run-summary.md) for the factual
-status contract and its no-automatic-retry boundary.
+status contract and its one-bounded-retry boundary.
 
 ## Integration boundary
 

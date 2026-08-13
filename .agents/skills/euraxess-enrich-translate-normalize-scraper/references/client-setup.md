@@ -4,8 +4,8 @@ Installing this skill adds contract instructions and offline parsers.
 Connecting MCP adds authenticated live tools. Neither step exposes a private
 Actor to an unauthorized account or deploys the local `1.0` rewrite.
 
-Private `latest` and `canary` currently resolve to `1.0.8`. Use generic
-`call-actor` with exact `callOptions.build: "1.0.8"` and verify the same build
+Private `latest` and `canary` currently resolve to `1.0.9`. Use generic
+`call-actor` with exact `callOptions.build: "1.0.9"` and verify the same build
 number on the authoritative run; do not rely on either mutable tag.
 
 Candidate scoped endpoint:
@@ -62,21 +62,22 @@ intentional.
 1. Confirm the server is connected and the account may access the exact Actor.
 2. Fetch Actor details and pricing; verify the deployed schema before calling.
 3. Call generic `call-actor` with the canonical Actor name, strict v1 input,
-   `callOptions.build: "1.0.8"`, `callOptions.maxItems: 5`, and a conservative
+   `callOptions.build: "1.0.9"`, `callOptions.maxItems: 5`, and a conservative
    `callOptions.maxTotalChargeUsd`.
-4. Require the run response to report `buildNumber: "1.0.8"` and stop on any
+4. Require the run response to report `buildNumber: "1.0.9"` and stop on any
    mismatch.
 5. Keep dedupe, translation, enrichment, and analytics disabled for the first
    bounded run.
 6. Poll to terminal. If MCP omits `buildNumber`, verify the same run through
    Apify's authenticated run API. After exact-build `SUCCEEDED` with exit code
-   0, read and validate fleet-v2 `RUN-SUMMARY`.
-7. Continue only for factual `succeeded` or `empty`; retrieve the default
+   0, read and validate `nomad-agent-run-summary-v3`.
+7. If a usable `partial` result recommends a retry, wait the bounded timing and
+   repeat the exact request at most once. Then retrieve the selected default
    dataset, reconcile its row count with `delivered`, and validate every row as `nomad-agent-job-v1` with
    `identity.source` equal to `euraxess` and the versioned EURAXESS custom
    extension.
-8. Missing, invalid, or degraded status stops delivery. Never start an
-   automatic paid retry; `errors[].retryable` is diagnostic only.
+8. Missing or invalid status stops delivery. Failed, timed-out, and aborted
+   Apify runs are never retried from `RUN-SUMMARY`.
 
 The repository records live and offline verification separately; a successful
 older run is not proof that a newly edited integration is live-compatible.

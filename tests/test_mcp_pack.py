@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import importlib.util
+from http.client import IncompleteRead
 import json
 from pathlib import Path
 import subprocess
@@ -57,7 +58,7 @@ class McpPackTests(unittest.TestCase):
             )
         )
         self.assertEqual(value["actor"], "nomad-agent/linkedin-enrich-translate-normalize-scraper")
-        self.assertEqual(value["callOptions"]["build"], "0.6.38")
+        self.assertEqual(value["callOptions"]["build"], "0.6.39")
         actor_input = value["input"]
         self.assertLessEqual(actor_input["maxItems"], 5)
         self.assertFalse(actor_input["translateToEnglish"])
@@ -109,7 +110,7 @@ class McpPackTests(unittest.TestCase):
             "nomad-agent/euraxess-enrich-translate-normalize-scraper",
         )
         self.assertEqual(value["callOptions"], {
-            "build": "1.0.8",
+            "build": "1.0.9",
             "maxItems": 5,
             "maxTotalChargeUsd": 0.1,
         })
@@ -124,11 +125,11 @@ class McpPackTests(unittest.TestCase):
         assert spec.loader is not None
         spec.loader.exec_module(module)
         self.assertEqual(module.SCOPED_URL, PINNED_URL)
-        self.assertEqual(module.PROFILES["linkedin"]["build"], "0.6.38")
+        self.assertEqual(module.PROFILES["linkedin"]["build"], "0.6.39")
         self.assertEqual(module.PROFILES["linkedin"]["tool"], "call-actor")
         self.assertEqual(module.PROFILES["euraxess"]["url"], PINNED_URL)
         self.assertEqual(module.PROFILES["euraxess"]["tool"], "call-actor")
-        self.assertEqual(module.PROFILES["euraxess"]["build"], "1.0.8")
+        self.assertEqual(module.PROFILES["euraxess"]["build"], "1.0.9")
         self.assertIn("fetch-actor-details", module.REQUIRED_TOOLS)
         self.assertIn("call-actor", module.REQUIRED_TOOLS)
         self.assertIn("get-key-value-store-record", module.REQUIRED_TOOLS)
@@ -157,18 +158,48 @@ class McpPackTests(unittest.TestCase):
             "store-1",
         )
 
-    def test_smoke_script_uses_factual_status_and_dataset_without_summary_retry(self):
+    def test_smoke_script_uses_v3_status_and_at_most_one_retry(self):
         text = (PACK / "scripts" / "smoke_test.py").read_text(encoding="utf-8")
         self.assertIn('"get-key-value-store-record"', text)
         self.assertIn("RUN-SUMMARY", text)
         self.assertIn("validate_dataset_count", text)
-        self.assertNotIn("--max-reschedule-retries", text)
+        self.assertIn("--max-reschedule-retries", text)
+        self.assertIn("time.sleep", text)
+        self.assertIn("retry_attempt", text)
+        self.assertIn("max_retries", text)
+        self.assertNotIn("sources.linkedin", text)
+        self.assertNotIn("sources.euraxess", text)
         self.assertIn('"--profile"', text)
         self.assertIn('"euraxess"', text)
         self.assertIn('call_options.get("build")', text)
         self.assertIn("_verified_rest_run", text)
         self.assertIn("evaluate_terminal_run", text)
         self.assertIn("_require_build(run", text)
+
+    def test_smoke_transport_retries_only_idempotent_mcp_reads(self):
+        path = PACK / "scripts" / "smoke_test.py"
+        spec = importlib.util.spec_from_file_location("mcp_smoke_retry", path)
+        module = importlib.util.module_from_spec(spec)
+        assert spec.loader is not None
+        spec.loader.exec_module(module)
+
+        class FlakyClient:
+            def __init__(self):
+                self.calls = 0
+
+            def call(self, _method, _params):
+                self.calls += 1
+                raise IncompleteRead(b"")
+
+        read_client = FlakyClient()
+        with self.assertRaises(IncompleteRead):
+            module._call_tool(read_client, "get-actor-run", {"runId": "r"})
+        self.assertEqual(read_client.calls, 3)
+
+        paid_client = FlakyClient()
+        with self.assertRaises(IncompleteRead):
+            module._call_tool(paid_client, "call-actor", {"actor": "a"})
+        self.assertEqual(paid_client.calls, 1)
 
 
 if __name__ == "__main__":
