@@ -42,7 +42,7 @@ Validate terminal success and the exact build, read and validate minimal v4
 `RUN-SUMMARY`, honor at most one retry, then validate and reconcile the default dataset. Do not
 reuse LinkedIn source-specific input fields for EURAXESS.
 
-The maintained profiles and smoke harness target LinkedIn `0.6.42` and
+The maintained profiles and smoke harness target LinkedIn `0.6.48` and
 EURAXESS `1.0.13`. A successful Actor or MCP check confirms only the Actor,
 completion record, and dataset path. Destination-platform writes require a
 separate test with the client's own credentials and disposable destination.

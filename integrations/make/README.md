@@ -3,7 +3,7 @@
 Import either blueprint:
 
 - [`linkedin-jobs-to-google-sheets.blueprint.json`](linkedin-jobs-to-google-sheets.blueprint.json),
-  for a Task pinned to LinkedIn build `0.6.42`;
+  for a Task pinned to LinkedIn build `0.6.48`;
 - [`euraxess-jobs-to-google-sheets.blueprint.json`](euraxess-jobs-to-google-sheets.blueprint.json),
   for a Task pinned to EURAXESS build `1.0.13`.
 

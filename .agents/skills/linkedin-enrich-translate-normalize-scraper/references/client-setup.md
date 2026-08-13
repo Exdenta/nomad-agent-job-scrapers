@@ -79,7 +79,7 @@ authorization header with a real token.
    paid run.
 4. Run a bounded `maxItems: 5` search with translation, AI enrichment,
    analytics, and cross-run dedupe disabled.
-5. Call with `callOptions.build: "0.6.42"`. Poll non-terminal runs with
+5. Call with `callOptions.build: "0.6.48"`. Poll non-terminal runs with
    `get-actor-run`; if MCP omits `buildNumber`, verify the run through Apify's
    authenticated run API. Only after exact-build `SUCCEEDED` with exit code 0,
    read `RUN-SUMMARY` with `get-key-value-store-record` and validate

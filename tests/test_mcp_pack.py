@@ -58,7 +58,7 @@ class McpPackTests(unittest.TestCase):
             )
         )
         self.assertEqual(value["actor"], "nomad-agent/linkedin-enrich-translate-normalize-scraper")
-        self.assertEqual(value["callOptions"]["build"], "0.6.42")
+        self.assertEqual(value["callOptions"]["build"], "0.6.48")
         actor_input = value["input"]
         self.assertLessEqual(actor_input["maxItems"], 5)
         self.assertFalse(actor_input["translateToEnglish"])
@@ -125,7 +125,7 @@ class McpPackTests(unittest.TestCase):
         assert spec.loader is not None
         spec.loader.exec_module(module)
         self.assertEqual(module.SCOPED_URL, PINNED_URL)
-        self.assertEqual(module.PROFILES["linkedin"]["build"], "0.6.42")
+        self.assertEqual(module.PROFILES["linkedin"]["build"], "0.6.48")
         self.assertEqual(module.PROFILES["linkedin"]["tool"], "call-actor")
         self.assertEqual(module.PROFILES["euraxess"]["url"], PINNED_URL)
         self.assertEqual(module.PROFILES["euraxess"]["tool"], "call-actor")

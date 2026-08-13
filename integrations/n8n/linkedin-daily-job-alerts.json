@@ -1,0 +1,328 @@
+{
+  "name": "Send new LinkedIn jobs to Slack, Telegram, or email with Apify",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 8 * * *"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [-980, 80],
+      "id": "7e977213-ad34-4589-a860-8cd85cf6b0fd",
+      "name": "Every day at 08:00 UTC"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [-980, 280],
+      "id": "e4dffacd-efb0-4aca-b9e6-cc65f32ed806",
+      "name": "Run manually"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "39f664e2-23eb-493e-adb6-1390d3686c86",
+              "name": "actorBuild",
+              "value": "0.6.48",
+              "type": "string"
+            },
+            {
+              "id": "877c0cd0-814d-4b45-a2db-ad163637e7fb",
+              "name": "keyword",
+              "value": "software engineer",
+              "type": "string"
+            },
+            {
+              "id": "f41066f1-0670-41bd-9a78-c8e265f45767",
+              "name": "location",
+              "value": "Germany",
+              "type": "string"
+            },
+            {
+              "id": "c575f577-8741-400b-84fb-d65f895213b0",
+              "name": "postedWithin",
+              "value": "24h",
+              "type": "string"
+            },
+            {
+              "id": "9f4a278e-4801-4cc8-b3ca-edb26966bb37",
+              "name": "workArrangementsCsv",
+              "value": "remote,hybrid",
+              "type": "string"
+            },
+            {
+              "id": "e62b36a8-51a8-4cab-b236-a0369600cf93",
+              "name": "advancedInputJson",
+              "value": "{}",
+              "type": "string"
+            },
+            {
+              "id": "cbf44995-9702-45b8-810a-752bc56abedd",
+              "name": "maxItems",
+              "value": 10,
+              "type": "number"
+            },
+            {
+              "id": "79317824-1921-4861-a9a6-4cac57479804",
+              "name": "maxTotalChargeUsd",
+              "value": 0.1,
+              "type": "number"
+            },
+            {
+              "id": "c327db7f-7166-480f-a56e-a89ea937a7a4",
+              "name": "dedupeScope",
+              "value": "REPLACE_WITH_OPAQUE_ALERT_SCOPE",
+              "type": "string"
+            },
+            {
+              "id": "6c3c9d10-7830-4a85-87c1-139693b88284",
+              "name": "deliveryChannel",
+              "value": "slack",
+              "type": "string"
+            },
+            {
+              "id": "8cbc9cb7-ee27-4fd4-9833-61d505f07afe",
+              "name": "deliveryTarget",
+              "value": "REPLACE_WITH_CHANNEL_CHAT_OR_EMAIL",
+              "type": "string"
+            },
+            {
+              "id": "f25dcb9e-fb2e-4710-9755-97051547620b",
+              "name": "emailFrom",
+              "value": "REPLACE_WITH_VERIFIED_SENDER_EMAIL",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": false,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [-740, 180],
+      "id": "5522179b-ee3e-4d87-bac7-82bb76fccb69",
+      "name": "Alert configuration"
+    },
+    {
+      "parameters": {
+        "jsCode": "const cfg = $input.first().json;\nconst text = (value) => typeof value === 'string' ? value.trim() : '';\nlet advancedInput;\ntry { advancedInput = JSON.parse(text(cfg.advancedInputJson) || '{}'); }\ncatch (error) { throw new Error(`Configuration: advancedInputJson must be valid JSON (${error.message})`); }\nif (!advancedInput || typeof advancedInput !== 'object' || Array.isArray(advancedInput)) throw new Error('Configuration: advancedInputJson must contain one JSON object');\nif (text(cfg.actorBuild) !== '0.6.48') throw new Error('Configuration: this template supports exact Actor build 0.6.48');\nconst deliveryChannel = text(cfg.deliveryChannel).toLowerCase();\nif (!new Set(['slack', 'telegram', 'email']).has(deliveryChannel)) throw new Error('Configuration: deliveryChannel must be slack, telegram, or email');\nconst deliveryTarget = text(cfg.deliveryTarget);\nif (!deliveryTarget || deliveryTarget.startsWith('REPLACE_WITH_')) throw new Error('Configuration: replace deliveryTarget with a Slack channel ID, Telegram chat ID, or email address');\nconst emailFrom = text(cfg.emailFrom);\nif (deliveryChannel === 'email' && (!emailFrom.includes('@') || emailFrom.startsWith('REPLACE_WITH_'))) throw new Error('Configuration: email delivery requires a verified emailFrom address');\nconst dedupeScope = text(cfg.dedupeScope);\nif (!dedupeScope || dedupeScope.startsWith('REPLACE_WITH_')) throw new Error('Configuration: replace dedupeScope with a stable opaque name for this alert');\nconst maxItems = Number(cfg.maxItems);\nif (!Number.isInteger(maxItems) || maxItems < 1 || maxItems > 25) throw new Error('Configuration: maxItems must be an integer from 1 to 25');\nconst chargeCap = Number(cfg.maxTotalChargeUsd);\nif (!Number.isFinite(chargeCap) || chargeCap <= 0 || chargeCap > 1) throw new Error('Configuration: maxTotalChargeUsd must be greater than 0 and at most 1');\nconst actorInput = {\n  schemaVersion: 'nomad-agent-job-search-input-v1',\n  keyword: text(cfg.keyword),\n  location: text(cfg.location),\n  postedWithin: text(cfg.postedWithin),\n  workArrangements: text(cfg.workArrangementsCsv).split(',').map(value => value.trim()).filter(Boolean),\n  maxItems,\n  translateToEnglish: false,\n  aiEnrichment: { enabled: false, accuracy: 'silver' },\n  includeRaw: false,\n  dedupe: { enabled: true, key: dedupeScope },\n  analyticsEnabled: false,\n  ...advancedInput,\n  maxItems,\n  dedupe: { enabled: true, key: dedupeScope },\n};\nif (actorInput.schemaVersion !== 'nomad-agent-job-search-input-v1') throw new Error('Configuration: actor input schemaVersion must be nomad-agent-job-search-input-v1');\nif (!new Set(['1h', '24h', '7d', '30d', 'any']).has(actorInput.postedWithin)) throw new Error('Configuration: postedWithin must be 1h, 24h, 7d, 30d, or any');\nif (!Array.isArray(actorInput.workArrangements) || actorInput.workArrangements.some(value => !new Set(['remote', 'hybrid', 'onsite']).has(value))) throw new Error('Configuration: workArrangements must contain only remote, hybrid, or onsite');\nreturn [{ json: { ...cfg, deliveryChannel, deliveryTarget, emailFrom, actorInput } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [-500, 180],
+      "id": "933b76b8-2688-4106-b2be-73e848658baf",
+      "name": "Validate alert setup"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.apify.com/v2/acts/nomad-agent~linkedin-enrich-translate-normalize-scraper/run-sync-get-dataset-items",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "build",
+              "value": "={{ $('Alert configuration').first().json.actorBuild }}"
+            },
+            {
+              "name": "maxTotalChargeUsd",
+              "value": "={{ $('Alert configuration').first().json.maxTotalChargeUsd }}"
+            },
+            {
+              "name": "timeout",
+              "value": "300"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ JSON.stringify($('Validate alert setup').first().json.actorInput) }}",
+        "options": {
+          "timeout": 310000,
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [-240, 180],
+      "id": "3f25fb5f-c8d0-4772-b25a-8d275f55f7e3",
+      "name": "Find only new jobs"
+    },
+    {
+      "parameters": {
+        "jsCode": "const ROOTS = ['custom', 'data', 'identity', 'llm', 'raw', 'schemaVersion'];\nconst objectOrEmpty = (value) => value && typeof value === 'object' && !Array.isArray(value) ? value : {};\nconst incoming = $input.all().map(item => item.json);\nconst records = [];\nfor (const value of incoming) {\n  if (Array.isArray(value)) records.push(...value);\n  else if (value && Array.isArray(value.body)) records.push(...value.body);\n  else if (value && value.schemaVersion === 'nomad-agent-job-v1') records.push(value);\n  else if (value && Object.keys(value).length === 0) continue;\n  else throw new Error('Apify response did not contain nomad-agent-job-v1 records');\n}\nconst seen = new Set();\nconst output = [];\nfor (const record of records) {\n  const actualRoots = Object.keys(record).sort();\n  if (JSON.stringify(actualRoots) !== JSON.stringify(ROOTS)) throw new Error(`Actor row has unexpected roots: ${actualRoots.join(', ')}`);\n  if (record.schemaVersion !== 'nomad-agent-job-v1') throw new Error(`Unsupported schemaVersion: ${record.schemaVersion}`);\n  const identity = objectOrEmpty(record.identity);\n  if (identity.source !== 'linkedin') throw new Error(`Unexpected job source: ${identity.source}`);\n  if (typeof identity.externalId !== 'string' || !identity.externalId.trim()) throw new Error('identity.externalId must be a non-empty string');\n  const jobKey = `${identity.source}:${identity.externalId.trim()}`;\n  if (seen.has(jobKey)) continue;\n  seen.add(jobKey);\n  const data = objectOrEmpty(record.data);\n  const company = objectOrEmpty(data.company);\n  const application = objectOrEmpty(data.application);\n  const locations = Array.isArray(data.locations) ? data.locations : [];\n  const locationText = locations.map(value => objectOrEmpty(value)).map(value => value.raw || [value.city, value.region, value.countryName].filter(Boolean).join(', ')).filter(Boolean).join(' | ') || null;\n  const title = typeof data.title === 'string' && data.title.trim() ? data.title.trim() : 'Untitled LinkedIn job';\n  const url = application.url || identity.url || null;\n  const lines = ['New LinkedIn job', title];\n  if (company.name) lines.push(`Company: ${company.name}`);\n  if (locationText) lines.push(`Location: ${locationText}`);\n  if (application.postedAt) lines.push(`Posted: ${application.postedAt}`);\n  if (url) lines.push(`Apply: ${url}`);\n  lines.push(`Job key: ${jobKey}`);\n  output.push({ json: { jobKey, title, companyName: company.name ?? null, locationText, postedAt: application.postedAt ?? null, url, message: lines.join('\\n'), emailSubject: `New LinkedIn job: ${title}` } });\n}\nreturn output;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [20, 180],
+      "id": "4b93959f-16c9-47fd-af32-b9d0f354c051",
+      "name": "Validate and format new jobs"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {"caseSensitive": true, "leftValue": "", "typeValidation": "strict", "version": 2},
+          "conditions": [
+            {
+              "id": "91b53569-bc90-4a6b-9407-441ea1e2591d",
+              "leftValue": "={{ $('Validate alert setup').first().json.deliveryChannel }}",
+              "rightValue": "slack",
+              "operator": {"type": "string", "operation": "equals"}
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [280, -40],
+      "id": "3538d1d7-60cd-4e6e-93bd-416dc90ddc35",
+      "name": "Deliver to Slack?"
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": {"__rl": true, "value": "={{ $('Validate alert setup').first().json.deliveryTarget }}", "mode": "id"},
+        "text": "={{ $json.message }}",
+        "otherOptions": {"includeLinkToWorkflow": false}
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.3,
+      "position": [540, -40],
+      "id": "e088f7b1-88a2-4b74-91c0-c95df1dc6e08",
+      "name": "Send Slack alert"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {"caseSensitive": true, "leftValue": "", "typeValidation": "strict", "version": 2},
+          "conditions": [
+            {
+              "id": "3f178e93-9734-46c4-a7df-8b871330e501",
+              "leftValue": "={{ $('Validate alert setup').first().json.deliveryChannel }}",
+              "rightValue": "telegram",
+              "operator": {"type": "string", "operation": "equals"}
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [280, 180],
+      "id": "ba989712-8f6b-4a9a-9f79-8f4d51f9e434",
+      "name": "Deliver to Telegram?"
+    },
+    {
+      "parameters": {
+        "jsCode": "const escapeHtml = (value) => String(value).replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;');\nreturn $input.all().map(item => ({ json: { ...item.json, telegramMessage: escapeHtml(item.json.message) } }));"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [540, 180],
+      "id": "64b7d84d-1810-4b1b-b61e-14bb2f995320",
+      "name": "Escape Telegram HTML"
+    },
+    {
+      "parameters": {
+        "resource": "message",
+        "operation": "sendMessage",
+        "chatId": "={{ $('Validate alert setup').first().json.deliveryTarget }}",
+        "text": "={{ $json.telegramMessage }}",
+        "additionalFields": {"appendAttribution": false, "parse_mode": "HTML"}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [800, 180],
+      "id": "28e817cf-7399-49f0-aa87-e3d562652dd3",
+      "name": "Send Telegram alert"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {"caseSensitive": true, "leftValue": "", "typeValidation": "strict", "version": 2},
+          "conditions": [
+            {
+              "id": "09b5b12c-404f-47fe-ac28-65d49c911d5f",
+              "leftValue": "={{ $('Validate alert setup').first().json.deliveryChannel }}",
+              "rightValue": "email",
+              "operator": {"type": "string", "operation": "equals"}
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [280, 400],
+      "id": "df1e5683-8aba-4556-a88e-fda340add24c",
+      "name": "Deliver by email?"
+    },
+    {
+      "parameters": {
+        "fromEmail": "={{ $('Validate alert setup').first().json.emailFrom }}",
+        "toEmail": "={{ $('Validate alert setup').first().json.deliveryTarget }}",
+        "subject": "={{ $json.emailSubject }}",
+        "emailFormat": "text",
+        "text": "={{ $json.message }}",
+        "options": {"appendAttribution": false}
+      },
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [540, 400],
+      "id": "3cac4496-bfc6-4e79-98eb-36df7801a972",
+      "name": "Send email alert"
+    },
+    {
+      "parameters": {
+        "content": "## Send only new LinkedIn jobs every day\n\n1. Add a scoped Apify token as an n8n Header Auth credential on **Find only new jobs**: `Authorization` = `Bearer YOUR_APIFY_TOKEN`.\n2. In **Alert configuration**, choose `slack`, `telegram`, or `email`; replace the destination placeholder; and give this alert a stable opaque dedupe scope.\n3. Add the matching Slack, Telegram, or SMTP credential only to the selected delivery node. For email, also set a verified sender address.\n4. Build `0.6.48` is pinned. The starter searches ten recent jobs with AI enrichment, translation, raw descriptions, and analytics disabled.\n5. Run manually first. The Actor's cross-run deduplication makes later runs return only jobs not already delivered in this alert scope. The workflow also removes duplicate `jobKey` values within each response.\n6. Publish only after the manual destination smoke succeeds. Empty results send no message. This import contains no credentials and is not evidence of a live Slack, Telegram, or email test.\n\nThis quick-start workflow uses Apify's bounded synchronous dataset endpoint. Use the tracker workflow when you need v4 RUN-SUMMARY reconciliation and retry handling before delivery.",
+        "height": 450,
+        "width": 700,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [-1000, -440],
+      "id": "c06d22cc-86a5-4504-a1f6-f963f2512b3e",
+      "name": "Setup notes"
+    }
+  ],
+  "connections": {
+    "Every day at 08:00 UTC": {"main": [[{"node": "Alert configuration", "type": "main", "index": 0}]]},
+    "Run manually": {"main": [[{"node": "Alert configuration", "type": "main", "index": 0}]]},
+    "Alert configuration": {"main": [[{"node": "Validate alert setup", "type": "main", "index": 0}]]},
+    "Validate alert setup": {"main": [[{"node": "Find only new jobs", "type": "main", "index": 0}]]},
+    "Find only new jobs": {"main": [[{"node": "Validate and format new jobs", "type": "main", "index": 0}]]},
+    "Validate and format new jobs": {"main": [[{"node": "Deliver to Slack?", "type": "main", "index": 0}, {"node": "Deliver to Telegram?", "type": "main", "index": 0}, {"node": "Deliver by email?", "type": "main", "index": 0}]]},
+    "Deliver to Slack?": {"main": [[{"node": "Send Slack alert", "type": "main", "index": 0}], []]},
+    "Deliver to Telegram?": {"main": [[{"node": "Escape Telegram HTML", "type": "main", "index": 0}], []]},
+    "Escape Telegram HTML": {"main": [[{"node": "Send Telegram alert", "type": "main", "index": 0}]]},
+    "Deliver by email?": {"main": [[{"node": "Send email alert", "type": "main", "index": 0}], []]}
+  },
+  "pinData": {},
+  "active": false,
+  "settings": {"executionOrder": "v1"},
+  "versionId": "aef1af33-285e-4e12-a9ee-44188c89bd75",
+  "meta": {"templateCredsSetupCompleted": false},
+  "tags": []
+}

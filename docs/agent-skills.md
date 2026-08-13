@@ -57,6 +57,51 @@ dependencies.
 Installing the skill does not install MCP. Complete the client setup in
 [MCP quickstart](mcp.md) as a separate step.
 
+## One-command LinkedIn setup
+
+From this repository, install the LinkedIn Agent Skill into a project and add
+the scoped Apify MCP tools to Codex with one command:
+
+```bash
+python3 scripts/setup_linkedin_monitor.py --client codex --target /path/to/project
+```
+
+Use `--client claude` or `--client both` when needed. The command writes only
+project-scoped, credential-free configuration under the dedicated names
+`apify_linkedin_jobs` in `.codex/config.toml` and `apify-linkedin-jobs` in
+`.mcp.json`. Existing unrelated servers, including a generic `apify` entry, are
+preserved. An exact skill or MCP entry is a no-op; a modified skill or a
+different entry under either dedicated name fails closed. `--force-skill`
+applies only to the skill and never overwrites MCP configuration.
+
+Codex loads a project `.codex/config.toml` only for a trusted project. Open and
+trust the target project first, then complete OAuth:
+
+```bash
+codex mcp login apify_linkedin_jobs
+```
+
+For Claude Code, open `/mcp` and authenticate `apify-linkedin-jobs`. Restart an
+already-open client only after trust and authentication. If a
+filesystem interruption leaves only one client configured during `--client
+both`, rerun the same setup command; the completed client is recognized and the
+missing client is added without changing the first.
+
+After setup, restart a client that was already open and invoke:
+
+```text
+$linkedin-enrich-translate-normalize-scraper
+Find and monitor remote TypeScript jobs in Spain. Keep AI enrichment and
+translation off, cap each search at 20 jobs, and use a stable dedupe scope for
+future runs.
+```
+
+The skill pins and verifies LinkedIn build `0.6.48`; the MCP connection supplies
+authentication and only the five tools needed for Actor details, execution,
+run status, completion records, and dataset retrieval. Setup does not create an
+Apify schedule by itself. Use the n8n daily-alert template or an Apify Task and
+schedule when unattended monitoring is required.
+
 The EURAXESS skill documents the public `1.0` contract on exact build `1.0.13`.
 Its client setup uses generic `call-actor` to pin and verify that build rather
 than rely on mutable `latest` or `canary` tags. It then validates minimal v4

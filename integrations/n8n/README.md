@@ -1,11 +1,18 @@
-# n8n to Google Sheets
+# n8n job alerts and trackers
 
-Import either inactive workflow:
+Import an inactive, outcome-ready workflow:
 
-- [`linkedin-jobs-to-google-sheets.json`](linkedin-jobs-to-google-sheets.json),
-  pinned to LinkedIn build `0.6.42`;
-- [`euraxess-jobs-to-google-sheets.json`](euraxess-jobs-to-google-sheets.json),
-  pinned to EURAXESS build `1.0.13`.
+- [`linkedin-daily-job-alerts.json`](linkedin-daily-job-alerts.json) searches
+  every day and sends only newly delivered jobs to one selected Slack channel,
+  Telegram chat, or email address. It pins LinkedIn build `0.6.48`, enables a
+  stable Actor dedupe scope, and starts with at most ten jobs;
+- [`linkedin-jobs-to-google-sheets.json`](linkedin-jobs-to-google-sheets.json)
+  creates a duplicate-safe job tracker by appending or updating the shared flat
+  row on stable `jobKey`; it pins LinkedIn build `0.6.48`;
+- [`euraxess-jobs-to-google-sheets.json`](euraxess-jobs-to-google-sheets.json)
+  creates the same tracker shape for EURAXESS build `1.0.13`.
+
+## Duplicate-safe job tracker
 
 Both workflows follow the same path:
 
@@ -28,7 +35,22 @@ build, item cap, and charge cap are reused. Missing, invalid, wrong-build,
 failed, or count-mismatched runs stop before Sheets. A validated `empty` status
 writes no rows.
 
-## Setup
+## Daily new-job alerts
+
+The alert workflow uses the bounded synchronous dataset endpoint for a shorter
+first automation. It requires exact build `0.6.48`, a run charge cap, no more
+than 25 requested jobs, strict six-root `nomad-agent-job-v1` rows, LinkedIn
+source identity, and stable `jobKey = source:externalId` within-run dedupe.
+Actor-side cross-run deduplication is always enabled with the configured opaque
+alert scope, so a later scheduled run returns only jobs not previously
+delivered in that scope. An empty response sends nothing.
+
+Choose one channel in **Alert configuration**, then add credentials only to the
+matching Slack, Telegram, or SMTP node. This compact alert template does not
+read v4 `RUN-SUMMARY` or apply its retry advice; use the tracker workflow when
+completion-summary reconciliation is required before delivery.
+
+## Tracker setup
 
 1. Create a scoped Apify token and an n8n Header Auth credential with
    `Authorization: Bearer YOUR_APIFY_TOKEN`.
@@ -46,7 +68,7 @@ writes no rows.
 EURAXESS accepts `postedWithin` values `24h`, `7d`, `30d`, or `any`; it rejects
 `1h` because the source establishes calendar dates, not posting hours.
 
-## Output and duplicate behavior
+## Tracker output and duplicate behavior
 
 The workflow validates the six canonical roots and derives the shared
 32-column `nomad-agent-flat-job-v1` projection. It uses
@@ -56,8 +78,9 @@ custom fields, provenance, or the distinction between `null` and `[]`.
 
 ## Validation boundary
 
-The exported graphs, exact build selectors, terminal run gate, complete input
-pass-through, canonical validation, flat projection, and credential hygiene are
-covered by offline tests. A destination-specific live test still requires the
-client's own n8n and Google Sheets credentials. Importing these files supplies
-no credentials and does not activate a schedule.
+The exported graphs, exact build selectors, canonical validation, flat
+projection, alert routing, and credential hygiene are covered by offline tests.
+The tracker additionally covers its terminal run gate and v4 reconciliation.
+A destination-specific live test still requires the client's own n8n and
+Google Sheets, Slack, Telegram, or SMTP credentials. Importing these files
+supplies no credentials and does not activate a schedule.

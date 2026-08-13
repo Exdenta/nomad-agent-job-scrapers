@@ -5,6 +5,18 @@ Actors. The Actor implementations may be hosted services; this repository
 publishes their interoperability layer, not a claim that every scraper is open
 source.
 
+## LinkedIn Jobs Scraper | Remove Duplicates | AI Enrichment
+
+Find fresh public LinkedIn jobs, keep recurring alerts and trackers free of
+duplicate deliveries, and send clean source-linked records into Google Sheets,
+Slack, Telegram, email, Airtable, Make, n8n, MCP clients, or your own API.
+Start with enrichment and translation off; enable either only when the extra
+structured fields or English display values are useful to the workflow.
+
+- [Build a daily new-job alert](integrations/n8n/linkedin-daily-job-alerts.json)
+- [Build a duplicate-safe Google Sheets job tracker](integrations/n8n/linkedin-jobs-to-google-sheets.json)
+- [Connect an agent that can find and monitor jobs](docs/agent-skills.md#one-command-linkedin-setup)
+
 The LinkedIn and EURAXESS Actors turn public job postings into the same stable,
 source-linked record shape. Both support precise filters, scheduled-alert
 deduplication, optional description-backed enrichment, and selected-field
@@ -20,7 +32,7 @@ English translation without requiring customer model or translation keys.
 
 | Actor | Best for | Key advantages | Availability boundary |
 | --- | --- | --- | --- |
-| [`LinkedIn Jobs Scraper — Structured Job Data`](https://apify.com/nomad-agent/linkedin-enrich-translate-normalize-scraper) | Public LinkedIn job search | Full descriptions, normalized company/location/application facts, strict filters, cross-run deduplication, optional public company profiles, enrichment, and translation | Public Store Actor; exact supported build `0.6.42` |
+| [`LinkedIn Jobs Scraper \| Remove Duplicates \| AI Enrichment`](https://apify.com/nomad-agent/linkedin-enrich-translate-normalize-scraper) | Public LinkedIn job search | Find fresh jobs, suppress already-delivered matches, and send clean records with complete descriptions when available to alerts, trackers, job boards, or agents. Optional enrichment and translation stay off until selected. | Public Store Actor; exact supported build `0.6.48` |
 | [`EURAXESS Jobs Scraper — Research & Academic Jobs`](https://apify.com/nomad-agent/euraxess-enrich-translate-normalize-scraper) | PhD, postdoc, fellowship, research, and faculty vacancies | Research domains, requirements, funding, deadlines, contacts, multilingual keyword expansion, strict filters, deduplication, optional enrichment, and translation | Public Store Actor; exact supported build `1.0.13` |
 
 Both target the six-root `nomad-agent-job-v1` envelope, but source-specific
@@ -39,7 +51,7 @@ Connect only the tools needed by the current task. Both profiles use generic
 https://mcp.apify.com?tools=fetch-actor-details,call-actor,get-actor-run,get-dataset-items,get-key-value-store-record
 ```
 
-Inspect Actor details, then use generic `call-actor` with build `0.6.42` for
+Inspect Actor details, then use generic `call-actor` with build `0.6.48` for
 LinkedIn or `1.0.13` for EURAXESS. Confirm terminal success, verify the exact
 build through the Apify run API, validate minimal v4 `RUN-SUMMARY`, and
 reconcile the default dataset.
@@ -66,8 +78,8 @@ Codex instructions and per-Actor compatibility gates.
 
 | Priority | Pack | Workflow | Status |
 | --- | --- | --- | --- |
-| 1 | [n8n](integrations/n8n/README.md) | Schedule -> Actor -> flatten -> Google Sheets append-or-update | Exact LinkedIn `0.6.42` and EURAXESS `1.0.13` pins; all current input fields supported |
-| 2 | [Make](integrations/make/README.md) | Completed Actor run -> flatten -> Google Sheets upsert | Task-owned complete inputs; exact LinkedIn `0.6.42` and EURAXESS `1.0.13` pins required |
+| 1 | [n8n](integrations/n8n/README.md) | Daily new-job alerts or a duplicate-safe Google Sheets tracker | Exact LinkedIn `0.6.48` and EURAXESS `1.0.13` pins; all current input fields supported |
+| 2 | [Make](integrations/make/README.md) | Completed Actor run -> flatten -> Google Sheets upsert | Task-owned complete inputs; exact LinkedIn `0.6.48` and EURAXESS `1.0.13` pins required |
 | 3 | [Airtable](integrations/airtable/README.md) | Import 32 fields and upsert on stable `jobKey` | Shared flat destination preset with `linkedin` and `euraxess` source choices |
 | 4 | [MCP](integrations/mcp/README.md) | ChatGPT, Claude, Cursor, Codex, or another MCP client | Exact-build generic calls, terminal-status checks, and validated datasets for both |
 | 5 | [API/webhook](integrations/api/README.md) | Custom job board, database, or internal application | Exact-build, bounded REST and idempotent webhook recipes for both Actors |
@@ -97,6 +109,25 @@ canonical record. In particular:
 
 Repository-scoped Codex skills live under `.agents/skills` for both normalized
 Actors. Claude Code users can install either into `.claude/skills`:
+
+Set up the LinkedIn skill and the five scoped Apify MCP tools together in the
+target project:
+
+```bash
+python3 scripts/setup_linkedin_monitor.py --client codex --target /path/to/your/project
+```
+
+Use `--client claude` or `--client both` when needed. Repeating the same command
+keeps identical skill and MCP entries unchanged. The setup uses the dedicated
+names `apify_linkedin_jobs` for Codex and `apify-linkedin-jobs` for Claude; it
+preserves unrelated entries and fails closed if either dedicated name already
+has different settings. It never embeds a token. Complete OAuth after setup
+only after opening and trusting the target project in Codex; then run `codex
+mcp login apify_linkedin_jobs`. For Claude Code, use its `/mcp` menu. Restart an
+already-open client after trust and authentication. A locally modified skill is
+never overwritten unless `--force-skill` is explicit.
+
+For skill-only installation:
 
 ```bash
 python3 scripts/install_skill.py --skill linkedin-enrich-translate-normalize-scraper \
