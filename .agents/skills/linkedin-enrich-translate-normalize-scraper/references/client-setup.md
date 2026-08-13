@@ -79,11 +79,11 @@ authorization header with a real token.
    paid run.
 4. Run a bounded `maxItems: 5` search with translation, AI enrichment,
    analytics, and cross-run dedupe disabled.
-5. Call with `callOptions.build: "0.6.40"`. Poll non-terminal runs with
+5. Call with `callOptions.build: "0.6.41"`. Poll non-terminal runs with
    `get-actor-run`; if MCP omits `buildNumber`, verify the run through Apify's
    authenticated run API. Only after exact-build `SUCCEEDED` with exit code 0,
    read `RUN-SUMMARY` with `get-key-value-store-record` and validate
-   `nomad-agent-run-summary-v3`.
+   `nomad-agent-run-summary-v4`.
 6. If a usable `partial` result recommends a retry, wait the bounded timing and
    repeat the exact request at most once. Then pass the selected default dataset ID to
    `get-dataset-items`, paginate, and reconcile its row count with `delivered`.

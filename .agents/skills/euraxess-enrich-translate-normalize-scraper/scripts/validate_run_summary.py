@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate the minimal public nomad-agent-run-summary-v3 contract."""
+"""Validate the minimal public nomad-agent-run-summary-v4 contract."""
 from __future__ import annotations
 
 import argparse
@@ -12,10 +12,10 @@ from typing import Any
 
 
 ROOT_KEYS = {
-    "schemaVersion", "status", "startedAt", "finishedAt", "truncated",
+    "schemaVersion", "status", "startedAt", "finishedAt", "resultsLimited",
     "delivered", "retry",
 }
-RETRY_KEYS = {"recommended", "afterSeconds", "notBefore"}
+RETRY_KEYS = {"recommended", "afterSeconds"}
 STATUSES = {"succeeded", "empty", "partial"}
 
 
@@ -51,7 +51,7 @@ def _count(value: Any, path: str) -> int:
 
 def validate_run_summary(value: Any) -> Mapping[str, Any]:
     summary = _object(value, "summary", ROOT_KEYS)
-    if summary["schemaVersion"] != "nomad-agent-run-summary-v3":
+    if summary["schemaVersion"] != "nomad-agent-run-summary-v4":
         raise RunSummaryValidationError("summary.schemaVersion is unsupported")
     status = summary["status"]
     if status not in STATUSES:
@@ -60,8 +60,8 @@ def validate_run_summary(value: Any) -> Mapping[str, Any]:
     finished = _time(summary["finishedAt"], "summary.finishedAt")
     if finished < started:
         raise RunSummaryValidationError("summary timestamps are reversed")
-    if type(summary["truncated"]) is not bool:
-        raise RunSummaryValidationError("summary.truncated must be boolean")
+    if type(summary["resultsLimited"]) is not bool:
+        raise RunSummaryValidationError("summary.resultsLimited must be boolean")
     delivered = _count(summary["delivered"], "summary.delivered")
     retry = _object(summary["retry"], "summary.retry", RETRY_KEYS)
     recommended = retry["recommended"]
@@ -73,18 +73,14 @@ def validate_run_summary(value: Any) -> Mapping[str, Any]:
             raise RunSummaryValidationError(
                 "summary.retry.afterSeconds must be an integer from 1 through 3600"
             )
-        if _time(retry["notBefore"], "summary.retry.notBefore") < finished:
-            raise RunSummaryValidationError(
-                "summary.retry.notBefore cannot precede finishedAt"
-            )
-    elif retry["afterSeconds"] is not None or retry["notBefore"] is not None:
+    elif retry["afterSeconds"] is not None:
         raise RunSummaryValidationError(
-            "a non-recommended retry requires null timing fields"
+            "a non-recommended retry requires afterSeconds=null"
         )
     if status == "empty":
-        if delivered != 0 or summary["truncated"] or recommended:
+        if delivered != 0 or summary["resultsLimited"] or recommended:
             raise RunSummaryValidationError(
-                "empty requires delivered=0, truncated=false, and no retry"
+                "empty requires delivered=0, resultsLimited=false, and no retry"
             )
     elif delivered < 1:
         raise RunSummaryValidationError(

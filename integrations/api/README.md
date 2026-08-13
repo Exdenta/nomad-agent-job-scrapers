@@ -5,8 +5,8 @@ integration-specific subset. Pin the exact qualified build in the run query:
 
 | Actor | API Actor identifier | Required build |
 | --- | --- | --- |
-| LinkedIn | `nomad-agent~linkedin-enrich-translate-normalize-scraper` | `0.6.40` |
-| EURAXESS | `nomad-agent~euraxess-enrich-translate-normalize-scraper` | `1.0.9` |
+| LinkedIn | `nomad-agent~linkedin-enrich-translate-normalize-scraper` | `0.6.41` |
+| EURAXESS | `nomad-agent~euraxess-enrich-translate-normalize-scraper` | `1.0.10` |
 
 EURAXESS is private, so the caller must have account access. Keep the exact
 build query even when `latest` currently points to the same build.
@@ -21,11 +21,11 @@ curl --request POST \
   --header "Authorization: Bearer $APIFY_TOKEN" \
   --header "Content-Type: application/json" \
   --data @integrations/api/linkedin-search.json \
-  "https://api.apify.com/v2/acts/nomad-agent~linkedin-enrich-translate-normalize-scraper/runs?build=0.6.40&maxTotalChargeUsd=0.10"
+  "https://api.apify.com/v2/acts/nomad-agent~linkedin-enrich-translate-normalize-scraper/runs?build=0.6.41&maxTotalChargeUsd=0.10"
 ```
 
 For EURAXESS, substitute its Actor identifier, body file, and
-`build=1.0.9`. The examples request at most five items and disable paid,
+`build=1.0.10`. The examples request at most five items and disable paid,
 stateful, raw, and analytics options. A caller may pass every field in the
 current input schema; see the
 [compatibility matrix](../../docs/integration-compatibility.md).
@@ -35,9 +35,9 @@ The start response identifies a run. Poll that exact run until its terminal run 
 1. continue only for `SUCCEEDED` and exit code `0` when present;
 2. require the response's `buildNumber` to equal the requested build;
 3. read `RUN-SUMMARY` from the same run's default key-value store and validate
-   `nomad-agent-run-summary-v3`;
-4. if a usable `partial` outcome recommends a retry, wait until its bounded
-   timing and repeat the exact input at most once;
+   `nomad-agent-run-summary-v4`;
+4. if a usable `partial` outcome recommends a retry, wait its bounded
+   `afterSeconds` delay and repeat the exact input at most once;
 5. fetch and paginate the same run's default dataset and require its total row
    count to equal `RUN-SUMMARY.delivered`;
 6. require every item to have exactly `schemaVersion`, `identity`, `data`,
@@ -46,7 +46,7 @@ The start response identifies a run. Poll that exact run until its terminal run 
 Both API profiles use the minimal public outcome before the dataset. A valid
 `empty` status plus zero dataset rows means no matching jobs. Failed, aborted,
 timed-out, wrong-build, missing/invalid summary, count mismatch, or malformed
-output stops delivery. Automatic retries are limited to one valid v3
+output stops delivery. Automatic retries are limited to one valid v4
 recommendation; internal source diagnostics are not public.
 
 ## Webhooks
@@ -60,7 +60,7 @@ trusted replacement for the run or dataset:
 3. require the exact Actor, build, and terminal status;
 4. read storage IDs only from that run;
 5. process each run ID idempotently;
-6. apply the same terminal-status, v3 `RUN-SUMMARY`, retry-bound, and dataset rules as
+6. apply the same terminal-status, v4 `RUN-SUMMARY`, retry-bound, and dataset rules as
    the polling flow.
 
 For Make, use the maintained Task-completion blueprint instead of rebuilding

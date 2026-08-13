@@ -1,9 +1,7 @@
-"""Strict one-retry policy for the minimal public RUN-SUMMARY v3."""
+"""Strict one-retry policy for the minimal public RUN-SUMMARY v4."""
 from __future__ import annotations
 
 from dataclasses import dataclass
-from datetime import datetime, timezone
-from math import ceil
 from typing import Any
 
 from validate_run_summary import (
@@ -34,7 +32,6 @@ def evaluate_terminal_run(
     *,
     retry_attempt: int = 0,
     max_retries: int = 1,
-    now: datetime | None = None,
 ) -> RunDecision:
     """Return the fail-closed dataset action for one Actor run.
 
@@ -67,12 +64,7 @@ def evaluate_terminal_run(
     summary_status = str(validated["status"])
     retry = validated["retry"]
     if retry["recommended"] and retry_attempt < max_retries:
-        not_before = datetime.fromisoformat(
-            str(retry["notBefore"]).replace("Z", "+00:00")
-        ).astimezone(timezone.utc)
-        current = (now or datetime.now(timezone.utc)).astimezone(timezone.utc)
-        remaining = max(0, ceil((not_before - current).total_seconds()))
-        delay = min(int(retry["afterSeconds"]), remaining)
+        delay = int(retry["afterSeconds"])
         return RunDecision(
             False,
             True,

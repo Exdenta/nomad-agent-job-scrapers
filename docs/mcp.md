@@ -8,7 +8,7 @@ The maintained LinkedIn MCP v1 pack is
 - environment-backed token alternatives;
 - deployed Actor schema and pricing inspection with `fetch-actor-details`;
 - exact-build `call-actor` and run/status/dataset helper workflow;
-- terminal Actor status, minimal v3 `RUN-SUMMARY`, authoritative build,
+- terminal Actor status, minimal v4 `RUN-SUMMARY`, authoritative build,
   one bounded retry, and dataset-count verification;
 - bounded input and prompt examples;
 - explicit empty-result and failure behavior;
@@ -35,16 +35,17 @@ https://mcp.apify.com?tools=fetch-actor-details,call-actor,get-actor-run,get-dat
 Read the skill's
 [client setup](../.agents/skills/euraxess-enrich-translate-normalize-scraper/references/client-setup.md)
 before use. Use generic `call-actor` with
-`callOptions.build: "1.0.9"`, `callOptions.maxItems`, and a conservative
-`callOptions.maxTotalChargeUsd`; require the run to report build `1.0.9`.
-Validate terminal success and the exact build, read and validate minimal v3
+`callOptions.build: "1.0.10"`, `callOptions.maxItems`, and a conservative
+`callOptions.maxTotalChargeUsd`; require the run to report build `1.0.10`.
+Validate terminal success and the exact build, read and validate minimal v4
 `RUN-SUMMARY`, honor at most one retry, then validate and reconcile the default dataset. Do not
 reuse LinkedIn source-specific input fields or destination live-validation
 claims for EURAXESS.
 
-Hosted MCP end-to-end smokes passed for exact LinkedIn build `0.6.40` and
-EURAXESS build `1.0.9` on 2026-08-13. They validated the original run's factual
-v3 status and reconciled dataset, without starting a retry. LinkedIn run
-`fGUBRCL6PmDZbOzGr` returned five rows; EURAXESS run `iEv1eNiPgDmysJhAh`
-returned a valid empty result. Destination-platform credentials and writes
-remain separate validation boundaries.
+Actor/API canaries passed for exact LinkedIn build `0.6.41` and EURAXESS build
+`1.0.10` on 2026-08-13. They validated v4 and reconciled the selected dataset,
+without starting a retry. LinkedIn run `3Q4yWRpCnbU8iYSVk` returned one row;
+EURAXESS run `Fgo5aehGjDm3Q7GQF` returned a valid empty result. Prior hosted-MCP
+end-to-end smokes used LinkedIn `0.6.40` and EURAXESS `1.0.9` with v3.
+Destination-platform credentials and writes remain separate validation
+boundaries.

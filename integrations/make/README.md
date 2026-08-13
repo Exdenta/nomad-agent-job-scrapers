@@ -3,9 +3,9 @@
 Import either blueprint:
 
 - [`linkedin-jobs-to-google-sheets.blueprint.json`](linkedin-jobs-to-google-sheets.blueprint.json),
-  for a Task pinned to LinkedIn build `0.6.40`;
+  for a Task pinned to LinkedIn build `0.6.41`;
 - [`euraxess-jobs-to-google-sheets.blueprint.json`](euraxess-jobs-to-google-sheets.blueprint.json),
-  for a Task pinned to private EURAXESS build `1.0.9`.
+  for a Task pinned to private EURAXESS build `1.0.10`.
 
 The Apify Task owns the complete Actor input, item limit, exact build, and
 charge cap. The Make scenario consumes the completed Task run:
@@ -13,8 +13,8 @@ charge cap. The Make scenario consumes the completed Task run:
 ```text
 completed Task run
   -> require SUCCEEDED and the configured exact build
-  -> read minimal RUN-SUMMARY v3 from the completed run store
-  -> wait and repeat the same Task at most once when v3 recommends it
+  -> read minimal RUN-SUMMARY v4 from the completed run store
+  -> wait and repeat the same Task at most once when v4 recommends it
   -> fetch the selected run's default dataset
   -> validate source identity and flatten each job
   -> find by jobKey
@@ -22,7 +22,7 @@ completed Task run
 ```
 
 The blueprints read `RUN-SUMMARY` through the Actor output schema's signed
-`output.runSummary` link. Only a valid usable `partial` v3 outcome can pass the
+`output.runSummary` link. Only a valid usable `partial` v4 outcome can pass the
 one bounded sleep-and-retry route; API-origin retried Task runs cannot enter
 that route again. A valid `empty` status writes no rows; missing, invalid,
 failed, aborted, timed-out, or wrong-build runs do not enter delivery.
@@ -57,9 +57,9 @@ custom fields, raw evidence, or provenance.
 
 ## Validation boundary
 
-The blueprint graphs, exact-build and v3 filters, one-retry bound, 32-column
+The blueprint graphs, exact-build and v4 filters, one-retry bound, 32-column
 mapping, source checks, and credential hygiene are
 covered by offline tests. A historical LinkedIn Make/Google Sheets smoke used build `0.6.19`; the
-current LinkedIn `0.6.40` and EURAXESS `1.0.9` destination paths still need
+current LinkedIn `0.6.41` and EURAXESS `1.0.10` destination paths still need
 fresh credentialed Make smoke tests. Importing a blueprint supplies no
 credentials and does not activate the scenario.

@@ -58,7 +58,7 @@ v1 custom extension.
 ## Run completion
 
 Delivery uses terminal Actor status, exact build identity, the canonical
-minimal `nomad-agent-run-summary-v3` record under `RUN-SUMMARY`, and the
+minimal `nomad-agent-run-summary-v4` record under `RUN-SUMMARY`, and the
 validated default dataset. Maintained integrations require the summary,
 reconcile its `delivered` count with the dataset, and honor at most one atomic
 bounded retry recommendation for a usable `partial` result. See the

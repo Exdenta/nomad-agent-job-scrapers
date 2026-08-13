@@ -9,8 +9,8 @@ https://mcp.apify.com?tools=fetch-actor-details,call-actor,get-actor-run,get-dat
 
 | Profile | Actor | Exact build |
 | --- | --- | --- |
-| LinkedIn | `nomad-agent/linkedin-enrich-translate-normalize-scraper` | `0.6.40` |
-| EURAXESS | `nomad-agent/euraxess-enrich-translate-normalize-scraper` | `1.0.9` |
+| LinkedIn | `nomad-agent/linkedin-enrich-translate-normalize-scraper` | `0.6.41` |
+| EURAXESS | `nomad-agent/euraxess-enrich-translate-normalize-scraper` | `1.0.10` |
 
 Keep the build explicit even when a movable tag currently points to the same
 version. EURAXESS is private and requires account access.
@@ -44,7 +44,7 @@ cross-run dedupe disabled.
    using the same bearer token.
 5. Resolve `storages.keyValueStores.default.id`, read `RUN-SUMMARY` with
    `get-key-value-store-record`, and validate the closed
-   `nomad-agent-run-summary-v3` contract.
+   `nomad-agent-run-summary-v4` contract.
 6. If a usable `partial` outcome has `retry.recommended: true`, wait the
    bounded delay and repeat the exact paid request at most once.
 7. Read the selected run's default dataset with `get-dataset-items`, paginate when
@@ -55,7 +55,7 @@ cross-run dedupe disabled.
 9. Treat a validated `empty` summary with zero dataset rows as “no matching
    jobs.” Do not broaden the search or invent a row.
 
-Only the closed v3 retry tuple can request an automatic retry, and the hard
+Only the closed v4 retry object can request an automatic retry, and the hard
 limit is one. Missing or invalid summaries stop delivery. Failed, timed-out,
 or aborted Apify runs are never retried from `RUN-SUMMARY`. The record exposes
 no source diagnostics.
@@ -77,20 +77,21 @@ APIFY_TOKEN=... python3 integrations/mcp/scripts/smoke_test.py --profile euraxes
 ```
 
 The script never prints the token. It verifies terminal success and the exact
-build through REST, validates v3, honors at most one bounded retry, fetches at most five
+build through REST, validates v4, honors at most one bounded retry, fetches at most five
 rows, reconciles the delivered count, and validates the six-root dataset
 contract.
 
 ## Current validation boundary
 
 Apify metadata was checked on 2026-08-13: LinkedIn `latest` and `canary` point
-to `0.6.40`; EURAXESS `latest` and `canary` point to private build `1.0.9`.
-Authenticated hosted-MCP discovery and end-to-end execution passed for both
-profiles with protocol `2025-06-18` on 2026-08-13. LinkedIn run
-`fGUBRCL6PmDZbOzGr` used exact build `0.6.40`, validated v3, and returned five
-reconciled canonical rows; EURAXESS run `iEv1eNiPgDmysJhAh` used exact build
-`1.0.9`, validated v3, and returned a reconciled valid empty result. The
-checked-in smoke script contains no credential.
+to `0.6.41`; EURAXESS `latest` and `canary` point to private build `1.0.10`.
+Actor/API canaries passed on 2026-08-13. LinkedIn run
+`3Q4yWRpCnbU8iYSVk` used exact build `0.6.41`, validated v4, and returned one
+reconciled canonical row; EURAXESS run `Fgo5aehGjDm3Q7GQF` used exact build
+`1.0.10`, validated v4, and returned a reconciled valid empty result. Prior
+hosted-MCP end-to-end smokes used LinkedIn `0.6.40` and EURAXESS `1.0.9` and
+validated the then-current v3 contract. The checked-in smoke script contains
+no credential.
 
 No n8n, Make, Google Sheets, Airtable, or webhook destination is validated by
 an MCP or Actor-only smoke.

@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import importlib.util
-from datetime import datetime, timezone
 from pathlib import Path
 import sys
 import unittest
@@ -26,16 +25,15 @@ class RetryPolicyTest(unittest.TestCase):
         retry: bool = False,
     ) -> dict:
         return {
-            "schemaVersion": "nomad-agent-run-summary-v3",
+            "schemaVersion": "nomad-agent-run-summary-v4",
             "status": status,
             "startedAt": "2026-08-13T10:00:00Z",
             "finishedAt": "2026-08-13T10:01:00Z",
-            "truncated": False,
+            "resultsLimited": False,
             "delivered": delivered,
             "retry": {
                 "recommended": retry,
                 "afterSeconds": 60 if retry else None,
-                "notBefore": "2026-08-13T10:02:00Z" if retry else None,
             },
         }
 
@@ -61,13 +59,11 @@ class RetryPolicyTest(unittest.TestCase):
         self.assertEqual(missing.reason, "missing-run-summary")
 
     def test_partial_can_request_one_bounded_retry(self) -> None:
-        now = datetime(2026, 8, 13, 10, 1, tzinfo=timezone.utc)
         summary = self.summary("partial", 1, retry=True)
         first = retry_policy.evaluate_terminal_run(
             {"status": "SUCCEEDED", "exitCode": 0},
             summary,
             retry_attempt=0,
-            now=now,
         )
         self.assertFalse(first.fetch_dataset)
         self.assertTrue(first.automatic_retry)
@@ -77,7 +73,6 @@ class RetryPolicyTest(unittest.TestCase):
             {"status": "SUCCEEDED", "exitCode": 0},
             summary,
             retry_attempt=1,
-            now=now,
         )
         self.assertTrue(exhausted.fetch_dataset)
         self.assertFalse(exhausted.automatic_retry)

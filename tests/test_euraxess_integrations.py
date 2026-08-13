@@ -29,7 +29,7 @@ def walk_modules(flow: list[dict[str, object]]) -> list[dict[str, object]]:
 
 
 class EuraxessIntegrationPackTests(unittest.TestCase):
-    def test_n8n_is_bounded_strict_and_retries_v3_once(self) -> None:
+    def test_n8n_is_bounded_strict_and_retries_v4_once(self) -> None:
         workflow = json.loads(N8N_PATH.read_text(encoding="utf-8"))
         nodes = {node["name"]: node for node in workflow["nodes"]}
         self.assertEqual(len(nodes), len(workflow["nodes"]))
@@ -48,7 +48,7 @@ class EuraxessIntegrationPackTests(unittest.TestCase):
                 "assignments"
             ]
         }
-        self.assertEqual(config["actorBuild"], "1.0.9")
+        self.assertEqual(config["actorBuild"], "1.0.10")
         self.assertEqual(config["advancedInputJson"], "{}")
         self.assertEqual(config["maxItems"], 5)
         self.assertEqual(config["maxRescheduleRetries"], 1)
@@ -91,7 +91,7 @@ process.stdout.write(JSON.stringify(new Function(node.parameters.jsCode)()));
         self.assertIn("RUN-SUMMARY", combined)
         self.assertIn("Validate run status", nodes)
         self.assertIn("Reconcile run status and dataset", nodes)
-        self.assertIn("nomad-agent-run-summary-v3", combined)
+        self.assertIn("nomad-agent-run-summary-v4", combined)
         self.assertNotIn("nomad-agent-fleet-run-summary-v2", combined)
         self.assertNotIn("sources.euraxess", combined)
         self.assertIn("identity.source=euraxess", combined)
@@ -154,7 +154,7 @@ process.stdout.write(JSON.stringify(new Function(node.parameters.jsCode)()));
         for key, expected in advanced.items():
             self.assertEqual(actor_input[key], expected)
 
-    def test_make_uses_v3_and_one_bounded_retry_route(self) -> None:
+    def test_make_uses_v4_and_one_bounded_retry_route(self) -> None:
         blueprint = json.loads(MAKE_PATH.read_text(encoding="utf-8"))
         modules = walk_modules(blueprint["flow"])
         ids = [module["id"] for module in modules]
@@ -168,11 +168,11 @@ process.stdout.write(JSON.stringify(new Function(node.parameters.jsCode)()));
             for item in by_name["Configuration"]["mapper"]["variables"]
         }
         self.assertEqual(config["maxitems"], "5")
-        self.assertEqual(config["actorbuild"], "1.0.9")
+        self.assertEqual(config["actorbuild"], "1.0.10")
         self.assertEqual(config["apifytaskid"], "REPLACE_WITH_APIFY_TASK_ID")
         rendered = json.dumps(blueprint)
         self.assertIn("RUN-SUMMARY", rendered)
-        self.assertIn("nomad-agent-run-summary-v3", rendered)
+        self.assertIn("nomad-agent-run-summary-v4", rendered)
         self.assertNotIn("nomad-agent-fleet-run-summary-v2", rendered)
         self.assertNotIn("sources.euraxess", rendered)
         self.assertIn("{{1.buildNumber}}", rendered)
@@ -191,7 +191,7 @@ process.stdout.write(JSON.stringify(new Function(node.parameters.jsCode)()));
             )
         )
         self.assertEqual(example["actor"], "nomad-agent/euraxess-enrich-translate-normalize-scraper")
-        self.assertEqual(example["callOptions"]["build"], "1.0.9")
+        self.assertEqual(example["callOptions"]["build"], "1.0.10")
         self.assertLessEqual(example["callOptions"]["maxItems"], 5)
         self.assertLessEqual(example["input"]["maxItems"], 5)
         self.assertFalse(example["input"]["translateToEnglish"])

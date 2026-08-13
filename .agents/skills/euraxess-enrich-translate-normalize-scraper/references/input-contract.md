@@ -2,7 +2,7 @@
 
 Target contract: `nomad-agent-job-search-input-v1` with the optional closed
 `nomad-agent-euraxess-search-v1` extension. Private `latest` and `canary`
-currently resolve to build `1.0.9`. Pin `1.0.9`, inspect the deployed schema,
+currently resolve to build `1.0.10`. Pin `1.0.10`, inspect the deployed schema,
 and stop when it does not exactly match this reference.
 
 | Field | Type | Default | Rules |

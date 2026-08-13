@@ -13,7 +13,7 @@
           "y": 0,
           "name": "Watch completed EURAXESS Task runs"
         },
-        "notes": "Select the Apify Task pinned to exact EURAXESS build 1.0.9. Only terminal successful runs are evaluated; one valid partial v3 outcome may repeat the same Task once."
+        "notes": "Select the Apify Task pinned to exact EURAXESS build 1.0.10. Only terminal successful runs are evaluated; one valid partial v4 outcome may repeat the same Task once."
       }
     },
     {
@@ -33,7 +33,7 @@
         },
           {
             "name": "actorbuild",
-            "value": "1.0.9"
+            "value": "1.0.10"
           },
           {
             "name": "googlespreadsheetid",
@@ -52,7 +52,7 @@
           "y": 0,
           "name": "Configuration"
         },
-    "notes": "Replace the Task ID and spreadsheet ID. Select the same Task pinned to exact build 1.0.9 in the trigger. Keep maxitems small for the first destination smoke test."
+    "notes": "Replace the Task ID and spreadsheet ID. Select the same Task pinned to exact build 1.0.10 in the trigger. Keep maxitems small for the first destination smoke test."
       }
     },
     {
@@ -87,9 +87,9 @@
         "designer": {
           "x": 600,
           "y": 0,
-          "name": "Read public RUN-SUMMARY v3"
+          "name": "Read public RUN-SUMMARY v4"
         },
-        "notes": "Reads the Actor output schema's signed runSummary link. Missing or malformed v3 stops the scenario; one valid partial outcome may authorize the bounded retry route."
+        "notes": "Reads the Actor output schema's signed runSummary link. Missing or malformed v4 stops the scenario; one valid partial outcome may authorize the bounded retry route."
       },
       "filter": {
         "name": "Read status only for the exact successful Actor build",
@@ -125,7 +125,7 @@
           "y": 150,
           "name": "Validate terminal run and deliver"
         },
-      "notes": "Validate minimal RUN-SUMMARY v3. A usable partial outcome may repeat the same saved Task once; API-origin retry completions cannot retry again."
+      "notes": "Validate minimal RUN-SUMMARY v4. A usable partial outcome may repeat the same saved Task once; API-origin retry completions cannot retry again."
     },
     "routes": [
       {
@@ -136,7 +136,7 @@
             "version": 1,
             "parameters": {},
             "filter": {
-              "name": "Retry one valid partial v3 outcome",
+              "name": "Retry one valid partial v4 outcome",
               "conditions": [
                 [
                   {
@@ -146,7 +146,7 @@
                   },
                   {
                     "a": "{{3.data.schemaVersion}}",
-                    "b": "nomad-agent-run-summary-v3",
+                    "b": "nomad-agent-run-summary-v4",
                     "o": "text:equal"
                   },
                   {
@@ -175,10 +175,6 @@
                     "o": "number:lessorequal"
                   },
                   {
-                    "a": "{{3.data.retry.notBefore}}",
-                    "o": "exist"
-                  },
-                  {
                     "a": "{{1.meta.origin}}",
                     "b": "API",
                     "o": "text:notequal"
@@ -193,9 +189,9 @@
               "designer": {
                 "x": 1500,
                 "y": -300,
-                "name": "Wait bounded v3 retry delay"
+                "name": "Wait bounded v4 retry delay"
               },
-              "notes": "Make's basic in-scenario wait is bounded to 240 seconds. Longer valid v3 recommendations are delivered as usable partial output without an automatic retry."
+              "notes": "Make's basic in-scenario wait is bounded to 240 seconds. Longer valid v4 recommendations are delivered as usable partial output without an automatic retry."
             }
           },
           {
@@ -238,10 +234,10 @@
                   "y": 150,
                   "name": "Get normalized jobs"
                 },
-                "notes": "Fetches the selected run dataset after minimal v3 validation. A valid partial recommendation retries once when its delay fits the bounded Make route; the retried or otherwise usable partial dataset can then be delivered."
+                "notes": "Fetches the selected run dataset after minimal v4 validation. A valid partial recommendation retries once when its delay fits the bounded Make route; the retried or otherwise usable partial dataset can then be delivered."
               },
               "filter": {
-                "name": "Deliver a valid v3 outcome when no first retry is pending",
+                "name": "Deliver a valid v4 outcome when no first retry is pending",
                 "conditions": [
                   [
                     {
@@ -251,7 +247,7 @@
                     },
                     {
                       "a": "{{3.data.schemaVersion}}",
-                      "b": "nomad-agent-run-summary-v3",
+                      "b": "nomad-agent-run-summary-v4",
                       "o": "text:equal"
                     },
                     {
@@ -283,7 +279,7 @@
                     },
                     {
                       "a": "{{3.data.schemaVersion}}",
-                      "b": "nomad-agent-run-summary-v3",
+                      "b": "nomad-agent-run-summary-v4",
                       "o": "text:equal"
                     },
                     {
@@ -297,7 +293,7 @@
                       "o": "number:equal"
                     },
                     {
-                      "a": "{{3.data.truncated}}",
+                      "a": "{{3.data.resultsLimited}}",
                       "b": false,
                       "o": "boolean:equal"
                     },
@@ -320,7 +316,7 @@
                     },
                     {
                       "a": "{{3.data.schemaVersion}}",
-                      "b": "nomad-agent-run-summary-v3",
+                      "b": "nomad-agent-run-summary-v4",
                       "o": "text:equal"
                     },
                     {
@@ -347,7 +343,7 @@
                   [
                     {
                       "a": "{{3.data.schemaVersion}}",
-                      "b": "nomad-agent-run-summary-v3",
+                      "b": "nomad-agent-run-summary-v4",
                       "o": "text:equal"
                     },
                     {
@@ -371,10 +367,6 @@
                       "o": "number:greaterorequal"
                     },
                     {
-                      "a": "{{3.data.retry.notBefore}}",
-                      "o": "exist"
-                    },
-                    {
                       "a": "{{1.meta.origin}}",
                       "b": "API",
                       "o": "text:equal"
@@ -388,7 +380,7 @@
                   [
                     {
                       "a": "{{3.data.schemaVersion}}",
-                      "b": "nomad-agent-run-summary-v3",
+                      "b": "nomad-agent-run-summary-v4",
                       "o": "text:equal"
                     },
                     {
@@ -415,10 +407,6 @@
                       "a": "{{3.data.retry.afterSeconds}}",
                       "b": "3600",
                       "o": "number:lessorequal"
-                    },
-                    {
-                      "a": "{{3.data.retry.notBefore}}",
-                      "o": "exist"
                     },
                     {
                       "a": "{{1.stats.datasetItems}}",

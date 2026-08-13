@@ -3,9 +3,9 @@
 Import either inactive workflow:
 
 - [`linkedin-jobs-to-google-sheets.json`](linkedin-jobs-to-google-sheets.json),
-  pinned to LinkedIn build `0.6.40`;
+  pinned to LinkedIn build `0.6.41`;
 - [`euraxess-jobs-to-google-sheets.json`](euraxess-jobs-to-google-sheets.json),
-  pinned to private EURAXESS build `1.0.9`.
+  pinned to private EURAXESS build `1.0.10`.
 
 Both workflows follow the same path:
 
@@ -15,14 +15,14 @@ schedule/manual trigger
   -> run the exact Actor build with a charge cap
   -> poll that same run ID until terminal
   -> require SUCCEEDED, exit code 0, and the exact build
-  -> read and validate minimal RUN-SUMMARY v3
+  -> read and validate minimal RUN-SUMMARY v4
   -> wait and repeat the exact paid request at most once when recommended
   -> fetch the selected run's default dataset
   -> reconcile delivered count, validate, and flatten nomad-agent-job-v1
   -> append or update Google Sheets by jobKey
 ```
 
-They poll each exact run ID and require `nomad-agent-run-summary-v3`. Only a
+They poll each exact run ID and require `nomad-agent-run-summary-v4`. Only a
 valid usable `partial` outcome can request one automatic retry; the same input,
 build, item cap, and charge cap are reused. Missing, invalid, wrong-build,
 failed, or count-mismatched runs stop before Sheets. A validated `empty` status
@@ -59,6 +59,6 @@ custom fields, provenance, or the distinction between `null` and `[]`.
 The exported graphs, exact build selectors, terminal run gate, complete input
 pass-through, canonical validation, flat projection, and credential hygiene are
 covered by offline tests. A historical LinkedIn n8n Cloud/Google Sheets smoke
-used Actor build `0.6.19`; it does not validate the current `0.6.40` workflow.
+used Actor build `0.6.19`; it does not validate the current `0.6.41` workflow.
 No EURAXESS n8n/Google Sheets destination smoke has completed. Importing these
 files supplies no credentials and does not activate a schedule.

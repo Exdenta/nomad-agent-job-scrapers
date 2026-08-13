@@ -33,16 +33,16 @@ class ApiPackTests(unittest.TestCase):
     def test_readme_pins_both_builds_and_preserves_the_run_contract(self) -> None:
         text = (PACK / "README.md").read_text(encoding="utf-8")
         for required in (
-            "build=0.6.40",
-            "build=1.0.9",
+            "build=0.6.41",
+            "build=1.0.10",
             "maxTotalChargeUsd",
             "Authorization: Bearer $APIFY_TOKEN",
             "buildNumber",
             "terminal run status",
             "RUN-SUMMARY",
-            "nomad-agent-run-summary-v3",
+            "nomad-agent-run-summary-v4",
             "RUN-SUMMARY.delivered",
-            "limited to one valid v3",
+            "limited to one valid v4",
             "webhook",
             "idempotently",
             "schemaVersion`, `identity`, `data`,",

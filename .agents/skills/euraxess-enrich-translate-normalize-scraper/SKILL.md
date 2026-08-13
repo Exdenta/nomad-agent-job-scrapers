@@ -6,11 +6,11 @@ description: Find and integrate EURAXESS research and academic jobs with the Api
 # EURAXESS research and academic job search
 
 Use this skill for the strict `1.0` EURAXESS contract. Private `latest` and
-`canary` both resolve to build `1.0.9`. Installing this skill does not prove
+`canary` both resolve to build `1.0.10`. Installing this skill does not prove
 that the private Actor is accessible to the current user.
 
 Use Apify MCP through generic `call-actor` with
-`callOptions.build: "1.0.9"`; do not rely on a mutable tag. Keep the nested
+`callOptions.build: "1.0.10"`; do not rely on a mutable tag. Keep the nested
 normalized record as the system of record; flatten only for a
 destination that requires table-shaped values.
 
@@ -26,8 +26,8 @@ repository.
 1. Fetch the deployed Actor details to confirm account access and current
    pricing.
 2. Use only generic `call-actor` with exact
-   `callOptions.build: "1.0.9"`. Require the run response to report
-   `buildNumber: "1.0.9"` before accepting its output.
+   `callOptions.build: "1.0.10"`. Require the run response to report
+   `buildNumber: "1.0.10"` before accepting its output.
 3. Send `schemaVersion: nomad-agent-job-search-input-v1` and the closed
    `euraxessSearch` extension described in
    [references/input-contract.md](references/input-contract.md).
@@ -102,13 +102,13 @@ this outer envelope; the documented bounded input above belongs under `input`:
   "actor": "nomad-agent/euraxess-enrich-translate-normalize-scraper",
   "input": {"schemaVersion": "nomad-agent-job-search-input-v1", "maxItems": 5},
   "waitSecs": 0,
-  "callOptions": {"build": "1.0.9", "maxItems": 5, "maxTotalChargeUsd": 0.1}
+  "callOptions": {"build": "1.0.10", "maxItems": 5, "maxTotalChargeUsd": 0.1}
 }
 ```
 
 1. Call generic `call-actor`; do not rely on the direct Actor tool or a mutable
    tag.
-2. Require the authoritative run to report `buildNumber: "1.0.9"`. If MCP
+2. Require the authoritative run to report `buildNumber: "1.0.10"`. If MCP
    omits that field, verify the same run through Apify's authenticated run API.
    A missing or different build is a compatibility failure.
 3. Poll `READY`, `RUNNING`, `TIMING-OUT`, or `ABORTING` runs by run ID with
@@ -125,7 +125,7 @@ this outer envelope; the documented bounded input above belongs under `input`:
 7. Require the complete dataset row count to equal `RUN-SUMMARY.delivered`.
    Accept validated `empty` plus zero rows as a valid empty search.
 8. If a valid usable `partial` outcome has `retry.recommended: true`, wait the
-   bounded v3 timing and repeat the exact input, build, item cap, and charge cap
+   bounded v4 `afterSeconds` delay and repeat the exact input, build, item cap, and charge cap
    at most once. Never retry an empty, failed, timed-out, or aborted run.
 9. After the one-retry bound, use the latest valid usable dataset and reconcile
    its row count. Missing or invalid summaries stop delivery.

@@ -15,7 +15,7 @@ SKILL_NAME = "euraxess-enrich-translate-normalize-scraper"
 SKILL = ROOT / ".agents" / "skills" / SKILL_NAME
 SCRIPTS = SKILL / "scripts"
 FIXTURE = ROOT / "tests" / "fixtures" / "euraxess-job.json"
-SUMMARY_SCHEMA = ROOT / "integrations" / "shared" / "run-summary-v3.schema.json"
+SUMMARY_SCHEMA = ROOT / "integrations" / "shared" / "run-summary-v4.schema.json"
 SUMMARY_VALIDATOR = ROOT / "integrations" / "shared" / "validate_run_summary.py"
 CUSTOM_SCHEMA = ROOT / "integrations" / "shared" / "euraxess-v1.schema.json"
 CANONICAL_CUSTOM_SCHEMA_SHA256 = (
@@ -51,16 +51,15 @@ def run_summary_validator(
 
 def valid_summary() -> dict[str, object]:
     return {
-        "schemaVersion": "nomad-agent-run-summary-v3",
+        "schemaVersion": "nomad-agent-run-summary-v4",
         "status": "succeeded",
         "startedAt": "2026-08-10T10:00:00Z",
         "finishedAt": "2026-08-10T10:02:00Z",
-        "truncated": False,
+        "resultsLimited": False,
         "delivered": 2,
         "retry": {
             "recommended": False,
             "afterSeconds": None,
-            "notBefore": None,
         },
     }
 
@@ -214,12 +213,12 @@ class EuraxessSkillTest(unittest.TestCase):
         self.assertIn("fetch-actor-details,call-actor", metadata)
         self.assertIn('transport: "streamable_http"', metadata)
         self.assertIn("`latest` and `canary`", combined)
-        self.assertIn("build `1.0.9`", combined)
+        self.assertIn("build `1.0.10`", combined)
         self.assertIn("nomad-agent-job-search-input-v1", combined)
         self.assertIn("nomad-agent-euraxess-search-v1", combined)
         self.assertIn("RUN-SUMMARY", combined)
         self.assertIn("get-key-value-store-record", combined)
-        self.assertIn("nomad-agent-run-summary-v3", combined)
+        self.assertIn("nomad-agent-run-summary-v4", combined)
         self.assertIn("at most once", combined.lower())
         self.assertIn("academicLevelRaw", combined)
         self.assertIn("only named people", combined.lower())
@@ -233,22 +232,22 @@ class EuraxessSkillTest(unittest.TestCase):
         self.assertNotIn("live-validated EURAXESS", combined)
         self.assertNotIn("APIFY_TOKEN=", combined)
 
-    def test_run_summary_v3_schema_is_closed_and_minimal(self) -> None:
+    def test_run_summary_v4_schema_is_closed_and_minimal(self) -> None:
         schema = json.loads(SUMMARY_SCHEMA.read_text(encoding="utf-8"))
         self.assertFalse(schema["additionalProperties"])
         self.assertEqual(
             schema["properties"]["schemaVersion"]["const"],
-            "nomad-agent-run-summary-v3",
+            "nomad-agent-run-summary-v4",
         )
         self.assertEqual(schema["properties"]["retry"], {"$ref": "#/$defs/retry"})
         retry = schema["$defs"]["retry"]
         self.assertFalse(retry["additionalProperties"])
-        self.assertEqual(set(retry["required"]), {"recommended", "afterSeconds", "notBefore"})
+        self.assertEqual(set(retry["required"]), {"recommended", "afterSeconds"})
         rendered = json.dumps(schema)
         for forbidden in ("sources", "searchRequests", "cardsSeen", "errors", "message"):
             self.assertNotIn(forbidden, rendered)
         self.assertIn("afterSeconds", rendered)
-        self.assertIn("notBefore", rendered)
+        self.assertNotIn("notBefore", rendered)
 
     def test_fleet_summary_semantic_validator_accepts_canonical_example(self) -> None:
         result = run_summary_validator(valid_summary())
@@ -270,13 +269,12 @@ class EuraxessSkillTest(unittest.TestCase):
         succeeded_retry["retry"] = {
             "recommended": True,
             "afterSeconds": 60,
-            "notBefore": "2026-08-10T10:03:00Z",
         }
         cases.append((succeeded_retry, "succeeded cannot recommend"))
 
         false_with_timing = valid_summary()
         false_with_timing["retry"]["afterSeconds"] = 60
-        cases.append((false_with_timing, "requires null timing fields"))
+        cases.append((false_with_timing, "requires afterSeconds=null"))
 
         partial_without_jobs = valid_summary()
         partial_without_jobs.update(status="partial", delivered=0)
@@ -313,10 +311,10 @@ class EuraxessSkillTest(unittest.TestCase):
         self.assertIn("Actor catalog", readme)
         self.assertIn(SKILL_NAME, readme)
         self.assertIn("EURAXESS `1.0` remains private", readme)
-        self.assertIn("`latest` and `canary` point to exact build `1.0.9`", readme)
-        self.assertIn("`latest` and `canary` point to exact build `1.0.9`", readme)
-        self.assertIn("Pin exact build `1.0.9`", guide)
-        self.assertIn("build `1.0.9`", guide)
+        self.assertIn("`latest` and `canary` point to exact build `1.0.10`", readme)
+        self.assertIn("`latest` and `canary` point to exact build `1.0.10`", readme)
+        self.assertIn("Pin exact build `1.0.10`", guide)
+        self.assertIn("build `1.0.10`", guide)
         self.assertIn(f"--skill {SKILL_NAME}", agents)
 
 

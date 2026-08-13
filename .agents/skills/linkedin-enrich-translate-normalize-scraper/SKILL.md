@@ -18,7 +18,7 @@ HTTP with OAuth. Never ask for a token in chat or write one to a repository.
 ## Before a run
 
 1. Fetch the deployed Actor details or inspect its MCP tool schema. This skill
-   was synchronized to public `latest` build `0.6.40`; stop if the run resolves
+   was synchronized to public `latest` build `0.6.41`; stop if the run resolves
    to another build until its contract has been checked.
 2. Confirm that the deployed input accepts
    `schemaVersion: nomad-agent-job-search-input-v1`. If it does not, explain
@@ -78,7 +78,7 @@ Apply these rules:
 
 ## Execute with MCP
 
-1. Call generic `call-actor` with this outer envelope. Pin build `0.6.40` in
+1. Call generic `call-actor` with this outer envelope. Pin build `0.6.41` in
    `callOptions.build`; do not rely on a mutable tag or the direct Actor tool:
 
    ```json
@@ -86,14 +86,14 @@ Apply these rules:
      "actor": "nomad-agent/linkedin-enrich-translate-normalize-scraper",
      "input": {"schemaVersion": "nomad-agent-job-search-input-v1", "maxItems": 5},
      "waitSecs": 0,
-     "callOptions": {"build": "0.6.40", "maxItems": 5, "maxTotalChargeUsd": 0.1}
+     "callOptions": {"build": "0.6.41", "maxItems": 5, "maxTotalChargeUsd": 0.1}
    }
    ```
 2. If the returned run is `READY`, `RUNNING`, `TIMING-OUT`, or `ABORTING`, use
    its run ID with `get-actor-run` and follow `nextStep` until the run is
    terminal.
 3. Continue only when the authoritative terminal run has status `SUCCEEDED`,
-   exit code `0`, and build number `0.6.40`. If an MCP response omits
+   exit code `0`, and build number `0.6.41`. If an MCP response omits
    `buildNumber`, verify the same run through Apify's authenticated run API;
    omission is not proof of the requested build.
 4. Read that run's default key-value-store ID from
@@ -108,7 +108,7 @@ Apply these rules:
 6. Require the complete dataset row count to equal `RUN-SUMMARY.delivered`.
    Treat validated `empty` plus zero dataset items as no matching jobs.
 7. If a valid usable `partial` outcome has `retry.recommended: true`, wait the
-   bounded v3 timing and repeat the exact input, build, item cap, and charge cap
+   bounded v4 `afterSeconds` delay and repeat the exact input, build, item cap, and charge cap
    at most once. Never retry `empty` or a failed Apify run.
 8. After the one-retry bound, use the latest valid usable dataset and reconcile
    its row count. Missing or invalid summaries stop delivery.

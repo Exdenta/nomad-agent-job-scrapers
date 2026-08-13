@@ -43,14 +43,14 @@ PROFILES = {
     "linkedin": {
         "url": PINNED_URL,
         "tool": "call-actor",
-        "build": "0.6.40",
+        "build": "0.6.41",
         "source": "linkedin",
         "input": Path(__file__).resolve().parents[1] / "examples/linkedin-search.mcp.json",
     },
     "euraxess": {
         "url": PINNED_URL,
         "tool": "call-actor",
-        "build": "1.0.9",
+        "build": "1.0.10",
         "source": "euraxess",
         "input": Path(__file__).resolve().parents[1] / "examples/euraxess-search.mcp.json",
     },
@@ -264,7 +264,7 @@ def _verified_rest_run(token: str, run_id: str, timeout: float) -> dict[str, Any
 
 
 def _run_summary(client: McpClient, run: dict[str, Any]) -> Any:
-    """Read one run's minimal public v3 outcome."""
+    """Read one run's minimal public v4 outcome."""
     store_id = _default_storage_id(run, "keyValueStores", "defaultKeyValueStoreId")
     if not store_id:
         return None
@@ -304,7 +304,7 @@ def parse_args() -> argparse.Namespace:
         "--max-reschedule-retries",
         type=int,
         default=1,
-        help="honor at most one valid RUN-SUMMARY v3 retry (default: 1)",
+        help="honor at most one valid RUN-SUMMARY v4 retry (default: 1)",
     )
     return parser.parse_args()
 

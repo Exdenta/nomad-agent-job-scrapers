@@ -24,7 +24,7 @@
   },
   "waitSecs": 0,
   "callOptions": {
-    "build": "0.6.40",
+    "build": "0.6.41",
     "maxItems": 5,
     "maxTotalChargeUsd": 0.1
   }

@@ -59,9 +59,9 @@ No community node, messaging account, or AI-provider credential is required.
 
 - The workflow imports inactive.
 - The schedule does not run until the workflow is published.
-- The workflow pins exact public latest build `0.6.40`.
+- The workflow pins exact public latest build `0.6.41`.
 - `maxItems` starts at `1` and the Apify call has a `$0.10` charge cap.
-- The workflow validates minimal v3 `RUN-SUMMARY`, may repeat the exact run
+- The workflow validates minimal v4 `RUN-SUMMARY`, may repeat the exact run
   request once on a valid partial recommendation, and reconciles its
   `delivered` count with the selected dataset. A validated `empty` status is
   valid and writes no rows.
@@ -80,8 +80,8 @@ refreshed instead of duplicated. The template has no separate delivery cache.
 Live-tested on 2026-08-09 with n8n Cloud, Apify build `0.6.19`, and Google
 Sheets. One canonical Actor result was flattened and written to the destination
 Sheet without an n8n node error. The published schedule was not part of the
-live test. This is not a live n8n validation for current Actor build `0.6.40`.
-The current workflow requires exact terminal success, minimal v3 status, the
+live test. This is not a live n8n validation for current Actor build `0.6.41`.
+The current workflow requires exact terminal success, minimal v4 status, the
 hard one-retry bound, and a reconciled default dataset.
 
 ## Support and license
