@@ -1,13 +1,13 @@
 # EURAXESS search examples
 
-These are bounded contract examples for build `1.0.11`. Every MCP
-execution must use generic `call-actor` with `callOptions.build: "1.0.11"` and
+These are bounded contract examples for build `1.0.13`. Every MCP
+execution must use generic `call-actor` with `callOptions.build: "1.0.13"` and
 verify that exact authoritative run build rather than rely on a mutable tag.
 
 ## Focused research search
 
 ```text
-After confirming Actor access and current pricing, call exact build `1.0.11`
+After confirming Actor access and current pricing, call exact build `1.0.13`
 for up to 5 postdoctoral machine-learning positions in Germany
 posted within 30 days. Disable cross-run dedupe, translation, enrichment, and
 analytics. Fetch the complete successful dataset, validate nomad-agent-job-v1,

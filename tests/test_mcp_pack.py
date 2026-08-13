@@ -110,7 +110,7 @@ class McpPackTests(unittest.TestCase):
             "nomad-agent/euraxess-enrich-translate-normalize-scraper",
         )
         self.assertEqual(value["callOptions"], {
-            "build": "1.0.11",
+            "build": "1.0.13",
             "maxItems": 5,
             "maxTotalChargeUsd": 0.1,
         })
@@ -129,7 +129,7 @@ class McpPackTests(unittest.TestCase):
         self.assertEqual(module.PROFILES["linkedin"]["tool"], "call-actor")
         self.assertEqual(module.PROFILES["euraxess"]["url"], PINNED_URL)
         self.assertEqual(module.PROFILES["euraxess"]["tool"], "call-actor")
-        self.assertEqual(module.PROFILES["euraxess"]["build"], "1.0.11")
+        self.assertEqual(module.PROFILES["euraxess"]["build"], "1.0.13")
         self.assertIn("fetch-actor-details", module.REQUIRED_TOOLS)
         self.assertIn("call-actor", module.REQUIRED_TOOLS)
         self.assertIn("get-key-value-store-record", module.REQUIRED_TOOLS)

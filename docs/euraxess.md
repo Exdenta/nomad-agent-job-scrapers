@@ -4,7 +4,7 @@
 finds public EURAXESS PhD, postdoctoral, fellowship, research, and faculty
 vacancies and returns the shared `nomad-agent-job-v1` contract.
 
-This integration pack supports exact build `1.0.11`. Pin that build in API,
+This integration pack supports exact build `1.0.13`. Pin that build in API,
 MCP, n8n, and Make clients, and verify it on the completed run before accepting
 results.
 
@@ -58,7 +58,7 @@ python3 scripts/install_skill.py \
 - [REST API and webhook guidance](../integrations/api/README.md)
 - [Airtable destination preset](../integrations/airtable/README.md)
 
-The n8n and Make assets require terminal success, exact build `1.0.11`, a
+The n8n and Make assets require terminal success, exact build `1.0.13`, a
 valid `nomad-agent-run-summary-v4`, and a dataset row count equal to
 `RUN-SUMMARY.delivered`. They preserve the canonical dataset and derive only
 the documented flat view for Google Sheets. Importing a template never adds

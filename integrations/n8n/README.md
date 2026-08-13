@@ -5,7 +5,7 @@ Import either inactive workflow:
 - [`linkedin-jobs-to-google-sheets.json`](linkedin-jobs-to-google-sheets.json),
   pinned to LinkedIn build `0.6.42`;
 - [`euraxess-jobs-to-google-sheets.json`](euraxess-jobs-to-google-sheets.json),
-  pinned to EURAXESS build `1.0.11`.
+  pinned to EURAXESS build `1.0.13`.
 
 Both workflows follow the same path:
 

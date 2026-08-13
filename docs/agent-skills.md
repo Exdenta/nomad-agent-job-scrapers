@@ -57,7 +57,7 @@ dependencies.
 Installing the skill does not install MCP. Complete the client setup in
 [MCP quickstart](mcp.md) as a separate step.
 
-The EURAXESS skill documents the public `1.0` contract on exact build `1.0.11`.
+The EURAXESS skill documents the public `1.0` contract on exact build `1.0.13`.
 Its client setup uses generic `call-actor` to pin and verify that build rather
 than rely on mutable `latest` or `canary` tags. It then validates minimal v4
 `RUN-SUMMARY`, reconciles `delivered` with the dataset, and honors at most one

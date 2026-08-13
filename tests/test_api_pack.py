@@ -34,7 +34,7 @@ class ApiPackTests(unittest.TestCase):
         text = (PACK / "README.md").read_text(encoding="utf-8")
         for required in (
             "build=0.6.42",
-            "build=1.0.11",
+            "build=1.0.13",
             "maxTotalChargeUsd",
             "Authorization: Bearer $APIFY_TOKEN",
             "buildNumber",

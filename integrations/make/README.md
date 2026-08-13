@@ -5,7 +5,7 @@ Import either blueprint:
 - [`linkedin-jobs-to-google-sheets.blueprint.json`](linkedin-jobs-to-google-sheets.blueprint.json),
   for a Task pinned to LinkedIn build `0.6.42`;
 - [`euraxess-jobs-to-google-sheets.blueprint.json`](euraxess-jobs-to-google-sheets.blueprint.json),
-  for a Task pinned to EURAXESS build `1.0.11`.
+  for a Task pinned to EURAXESS build `1.0.13`.
 
 The Apify Task owns the complete Actor input, item limit, exact build, and
 charge cap. The Make scenario consumes the completed Task run:

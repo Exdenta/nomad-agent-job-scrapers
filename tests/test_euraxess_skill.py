@@ -196,8 +196,8 @@ class EuraxessSkillTest(unittest.TestCase):
         self.assertTrue(skill.startswith("---\nname: euraxess-"))
         self.assertIn("fetch-actor-details,call-actor", metadata)
         self.assertIn('transport: "streamable_http"', metadata)
-        self.assertIn("exact build `1.0.11`", combined)
-        self.assertIn("build `1.0.11`", combined)
+        self.assertIn("exact build `1.0.13`", combined)
+        self.assertIn("build `1.0.13`", combined)
         self.assertIn("nomad-agent-job-search-input-v1", combined)
         self.assertIn("nomad-agent-euraxess-search-v1", combined)
         self.assertIn("RUN-SUMMARY", combined)
@@ -290,9 +290,9 @@ class EuraxessSkillTest(unittest.TestCase):
         self.assertIn("Actor catalog", readme)
         self.assertIn(SKILL_NAME, readme)
         self.assertIn("LinkedIn `0.6` and EURAXESS `1.0` are public Store Actors", readme)
-        self.assertIn("exact supported build `1.0.11`", readme)
-        self.assertIn("supports exact build `1.0.11`", guide)
-        self.assertIn("build `1.0.11`", guide)
+        self.assertIn("exact supported build `1.0.13`", readme)
+        self.assertIn("supports exact build `1.0.13`", guide)
+        self.assertIn("build `1.0.13`", guide)
         self.assertIn(f"--skill {SKILL_NAME}", agents)
 
 
