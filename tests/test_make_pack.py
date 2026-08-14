@@ -160,7 +160,35 @@ class MakePackTest(unittest.TestCase):
             self.assertIn(" = null; null;", expression)
             self.assertIn('= 0; "[]";', expression)
             self.assertIn("join(add(emptyarray;", expression)
+            self.assertIn('decodeURL("%5B%22")', expression)
+            self.assertIn("escapeJSON(join(", expression)
+            self.assertEqual(expression.count("__NOMAD_JSON_SEP__"), 2)
+            self.assertIn('decodeURL("%22%2C%22")', expression)
+            self.assertIn('decodeURL("%22%5D")', expression)
             self.assertIn("; emptystring)", expression)
+
+        expected_sources = {
+            "workArrangements": "8.data.employment.workArrangements",
+            "workSchedules": "8.data.employment.workSchedules",
+            "contractTypes": "8.data.employment.contractTypes",
+            "seniorityLevels": "8.data.seniority.levels",
+            "industries": "8.data.classification.industries",
+            "jobFunctions": "8.data.classification.jobFunctions",
+        }
+        for field, source in expected_sources.items():
+            self.assertEqual(
+                by_name[field],
+                f'{{{{if({source} = null; null; '
+                f'if(length({source}) = 0; "[]"; '
+                'join(add(emptyarray; decodeURL("%5B%22"); '
+                f'replace(escapeJSON(join({source}; "__NOMAD_JSON_SEP__")); '
+                '"__NOMAD_JSON_SEP__"; decodeURL("%22%2C%22")); '
+                'decodeURL("%22%5D")); emptystring)))}}',
+            )
+
+        notes = projection["metadata"]["notes"]
+        self.assertIn("reserved __NOMAD_JSON_SEP__ sentinel", notes)
+        self.assertIn("do not reuse this formula for uncontrolled arrays", notes)
 
         rendered = json.dumps(projection)
         self.assertNotIn("code:ExecuteCode", rendered)

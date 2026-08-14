@@ -493,15 +493,15 @@
                   },
                   {
                     "name": "workArrangements",
-                    "value": "{{if(8.data.employment.workArrangements = null; null; if(length(8.data.employment.workArrangements) = 0; \"[]\"; join(add(emptyarray; \"[\\\"\"; join(8.data.employment.workArrangements; \"\\\",\\\"\"); \"\\\"]\"); emptystring)))}}"
+                    "value": "{{if(8.data.employment.workArrangements = null; null; if(length(8.data.employment.workArrangements) = 0; \"[]\"; join(add(emptyarray; decodeURL(\"%5B%22\"); replace(escapeJSON(join(8.data.employment.workArrangements; \"__NOMAD_JSON_SEP__\")); \"__NOMAD_JSON_SEP__\"; decodeURL(\"%22%2C%22\")); decodeURL(\"%22%5D\")); emptystring)))}}"
                   },
                   {
                     "name": "workSchedules",
-                    "value": "{{if(8.data.employment.workSchedules = null; null; if(length(8.data.employment.workSchedules) = 0; \"[]\"; join(add(emptyarray; \"[\\\"\"; join(8.data.employment.workSchedules; \"\\\",\\\"\"); \"\\\"]\"); emptystring)))}}"
+                    "value": "{{if(8.data.employment.workSchedules = null; null; if(length(8.data.employment.workSchedules) = 0; \"[]\"; join(add(emptyarray; decodeURL(\"%5B%22\"); replace(escapeJSON(join(8.data.employment.workSchedules; \"__NOMAD_JSON_SEP__\")); \"__NOMAD_JSON_SEP__\"; decodeURL(\"%22%2C%22\")); decodeURL(\"%22%5D\")); emptystring)))}}"
                   },
                   {
                     "name": "contractTypes",
-                    "value": "{{if(8.data.employment.contractTypes = null; null; if(length(8.data.employment.contractTypes) = 0; \"[]\"; join(add(emptyarray; \"[\\\"\"; join(8.data.employment.contractTypes; \"\\\",\\\"\"); \"\\\"]\"); emptystring)))}}"
+                    "value": "{{if(8.data.employment.contractTypes = null; null; if(length(8.data.employment.contractTypes) = 0; \"[]\"; join(add(emptyarray; decodeURL(\"%5B%22\"); replace(escapeJSON(join(8.data.employment.contractTypes; \"__NOMAD_JSON_SEP__\")); \"__NOMAD_JSON_SEP__\"; decodeURL(\"%22%2C%22\")); decodeURL(\"%22%5D\")); emptystring)))}}"
                   },
                   {
                     "name": "postedAt",
@@ -525,15 +525,15 @@
                   },
                   {
                     "name": "seniorityLevels",
-                    "value": "{{if(8.data.seniority.levels = null; null; if(length(8.data.seniority.levels) = 0; \"[]\"; join(add(emptyarray; \"[\\\"\"; join(8.data.seniority.levels; \"\\\",\\\"\"); \"\\\"]\"); emptystring)))}}"
+                    "value": "{{if(8.data.seniority.levels = null; null; if(length(8.data.seniority.levels) = 0; \"[]\"; join(add(emptyarray; decodeURL(\"%5B%22\"); replace(escapeJSON(join(8.data.seniority.levels; \"__NOMAD_JSON_SEP__\")); \"__NOMAD_JSON_SEP__\"; decodeURL(\"%22%2C%22\")); decodeURL(\"%22%5D\")); emptystring)))}}"
                   },
                   {
                     "name": "industries",
-                    "value": "{{if(8.data.classification.industries = null; null; if(length(8.data.classification.industries) = 0; \"[]\"; join(add(emptyarray; \"[\\\"\"; join(8.data.classification.industries; \"\\\",\\\"\"); \"\\\"]\"); emptystring)))}}"
+                    "value": "{{if(8.data.classification.industries = null; null; if(length(8.data.classification.industries) = 0; \"[]\"; join(add(emptyarray; decodeURL(\"%5B%22\"); replace(escapeJSON(join(8.data.classification.industries; \"__NOMAD_JSON_SEP__\")); \"__NOMAD_JSON_SEP__\"; decodeURL(\"%22%2C%22\")); decodeURL(\"%22%5D\")); emptystring)))}}"
                   },
                   {
                     "name": "jobFunctions",
-                    "value": "{{if(8.data.classification.jobFunctions = null; null; if(length(8.data.classification.jobFunctions) = 0; \"[]\"; join(add(emptyarray; \"[\\\"\"; join(8.data.classification.jobFunctions; \"\\\",\\\"\"); \"\\\"]\"); emptystring)))}}"
+                    "value": "{{if(8.data.classification.jobFunctions = null; null; if(length(8.data.classification.jobFunctions) = 0; \"[]\"; join(add(emptyarray; decodeURL(\"%5B%22\"); replace(escapeJSON(join(8.data.classification.jobFunctions; \"__NOMAD_JSON_SEP__\")); \"__NOMAD_JSON_SEP__\"; decodeURL(\"%22%2C%22\")); decodeURL(\"%22%5D\")); emptystring)))}}"
                   },
                   {
                     "name": "salaryCurrency",
@@ -576,7 +576,7 @@
                   "y": 150,
                   "name": "Flatten normalized job"
                 },
-                "notes": "Creates the 32-column nomad-agent-flat-job-v1 projection with Make's free built-in Tools module. No paid Make Code app is required."
+                "notes": "Creates the 32-column nomad-agent-flat-job-v1 projection with Make's free built-in Tools module. Array columns use JSON-safe escaping and the reserved __NOMAD_JSON_SEP__ sentinel, which supported Actor enum/string values never contain; do not reuse this formula for uncontrolled arrays. No paid Make Code app is required."
               }
             },
             {

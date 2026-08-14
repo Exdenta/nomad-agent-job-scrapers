@@ -48,8 +48,11 @@ Do not put retired fields such as `replayEpoch` in the saved Task input.
 
 The scenario derives the shared 32-column `nomad-agent-flat-job-v1` projection
 and upserts by `jobKey = source:externalId`. Array fields are serialized as JSON
-text while preserving `null` versus `[]`. `descriptionText` comes from
-`raw.description`; it is `null` when raw output is disabled.
+text with JSON escaping while preserving `null` versus `[]`. The formula uses
+`__NOMAD_JSON_SEP__` as a reserved separator; supported Actor enum/string array
+values never contain it. Do not reuse that formula for uncontrolled arrays.
+`descriptionText` comes from `raw.description`; it is `null` when raw output is
+disabled.
 
 The flat row does not replace the canonical six-root dataset. Preserve the
 canonical record when downstream logic needs nested requirements, contacts,

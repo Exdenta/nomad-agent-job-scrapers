@@ -184,6 +184,34 @@ process.stdout.write(JSON.stringify(new Function(node.parameters.jsCode)()));
         self.assertNotIn("nomad-agent-linkedin-run-summary-v1", rendered)
         self.assertNotIn("token", rendered.lower())
 
+        projection = by_name["Flatten normalized job"]
+        values = {
+            item["name"]: item["value"]
+            for item in projection["mapper"]["variables"]
+        }
+        expected_sources = {
+            "workArrangements": "8.data.employment.workArrangements",
+            "workSchedules": "8.data.employment.workSchedules",
+            "contractTypes": "8.data.employment.contractTypes",
+            "seniorityLevels": "8.data.seniority.levels",
+            "industries": "8.data.classification.industries",
+            "jobFunctions": "8.data.classification.jobFunctions",
+        }
+        for field, source in expected_sources.items():
+            self.assertEqual(
+                values[field],
+                f'{{{{if({source} = null; null; '
+                f'if(length({source}) = 0; "[]"; '
+                'join(add(emptyarray; decodeURL("%5B%22"); '
+                f'replace(escapeJSON(join({source}; "__NOMAD_JSON_SEP__")); '
+                '"__NOMAD_JSON_SEP__"; decodeURL("%22%2C%22")); '
+                'decodeURL("%22%5D")); emptystring)))}}',
+            )
+        self.assertIn(
+            "do not reuse this formula for uncontrolled arrays",
+            projection["metadata"]["notes"],
+        )
+
     def test_mcp_examples_are_scoped_bounded_and_credential_free(self) -> None:
         example = json.loads(
             (MCP_DIR / "examples" / "euraxess-search.mcp.json").read_text(
