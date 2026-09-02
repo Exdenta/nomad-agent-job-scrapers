@@ -20,6 +20,9 @@ from xml.sax.saxutils import escape
 
 
 GOOGLE_WEBMASTERS_SCOPE = "https://www.googleapis.com/auth/webmasters"
+GOOGLE_INSPECTION_ENDPOINT = (
+    "https://searchconsole.googleapis.com/v1/urlInspection/index:inspect"
+)
 INDEXNOW_ENDPOINT = "https://api.indexnow.org/indexnow"
 INDEXNOW_KEY_PATTERN = re.compile(r"[A-Za-z0-9-]{8,128}\Z")
 SITEMAP_NAMESPACE = "http://www.sitemaps.org/schemas/sitemap/0.9"
@@ -225,6 +228,50 @@ def verify_google_property_access(site_url: str, access_token: str) -> str:
     return permission
 
 
+def inspect_google_url(
+    site_url: str, inspection_url: str, access_token: str
+) -> dict[str, object]:
+    site_url = normalize_site_url(site_url)
+    canonical = validate_canonical(inspection_url, site_url, Path(inspection_url))
+    request = Request(
+        GOOGLE_INSPECTION_ENDPOINT,
+        data=json.dumps(
+            {
+                "inspectionUrl": canonical,
+                "siteUrl": site_url,
+                "languageCode": "en-US",
+            }
+        ).encode("utf-8"),
+        method="POST",
+        headers={
+            "Authorization": f"Bearer {access_token}",
+            "Content-Type": "application/json; charset=utf-8",
+            "User-Agent": USER_AGENT,
+        },
+    )
+    try:
+        with urlopen(request, timeout=30) as response:
+            if response.status != 200:
+                raise RuntimeError(
+                    f"Search Console URL inspection returned HTTP {response.status}"
+                )
+            payload = json.loads(response.read())
+    except HTTPError as error:
+        raise RuntimeError(
+            f"Search Console URL inspection failed with {_response_summary(error)}"
+        ) from error
+    except json.JSONDecodeError as error:
+        raise RuntimeError("Search Console URL inspection returned invalid JSON") from error
+
+    result = payload.get("inspectionResult")
+    if not isinstance(result, dict):
+        raise RuntimeError("Search Console URL inspection omitted inspectionResult")
+    index_status = result.get("indexStatusResult")
+    if not isinstance(index_status, dict):
+        raise RuntimeError("Search Console URL inspection omitted indexStatusResult")
+    return index_status
+
+
 def submit_indexnow(
     site_url: str, urls: list[str], indexnow_key: str
 ) -> int:
@@ -265,32 +312,46 @@ def google_access_token() -> str:
     if access_token := os.environ.get("GOOGLE_SEARCH_CONSOLE_ACCESS_TOKEN"):
         return access_token
 
-    raw_credentials = os.environ.get("GOOGLE_SEARCH_CONSOLE_CREDENTIALS_JSON")
-    if not raw_credentials:
-        raise RuntimeError(
-            "set GOOGLE_SEARCH_CONSOLE_ACCESS_TOKEN or "
-            "GOOGLE_SEARCH_CONSOLE_CREDENTIALS_JSON"
-        )
     try:
-        credentials_info = json.loads(raw_credentials)
-    except json.JSONDecodeError as error:
-        raise RuntimeError("Google service-account JSON is invalid") from error
-
-    try:
+        import google.auth
         from google.auth.transport.requests import Request as GoogleAuthRequest
-        from google.oauth2 import service_account
     except ImportError as error:
         raise RuntimeError(
-            "google-auth[requests] is required when using service-account JSON"
+            "google-auth[requests] is required for Application Default Credentials"
         ) from error
 
-    credentials = service_account.Credentials.from_service_account_info(
-        credentials_info, scopes=[GOOGLE_WEBMASTERS_SCOPE]
-    )
+    try:
+        credentials, _ = google.auth.default(scopes=[GOOGLE_WEBMASTERS_SCOPE])
+    except Exception as error:
+        raise RuntimeError(
+            "Google Application Default Credentials are unavailable"
+        ) from error
     credentials.refresh(GoogleAuthRequest())
     if not credentials.token:
         raise RuntimeError("Google authentication did not return an access token")
     return credentials.token
+
+
+def inspect(site_dir: Path, site_url: str) -> None:
+    site_url = normalize_site_url(site_url)
+    token = google_access_token()
+    results = []
+    for url in discover_canonical_urls(site_dir, site_url):
+        status = inspect_google_url(site_url, url, token)
+        results.append(
+            {
+                "url": url,
+                "verdict": status.get("verdict"),
+                "coverageState": status.get("coverageState"),
+                "indexingState": status.get("indexingState"),
+                "pageFetchState": status.get("pageFetchState"),
+                "robotsTxtState": status.get("robotsTxtState"),
+                "lastCrawlTime": status.get("lastCrawlTime"),
+                "googleCanonical": status.get("googleCanonical"),
+                "userCanonical": status.get("userCanonical"),
+            }
+        )
+    print(json.dumps({"siteUrl": site_url, "results": results}, indent=2))
 
 
 def notify(site_dir: Path, site_url: str, indexnow_key: str) -> None:
@@ -335,7 +396,7 @@ def notify(site_dir: Path, site_url: str, indexnow_key: str) -> None:
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=__doc__)
     subparsers = parser.add_subparsers(dest="command", required=True)
-    for command in ("prepare", "preflight", "notify"):
+    for command in ("prepare", "preflight", "inspect", "notify"):
         child = subparsers.add_parser(command)
         child.add_argument("--site-dir", type=Path, default=Path("website"))
         child.add_argument("--site-url", default="https://nomadagent.dev/")
@@ -357,6 +418,8 @@ def main() -> int:
                 args.site_url, google_access_token()
             )
             print(f"Search Console property access verified ({permission})")
+        elif args.command == "inspect":
+            inspect(args.site_dir, args.site_url)
         else:
             indexnow_key = os.environ.get("INDEXNOW_KEY")
             if not indexnow_key:

@@ -2,7 +2,9 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+import sys
 from tempfile import TemporaryDirectory
+from types import ModuleType
 import unittest
 from unittest.mock import patch
 
@@ -180,6 +182,76 @@ class SearchPublishTests(unittest.TestCase):
                 "https://nomadagent.dev/", "test-token"
             )
 
+    def test_google_inspection_returns_index_status_without_requesting_indexing(self) -> None:
+        captured = []
+        payload = json.dumps(
+            {
+                "inspectionResult": {
+                    "indexStatusResult": {
+                        "verdict": "PASS",
+                        "coverageState": "Submitted and indexed",
+                        "lastCrawlTime": "2026-09-03T12:00:00Z",
+                    }
+                }
+            }
+        ).encode("utf-8")
+
+        def fake_urlopen(request, timeout):
+            captured.append((request, timeout))
+            return FakeResponse(200, request.full_url, payload)
+
+        with patch.object(search_publish, "urlopen", fake_urlopen):
+            result = search_publish.inspect_google_url(
+                "https://nomadagent.dev/",
+                "https://nomadagent.dev/actors/linkedin/",
+                "test-token",
+            )
+
+        request, timeout = captured[0]
+        self.assertEqual(timeout, 30)
+        self.assertEqual(request.get_method(), "POST")
+        self.assertEqual(request.full_url, search_publish.GOOGLE_INSPECTION_ENDPOINT)
+        self.assertEqual(
+            json.loads(request.data),
+            {
+                "inspectionUrl": "https://nomadagent.dev/actors/linkedin/",
+                "siteUrl": "https://nomadagent.dev/",
+                "languageCode": "en-US",
+            },
+        )
+        self.assertEqual(result["verdict"], "PASS")
+
+    def test_google_access_token_uses_application_default_credentials(self) -> None:
+        class FakeCredentials:
+            token = None
+
+            def refresh(self, request):
+                self.token = "adc-token"
+
+        credentials = FakeCredentials()
+        google = ModuleType("google")
+        google_auth = ModuleType("google.auth")
+        google_auth.default = lambda **kwargs: (credentials, "hryu-jobs")
+        google.auth = google_auth
+        transport = ModuleType("google.auth.transport")
+        transport_requests = ModuleType("google.auth.transport.requests")
+        transport_requests.Request = object
+
+        modules = {
+            "google": google,
+            "google.auth": google_auth,
+            "google.auth.transport": transport,
+            "google.auth.transport.requests": transport_requests,
+        }
+        with patch.dict(sys.modules, modules), patch.dict(
+            "os.environ",
+            {"GOOGLE_SEARCH_CONSOLE_ACCESS_TOKEN": ""},
+            clear=False,
+        ):
+            token = search_publish.google_access_token()
+
+        self.assertEqual(token, "adc-token")
+
     def test_repository_sitemap_matches_current_html_pages(self) -> None:
         root = Path(__file__).resolve().parents[1]
         site_dir = root / "website"
@@ -190,7 +262,20 @@ class SearchPublishTests(unittest.TestCase):
             (site_dir / "sitemap.xml").read_text(encoding="utf-8")
         )
         self.assertEqual(actual, expected)
-        self.assertEqual(actual, ["https://nomadagent.dev/"])
+        self.assertEqual(
+            actual,
+            [
+                "https://nomadagent.dev/",
+                "https://nomadagent.dev/actors/euraxess",
+                "https://nomadagent.dev/actors/linkedin",
+                "https://nomadagent.dev/integrations/airtable",
+                "https://nomadagent.dev/integrations/api",
+                "https://nomadagent.dev/integrations/make",
+                "https://nomadagent.dev/integrations/mcp",
+                "https://nomadagent.dev/integrations/n8n",
+                "https://nomadagent.dev/integrations/python",
+            ],
+        )
 
     def test_deployment_notifies_only_after_tests_preflight_and_firebase(self) -> None:
         root = Path(__file__).resolve().parents[1]
@@ -201,13 +286,24 @@ class SearchPublishTests(unittest.TestCase):
 
         tests_at = workflow.index("python3 -m unittest discover -s tests -v")
         preflight_at = workflow.index("python3 scripts/search_publish.py preflight")
-        deploy_at = workflow.index("FirebaseExtended/action-hosting-deploy@v0.11.0")
+        auth_at = workflow.index("google-github-actions/auth@v3")
+        deploy_at = workflow.index(
+            "firebase deploy --only hosting --project hryu-jobs --non-interactive"
+        )
         notify_at = workflow.index("python3 scripts/search_publish.py notify")
+        self.assertLess(tests_at, auth_at)
         self.assertLess(tests_at, preflight_at)
         self.assertLess(preflight_at, deploy_at)
         self.assertLess(deploy_at, notify_at)
+        self.assertIn("actions/checkout@v6", workflow)
+        self.assertIn("actions/setup-python@v6", workflow)
+        self.assertIn("id-token: write", workflow)
+        self.assertIn("firebase-tools@15.28.1", workflow)
+        self.assertNotIn("FIREBASE_SERVICE_ACCOUNT_HRYU_JOBS", workflow)
+        self.assertNotIn("firebaseServiceAccount", workflow)
         self.assertIn("https://api.indexnow.org/indexnow", script)
         self.assertIn("/webmasters/v3/sites/", script)
+        self.assertIn("/v1/urlInspection/index:inspect", script)
         self.assertNotIn("indexing.googleapis.com", script)
 
 

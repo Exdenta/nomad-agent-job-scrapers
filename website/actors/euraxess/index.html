@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Use the Nomad Agent EURAXESS Jobs Scraper for PhD, postdoc, fellowship, research, and faculty vacancies with academic fields preserved." />
+    <meta name="robots" content="index,follow" />
+    <meta property="og:title" content="EURAXESS Research Jobs Scraper | Nomad Agent" />
+    <meta property="og:description" content="Research and academic vacancies with funding, deadlines, contacts, and taxonomy preserved." />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://nomadagent.dev/actors/euraxess" />
+    <meta name="twitter:card" content="summary" />
+    <title>EURAXESS Research Jobs Scraper | Nomad Agent</title>
+    <link rel="canonical" href="https://nomadagent.dev/actors/euraxess" />
+    <link rel="icon" type="image/svg+xml" href="/assets/mark.svg" />
+    <link rel="stylesheet" href="/styles.css" />
+    <link rel="stylesheet" href="/detail.css" />
+    <script type="application/ld+json">
+      {"@context":"https://schema.org","@type":"SoftwareApplication","name":"EURAXESS Jobs Scraper — Research and Academic Jobs","applicationCategory":"DeveloperApplication","operatingSystem":"Web","url":"https://nomadagent.dev/actors/euraxess","description":"Public EURAXESS research vacancies mapped to nomad-agent-job-v1 with academic taxonomy preserved."}
+    </script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">Skip to content</a>
+    <header class="topbar"><nav class="nav-container" aria-label="Primary navigation"><a class="brand" href="/" aria-label="Nomad Agent home"><img src="/assets/mark.svg" alt="" width="36" height="36" /><span>Nomad Agent</span></a><div class="nav-actions"><a class="nav-link" href="/#actors">Actors</a><a class="nav-link" href="/#integrations">Integrations</a><a class="nav-primary" href="https://github.com/Exdenta/nomad-agent-job-scrapers">View source</a></div></nav></header>
+    <main class="detail-main" id="main-content">
+      <nav class="detail-breadcrumbs" aria-label="Breadcrumb"><a href="/">Home</a><span>/</span><a href="/#actors">Actors</a><span>/</span><span>EURAXESS</span></nav>
+      <section class="detail-hero">
+        <p class="detail-eyebrow">Research and academic Actor</p>
+        <h1>EURAXESS Jobs Scraper</h1>
+        <p class="detail-lede">Search PhD, postdoc, fellowship, research, and faculty vacancies while preserving research domains, requirements, funding, deadlines, contacts, and source taxonomy.</p>
+        <div class="detail-badges"><span class="detail-badge">Supported build 1.0.16</span><span class="detail-badge">nomad-agent-job-v1</span><span class="detail-badge">Academic taxonomy</span></div>
+        <div class="detail-actions"><a class="button button-dark" href="https://apify.com/nomad-agent/euraxess-enrich-translate-normalize-scraper?utm_source=nomad-agent-job-scrapers&amp;utm_medium=owned-site&amp;utm_campaign=actor-discovery&amp;utm_content=detail-euraxess" target="_blank" rel="noopener noreferrer">Open on Apify ↗</a><a class="button button-outline" href="/integrations/make">Build a Sheets flow</a></div>
+      </section>
+      <div class="detail-layout">
+        <div class="detail-content">
+          <section class="detail-panel"><h2>What it is for</h2><p>EURAXESS vacancies carry academic concepts that do not fit a generic job row cleanly. This Actor keeps those source fields in a separately versioned <code>custom</code> object while also producing the shared identity, data, LLM, and raw roots used by every Nomad Agent integration.</p><ul><li>Use multilingual keyword expansion and source-specific research filters.</li><li>Preserve published funding, deadline, contact, programme, and researcher-profile evidence.</li><li>Choose canonical output when academic provenance matters; flatten only for a table destination.</li></ul></section>
+          <section class="detail-panel"><h2>Bounded starter input</h2><p>EURAXESS recency has calendar-date granularity, so supported values begin at 24 hours.</p><pre><code>{
+  "schemaVersion": "nomad-agent-job-search-input-v1",
+  "keyword": "machine learning",
+  "location": "Spain",
+  "postedWithin": "7d",
+  "maxItems": 20,
+  "translateToEnglish": false,
+  "aiEnrichment": { "enabled": false },
+  "includeRaw": false
+}</code></pre></section>
+          <section class="detail-panel detail-note"><h2>Source semantics stay intact</h2><p><code>null</code> means unknown or unavailable. <code>[]</code> means the source established that a list is empty. Consumers must not collapse that distinction or infer missing requirements from nearby prose.</p></section>
+        </div>
+        <aside class="detail-aside" aria-label="EURAXESS Actor resources">
+          <section class="detail-panel"><h3>Completion proof</h3><p>Require terminal success, authoritative build <code>1.0.16</code>, a valid v4 <code>RUN-SUMMARY</code>, and dataset reconciliation before delivery.</p></section>
+          <section class="detail-panel"><h3>Implementation guides</h3><ul class="detail-link-list"><li><a href="https://github.com/Exdenta/nomad-agent-job-scrapers/blob/main/docs/euraxess.md">EURAXESS contract guide</a></li><li><a href="https://github.com/Exdenta/nomad-agent-job-scrapers/blob/main/docs/integration-compatibility.md">Compatibility matrix</a></li><li><a href="/integrations/n8n">n8n integration</a></li><li><a href="/integrations/python">Python parsers</a></li></ul></section>
+        </aside>
+      </div>
+      <nav class="detail-footer-nav" aria-label="Related pages"><a href="/actors/linkedin">Previous Actor: LinkedIn →</a><a href="/integrations/make">Integration: Make →</a></nav>
+    </main>
+    <footer class="site-footer"><div class="footer-container"><a href="/">Nomad Agent</a><a href="/#integrations">All integrations</a><span>Independent community project · MIT</span></div></footer>
+  </body>
+</html>

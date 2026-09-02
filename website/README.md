@@ -70,19 +70,29 @@ absolute `https://nomadagent.dev/...` canonical URL.
 
 ### One-time GitHub and console setup
 
-Configure these GitHub Actions secrets before enabling the workflow:
+Configure the `INDEXNOW_KEY` GitHub Actions secret before enabling the workflow.
+It must be a random 8-128 character value containing only letters, numbers, and
+dashes. The workflow publishes it only as `/indexnow-key.txt`, which is excluded
+from Git.
 
-- `FIREBASE_SERVICE_ACCOUNT_HRYU_JOBS`: the JSON credential for a narrowly
-  scoped service account that can deploy Firebase Hosting site
-  `nomad-agent-job-scrapers` in project `hryu-jobs`.
-- `INDEXNOW_KEY`: a random 8-128 character value containing only letters,
-  numbers, and dashes. The workflow publishes it only as
-  `/indexnow-key.txt`, which is excluded from Git.
+Firebase and Search Console authenticate without a stored Google private key.
+GitHub's OIDC token is exchanged through this Workload Identity Federation
+provider:
 
-Enable the Search Console API for the service account's Google Cloud project,
-then add the JSON credential's `client_email` as a full user of the exact
-Search Console URL-prefix property `https://nomadagent.dev/`. The workflow
-reuses that credential only to request the `webmasters` OAuth scope.
+```text
+projects/783418209706/locations/global/workloadIdentityPools/github-actions/providers/nomad-agent-job-scrapers
+```
+
+The provider accepts only the `Exdenta/nomad-agent-job-scrapers` repository on
+`refs/heads/main`. Its repository-scoped principal has Workload Identity User
+on `github-nomad-agent-web@hryu-jobs.iam.gserviceaccount.com`. That service
+account retains the narrow Firebase Hosting Admin and API Keys Viewer roles.
+
+Enable the Search Console API for project `hryu-jobs`, then add the service
+account email as a full user of the exact Search Console URL-prefix property
+`https://nomadagent.dev/`. The workflow requests the `webmasters` OAuth scope
+through Application Default Credentials created by
+`google-github-actions/auth`.
 
 Generate an IndexNow key locally with, for example:
 
@@ -94,3 +104,10 @@ The workflow can also be run manually from GitHub Actions. Its post-deploy step
 checks exact Search Console property access before deployment, then fails if the
 live sitemap, canonical page, or IndexNow key file is not publicly available.
 It reports Google and IndexNow submission failures separately.
+
+For a read-only Google index snapshot after deployment, run
+`python3 scripts/search_publish.py inspect` with Application Default
+Credentials. It reports the indexed version's verdict, coverage, crawl, robots,
+fetch, and canonical fields for every sitemap URL; it does not request
+indexing. Bing's corresponding evidence is available in Webmaster Tools URL
+Inspection and Site Explorer rather than from the IndexNow acceptance response.

@@ -12,6 +12,18 @@ ROOT = Path(__file__).resolve().parents[1]
 WEBSITE = ROOT / "website"
 HTML_PATH = WEBSITE / "index.html"
 
+EXPECTED_PAGES = {
+    "index.html": "https://nomadagent.dev/",
+    "actors/euraxess/index.html": "https://nomadagent.dev/actors/euraxess",
+    "actors/linkedin/index.html": "https://nomadagent.dev/actors/linkedin",
+    "integrations/airtable/index.html": "https://nomadagent.dev/integrations/airtable",
+    "integrations/api/index.html": "https://nomadagent.dev/integrations/api",
+    "integrations/make/index.html": "https://nomadagent.dev/integrations/make",
+    "integrations/mcp/index.html": "https://nomadagent.dev/integrations/mcp",
+    "integrations/n8n/index.html": "https://nomadagent.dev/integrations/n8n",
+    "integrations/python/index.html": "https://nomadagent.dev/integrations/python",
+}
+
 ACTOR_PATHS = {
     "linkedin": "/nomad-agent/linkedin-enrich-translate-normalize-scraper",
     "euraxess": "/nomad-agent/euraxess-enrich-translate-normalize-scraper",
@@ -76,6 +88,70 @@ class WebsiteContractTests(unittest.TestCase):
             with self.subTest(tag=tag, reference=reference):
                 target = WEBSITE / reference.removeprefix("./").split("?", 1)[0]
                 self.assertTrue(target.is_file(), target)
+
+    def test_every_indexable_page_has_unique_metadata_and_valid_local_links(self) -> None:
+        titles: set[str] = set()
+        descriptions: set[str] = set()
+
+        actual_paths = {
+            path.relative_to(WEBSITE).as_posix()
+            for path in WEBSITE.rglob("*.html")
+        }
+        self.assertEqual(actual_paths, set(EXPECTED_PAGES))
+
+        for relative_path, expected_canonical in EXPECTED_PAGES.items():
+            with self.subTest(page=relative_path):
+                path = WEBSITE / relative_path
+                html = path.read_text(encoding="utf-8")
+                parser = WebsiteHTMLParser()
+                parser.feed(html)
+
+                title_match = re.search(r"<title>(.*?)</title>", html, re.DOTALL)
+                self.assertIsNotNone(title_match)
+                title = re.sub(r"\s+", " ", title_match.group(1)).strip()
+                self.assertGreaterEqual(len(title), 20)
+                self.assertNotIn(title, titles)
+                titles.add(title)
+
+                meta = {
+                    attrs.get("name") or attrs.get("property"): attrs.get("content", "")
+                    for tag, attrs in parser.elements
+                    if tag == "meta"
+                }
+                description = meta.get("description", "")
+                self.assertGreaterEqual(len(description), 70)
+                self.assertNotIn(description, descriptions)
+                descriptions.add(description)
+                self.assertNotIn("noindex", meta.get("robots", "").lower())
+                self.assertEqual(meta.get("og:url"), expected_canonical)
+
+                canonicals = [
+                    attrs.get("href")
+                    for tag, attrs in parser.elements
+                    if tag == "link" and "canonical" in attrs.get("rel", "").split()
+                ]
+                self.assertEqual(canonicals, [expected_canonical])
+                self.assertEqual(len(parser.ids), len(set(parser.ids)))
+
+                for tag, attrs in parser.elements:
+                    reference = attrs.get("src") or attrs.get("href")
+                    if not reference or not reference.startswith(("./", "../")):
+                        continue
+                    target = (path.parent / reference.split("?", 1)[0]).resolve()
+                    self.assertTrue(target.is_file() or target.is_dir(), (tag, target))
+
+    def test_home_page_links_to_every_detail_page(self) -> None:
+        internal_hrefs = {
+            attrs.get("href")
+            for tag, attrs in self.parser.elements
+            if tag == "a" and attrs.get("href", "").startswith("/")
+        }
+        expected = {
+            url.removeprefix("https://nomadagent.dev").rstrip("/") or "/"
+            for path, url in EXPECTED_PAGES.items()
+            if path != "index.html"
+        }
+        self.assertTrue(expected.issubset(internal_hrefs), expected - internal_hrefs)
 
     def test_every_apify_cta_is_direct_and_attributed(self) -> None:
         placements: set[str] = set()

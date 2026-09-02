@@ -3,4 +3,28 @@
   <url>
     <loc>https://nomadagent.dev/</loc>
   </url>
+  <url>
+    <loc>https://nomadagent.dev/actors/euraxess</loc>
+  </url>
+  <url>
+    <loc>https://nomadagent.dev/actors/linkedin</loc>
+  </url>
+  <url>
+    <loc>https://nomadagent.dev/integrations/airtable</loc>
+  </url>
+  <url>
+    <loc>https://nomadagent.dev/integrations/api</loc>
+  </url>
+  <url>
+    <loc>https://nomadagent.dev/integrations/make</loc>
+  </url>
+  <url>
+    <loc>https://nomadagent.dev/integrations/mcp</loc>
+  </url>
+  <url>
+    <loc>https://nomadagent.dev/integrations/n8n</loc>
+  </url>
+  <url>
+    <loc>https://nomadagent.dev/integrations/python</loc>
+  </url>
 </urlset>

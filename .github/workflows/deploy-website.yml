@@ -16,6 +16,7 @@ on:
 
 permissions:
   contents: read
+  id-token: write
 
 concurrency:
   group: website-production
@@ -30,30 +31,22 @@ jobs:
       url: https://nomadagent.dev/
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: "3.12"
 
       - name: Validate required secrets
         env:
-          FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_HRYU_JOBS }}
           INDEXNOW_KEY: ${{ secrets.INDEXNOW_KEY }}
         run: |
           python3 - <<'PY'
-          import json
           import os
           import re
 
-          credentials = os.environ.get("FIREBASE_SERVICE_ACCOUNT_JSON", "")
           indexnow_key = os.environ.get("INDEXNOW_KEY", "")
-          if not credentials:
-              raise SystemExit("FIREBASE_SERVICE_ACCOUNT_HRYU_JOBS is not configured")
-          parsed = json.loads(credentials)
-          if parsed.get("type") != "service_account" or not parsed.get("client_email"):
-              raise SystemExit("FIREBASE_SERVICE_ACCOUNT_HRYU_JOBS is not service-account JSON")
           if not re.fullmatch(r"[A-Za-z0-9-]{8,128}", indexnow_key):
               raise SystemExit("INDEXNOW_KEY must contain 8-128 letters, numbers, or dashes")
           PY
@@ -69,21 +62,23 @@ jobs:
       - name: Install Google authentication client
         run: python3 -m pip install "google-auth[requests]>=2.38,<3"
 
+      - name: Authenticate to Google Cloud with GitHub OIDC
+        uses: google-github-actions/auth@v3
+        with:
+          project_id: hryu-jobs
+          workload_identity_provider: projects/783418209706/locations/global/workloadIdentityPools/github-actions/providers/nomad-agent-job-scrapers
+          service_account: github-nomad-agent-web@hryu-jobs.iam.gserviceaccount.com
+
       - name: Verify Search Console property access
-        env:
-          GOOGLE_SEARCH_CONSOLE_CREDENTIALS_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_HRYU_JOBS }}
         run: python3 scripts/search_publish.py preflight
 
+      - name: Install Firebase CLI
+        run: npm install --global firebase-tools@15.28.1
+
       - name: Deploy isolated Firebase Hosting site
-        uses: FirebaseExtended/action-hosting-deploy@v0.11.0
-        with:
-          repoToken: ${{ secrets.GITHUB_TOKEN }}
-          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_HRYU_JOBS }}
-          channelId: live
-          projectId: hryu-jobs
+        run: firebase deploy --only hosting --project hryu-jobs --non-interactive
 
       - name: Verify live pages and notify Google and Bing
         env:
-          GOOGLE_SEARCH_CONSOLE_CREDENTIALS_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_HRYU_JOBS }}
           INDEXNOW_KEY: ${{ secrets.INDEXNOW_KEY }}
         run: python3 scripts/search_publish.py notify
