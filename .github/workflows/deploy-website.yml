@@ -1,0 +1,89 @@
+name: Deploy website and notify search engines
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - ".firebaserc"
+      - ".github/workflows/deploy-website.yml"
+      - "firebase.json"
+      - "scripts/search_publish.py"
+      - "tests/test_search_publish.py"
+      - "tests/test_website.py"
+      - "website/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: website-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Deploy and submit search discovery
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+      url: https://nomadagent.dev/
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Validate required secrets
+        env:
+          FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_HRYU_JOBS }}
+          INDEXNOW_KEY: ${{ secrets.INDEXNOW_KEY }}
+        run: |
+          python3 - <<'PY'
+          import json
+          import os
+          import re
+
+          credentials = os.environ.get("FIREBASE_SERVICE_ACCOUNT_JSON", "")
+          indexnow_key = os.environ.get("INDEXNOW_KEY", "")
+          if not credentials:
+              raise SystemExit("FIREBASE_SERVICE_ACCOUNT_HRYU_JOBS is not configured")
+          parsed = json.loads(credentials)
+          if parsed.get("type") != "service_account" or not parsed.get("client_email"):
+              raise SystemExit("FIREBASE_SERVICE_ACCOUNT_HRYU_JOBS is not service-account JSON")
+          if not re.fullmatch(r"[A-Za-z0-9-]{8,128}", indexnow_key):
+              raise SystemExit("INDEXNOW_KEY must contain 8-128 letters, numbers, or dashes")
+          PY
+
+      - name: Prepare sitemap, robots, and IndexNow ownership file
+        env:
+          INDEXNOW_KEY: ${{ secrets.INDEXNOW_KEY }}
+        run: python3 scripts/search_publish.py prepare
+
+      - name: Run repository tests
+        run: python3 -m unittest discover -s tests -v
+
+      - name: Install Google authentication client
+        run: python3 -m pip install "google-auth[requests]>=2.38,<3"
+
+      - name: Verify Search Console property access
+        env:
+          GOOGLE_SEARCH_CONSOLE_CREDENTIALS_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_HRYU_JOBS }}
+        run: python3 scripts/search_publish.py preflight
+
+      - name: Deploy isolated Firebase Hosting site
+        uses: FirebaseExtended/action-hosting-deploy@v0.11.0
+        with:
+          repoToken: ${{ secrets.GITHUB_TOKEN }}
+          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_HRYU_JOBS }}
+          channelId: live
+          projectId: hryu-jobs
+
+      - name: Verify live pages and notify Google and Bing
+        env:
+          GOOGLE_SEARCH_CONSOLE_CREDENTIALS_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_HRYU_JOBS }}
+          INDEXNOW_KEY: ${{ secrets.INDEXNOW_KEY }}
+        run: python3 scripts/search_publish.py notify

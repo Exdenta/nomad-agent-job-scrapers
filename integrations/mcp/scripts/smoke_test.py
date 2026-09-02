@@ -43,14 +43,14 @@ PROFILES = {
     "linkedin": {
         "url": PINNED_URL,
         "tool": "call-actor",
-        "build": "0.6.48",
+        "build": "1.0.2",
         "source": "linkedin",
         "input": Path(__file__).resolve().parents[1] / "examples/linkedin-search.mcp.json",
     },
     "euraxess": {
         "url": PINNED_URL,
         "tool": "call-actor",
-        "build": "1.0.13",
+        "build": "1.0.16",
         "source": "euraxess",
         "input": Path(__file__).resolve().parents[1] / "examples/euraxess-search.mcp.json",
     },

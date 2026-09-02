@@ -53,7 +53,7 @@ const workflow = JSON.parse(fs.readFileSync(process.argv[1], 'utf8'));
 const run = JSON.parse(process.argv[2]);
 global.$input = { first: () => ({ json: { data: run } }) };
 global.$ = (name) => {
-  if (name === 'Configuration') return { first: () => ({ json: { actorBuild: '0.6.48' } }) };
+  if (name === 'Configuration') return { first: () => ({ json: { actorBuild: '1.0.2' } }) };
   throw new Error(`unexpected node reference: ${name}`);
 };
 const node = workflow.nodes.find(value => value.name === 'Validate terminal run');
@@ -105,7 +105,9 @@ process.stdout.write(JSON.stringify(output));
                 "Reconcile run status and dataset",
                 "Validate and flatten jobs",
                 "Upsert jobs in Google Sheets",
-                "Setup notes",
+                "1. Configure the workflow",
+                "2. Run and verify the Actor",
+                "3. Validate and save jobs",
             },
         )
         self.assertEqual(
@@ -186,6 +188,47 @@ process.stdout.write(JSON.stringify(output));
         )
         self.assertNotIn("Upsert jobs in Google Sheets", self.workflow["connections"])
 
+    def test_sticky_notes_group_three_non_overlapping_stages(self) -> None:
+        notes = [
+            node
+            for node in self.workflow["nodes"]
+            if node["type"] == "n8n-nodes-base.stickyNote"
+        ]
+        self.assertEqual(
+            [node["name"] for node in notes],
+            [
+                "1. Configure the workflow",
+                "2. Run and verify the Actor",
+                "3. Validate and save jobs",
+            ],
+        )
+        combined = "\n".join(node["parameters"]["content"] for node in notes)
+        for heading in (
+            "## 1. Configure",
+            "## 2. Run and verify",
+            "## 3. Validate and save",
+        ):
+            self.assertIn(heading, combined)
+        self.assertIn("jobKey", combined)
+        self.assertIn("1.0.2", combined)
+        rectangles = []
+        for note in notes:
+            params = note["parameters"]
+            self.assertGreaterEqual(params["height"], 420)
+            self.assertGreaterEqual(params["width"], 680)
+            self.assertLessEqual(len(params["content"].split()), 115)
+            x, y = note["position"]
+            rectangles.append((x, y, x + params["width"], y + params["height"]))
+        for index, left in enumerate(rectangles):
+            for right in rectangles[index + 1 :]:
+                self.assertTrue(
+                    left[2] <= right[0]
+                    or right[2] <= left[0]
+                    or left[3] <= right[1]
+                    or right[3] <= left[1],
+                    f"sticky notes overlap: {left} and {right}",
+                )
+
     def test_apify_request_uses_header_auth_and_bounded_v1_input(self) -> None:
         node = self.nodes["Run Actor on Apify"]
         params = node["parameters"]
@@ -227,7 +270,7 @@ process.stdout.write(JSON.stringify(output));
                 "assignments"
             ]
         }
-        self.assertEqual(assignments["actorBuild"], "0.6.48")
+        self.assertEqual(assignments["actorBuild"], "1.0.2")
         self.assertEqual(assignments["advancedInputJson"], "{}")
         self.assertEqual(assignments["maxItems"], 1)
         self.assertEqual(assignments["maxRescheduleRetries"], 1)
@@ -293,10 +336,10 @@ process.stdout.write(JSON.stringify(output));
         advanced = {
             "keyword": "",
             "location": "",
+            "orderBy": "newest",
             "linkedinSearch": {
-                "schemaVersion": "nomad-agent-linkedin-search-v1",
+                "schemaVersion": "nomad-agent-linkedin-search-v2",
                 "searches": [{"keyword": "data engineer", "location": "Spain"}],
-                "orderBy": "newest",
             },
             "strictGeography": {
                 "schemaVersion": "nomad-agent-linkedin-strict-geography-v1",
@@ -327,7 +370,7 @@ process.stdout.write(JSON.stringify(output));
         self.assertEqual(accepted.returncode, 0, accepted.stderr)
         actor_input = json.loads(accepted.stdout)[0]["json"]["actorInput"]
         self.assertEqual(set(actor_input), {
-            "schemaVersion", "keyword", "location", "linkedinSearch",
+            "schemaVersion", "keyword", "location", "orderBy", "linkedinSearch",
             "strictGeography", "filters", "companyProfileEnrichment",
             "companyFilters", "postedWithin", "workArrangements", "maxItems",
             "translateToEnglish", "aiEnrichment", "includeRaw", "dedupe",
@@ -341,7 +384,7 @@ process.stdout.write(JSON.stringify(output));
             "id": "run-1",
             "status": "SUCCEEDED",
             "exitCode": 0,
-            "buildNumber": "0.6.48",
+            "buildNumber": "1.0.2",
             "defaultDatasetId": "dataset-1",
         })
         self.assertEqual(completed.returncode, 0, completed.stderr)
@@ -352,7 +395,7 @@ process.stdout.write(JSON.stringify(output));
     def test_failed_or_wrong_build_run_is_not_retried_or_delivered(self) -> None:
         failed = self.run_terminal_node({
             "id": "run-2", "status": "FAILED", "exitCode": 1,
-            "buildNumber": "0.6.48", "defaultDatasetId": "dataset-2",
+            "buildNumber": "1.0.2", "defaultDatasetId": "dataset-2",
         })
         self.assertNotEqual(failed.returncode, 0)
         self.assertIn("failed terminal runs cannot be retried", failed.stderr)
@@ -361,7 +404,7 @@ process.stdout.write(JSON.stringify(output));
             "buildNumber": "0.6.36", "defaultDatasetId": "dataset-3",
         })
         self.assertNotEqual(wrong_build.returncode, 0)
-        self.assertIn("expected 0.6.48", wrong_build.stderr)
+        self.assertIn("expected 1.0.2", wrong_build.stderr)
 
     def test_workflow_uses_v4_and_one_retry_nodes(self) -> None:
         rendered = json.dumps(self.workflow)
@@ -460,7 +503,7 @@ process.stdout.write(JSON.stringify(output));
             "Find and save new LinkedIn jobs to Google Sheets with Apify", listing
         )
         self.assertIn("n8n Cloud", listing)
-        self.assertIn("0.6.48", listing)
+        self.assertIn("1.0.2", listing)
         self.assertIn("destination-specific live test", listing)
         self.assertIn("no separate delivery cache", listing)
 

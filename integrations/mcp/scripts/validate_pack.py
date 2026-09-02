@@ -17,8 +17,8 @@ PINNED_URL = (
 )
 LINKEDIN_ACTOR = "nomad-agent/linkedin-enrich-translate-normalize-scraper"
 EURAXESS_ACTOR = "nomad-agent/euraxess-enrich-translate-normalize-scraper"
-LINKEDIN_BUILD = "0.6.48"
-EURAXESS_BUILD = "1.0.13"
+LINKEDIN_BUILD = "1.0.2"
+EURAXESS_BUILD = "1.0.16"
 CANONICAL_ROOTS = {"custom", "data", "identity", "llm", "raw", "schemaVersion"}
 INPUT_KEYS = {
     "schemaVersion",

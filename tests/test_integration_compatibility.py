@@ -9,8 +9,8 @@ ROOT = Path(__file__).resolve().parents[1]
 LINKEDIN_FIELDS = {
     "aiEnrichment", "analyticsEnabled", "companyFilters",
     "companyProfileEnrichment", "dedupe", "filters", "includeRaw",
-    "keyword", "linkedinSearch", "location", "maxItems", "postedWithin",
-    "schemaVersion", "strictGeography", "translateToEnglish",
+    "firstRunMode", "keyword", "linkedinSearch", "location", "maxItems",
+    "postedWithin", "schemaVersion", "strictGeography", "translateToEnglish",
     "workArrangements",
 }
 EURAXESS_FIELDS = {
@@ -50,8 +50,8 @@ class IntegrationCompatibilityTests(unittest.TestCase):
         make = (ROOT / "integrations" / "make" / "README.md").read_text()
         api = (ROOT / "integrations" / "api" / "README.md").read_text()
         for text in (make, api):
-            self.assertIn("`0.6.48`", text)
-            self.assertIn("`1.0.13`", text)
+            self.assertIn("`1.0.2`", text)
+            self.assertIn("`1.0.16`", text)
         for field in (
             "linkedinSearch", "strictGeography", "companyProfileEnrichment",
             "companyFilters", "euraxessSearch", "filters",
@@ -72,7 +72,7 @@ class IntegrationCompatibilityTests(unittest.TestCase):
             / "euraxess-jobs-to-google-sheets.json"
         ).read_text()
 
-        self.assertEqual(len(LINKEDIN_FIELDS), 16)
+        self.assertEqual(len(LINKEDIN_FIELDS), 17)
         self.assertEqual(len(EURAXESS_FIELDS), 13)
         for field in LINKEDIN_FIELDS | EURAXESS_FIELDS:
             self.assertIn(f"`{field}`", matrix)

@@ -58,7 +58,7 @@ class McpPackTests(unittest.TestCase):
             )
         )
         self.assertEqual(value["actor"], "nomad-agent/linkedin-enrich-translate-normalize-scraper")
-        self.assertEqual(value["callOptions"]["build"], "0.6.48")
+        self.assertEqual(value["callOptions"]["build"], "1.0.2")
         actor_input = value["input"]
         self.assertLessEqual(actor_input["maxItems"], 5)
         self.assertFalse(actor_input["translateToEnglish"])
@@ -110,7 +110,7 @@ class McpPackTests(unittest.TestCase):
             "nomad-agent/euraxess-enrich-translate-normalize-scraper",
         )
         self.assertEqual(value["callOptions"], {
-            "build": "1.0.13",
+            "build": "1.0.16",
             "maxItems": 5,
             "maxTotalChargeUsd": 0.1,
         })
@@ -125,11 +125,11 @@ class McpPackTests(unittest.TestCase):
         assert spec.loader is not None
         spec.loader.exec_module(module)
         self.assertEqual(module.SCOPED_URL, PINNED_URL)
-        self.assertEqual(module.PROFILES["linkedin"]["build"], "0.6.48")
+        self.assertEqual(module.PROFILES["linkedin"]["build"], "1.0.2")
         self.assertEqual(module.PROFILES["linkedin"]["tool"], "call-actor")
         self.assertEqual(module.PROFILES["euraxess"]["url"], PINNED_URL)
         self.assertEqual(module.PROFILES["euraxess"]["tool"], "call-actor")
-        self.assertEqual(module.PROFILES["euraxess"]["build"], "1.0.13")
+        self.assertEqual(module.PROFILES["euraxess"]["build"], "1.0.16")
         self.assertIn("fetch-actor-details", module.REQUIRED_TOOLS)
         self.assertIn("call-actor", module.REQUIRED_TOOLS)
         self.assertIn("get-key-value-store-record", module.REQUIRED_TOOLS)

@@ -1,0 +1,156 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Exdenta/nomad-agent-job-scrapers/benchmarks/enrichment-quality-v1/benchmark.schema.json",
+  "title": "Normalized job enrichment benchmark v1",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "benchmarkId",
+    "status",
+    "createdAt",
+    "supportedEnrichmentPaths",
+    "translationPaths",
+    "cases"
+  ],
+  "properties": {
+    "schemaVersion": {"const": "nomad-agent-enrichment-benchmark-v1"},
+    "benchmarkId": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]{0,127}$"},
+    "status": {"enum": ["draft", "public_release"]},
+    "createdAt": {"type": "string", "format": "date-time"},
+    "description": {"type": "string"},
+    "supportedEnrichmentPaths": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"type": "string", "pattern": "^data\\.[A-Za-z0-9_.]+$"}
+    },
+    "translationPaths": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"type": "string", "pattern": "^data\\.[A-Za-z0-9_.]+$"}
+    },
+    "cases": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/case"}
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "sourceDocument": {
+      "type": "object",
+      "required": [
+        "origin",
+        "text",
+        "textSha256",
+        "observedAt",
+        "redistributable",
+        "redistributionBasis"
+      ],
+      "properties": {
+        "origin": {"enum": ["source_page", "permissioned", "synthetic"]},
+        "url": {"type": ["string", "null"]},
+        "externalId": {"type": ["string", "null"]},
+        "text": {"type": "string", "minLength": 1},
+        "textSha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+        "observedAt": {"type": "string", "format": "date-time"},
+        "redistributable": {"const": true},
+        "redistributionBasis": {"type": "string", "minLength": 1}
+      },
+      "additionalProperties": false
+    },
+    "evidence": {
+      "type": "object",
+      "required": ["start", "end", "quote"],
+      "properties": {
+        "start": {"type": "integer", "minimum": 0},
+        "end": {"type": "integer", "minimum": 1},
+        "quote": {"type": "string", "minLength": 1}
+      },
+      "additionalProperties": false
+    },
+    "review": {
+      "type": "object",
+      "required": ["labelQuality", "independentHumanReviewers", "adjudicated"],
+      "properties": {
+        "labelQuality": {"enum": ["draft", "silver_consensus", "gold_human_verified"]},
+        "independentHumanReviewers": {"type": "integer", "minimum": 0},
+        "adjudicated": {"type": "boolean"},
+        "notes": {"type": "string"}
+      },
+      "additionalProperties": false
+    },
+    "expectation": {
+      "type": "object",
+      "required": ["path", "expected", "matcher", "acceptedValues", "evidence", "review"],
+      "properties": {
+        "path": {"type": "string", "pattern": "^data\\.[A-Za-z0-9_.]+$"},
+        "expected": {"enum": ["present", "absent", "ambiguous"]},
+        "matcher": {"enum": ["exact", "unordered_array"]},
+        "acceptedValues": {"type": "array"},
+        "evidence": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/evidence"}
+        },
+        "review": {"$ref": "#/$defs/review"},
+        "notes": {"type": "string"}
+      },
+      "additionalProperties": false
+    },
+    "translationExpectation": {
+      "type": "object",
+      "required": ["path", "sourceText", "references", "invariants", "review"],
+      "properties": {
+        "path": {"type": "string", "pattern": "^data\\.[A-Za-z0-9_.]+$"},
+        "sourceText": {"type": "string", "minLength": 1},
+        "references": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"type": "string", "minLength": 1}
+        },
+        "invariants": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        },
+        "review": {"$ref": "#/$defs/review"}
+      },
+      "additionalProperties": false
+    },
+    "case": {
+      "type": "object",
+      "required": [
+        "caseId",
+        "source",
+        "split",
+        "document",
+        "staticRecord",
+        "staticProtectedPaths",
+        "expectations",
+        "translationExpectations"
+      ],
+      "properties": {
+        "caseId": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]{0,127}$"},
+        "source": {"enum": ["linkedin", "euraxess"]},
+        "split": {"enum": ["development", "test"]},
+        "document": {"$ref": "#/$defs/sourceDocument"},
+        "staticRecord": {"type": "object"},
+        "staticProtectedPaths": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"type": "string", "pattern": "^(data|identity)\\.[A-Za-z0-9_.]+$"}
+        },
+        "expectations": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/expectation"}
+        },
+        "translationExpectations": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/translationExpectation"}
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

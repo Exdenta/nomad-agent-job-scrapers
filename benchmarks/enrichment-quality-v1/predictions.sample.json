@@ -1,0 +1,141 @@
+{
+  "schemaVersion": "nomad-agent-enrichment-submission-v1",
+  "benchmarkId": "normalized-job-enrichment-synthetic-sample-v1",
+  "submissionId": "perfect-synthetic-sample",
+  "createdAt": "2026-08-15T00:00:00Z",
+  "systems": {
+    "linkedin": {
+      "actorId": "nomad-agent/linkedin-enrich-translate-normalize-scraper",
+      "buildNumber": "0.0.0",
+      "buildId": "synthetic",
+      "accuracyMode": "silver",
+      "translationEnabled": false,
+      "repeats": 1,
+      "inputSha256": null
+    },
+    "euraxess": {
+      "actorId": "nomad-agent/euraxess-enrich-translate-normalize-scraper",
+      "buildNumber": "0.0.0",
+      "buildId": "synthetic",
+      "accuracyMode": "silver",
+      "translationEnabled": true,
+      "repeats": 1,
+      "inputSha256": null
+    }
+  },
+  "predictions": [
+    {
+      "caseId": "linkedin-synthetic-001",
+      "repeat": 1,
+      "status": "completed",
+      "record": {
+        "schemaVersion": "nomad-agent-job-v1",
+        "identity": {"source": "linkedin", "externalId": "synthetic-linkedin-001", "url": null},
+        "data": {
+          "title": "Backend Engineer",
+          "company": {"name": "Example Labs"},
+          "classification": {"industries": ["Software Development"], "jobFunctions": ["Engineering"]},
+          "domains": ["backend services"],
+          "employment": {"workArrangements": ["remote"]},
+          "application": {"selectionProcess": null},
+          "requirements": {
+            "requiredSkills": [{"name": "Python", "yearsRequired": 3}],
+            "preferredSkills": null,
+            "education": null,
+            "experience": [{"field": "Python", "minimumYears": 3, "maximumYears": null, "raw": "3 years of Python experience"}],
+            "languages": null,
+            "certifications": null
+          },
+          "benefits": "health insurance and a learning budget",
+          "constraints": {"workAuthorization": null, "locationPreference": null}
+        },
+        "custom": null,
+        "llm": {
+          "status": "completed",
+          "requestedFields": [
+            "data.domains",
+            "data.application.selectionProcess",
+            "data.requirements.requiredSkills",
+            "data.requirements.preferredSkills",
+            "data.requirements.education",
+            "data.requirements.experience",
+            "data.requirements.languages",
+            "data.requirements.certifications",
+            "data.benefits",
+            "data.constraints.workAuthorization",
+            "data.constraints.locationPreference",
+            "data.employment.workArrangements"
+          ],
+          "filledFields": [
+            "data.domains",
+            "data.requirements.requiredSkills",
+            "data.requirements.experience",
+            "data.benefits",
+            "data.employment.workArrangements"
+          ]
+        },
+        "raw": {"description": "Build backend services in Python and PostgreSQL. You must have 3 years of Python experience. We offer health insurance and a learning budget. This role is fully remote within Spain."}
+      },
+      "runId": null,
+      "datasetId": null,
+      "observedAt": "2026-08-15T00:00:00Z",
+      "failureCategory": null
+    },
+    {
+      "caseId": "euraxess-synthetic-001",
+      "repeat": 1,
+      "status": "completed",
+      "record": {
+        "schemaVersion": "nomad-agent-job-v1",
+        "identity": {"source": "euraxess", "externalId": "synthetic-euraxess-001", "url": null},
+        "data": {
+          "title": "Molecular Biology Researcher",
+          "company": {"name": "Institut Exemple"},
+          "classification": {"industries": ["Biomedical Research"], "jobFunctions": ["Research and Development"]},
+          "domains": ["biologie moléculaire"],
+          "employment": {"workArrangements": null},
+          "application": {"selectionProcess": "deux entretiens"},
+          "requirements": {
+            "requiredSkills": null,
+            "preferredSkills": null,
+            "education": [{"level": "Doctorat", "field": "biologie", "yearsRequired": null, "preferred": false}],
+            "experience": null,
+            "languages": [{"language": "Anglais", "level": "C1", "required": true}],
+            "certifications": null
+          },
+          "benefits": null,
+          "constraints": {"workAuthorization": null, "locationPreference": null}
+        },
+        "custom": null,
+        "llm": {
+          "status": "completed",
+          "requestedFields": [
+            "data.domains",
+            "data.application.selectionProcess",
+            "data.requirements.requiredSkills",
+            "data.requirements.preferredSkills",
+            "data.requirements.education",
+            "data.requirements.experience",
+            "data.requirements.languages",
+            "data.requirements.certifications",
+            "data.benefits",
+            "data.constraints.workAuthorization",
+            "data.constraints.locationPreference",
+            "data.employment.workArrangements"
+          ],
+          "filledFields": [
+            "data.domains",
+            "data.application.selectionProcess",
+            "data.requirements.education",
+            "data.requirements.languages"
+          ]
+        },
+        "raw": {"description": "Le poste porte sur la recherche en biologie moléculaire. Doctorat en biologie requis. Anglais niveau C1 obligatoire. Les candidatures retenues passeront deux entretiens."}
+      },
+      "runId": null,
+      "datasetId": null,
+      "observedAt": "2026-08-15T00:00:00Z",
+      "failureCategory": null
+    }
+  ]
+}

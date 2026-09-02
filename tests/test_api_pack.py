@@ -22,6 +22,7 @@ class ApiPackTests(unittest.TestCase):
             self.assertFalse(value["dedupe"]["enabled"])
             self.assertFalse(value["analyticsEnabled"])
         self.assertNotIn("euraxessSearch", linkedin)
+        self.assertNotIn("firstRunMode", linkedin)
         self.assertEqual(
             euraxess["euraxessSearch"],
             {
@@ -33,8 +34,8 @@ class ApiPackTests(unittest.TestCase):
     def test_readme_pins_both_builds_and_preserves_the_run_contract(self) -> None:
         text = (PACK / "README.md").read_text(encoding="utf-8")
         for required in (
-            "build=0.6.48",
-            "build=1.0.13",
+            "build=1.0.2",
+            "build=1.0.16",
             "maxTotalChargeUsd",
             "Authorization: Bearer $APIFY_TOKEN",
             "buildNumber",
@@ -50,6 +51,21 @@ class ApiPackTests(unittest.TestCase):
         ):
             self.assertIn(required, text)
         self.assertNotIn("token=", text.lower())
+
+    def test_pinned_linkedin_build_documents_but_does_not_enable_first_run_mode(self) -> None:
+        contract = (
+            ROOT
+            / ".agents"
+            / "skills"
+            / "linkedin-enrich-translate-normalize-scraper"
+            / "references"
+            / "input-contract.md"
+        ).read_text(encoding="utf-8")
+        normalized = " ".join(contract.split())
+        self.assertIn("build `1.0.2`", normalized)
+        self.assertIn("declares the `firstRunMode` convenience field", normalized)
+        self.assertIn("starter examples intentionally omit it", normalized)
+        self.assertIn("paid events", normalized)
 
 
 if __name__ == "__main__":

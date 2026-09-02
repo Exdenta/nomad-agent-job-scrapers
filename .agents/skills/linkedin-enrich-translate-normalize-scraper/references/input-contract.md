@@ -6,6 +6,7 @@ reference.
 
 | Field | Type | Default | Rules |
 | --- | --- | --- | --- |
+| `firstRunMode` | boolean | `false` | Optional console convenience mode; when true, caps output at 5 and enables paid Silver enrichment and supported-field translation |
 | `schemaVersion` | string | required | Must be `nomad-agent-job-search-input-v1` |
 | `keyword` | string | empty | Role, skill, or title |
 | `location` | string | empty | City, region, country, or broad geography |
@@ -16,12 +17,22 @@ reference.
 | `filters` | object | omitted | Versioned normalized-field expression |
 | `companyProfileEnrichment` | boolean | `false` | Retrieve bounded public profiles linked by selected jobs |
 | `companyFilters` | object | omitted | Versioned public-company-fact expression; requires company profile enrichment |
-| `maxItems` | integer | `100` | Use 5 for exploratory runs; 0 requests the bounded 200-item window |
+| `maxItems` | integer | `100` | Use 5 for exploratory runs; 0 requests the bounded 1,000-item window |
 | `translateToEnglish` | boolean | `false` | Managed optional translation; no customer provider key required |
 | `aiEnrichment` | object | `{"enabled": false, "accuracy": "silver"}` | Managed optional enrichment; Silver is the default tier and Gold is optional |
 | `includeRaw` | boolean | `true` | False returns top-level `raw: null` |
-| `dedupe` | object | `{"enabled": true, "key": ""}` | Optional cross-run delivery ledger; disable explicitly for one-off runs |
+| `dedupe` | object | `{"enabled": true, "key": "default"}` | Optional cross-run delivery ledger; use an isolated key per alert or disable explicitly for one-off runs |
 | `analyticsEnabled` | boolean | `false` | Explicit opt-in only |
+
+Supported LinkedIn build `1.0.2` declares the `firstRunMode` convenience
+field. The pinned API, MCP, n8n, and Make starter examples intentionally omit
+it and continue to send bounded settings explicitly so paid enrichment and
+translation stay off. When a caller deliberately sends `firstRunMode: true`,
+the Actor preserves search/filter fields, caps effective `maxItems` at 5,
+forces Silver AI enrichment and supported-field English translation on, and
+forces dedupe, returned raw content, and analytics off. AI enrichment and
+translation are paid events; review the Actor's Pricing tab and set a maximum
+run charge.
 
 ## Multi-search
 
@@ -82,7 +93,7 @@ Filters use the separately versioned `nomad-agent-job-filter-v1` expression:
 Use only paths and operators accepted by the deployed tool schema. Filters
 evaluate source-language values.
 
-In supported build `0.6.48`, `translateToEnglish` covers title, classifications,
+In supported build `1.0.2`, `translateToEnglish` covers title, classifications,
 domains, applicant-requirement prose, benefits, eligibility and selection
 text, work authorization, security clearance, and location preference. It
 does not rewrite company or place names, identifiers, URLs, source-raw labels,

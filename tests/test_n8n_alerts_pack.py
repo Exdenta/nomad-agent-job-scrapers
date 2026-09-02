@@ -77,7 +77,7 @@ process.stdout.write(JSON.stringify(output));
 
     def test_safe_defaults_require_destination_and_dedupe_configuration(self) -> None:
         config = self.configuration()
-        self.assertEqual(config["actorBuild"], "0.6.48")
+        self.assertEqual(config["actorBuild"], "1.0.2")
         self.assertEqual(config["maxItems"], 10)
         self.assertEqual(config["maxTotalChargeUsd"], 0.1)
         self.assertEqual(config["deliveryChannel"], "slack")
@@ -110,12 +110,12 @@ process.stdout.write(JSON.stringify(output));
         config["dedupeScope"] = "spain-typescript-daily"
         config["advancedInputJson"] = json.dumps(
             {
+                "orderBy": "newest",
                 "linkedinSearch": {
-                    "schemaVersion": "nomad-agent-linkedin-search-v1",
+                    "schemaVersion": "nomad-agent-linkedin-search-v2",
                     "searches": [
                         {"keyword": "typescript", "location": "Spain"}
                     ],
-                    "orderBy": "newest",
                 },
                 "dedupe": {"enabled": False, "key": ""},
                 "maxItems": 200,

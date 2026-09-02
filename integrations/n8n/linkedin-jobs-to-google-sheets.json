@@ -16,7 +16,7 @@
       "typeVersion": 1.2,
       "position": [
         -1120,
-        120
+        180
       ],
       "id": "295697d6-65c8-46b3-98c0-525d14dcf99d",
       "name": "Every day at 08:00 UTC"
@@ -27,7 +27,7 @@
       "typeVersion": 1,
       "position": [
         -1120,
-        340
+        380
       ],
       "id": "e514f1e0-14e5-4773-8c3e-d8019f629fad",
       "name": "Run manually"
@@ -39,7 +39,7 @@
             {
               "id": "69714966-f468-49d8-b4e6-4e4a3aaec30d",
               "name": "actorBuild",
-              "value": "0.6.48",
+              "value": "1.0.2",
               "type": "string"
             },
             {
@@ -111,20 +111,20 @@
       "typeVersion": 3.4,
       "position": [
         -860,
-        220
+        280
       ],
       "id": "8fd92c58-377b-48c1-ad4e-57edc55189c1",
       "name": "Configuration"
     },
     {
       "parameters": {
-        "jsCode": "const cfg = $input.first().json;\nconst text = (value) => typeof value === 'string' ? value.trim() : '';\nlet advancedInput;\ntry {\n  advancedInput = JSON.parse(text(cfg.advancedInputJson) || '{}');\n} catch (error) {\n  throw new Error(`Configuration: advancedInputJson must be valid JSON (${error.message})`);\n}\nif (!advancedInput || typeof advancedInput !== 'object' || Array.isArray(advancedInput)) {\n  throw new Error('Configuration: advancedInputJson must contain one JSON object');\n}\nconst actorInput = {\n  schemaVersion: 'nomad-agent-job-search-input-v1',\n  keyword: text(cfg.keyword),\n  location: text(cfg.location),\n  postedWithin: text(cfg.postedWithin),\n  workArrangements: text(cfg.workArrangementsCsv).split(',').map(value => value.trim()).filter(Boolean),\n  maxItems: Number(cfg.maxItems),\n  translateToEnglish: false,\n  aiEnrichment: { enabled: false, accuracy: 'silver' },\n  includeRaw: false,\n  dedupe: { enabled: false, key: '' },\n  analyticsEnabled: false,\n  ...advancedInput,\n};\nif (actorInput.schemaVersion !== 'nomad-agent-job-search-input-v1') {\n  throw new Error('Configuration: actor input schemaVersion must be nomad-agent-job-search-input-v1');\n}\nif (!new Set(['1h', '24h', '7d', '30d', 'any']).has(actorInput.postedWithin)) {\n  throw new Error('Configuration: postedWithin must be 1h, 24h, 7d, 30d, or any');\n}\nif (!Array.isArray(actorInput.workArrangements)) {\n  throw new Error('Configuration: workArrangements must be an array');\n}\nconst invalidArrangements = actorInput.workArrangements.filter(value => !new Set(['remote', 'hybrid', 'onsite']).has(value));\nif (invalidArrangements.length) throw new Error(`Configuration: invalid work arrangement(s): ${invalidArrangements.join(', ')}`);\nif (!Number.isInteger(actorInput.maxItems) || actorInput.maxItems < 0 || actorInput.maxItems > 200) {\n  throw new Error('Configuration: maxItems must be an integer from 0 to 200');\n}\nconst chargeCap = Number(cfg.maxTotalChargeUsd);\nif (!Number.isFinite(chargeCap) || chargeCap <= 0 || chargeCap > 10) {\n  throw new Error('Configuration: maxTotalChargeUsd must be greater than 0 and at most 10');\n}\nif (!/^\\d+\\.\\d+\\.\\d+$/.test(text(cfg.actorBuild))) {\n  throw new Error('Configuration: actorBuild must be a pinned version such as 0.6.48');\n}\nconst retryLimit = Number(cfg.maxRescheduleRetries);\nif (!Number.isInteger(retryLimit) || retryLimit < 0 || retryLimit > 1) {\n  throw new Error('Configuration: maxRescheduleRetries must be 0 or 1');\n}\nconst spreadsheetId = text(cfg.googleSpreadsheetId);\nif (spreadsheetId.startsWith('REPLACE_WITH_') || !/^[A-Za-z0-9_-]{20,}$/.test(spreadsheetId)) {\n  throw new Error('Configuration: replace googleSpreadsheetId with the ID from your Google Sheets URL');\n}\nif (!text(cfg.googleSheetName)) throw new Error('Configuration: googleSheetName is required');\nreturn [{ json: { ...cfg, actorInput } }];"
+        "jsCode": "const cfg = $input.first().json;\nconst text = (value) => typeof value === 'string' ? value.trim() : '';\nlet advancedInput;\ntry {\n  advancedInput = JSON.parse(text(cfg.advancedInputJson) || '{}');\n} catch (error) {\n  throw new Error(`Configuration: advancedInputJson must be valid JSON (${error.message})`);\n}\nif (!advancedInput || typeof advancedInput !== 'object' || Array.isArray(advancedInput)) {\n  throw new Error('Configuration: advancedInputJson must contain one JSON object');\n}\nconst actorInput = {\n  schemaVersion: 'nomad-agent-job-search-input-v1',\n  keyword: text(cfg.keyword),\n  location: text(cfg.location),\n  postedWithin: text(cfg.postedWithin),\n  workArrangements: text(cfg.workArrangementsCsv).split(',').map(value => value.trim()).filter(Boolean),\n  maxItems: Number(cfg.maxItems),\n  translateToEnglish: false,\n  aiEnrichment: { enabled: false, accuracy: 'silver' },\n  includeRaw: false,\n  dedupe: { enabled: false, key: '' },\n  analyticsEnabled: false,\n  ...advancedInput,\n};\nif (actorInput.schemaVersion !== 'nomad-agent-job-search-input-v1') {\n  throw new Error('Configuration: actor input schemaVersion must be nomad-agent-job-search-input-v1');\n}\nif (!new Set(['1h', '24h', '7d', '30d', 'any']).has(actorInput.postedWithin)) {\n  throw new Error('Configuration: postedWithin must be 1h, 24h, 7d, 30d, or any');\n}\nif (!Array.isArray(actorInput.workArrangements)) {\n  throw new Error('Configuration: workArrangements must be an array');\n}\nconst invalidArrangements = actorInput.workArrangements.filter(value => !new Set(['remote', 'hybrid', 'onsite']).has(value));\nif (invalidArrangements.length) throw new Error(`Configuration: invalid work arrangement(s): ${invalidArrangements.join(', ')}`);\nif (!Number.isInteger(actorInput.maxItems) || actorInput.maxItems < 0 || actorInput.maxItems > 200) {\n  throw new Error('Configuration: maxItems must be an integer from 0 to 200');\n}\nconst chargeCap = Number(cfg.maxTotalChargeUsd);\nif (!Number.isFinite(chargeCap) || chargeCap <= 0 || chargeCap > 10) {\n  throw new Error('Configuration: maxTotalChargeUsd must be greater than 0 and at most 10');\n}\nif (!/^\\d+\\.\\d+\\.\\d+$/.test(text(cfg.actorBuild))) {\n  throw new Error('Configuration: actorBuild must be a pinned version such as 1.0.2');\n}\nconst retryLimit = Number(cfg.maxRescheduleRetries);\nif (!Number.isInteger(retryLimit) || retryLimit < 0 || retryLimit > 1) {\n  throw new Error('Configuration: maxRescheduleRetries must be 0 or 1');\n}\nconst spreadsheetId = text(cfg.googleSpreadsheetId);\nif (spreadsheetId.startsWith('REPLACE_WITH_') || !/^[A-Za-z0-9_-]{20,}$/.test(spreadsheetId)) {\n  throw new Error('Configuration: replace googleSpreadsheetId with the ID from your Google Sheets URL');\n}\nif (!text(cfg.googleSheetName)) throw new Error('Configuration: googleSheetName is required');\nreturn [{ json: { ...cfg, actorInput } }];"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
         -580,
-        220
+        280
       ],
       "id": "319ee85f-65b2-40f7-94c9-8be40c2e6d45",
       "name": "Validate template setup"
@@ -169,7 +169,7 @@
       "typeVersion": 4.2,
       "position": [
         -320,
-        220
+        280
       ],
       "id": "a2dc2f8e-4d46-4447-aeac-23a580b61edc",
       "name": "Run Actor on Apify"
@@ -181,8 +181,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        420,
-        100
+        440,
+        200
       ],
       "id": "e5e85dd7-8875-466b-91f9-623572ca8af7",
       "name": "Validate terminal run"
@@ -203,7 +203,7 @@
       },
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
-      "position": [680, 100],
+      "position": [700, 200],
       "id": "a2d4c0bb-8056-4714-b9e7-0f474eeb189d",
       "name": "Read factual RUN-SUMMARY"
     },
@@ -213,7 +213,7 @@
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [940, 100],
+      "position": [960, 200],
       "id": "9c3ee62d-0420-485e-bb77-1b085f94a0bd",
       "name": "Validate run status"
     },
@@ -244,7 +244,7 @@
       },
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
-      "position": [1200, 100],
+      "position": [1220, 200],
       "id": "d59ef0bb-cbec-4f33-bcfb-dfdb532f0b75",
       "name": "Retry requested?"
     },
@@ -255,7 +255,7 @@
       },
       "type": "n8n-nodes-base.wait",
       "typeVersion": 1.1,
-      "position": [1200, -100],
+      "position": [1220, 0],
       "id": "96844cef-9280-467e-85f3-96c88ea21edc",
       "name": "Wait before one retry",
       "webhookId": "6b673c65-a169-47e1-a7bd-7cb3cc6630d7"
@@ -295,8 +295,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        680,
-        100
+        1480,
+        200
       ],
       "id": "25ce1070-541d-4879-8da5-3b12b67af617",
       "name": "Get delivery run jobs"
@@ -307,7 +307,7 @@
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [1460, 100],
+      "position": [1740, 200],
       "id": "6eb4e66a-893c-48bb-a0d9-2b232441d2a6",
       "name": "Reconcile run status and dataset"
     },
@@ -318,8 +318,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        940,
-        100
+        2000,
+        200
       ],
       "id": "5648a0ca-cb6a-40e0-b99c-6d747ef2b2c2",
       "name": "Validate and flatten jobs"
@@ -673,27 +673,59 @@
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.7,
       "position": [
-        1200,
-        100
+        2260,
+        200
       ],
       "id": "22ed46d8-9cc5-4263-8657-e7518f2e54b4",
       "name": "Upsert jobs in Google Sheets"
     },
     {
       "parameters": {
-        "content": "## Build a duplicate-safe LinkedIn job tracker\n\n1. Create a scoped Apify token and add the same n8n Header Auth credential to all four Apify HTTP nodes: `Authorization` = `Bearer YOUR_APIFY_TOKEN`.\n2. Import `google-sheets-columns.csv` into a sheet named `Jobs`.\n3. Select your Google Sheets credential on **Upsert jobs in Google Sheets**.\n4. Replace the Google spreadsheet placeholder in **Configuration**.\n5. Build `0.6.48` is pinned. Run the one-job smoke test manually before enabling the schedule.\n6. Use `advancedInputJson` for any current Actor option not exposed as a simple field, including `linkedinSearch`, `strictGeography`, normalized `filters`, company enrichment/filtering, translation, AI enrichment, raw output, dedupe, and analytics. Values there override the simple fields after local validation.\n7. The workflow validates minimal `nomad-agent-run-summary-v4`. A usable `partial` outcome may wait and repeat the exact request once; the one-retry bound is enforced before delivery. The selected default dataset row count must match `delivered`.\n8. Every row is appended or refreshed by stable `jobKey`, so recurring runs do not create duplicate tracker rows. Increase `maxItems` only after the smoke succeeds, then publish the workflow to enable the schedule. This import contains no credentials and is not proof of a live Google Sheets test.",
-        "height": 390,
-        "width": 700,
+        "content": "## 1. Configure\n\n**Goal:** save LinkedIn jobs to one duplicate-safe Google Sheet.\n\n1. Add the same Header Auth credential to every Apify HTTP node: `Authorization: Bearer <APIFY_TOKEN>`.\n2. Import `google-sheets-columns.csv` into a sheet named `Jobs`.\n3. Add Google Sheets OAuth2 to the final node.\n4. Enter the spreadsheet ID and review the search in **Configuration**.\n\nThe workflow starts inactive. Keep build `1.0.2` pinned and run the one-job manual smoke before enabling the daily schedule.",
+        "height": 620,
+        "width": 820,
         "color": 5
       },
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        -1140,
-        -280
+        -1180,
+        -80
       ],
       "id": "c516286b-7f1d-4aa2-b299-ce5b6b362819",
-      "name": "Setup notes"
+      "name": "1. Configure the workflow"
+    },
+    {
+      "parameters": {
+        "content": "## 2. Run and verify\n\nThis cluster starts one bounded Actor run and polls **that same run ID** until it finishes.\n\nThe workflow rejects failed, aborted, timed-out, wrong-build, stale, or malformed runs. It checks the factual `nomad-agent-run-summary-v4`, reconciles the delivered count, and allows at most one exact retry only when a valid partial summary recommends it.\n\nKeep these gates together: they prevent unrelated or incomplete run data from reaching the destination.",
+        "height": 700,
+        "width": 1740,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -320,
+        -80
+      ],
+      "id": "b75a9f11-2748-42d2-bb6d-81d35fa97aba",
+      "name": "2. Run and verify the Actor"
+    },
+    {
+      "parameters": {
+        "content": "## 3. Validate and save\n\nThe exact run dataset is fetched, strict six-root job records are validated, and diagnostic or malformed rows are rejected. Valid jobs become the shared flat sheet format.\n\nGoogle Sheets matches on stable `jobKey`: new jobs are appended and existing jobs are updated instead of duplicated.\n\nAfter the manual smoke, confirm the expected row in `Jobs`. Only then activate the schedule or increase the bounded item limit.",
+        "height": 620,
+        "width": 1100,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1460,
+        -80
+      ],
+      "id": "2cfe0c7a-c99e-4623-9bd1-c9bc9851ff7f",
+      "name": "3. Validate and save jobs"
     },
     {
       "parameters": {
@@ -705,7 +737,7 @@
       "typeVersion": 2,
       "position": [
         -80,
-        220
+        280
       ]
     },
     {
@@ -738,8 +770,8 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        160,
-        220
+        180,
+        280
       ]
     },
     {
@@ -770,8 +802,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        420,
-        380
+        180,
+        500
       ]
     }
   ],

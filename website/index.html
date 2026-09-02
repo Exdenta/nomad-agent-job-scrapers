@@ -1,0 +1,544 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Open contracts, integrations, and Agent Skills for source-linked LinkedIn and EURAXESS job data."
+    />
+    <meta name="theme-color" content="#ffffff" />
+    <meta
+      name="google-site-verification"
+      content="DqV9MzbsJairpzgPKuojwNpzwRSrP8wC199X7IPbOzM"
+    />
+    <meta name="msvalidate.01" content="03430DBD7EDA9B72980270788BB942AB" />
+    <meta property="og:title" content="Nomad Agent Job Scrapers" />
+    <meta
+      property="og:description"
+      content="Turn public job listings into normalized, duplicate-safe records for products, workflows, and AI agents."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://nomadagent.dev/" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="Nomad Agent Job Scrapers" />
+    <meta
+      name="twitter:description"
+      content="Source-linked LinkedIn and EURAXESS job records for alerts, products, automations, and AI agents."
+    />
+    <title>Nomad Agent Job Scrapers</title>
+    <link rel="canonical" href="https://nomadagent.dev/" />
+    <link rel="icon" type="image/svg+xml" href="./assets/mark.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;500&family=Geist:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "ItemList",
+        "name": "Nomad Agent normalized job-data Actors",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "item": {
+              "@type": "SoftwareApplication",
+              "name": "LinkedIn Jobs Scraper — Normalized Contract",
+              "applicationCategory": "DeveloperApplication",
+              "operatingSystem": "Web",
+              "description": "Public LinkedIn jobs mapped to the source-linked nomad-agent-job-v1 contract for products, alerts, automations, and AI agents.",
+              "url": "https://apify.com/nomad-agent/linkedin-enrich-translate-normalize-scraper"
+            }
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "item": {
+              "@type": "SoftwareApplication",
+              "name": "EURAXESS Jobs Scraper — Research & Academic Jobs",
+              "applicationCategory": "DeveloperApplication",
+              "operatingSystem": "Web",
+              "description": "Public EURAXESS research vacancies mapped to the source-linked nomad-agent-job-v1 contract with published research-job details preserved.",
+              "url": "https://apify.com/nomad-agent/euraxess-enrich-translate-normalize-scraper"
+            }
+          }
+        ]
+      }
+    </script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">Skip to content</a>
+
+    <header class="topbar">
+      <nav class="nav-container" aria-label="Primary navigation">
+        <a class="brand" href="#top" aria-label="Nomad Agent home">
+          <img src="./assets/mark.svg" alt="" width="36" height="36" />
+          <span>Nomad Agent</span>
+        </a>
+
+        <div class="desktop-nav">
+          <a href="#overview">Home</a>
+          <a href="#actors">Actors</a>
+          <a href="#integrations">Integrations</a>
+          <a class="active" href="#contract">Open contract</a>
+          <a href="#benchmark">Benchmark</a>
+        </div>
+
+        <div class="nav-actions">
+          <a class="nav-select" href="https://github.com/Exdenta/nomad-agent-job-scrapers/tree/main/docs" target="_blank" rel="noreferrer">
+            Docs
+            <svg viewBox="0 0 16 16" aria-hidden="true"><path d="m4 6 4 4 4-4" /></svg>
+          </a>
+          <a class="nav-link" href="https://github.com/Exdenta/nomad-agent-job-scrapers" target="_blank" rel="noreferrer">GitHub</a>
+          <a
+            class="nav-primary"
+            href="https://apify.com/nomad-agent/linkedin-enrich-translate-normalize-scraper?utm_source=nomad-agent-job-scrapers&amp;utm_medium=owned-site&amp;utm_campaign=actor-discovery&amp;utm_content=header-linkedin"
+            target="_blank"
+            rel="noopener noreferrer"
+            data-event="actor_cta_click"
+            data-actor="linkedin"
+            data-placement="header-linkedin"
+          >Try LinkedIn</a>
+        </div>
+
+        <div class="mobile-tools">
+          <a class="nav-select" href="https://github.com/Exdenta/nomad-agent-job-scrapers/tree/main/docs" target="_blank" rel="noreferrer">
+            Docs
+            <svg viewBox="0 0 16 16" aria-hidden="true"><path d="m4 6 4 4 4-4" /></svg>
+          </a>
+          <button
+            class="menu-button"
+            type="button"
+            aria-expanded="false"
+            aria-controls="mobile-menu"
+            aria-label="Open navigation"
+            data-menu-button
+          >
+            <span></span><span></span><span></span>
+          </button>
+        </div>
+      </nav>
+
+      <div class="mobile-menu" id="mobile-menu" data-mobile-menu>
+        <a href="#overview">Home</a>
+        <a href="#actors">Actors</a>
+        <a href="#integrations">Integrations</a>
+        <a href="#contract">Open contract</a>
+        <a href="#benchmark">Benchmark</a>
+        <a
+          href="https://apify.com/nomad-agent/linkedin-enrich-translate-normalize-scraper?utm_source=nomad-agent-job-scrapers&amp;utm_medium=owned-site&amp;utm_campaign=actor-discovery&amp;utm_content=mobile-menu-linkedin"
+          target="_blank"
+          rel="noopener noreferrer"
+          data-event="actor_cta_click"
+          data-actor="linkedin"
+          data-placement="mobile-menu-linkedin"
+        >Try LinkedIn Actor ↗</a>
+      </div>
+    </header>
+
+    <main id="main-content">
+      <div class="main-container" id="top">
+        <nav class="breadcrumbs" aria-label="Breadcrumb">
+          <a href="#overview">Open job data tools</a>
+          <svg viewBox="0 0 16 16" aria-hidden="true"><path d="m6 3 5 5-5 5" /></svg>
+          <span>nomad-agent-job-scrapers</span>
+        </nav>
+
+        <div class="page-grid">
+          <div class="content-column">
+            <section class="package-intro" id="overview" aria-labelledby="page-title">
+              <div class="package-heading">
+                <img class="package-icon" src="./assets/mark.svg" alt="" width="56" height="56" />
+                <div class="package-title">
+                  <h1 id="page-title">nomad-agent-job-scrapers</h1>
+                  <p>by <strong>Nomad Agent</strong></p>
+                </div>
+              </div>
+
+              <p class="package-summary">
+                Turn public LinkedIn and EURAXESS listings into clean, source-linked job records.
+                Build duplicate-safe alerts, trackers, job boards, automations, and AI-agent workflows
+                on one stable data contract.
+              </p>
+
+              <div class="source-picker">
+                <span>Install an Agent Skill</span>
+                <div class="source-options" role="group" aria-label="Choose an Actor skill">
+                  <button
+                    type="button"
+                    aria-pressed="true"
+                    data-source-option="linkedin"
+                    data-command-value="npx skills add https://github.com/Exdenta/nomad-agent-job-scrapers --skill linkedin-enrich-translate-normalize-scraper"
+                  >LinkedIn</button>
+                  <button
+                    type="button"
+                    aria-pressed="false"
+                    data-source-option="euraxess"
+                    data-command-value="npx skills add https://github.com/Exdenta/nomad-agent-job-scrapers --skill euraxess-enrich-translate-normalize-scraper"
+                  >EURAXESS</button>
+                </div>
+              </div>
+
+              <div class="command-strip">
+                <code data-command>npx skills add https://github.com/Exdenta/nomad-agent-job-scrapers --skill linkedin-enrich-translate-normalize-scraper</code>
+                <button class="copy-command" type="button" aria-label="Copy install command" aria-describedby="command-status" data-copy-command>
+                  <svg class="copy-icon" viewBox="0 0 20 20" aria-hidden="true">
+                    <rect x="7" y="7" width="9" height="10" rx="1.5" />
+                    <path d="M13 7V4.5A1.5 1.5 0 0 0 11.5 3h-7A1.5 1.5 0 0 0 3 4.5v8A1.5 1.5 0 0 0 4.5 14H7" />
+                  </svg>
+                  <svg class="check-icon" viewBox="0 0 20 20" aria-hidden="true"><path d="m4 10 4 4 8-9" /></svg>
+                </button>
+              </div>
+              <span class="sr-only" id="command-status" role="status" aria-live="polite" data-command-status></span>
+
+              <div class="package-actions">
+                <a
+                  class="button button-dark"
+                  href="https://apify.com/nomad-agent/linkedin-enrich-translate-normalize-scraper?utm_source=nomad-agent-job-scrapers&amp;utm_medium=owned-site&amp;utm_campaign=actor-discovery&amp;utm_content=hero-linkedin"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  data-event="actor_cta_click"
+                  data-actor="linkedin"
+                  data-placement="hero-linkedin"
+                >Try LinkedIn Actor <span aria-hidden="true">↗</span></a>
+                <a
+                  class="button button-outline"
+                  href="https://apify.com/nomad-agent/euraxess-enrich-translate-normalize-scraper?utm_source=nomad-agent-job-scrapers&amp;utm_medium=owned-site&amp;utm_campaign=actor-discovery&amp;utm_content=hero-euraxess"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  data-event="actor_cta_click"
+                  data-actor="euraxess"
+                  data-placement="hero-euraxess"
+                >Explore EURAXESS <span aria-hidden="true">↗</span></a>
+                <a class="sponsor-link" href="https://github.com/Exdenta/nomad-agent-job-scrapers" target="_blank" rel="noopener noreferrer">
+                  View source <span aria-hidden="true">↗</span>
+                  <small>MIT</small>
+                </a>
+              </div>
+            </section>
+
+            <article class="docs-panel markdown-body">
+              <section aria-labelledby="intro-heading">
+                <h2 id="intro-heading">Nomad Agent Job Data</h2>
+                <p>
+                  Nomad Agent publishes an interoperability layer for source-specialized job-search
+                  Actors. Each Actor understands its source, while every supported consumer receives
+                  the same six-root <code>nomad-agent-job-v1</code> envelope.
+                </p>
+              </section>
+
+              <section aria-labelledby="quick-start-heading">
+                <h2 id="quick-start-heading">Quick Start</h2>
+                <ol>
+                  <li>Choose the LinkedIn or EURAXESS Actor for the market you need.</li>
+                  <li>Start with a bounded search and optional enrichment disabled.</li>
+                  <li>Require terminal success, the exact build, and a valid <code>RUN-SUMMARY</code>.</li>
+                  <li>Keep canonical records when identity, evidence, or provenance matters.</li>
+                  <li>Use the flat projection only for table-oriented destinations.</li>
+                </ol>
+                <pre><code>{
+  "keyword": "TypeScript developer",
+  "location": "Spain",
+  "postedWithin": "past-week",
+  "maxItems": 20,
+  "translateToEnglish": false,
+  "aiEnrichment": false
+}</code></pre>
+              </section>
+
+              <section aria-labelledby="use-heading">
+                <h2 id="use-heading">When to Use This Project</h2>
+                <ul>
+                  <li>Building a recurring new-job alert without repeat deliveries</li>
+                  <li>Feeding a job board, search product, database, or internal application</li>
+                  <li>Giving an AI agent bounded tools for finding and monitoring jobs</li>
+                  <li>Sending normalized records into n8n, Make, Airtable, or Google Sheets</li>
+                  <li>Preserving source identity and evidence across multiple job markets</li>
+                </ul>
+              </section>
+
+              <section id="actors" aria-labelledby="actors-heading">
+                <h2 id="actors-heading">Actor Catalog</h2>
+                <div class="actor-doc-card">
+                  <div class="mini-icon linkedin">in</div>
+                  <div>
+                    <h3>LinkedIn Jobs Scraper</h3>
+                    <p>
+                      Fresh public LinkedIn jobs with precise filters, complete descriptions when
+                      available, cross-run deduplication, and optional enrichment or translation.
+                    </p>
+                    <p class="actor-fit"><strong>Best for:</strong> job alerts, trackers, products, and agent search.</p>
+                    <a
+                      href="https://apify.com/nomad-agent/linkedin-enrich-translate-normalize-scraper?utm_source=nomad-agent-job-scrapers&amp;utm_medium=owned-site&amp;utm_campaign=actor-discovery&amp;utm_content=catalog-linkedin"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      data-event="actor_cta_click"
+                      data-actor="linkedin"
+                      data-placement="catalog-linkedin"
+                    >Try LinkedIn Actor ↗</a>
+                  </div>
+                </div>
+                <div class="actor-doc-card">
+                  <div class="mini-icon euraxess">EU</div>
+                  <div>
+                    <h3>EURAXESS Jobs Scraper</h3>
+                    <p>
+                      PhD, postdoc, fellowship, research, and faculty vacancies with research domains,
+                      funding, requirements, deadlines, contacts, and academic taxonomy preserved.
+                    </p>
+                    <p class="actor-fit"><strong>Best for:</strong> research discovery, academic alerts, and funding-aware feeds.</p>
+                    <a
+                      href="https://apify.com/nomad-agent/euraxess-enrich-translate-normalize-scraper?utm_source=nomad-agent-job-scrapers&amp;utm_medium=owned-site&amp;utm_campaign=actor-discovery&amp;utm_content=catalog-euraxess"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      data-event="actor_cta_click"
+                      data-actor="euraxess"
+                      data-placement="catalog-euraxess"
+                    >Try EURAXESS Actor ↗</a>
+                  </div>
+                </div>
+              </section>
+
+              <section id="contract" aria-labelledby="contract-heading">
+                <h2 id="contract-heading">Canonical Output Contract</h2>
+                <p>Every canonical job record has exactly six top-level keys:</p>
+                <pre><code>{
+  "schemaVersion": "nomad-agent-job-v1",
+  "identity": { "source": "linkedin", "externalId": "…", "url": "…" },
+  "data": { "title": "…", "company": { "name": "…" }, "location": { } },
+  "custom": null,
+  "llm": { "status": "not_requested" },
+  "raw": null
+}</code></pre>
+                <blockquote>
+                  <strong>Source semantics:</strong> <code>null</code> means unknown or unavailable.
+                  <code>[]</code> means the source established that the field is empty. Integrations
+                  must not collapse the distinction.
+                </blockquote>
+                <p>
+                  Deduplicate with <code>jobKey = source:externalId</code>. A title or company name is
+                  display data, not job identity.
+                </p>
+              </section>
+
+              <section id="integrations" aria-labelledby="integrations-heading">
+                <h2 id="integrations-heading">Integration Packs</h2>
+                <table>
+                  <thead>
+                    <tr><th>Pack</th><th>Best for</th><th>Output handling</th></tr>
+                  </thead>
+                  <tbody>
+                    <tr><td>n8n</td><td>Daily alerts and trackers</td><td>Validated canonical or flat rows</td></tr>
+                    <tr><td>Make</td><td>Visual scheduled workflows</td><td>Completed dataset projection</td></tr>
+                    <tr><td>MCP</td><td>ChatGPT, Claude, Cursor, Codex</td><td>Exact-build canonical records</td></tr>
+                    <tr><td>REST API</td><td>Custom products and databases</td><td>Paginated canonical datasets</td></tr>
+                    <tr><td>Airtable</td><td>Table-first operations</td><td>32-field flat projection</td></tr>
+                  </tbody>
+                </table>
+                <p>
+                  Importing a template does not supply credentials or activate a schedule. A named
+                  destination must be tested independently before delivery is described as live.
+                </p>
+              </section>
+
+              <section aria-labelledby="completion-heading">
+                <h2 id="completion-heading">Delivery Checklist</h2>
+                <p>Check all four layers before using a completed run:</p>
+                <ul class="checklist">
+                  <li>Actor reached a supported terminal status</li>
+                  <li>The run used the exact expected build</li>
+                  <li><code>RUN-SUMMARY</code> validates against the current contract</li>
+                  <li>Summary delivery count reconciles with the default dataset</li>
+                  <li>Every record validates as the expected source-specific canonical shape</li>
+                  <li>At most one bounded retry is honored for a usable partial result</li>
+                </ul>
+              </section>
+
+              <section id="benchmark" aria-labelledby="benchmark-heading">
+                <h2 id="benchmark-heading">Public Quality Benchmark</h2>
+                <p>
+                  The open benchmark scores final customer-facing records, unsupported fills,
+                  deterministic-field preservation, provenance integrity, repeated-run completion,
+                  and selected-field translation separately for LinkedIn and EURAXESS.
+                </p>
+                <blockquote>
+                  An official accuracy percentage will be published only after blind independent
+                  human review and adjudication. Synthetic fixtures and internal positive-heavy sets
+                  are not presented as production accuracy.
+                </blockquote>
+              </section>
+
+              <section aria-labelledby="security-heading">
+                <h2 id="security-heading">Security and Responsible Use</h2>
+                <ul>
+                  <li>Prefer OAuth and least-privilege MCP tool scopes.</li>
+                  <li>Never commit Apify tokens, destination credentials, or private datasets.</li>
+                  <li>Review source terms, licensing, privacy requirements, and applicable law.</li>
+                  <li>Do not publish personal data without confirming destination access and retention.</li>
+                </ul>
+                <p class="independence-note">
+                  This is an independent community project. It is not affiliated with or endorsed by
+                  LinkedIn, EURAXESS, the European Commission, or the operators of source websites.
+                </p>
+              </section>
+
+              <section aria-labelledby="resources-heading">
+                <h2 id="resources-heading">Resources</h2>
+                <ul>
+                  <li><a href="https://github.com/Exdenta/nomad-agent-job-scrapers/blob/main/docs/contracts.md" target="_blank" rel="noreferrer">Canonical and flat contracts</a> — output identity and semantics</li>
+                  <li><a href="https://github.com/Exdenta/nomad-agent-job-scrapers/blob/main/docs/mcp.md" target="_blank" rel="noreferrer">MCP setup</a> — scoped configuration for supported clients</li>
+                  <li><a href="https://github.com/Exdenta/nomad-agent-job-scrapers/blob/main/docs/integration-compatibility.md" target="_blank" rel="noreferrer">Compatibility matrix</a> — current inputs and integration boundaries</li>
+                  <li><a href="https://github.com/Exdenta/nomad-agent-job-scrapers/tree/main/benchmarks/enrichment-quality-v1" target="_blank" rel="noreferrer">Benchmark contract</a> — public review and scoring artifacts</li>
+                </ul>
+              </section>
+
+              <section aria-labelledby="start-heading">
+                <h2 id="start-heading">Start with the Source You Need</h2>
+                <p>
+                  Use LinkedIn for broad professional hiring markets or EURAXESS for research and
+                  academic opportunities. Both return the same six-root contract, so one consumer can
+                  support either source without erasing source-specific evidence.
+                </p>
+                <div class="final-cta-actions">
+                  <a
+                    class="button button-dark"
+                    href="https://apify.com/nomad-agent/linkedin-enrich-translate-normalize-scraper?utm_source=nomad-agent-job-scrapers&amp;utm_medium=owned-site&amp;utm_campaign=actor-discovery&amp;utm_content=docs-end-linkedin"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    data-event="actor_cta_click"
+                    data-actor="linkedin"
+                    data-placement="docs-end-linkedin"
+                  >Try LinkedIn Actor <span aria-hidden="true">↗</span></a>
+                  <a
+                    class="button button-outline"
+                    href="https://apify.com/nomad-agent/euraxess-enrich-translate-normalize-scraper?utm_source=nomad-agent-job-scrapers&amp;utm_medium=owned-site&amp;utm_campaign=actor-discovery&amp;utm_content=docs-end-euraxess"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    data-event="actor_cta_click"
+                    data-actor="euraxess"
+                    data-placement="docs-end-euraxess"
+                  >Try EURAXESS Actor <span aria-hidden="true">↗</span></a>
+                </div>
+              </section>
+            </article>
+          </div>
+
+          <aside class="sidebar-column" aria-label="More Nomad Agent tools">
+            <div class="sidebar-sticky">
+              <div class="sidebar-promo">
+                <strong>One contract. Two specialist sources.</strong>
+                <span>Build one consumer and keep source evidence intact.</span>
+              </div>
+              <div class="promo-caption">Open job data infrastructure</div>
+
+              <h2>More from Nomad Agent</h2>
+              <div class="related-list">
+                <a
+                  class="related-card"
+                  href="https://apify.com/nomad-agent/linkedin-enrich-translate-normalize-scraper?utm_source=nomad-agent-job-scrapers&amp;utm_medium=owned-site&amp;utm_campaign=actor-discovery&amp;utm_content=sidebar-linkedin"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  data-event="actor_cta_click"
+                  data-actor="linkedin"
+                  data-placement="sidebar-linkedin"
+                >
+                  <div class="related-head">
+                    <span class="related-icon linkedin">in</span>
+                    <div><strong>linkedin-jobs-scraper</strong><small>Nomad Agent</small></div>
+                    <span class="external-arrow">↗</span>
+                  </div>
+                  <p>Fresh public LinkedIn jobs with precise filters, deduplication, and optional enrichment.</p>
+                </a>
+
+                <a
+                  class="related-card"
+                  href="https://apify.com/nomad-agent/euraxess-enrich-translate-normalize-scraper?utm_source=nomad-agent-job-scrapers&amp;utm_medium=owned-site&amp;utm_campaign=actor-discovery&amp;utm_content=sidebar-euraxess"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  data-event="actor_cta_click"
+                  data-actor="euraxess"
+                  data-placement="sidebar-euraxess"
+                >
+                  <div class="related-head">
+                    <span class="related-icon euraxess">EU</span>
+                    <div><strong>euraxess-jobs-scraper</strong><small>Nomad Agent</small></div>
+                    <span class="external-arrow">↗</span>
+                  </div>
+                  <p>Research and academic vacancies with funding, deadlines, contacts, and taxonomy preserved.</p>
+                </a>
+
+                <a class="related-card" href="https://github.com/Exdenta/nomad-agent-job-scrapers/tree/main/.agents/skills" target="_blank" rel="noreferrer">
+                  <div class="related-head">
+                    <span class="related-icon neutral">AI</span>
+                    <div><strong>job-search-agent-skills</strong><small>Nomad Agent</small></div>
+                    <span class="external-arrow">↗</span>
+                  </div>
+                  <p>Source-specific Agent Skills for bounded searches, validation, and output projection.</p>
+                </a>
+
+                <a class="related-card" href="https://github.com/Exdenta/nomad-agent-job-scrapers/tree/main/integrations/n8n" target="_blank" rel="noreferrer">
+                  <div class="related-head">
+                    <span class="related-icon neutral">n8n</span>
+                    <div><strong>daily-job-alerts</strong><small>n8n workflow</small></div>
+                    <span class="external-arrow">↗</span>
+                  </div>
+                  <p>Importable duplicate-safe alerts and Google Sheets tracker workflows.</p>
+                </a>
+
+                <a class="related-card" href="https://github.com/Exdenta/nomad-agent-job-scrapers/tree/main/integrations/mcp" target="_blank" rel="noreferrer">
+                  <div class="related-head">
+                    <span class="related-icon neutral">MCP</span>
+                    <div><strong>scoped-mcp-configs</strong><small>Agent integration</small></div>
+                    <span class="external-arrow">↗</span>
+                  </div>
+                  <p>Credential-free setup profiles for ChatGPT, Claude, Cursor, and Codex.</p>
+                </a>
+
+                <a class="related-card" href="https://github.com/Exdenta/nomad-agent-job-scrapers/tree/main/benchmarks/enrichment-quality-v1" target="_blank" rel="noreferrer">
+                  <div class="related-head">
+                    <span class="related-icon neutral">QA</span>
+                    <div><strong>enrichment-quality-v1</strong><small>Open benchmark</small></div>
+                    <span class="external-arrow">↗</span>
+                  </div>
+                  <p>Human-review gates and public scoring for final normalized records.</p>
+                </a>
+              </div>
+            </div>
+          </aside>
+        </div>
+      </div>
+    </main>
+
+    <footer class="site-footer">
+      <div class="footer-container">
+        <a
+          href="https://apify.com/nomad-agent/linkedin-enrich-translate-normalize-scraper?utm_source=nomad-agent-job-scrapers&amp;utm_medium=owned-site&amp;utm_campaign=actor-discovery&amp;utm_content=footer-linkedin"
+          target="_blank"
+          rel="noopener noreferrer"
+          data-event="actor_cta_click"
+          data-actor="linkedin"
+          data-placement="footer-linkedin"
+        >LinkedIn Actor</a>
+        <a
+          href="https://apify.com/nomad-agent/euraxess-enrich-translate-normalize-scraper?utm_source=nomad-agent-job-scrapers&amp;utm_medium=owned-site&amp;utm_campaign=actor-discovery&amp;utm_content=footer-euraxess"
+          target="_blank"
+          rel="noopener noreferrer"
+          data-event="actor_cta_click"
+          data-actor="euraxess"
+          data-placement="footer-euraxess"
+        >EURAXESS Actor</a>
+        <a href="https://github.com/Exdenta/nomad-agent-job-scrapers/tree/main/docs" target="_blank" rel="noreferrer">Documentation</a>
+        <a href="https://github.com/Exdenta/nomad-agent-job-scrapers/tree/main/integrations" target="_blank" rel="noreferrer">Integrations</a>
+        <a href="https://github.com/Exdenta/nomad-agent-job-scrapers/tree/main/.agents/skills" target="_blank" rel="noreferrer">Agent Skills</a>
+        <a href="https://github.com/Exdenta/nomad-agent-job-scrapers/tree/main/benchmarks" target="_blank" rel="noreferrer">Benchmarks</a>
+        <span>MIT licensed · <span data-year></span></span>
+      </div>
+    </footer>
+
+    <script src="./script.js" defer></script>
+  </body>
+</html>

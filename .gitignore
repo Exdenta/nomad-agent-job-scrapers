@@ -5,3 +5,6 @@ __pycache__/
 .env.*
 !.env.example
 dist/
+.firebase/
+firebase-debug.log
+website/indexnow-key.txt

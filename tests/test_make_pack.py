@@ -71,7 +71,7 @@ class MakePackTest(unittest.TestCase):
             for item in self.by_name["Configuration"]["mapper"]["variables"]
         }
         self.assertEqual(config["maxitems"], "1")
-        self.assertEqual(config["actorbuild"], "0.6.48")
+        self.assertEqual(config["actorbuild"], "1.0.2")
         self.assertEqual(config["apifytaskid"], "REPLACE_WITH_APIFY_TASK_ID")
         self.assertEqual(
             config["googlespreadsheetid"],

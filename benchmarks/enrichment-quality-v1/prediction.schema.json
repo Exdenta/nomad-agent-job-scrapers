@@ -1,0 +1,66 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Exdenta/nomad-agent-job-scrapers/benchmarks/enrichment-quality-v1/prediction.schema.json",
+  "title": "Normalized job enrichment benchmark submission v1",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "benchmarkId",
+    "submissionId",
+    "createdAt",
+    "systems",
+    "predictions"
+  ],
+  "properties": {
+    "schemaVersion": {"const": "nomad-agent-enrichment-submission-v1"},
+    "benchmarkId": {"type": "string"},
+    "submissionId": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]{0,127}$"},
+    "createdAt": {"type": "string", "format": "date-time"},
+    "systems": {
+      "type": "object",
+      "required": ["linkedin", "euraxess"],
+      "properties": {
+        "linkedin": {"$ref": "#/$defs/system"},
+        "euraxess": {"$ref": "#/$defs/system"}
+      },
+      "additionalProperties": false
+    },
+    "predictions": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/prediction"}
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "system": {
+      "type": "object",
+      "required": ["actorId", "buildNumber", "buildId", "accuracyMode", "repeats"],
+      "properties": {
+        "actorId": {"type": "string", "minLength": 1},
+        "buildNumber": {"type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"},
+        "buildId": {"type": "string", "minLength": 1},
+        "accuracyMode": {"enum": ["silver", "gold"]},
+        "translationEnabled": {"type": "boolean"},
+        "repeats": {"type": "integer", "minimum": 1},
+        "inputSha256": {"type": ["string", "null"], "pattern": "^[a-f0-9]{64}$"}
+      },
+      "additionalProperties": false
+    },
+    "prediction": {
+      "type": "object",
+      "required": ["caseId", "repeat", "status", "record"],
+      "properties": {
+        "caseId": {"type": "string"},
+        "repeat": {"type": "integer", "minimum": 1},
+        "status": {"enum": ["completed", "failed"]},
+        "record": {"type": ["object", "null"]},
+        "runId": {"type": ["string", "null"]},
+        "datasetId": {"type": ["string", "null"]},
+        "observedAt": {"type": ["string", "null"], "format": "date-time"},
+        "failureCategory": {"type": ["string", "null"]}
+      },
+      "additionalProperties": false
+    }
+  }
+}

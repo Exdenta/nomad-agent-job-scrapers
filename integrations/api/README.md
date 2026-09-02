@@ -5,8 +5,8 @@ integration-specific subset. Pin the exact qualified build in the run query:
 
 | Actor | API Actor identifier | Required build |
 | --- | --- | --- |
-| LinkedIn | `nomad-agent~linkedin-enrich-translate-normalize-scraper` | `0.6.48` |
-| EURAXESS | `nomad-agent~euraxess-enrich-translate-normalize-scraper` | `1.0.13` |
+| LinkedIn | `nomad-agent~linkedin-enrich-translate-normalize-scraper` | `1.0.2` |
+| EURAXESS | `nomad-agent~euraxess-enrich-translate-normalize-scraper` | `1.0.16` |
 
 Confirm EURAXESS availability before a paid run. Keep the exact build query
 instead of relying on `latest`.
@@ -21,11 +21,11 @@ curl --request POST \
   --header "Authorization: Bearer $APIFY_TOKEN" \
   --header "Content-Type: application/json" \
   --data @integrations/api/linkedin-search.json \
-  "https://api.apify.com/v2/acts/nomad-agent~linkedin-enrich-translate-normalize-scraper/runs?build=0.6.48&maxTotalChargeUsd=0.10"
+  "https://api.apify.com/v2/acts/nomad-agent~linkedin-enrich-translate-normalize-scraper/runs?build=1.0.2&maxTotalChargeUsd=0.10"
 ```
 
 For EURAXESS, substitute its Actor identifier, body file, and
-`build=1.0.13`. The examples request at most five items and disable paid,
+`build=1.0.16`. The examples request at most five items and disable paid,
 stateful, raw, and analytics options. A caller may pass every field in the
 current input schema; see the
 [compatibility matrix](../../docs/integration-compatibility.md).

@@ -61,7 +61,7 @@ No community node, messaging account, or AI-provider credential is required.
 
 - The workflow imports inactive.
 - The schedule does not run until the workflow is published.
-- The workflow pins exact supported build `0.6.48`.
+- The workflow pins exact supported build `1.0.2`.
 - `maxItems` starts at `1` and the Apify call has a `$0.10` charge cap.
 - The workflow validates minimal v4 `RUN-SUMMARY`, may repeat the exact run
   request once on a valid partial recommendation, and reconciles its
@@ -117,7 +117,7 @@ chat, or email address only when new jobs arrive.
 1. Runs manually or every day at 08:00 UTC.
 2. Validates the exact build, bounded search, cost cap, opaque dedupe scope,
    selected delivery channel, and destination placeholder before a paid call.
-3. Calls exact Actor build `0.6.48` through Apify's synchronous dataset
+3. Calls exact Actor build `1.0.2` through Apify's synchronous dataset
    endpoint with a scoped Header Auth credential.
 4. Requires strict six-root `nomad-agent-job-v1` rows from LinkedIn and creates
    `jobKey = source:externalId` without inferring missing facts.

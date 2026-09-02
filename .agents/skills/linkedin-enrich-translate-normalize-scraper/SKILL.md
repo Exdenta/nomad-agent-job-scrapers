@@ -18,7 +18,7 @@ HTTP with OAuth. Never ask for a token in chat or write one to a repository.
 ## Before a run
 
 1. Fetch the deployed Actor details or inspect its MCP tool schema. This skill
-   was synchronized to exact supported build `0.6.48`; stop if the run resolves
+   was synchronized to exact supported build `1.0.2`; stop if the run resolves
    to another build until its contract has been checked.
 2. Confirm that the deployed input accepts
    `schemaVersion: nomad-agent-job-search-input-v1`. If it does not, explain
@@ -62,8 +62,12 @@ Apply these rules:
 
 - Use `postedWithin`; do not invent `timeFilter` or `postedSince`.
 - Use `workArrangements` for any union of `remote`, `hybrid`, and `onsite`.
-- Start at `maxItems: 5`; set it between 1 and 200 for normal runs. Use 0 only
-  when the user explicitly requests the Actor's full bounded 200-item window.
+- Start at `maxItems: 5`; set it between 1 and 1,000 for normal runs. Use 0
+  only when the user explicitly requests the Actor's full bounded 1,000-item
+  window.
+- Omit `firstRunMode` in ordinary programmatic searches. Use it only when the
+  user explicitly wants the five-result paid evaluation preset and accepts
+  its enrichment and translation events.
 - Inspect the Actor details for current pricing before a paid run. Explain the
   larger result count and any additional per-result cost before increasing
   `maxItems` or enabling translation or AI enrichment.
@@ -78,7 +82,7 @@ Apply these rules:
 
 ## Execute with MCP
 
-1. Call generic `call-actor` with this outer envelope. Pin build `0.6.48` in
+1. Call generic `call-actor` with this outer envelope. Pin build `1.0.2` in
    `callOptions.build`; do not rely on a mutable tag or the direct Actor tool:
 
    ```json
@@ -86,14 +90,14 @@ Apply these rules:
      "actor": "nomad-agent/linkedin-enrich-translate-normalize-scraper",
      "input": {"schemaVersion": "nomad-agent-job-search-input-v1", "maxItems": 5},
      "waitSecs": 0,
-     "callOptions": {"build": "0.6.48", "maxItems": 5, "maxTotalChargeUsd": 0.1}
+     "callOptions": {"build": "1.0.2", "maxItems": 5, "maxTotalChargeUsd": 0.1}
    }
    ```
 2. If the returned run is `READY`, `RUNNING`, `TIMING-OUT`, or `ABORTING`, use
    its run ID with `get-actor-run` and follow `nextStep` until the run is
    terminal.
 3. Continue only when the authoritative terminal run has status `SUCCEEDED`,
-   exit code `0`, and build number `0.6.48`. If an MCP response omits
+   exit code `0`, and build number `1.0.2`. If an MCP response omits
    `buildNumber`, verify the same run through Apify's authenticated run API;
    omission is not proof of the requested build.
 4. Read that run's default key-value-store ID from

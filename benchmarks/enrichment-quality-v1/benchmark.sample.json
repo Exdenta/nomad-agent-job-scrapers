@@ -1,0 +1,237 @@
+{
+  "schemaVersion": "nomad-agent-enrichment-benchmark-v1",
+  "benchmarkId": "normalized-job-enrichment-synthetic-sample-v1",
+  "status": "draft",
+  "createdAt": "2026-08-15T00:00:00Z",
+  "description": "Synthetic contract example only; not an accuracy dataset.",
+  "supportedEnrichmentPaths": [
+    "data.domains",
+    "data.application.selectionProcess",
+    "data.requirements.requiredSkills",
+    "data.requirements.preferredSkills",
+    "data.requirements.education",
+    "data.requirements.experience",
+    "data.requirements.languages",
+    "data.requirements.certifications",
+    "data.benefits",
+    "data.constraints.workAuthorization",
+    "data.constraints.locationPreference",
+    "data.employment.workArrangements"
+  ],
+  "translationPaths": [
+    "data.title",
+    "data.classification.industries",
+    "data.classification.jobFunctions"
+  ],
+  "cases": [
+    {
+      "caseId": "linkedin-synthetic-001",
+      "source": "linkedin",
+      "split": "development",
+      "document": {
+        "origin": "synthetic",
+        "url": null,
+        "externalId": "synthetic-linkedin-001",
+        "text": "Build backend services in Python and PostgreSQL. You must have 3 years of Python experience. We offer health insurance and a learning budget. This role is fully remote within Spain.",
+        "textSha256": "9a0b5d4db94b25e21fcb271328adae247e1595800b1684dc81156ff9737af648",
+        "observedAt": "2026-08-15T00:00:00Z",
+        "redistributable": true,
+        "redistributionBasis": "CC0-1.0; written for this benchmark sample"
+      },
+      "staticRecord": {
+        "schemaVersion": "nomad-agent-job-v1",
+        "identity": {"source": "linkedin", "externalId": "synthetic-linkedin-001", "url": null},
+        "data": {
+          "title": "Backend Engineer",
+          "company": {"name": "Example Labs"},
+          "classification": {"industries": ["Software Development"], "jobFunctions": ["Engineering"]},
+          "domains": null,
+          "employment": {"workArrangements": null},
+          "application": {"selectionProcess": null},
+          "requirements": {
+            "requiredSkills": null,
+            "preferredSkills": null,
+            "education": null,
+            "experience": null,
+            "languages": null,
+            "certifications": null
+          },
+          "benefits": null,
+          "constraints": {"workAuthorization": null, "locationPreference": null}
+        },
+        "custom": null,
+        "llm": {"status": "not_requested", "requestedFields": [], "filledFields": []},
+        "raw": {"description": "Build backend services in Python and PostgreSQL. You must have 3 years of Python experience. We offer health insurance and a learning budget. This role is fully remote within Spain."}
+      },
+      "staticProtectedPaths": [
+        "identity.source",
+        "identity.externalId",
+        "data.title",
+        "data.company.name",
+        "data.classification.industries",
+        "data.classification.jobFunctions"
+      ],
+      "expectations": [
+        {
+          "path": "data.domains",
+          "expected": "present",
+          "matcher": "unordered_array",
+          "acceptedValues": [["backend services"]],
+          "evidence": [{"start": 0, "end": 48, "quote": "Build backend services in Python and PostgreSQL."}],
+          "review": {"labelQuality": "draft", "independentHumanReviewers": 0, "adjudicated": false}
+        },
+        {
+          "path": "data.requirements.requiredSkills",
+          "expected": "present",
+          "matcher": "unordered_array",
+          "acceptedValues": [[{"name": "Python", "yearsRequired": 3}]],
+          "evidence": [{"start": 49, "end": 92, "quote": "You must have 3 years of Python experience."}],
+          "review": {"labelQuality": "draft", "independentHumanReviewers": 0, "adjudicated": false}
+        },
+        {
+          "path": "data.requirements.experience",
+          "expected": "present",
+          "matcher": "unordered_array",
+          "acceptedValues": [[{"field": "Python", "minimumYears": 3, "maximumYears": null, "raw": "3 years of Python experience"}]],
+          "evidence": [{"start": 49, "end": 92, "quote": "You must have 3 years of Python experience."}],
+          "review": {"labelQuality": "draft", "independentHumanReviewers": 0, "adjudicated": false}
+        },
+        {
+          "path": "data.benefits",
+          "expected": "present",
+          "matcher": "exact",
+          "acceptedValues": ["health insurance and a learning budget"],
+          "evidence": [{"start": 93, "end": 141, "quote": "We offer health insurance and a learning budget."}],
+          "review": {"labelQuality": "draft", "independentHumanReviewers": 0, "adjudicated": false}
+        },
+        {
+          "path": "data.employment.workArrangements",
+          "expected": "present",
+          "matcher": "unordered_array",
+          "acceptedValues": [["remote"]],
+          "evidence": [{"start": 142, "end": 181, "quote": "This role is fully remote within Spain."}],
+          "review": {"labelQuality": "draft", "independentHumanReviewers": 0, "adjudicated": false}
+        },
+        {
+          "path": "data.application.selectionProcess",
+          "expected": "absent",
+          "matcher": "exact",
+          "acceptedValues": [],
+          "evidence": [],
+          "review": {"labelQuality": "draft", "independentHumanReviewers": 0, "adjudicated": false}
+        }
+      ],
+      "translationExpectations": []
+    },
+    {
+      "caseId": "euraxess-synthetic-001",
+      "source": "euraxess",
+      "split": "development",
+      "document": {
+        "origin": "synthetic",
+        "url": null,
+        "externalId": "synthetic-euraxess-001",
+        "text": "Le poste porte sur la recherche en biologie moléculaire. Doctorat en biologie requis. Anglais niveau C1 obligatoire. Les candidatures retenues passeront deux entretiens.",
+        "textSha256": "b77b11b0d9f7904cd70a45e5cea5edf55d9a74ecaac4e708b3007ec3703c8f66",
+        "observedAt": "2026-08-15T00:00:00Z",
+        "redistributable": true,
+        "redistributionBasis": "CC0-1.0; written for this benchmark sample"
+      },
+      "staticRecord": {
+        "schemaVersion": "nomad-agent-job-v1",
+        "identity": {"source": "euraxess", "externalId": "synthetic-euraxess-001", "url": null},
+        "data": {
+          "title": "Chercheur en biologie moléculaire",
+          "company": {"name": "Institut Exemple"},
+          "classification": {"industries": ["Recherche biomédicale"], "jobFunctions": ["Recherche et développement"]},
+          "domains": null,
+          "employment": {"workArrangements": null},
+          "application": {"selectionProcess": null},
+          "requirements": {
+            "requiredSkills": null,
+            "preferredSkills": null,
+            "education": null,
+            "experience": null,
+            "languages": null,
+            "certifications": null
+          },
+          "benefits": null,
+          "constraints": {"workAuthorization": null, "locationPreference": null}
+        },
+        "custom": null,
+        "llm": {"status": "not_requested", "requestedFields": [], "filledFields": []},
+        "raw": {"description": "Le poste porte sur la recherche en biologie moléculaire. Doctorat en biologie requis. Anglais niveau C1 obligatoire. Les candidatures retenues passeront deux entretiens."}
+      },
+      "staticProtectedPaths": [
+        "identity.source",
+        "identity.externalId",
+        "data.company.name"
+      ],
+      "expectations": [
+        {
+          "path": "data.domains",
+          "expected": "present",
+          "matcher": "unordered_array",
+          "acceptedValues": [["biologie moléculaire"]],
+          "evidence": [{"start": 22, "end": 55, "quote": "recherche en biologie moléculaire"}],
+          "review": {"labelQuality": "draft", "independentHumanReviewers": 0, "adjudicated": false}
+        },
+        {
+          "path": "data.requirements.education",
+          "expected": "present",
+          "matcher": "unordered_array",
+          "acceptedValues": [[{"level": "Doctorat", "field": "biologie", "yearsRequired": null, "preferred": false}]],
+          "evidence": [{"start": 57, "end": 85, "quote": "Doctorat en biologie requis."}],
+          "review": {"labelQuality": "draft", "independentHumanReviewers": 0, "adjudicated": false}
+        },
+        {
+          "path": "data.requirements.languages",
+          "expected": "present",
+          "matcher": "unordered_array",
+          "acceptedValues": [[{"language": "Anglais", "level": "C1", "required": true}]],
+          "evidence": [{"start": 86, "end": 116, "quote": "Anglais niveau C1 obligatoire."}],
+          "review": {"labelQuality": "draft", "independentHumanReviewers": 0, "adjudicated": false}
+        },
+        {
+          "path": "data.application.selectionProcess",
+          "expected": "present",
+          "matcher": "exact",
+          "acceptedValues": ["deux entretiens"],
+          "evidence": [{"start": 117, "end": 169, "quote": "Les candidatures retenues passeront deux entretiens."}],
+          "review": {"labelQuality": "draft", "independentHumanReviewers": 0, "adjudicated": false}
+        },
+        {
+          "path": "data.benefits",
+          "expected": "absent",
+          "matcher": "exact",
+          "acceptedValues": [],
+          "evidence": [],
+          "review": {"labelQuality": "draft", "independentHumanReviewers": 0, "adjudicated": false}
+        }
+      ],
+      "translationExpectations": [
+        {
+          "path": "data.title",
+          "sourceText": "Chercheur en biologie moléculaire",
+          "references": ["Molecular Biology Researcher"],
+          "invariants": [],
+          "review": {"labelQuality": "draft", "independentHumanReviewers": 0, "adjudicated": false}
+        },
+        {
+          "path": "data.classification.industries.0",
+          "sourceText": "Recherche biomédicale",
+          "references": ["Biomedical Research"],
+          "invariants": [],
+          "review": {"labelQuality": "draft", "independentHumanReviewers": 0, "adjudicated": false}
+        },
+        {
+          "path": "data.classification.jobFunctions.0",
+          "sourceText": "Recherche et développement",
+          "references": ["Research and Development"],
+          "invariants": [],
+          "review": {"labelQuality": "draft", "independentHumanReviewers": 0, "adjudicated": false}
+        }
+      ]
+    }
+  ]
+}
