@@ -86,9 +86,9 @@ are separate proof layers.
 
 | Layer | Current status | Required or retained evidence |
 | --- | --- | --- |
-| Expanded 23-page implementation | Local validation in progress, 2026-09-03 | Checked-in pages, contracts, tests, and browser QA from this change set |
-| Production deployment | Not yet proved for this change set | Exact commit, successful Firebase workflow run, live byte parity |
-| Google/IndexNow notification | Not yet attempted for this change set | Post-parity workflow receipts; never labeled indexing |
+| Expanded 23-page implementation | Repository implementation recorded 2026-09-03; validation is attached to the exact commit | Checked-in pages, contracts, tests, browser QA, and the successful pull-request workflow for that commit |
+| Production deployment | Established only by the exact successful `main` Firebase workflow receipt | Exact commit, successful Firebase workflow run, live byte parity |
+| Google/IndexNow notification | Established only by the post-parity `main` workflow receipts | Post-parity workflow receipts; acceptance is never labeled indexing |
 | Crawling and indexing | Monitored separately | URL Inspection and Bing state at 72-hour, 7-, 14-, 28-, 56-, and 84-day checkpoints |
 | Search demand | Awaiting first complete 28-day baseline | Privacy-minimized weekly Search Console artifact; no invented target |
 | Product outcomes/case studies | Not claimed | Consent, exact versions, reproducible metric, destination evidence, approved wording |
