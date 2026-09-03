@@ -7,7 +7,7 @@ Import either blueprint:
 - [`euraxess-jobs-to-google-sheets.blueprint.json`](euraxess-jobs-to-google-sheets.blueprint.json),
   for a Task pinned to EURAXESS build `1.0.16`;
 - [`ai-job-fit-scorer-to-google-sheets.blueprint.json`](ai-job-fit-scorer-to-google-sheets.blueprint.json),
-  for a Task pinned to AI Job Search & Fit Scorer build `0.1.11`.
+  for a Task pinned to AI Job Search & Fit Scorer build `0.1.12`.
 
 The Apify Task owns the complete Actor input, item limit, exact build, and
 charge cap. The Make scenario consumes the completed Task run:
@@ -29,9 +29,10 @@ one bounded sleep-and-retry route; API-origin retried Task runs cannot enter
 that route again. A valid `empty` status writes no rows; missing, invalid,
 failed, aborted, timed-out, or wrong-build runs do not enter delivery.
 
-The fit-scoring blueprint uses the distinct
-`nomad-ai-job-fit-run-summary-v3`/`nomad-ai-job-fit-v1` contract. It requires
-the single `$0.02` event configuration, skips `ai_failed`, and upserts the
+The fit-scoring blueprint accepts the distinct legacy v3 or current
+`nomad-ai-job-fit-run-summary-v4`/`nomad-ai-job-fit-v1` contract. Its native
+routes distinguish v4 `shortlist` and `audit` policies, require the single
+`$0.02` event configuration, skip `ai_failed`, and upsert the
 21-column fit projection by candidate-specific `matchKey` rather than
 source-only `jobKey`.
 

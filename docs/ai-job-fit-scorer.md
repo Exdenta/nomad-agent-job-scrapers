@@ -3,13 +3,18 @@
 [`nomad-agent/ai-job-fit-scorer`](https://apify.com/nomad-agent/ai-job-fit-scorer)
 turns one résumé or structured candidate profile into a ranked developer-job
 shortlist. It can search and deduplicate 10 public job sources in one run, or
-score supplied `nomad-agent-job-v1` records. Each retained evaluation costs
-$0.02 and includes a raw 0–100 fit, a gate-adjusted 0–5 delivery score,
+score supplied `nomad-agent-job-v1` records. Default `shortlist` mode returns
+only scored rows meeting the gate-aware delivery threshold. Explicit `audit`
+mode retains drops, holds, and failures for pipeline analysis. A charged result
+costs $0.02 and includes a raw 0–100 fit, a gate-adjusted 0–5 delivery score,
 evidence, gaps, source provenance, and stable destination keys.
 
-This repository supports immutable Actor build `0.1.11`
-(`MorUFN0ZFQjpmpytr`). Do not replace that pin with `latest` in an automated
-workflow without re-running the contract and destination checks.
+This repository pins the live-verified scoring runtime at immutable Actor build
+`0.1.12` (`eLfTnCWohYVKejvsD`). Public `latest` is `0.1.13`
+(`7wXjnRw6XvfiUQUwB`), a documentation-only build with the same runtime image.
+Keep automated integrations on `0.1.12` until a newer runtime is separately
+contract-tested. Maintained consumers accept legacy
+`nomad-ai-job-fit-run-summary-v3` and current v4 during migration.
 
 ## Choose a starter
 
@@ -33,7 +38,7 @@ and search terms:
 
 ```bash
 export APIFY_TOKEN="..."
-export ACTOR_BUILD_NUMBER="0.1.11"
+export ACTOR_BUILD_NUMBER="0.1.12"
 node integrations/api/ai-job-fit-scorer-run-and-fetch.mjs
 ```
 
@@ -69,26 +74,43 @@ Choose exactly one candidate source as well: `candidateProfile`, `resume`, or
 language, location, and contract constraints that the candidate actually
 provided.
 
+## Choose what the dataset returns
+
+- `resultMode: "shortlist"` is the default. It returns and charges only rows
+  with `evaluationStatus: "scored"` whose integer `deliveryScore` is at
+  least `minDeliveryScore`. The default threshold is `2`.
+- `resultMode: "audit"` preserves every evaluated row, including
+  `static_drop`, `static_hold`, `forward_cap_hold`, and `ai_failed`.
+  Retained non-failure decisions are charged; `ai_failed` rows are not.
+- Raw `fitScore` is not the delivery filter. `deliveryScore` incorporates
+  hard role, location, seniority, language, and preference gates that can make
+  a superficially high raw fit unsafe to deliver.
+- `RUN-SUMMARY` v4 always reports `evaluatedJobs`, `staticDropped`,
+  `staticHeld`, `aiScored`, `aiFailed`, `resultFilteredOut`, and
+  `outputRows`, so a clean empty shortlist is distinguishable from no work.
+
 ## Exact-run consumption contract
 
 Every integration should preserve this order:
 
-1. start `nomad-agent/ai-job-fit-scorer` with build `0.1.11`, an explicit input,
+1. start `nomad-agent/ai-job-fit-scorer` with build `0.1.12`, an explicit input,
    item cap, and maximum total charge;
 2. retain the returned run ID and poll only that run to a terminal state;
-3. require `SUCCEEDED`, exit code `0`, build number `0.1.11`, and immutable
+3. require `SUCCEEDED`, exit code `0`, build number `0.1.12`, and immutable
    default dataset and key-value-store IDs;
 4. read `RUN-SUMMARY` from that run and require
-   `nomad-ai-job-fit-run-summary-v3`, a usable status, scoring v3, the $0.25
-   provider guard, at most two provider attempts, and the single $0.02
-   `job-fit-result` meter;
+   `nomad-ai-job-fit-run-summary-v4`, a usable status, scoring v3, a valid
+   result policy and count partition, the $0.25 provider guard, at most two
+   provider attempts, and the single $0.02 `job-fit-result` meter;
 5. read the exact run dataset and require its count to equal
    `RUN-SUMMARY.counts.outputRows`;
-6. require one run charge per successful retained row, no charge for
-   `ai_failed`, and every row to satisfy `nomad-ai-job-fit-v1`;
+6. in shortlist mode require every row to be scored and meet the declared
+   delivery threshold, with `chargedCount == outputRows`; in audit mode require
+   `resultFilteredOut == 0` and charge only retained non-failures;
 7. boundedly re-read the same run and storages when completion metadata has not
    settled yet—never switch to a latest-run shortcut;
-8. skip `ai_failed` rows and upsert successful evaluations by `matchKey`.
+8. skip `ai_failed` rows at destinations and upsert retained evaluations by
+   `matchKey`.
 
 `jobKey` identifies one source posting. It is not a safe candidate-specific
 destination key: using it alone can let one candidate's evaluation overwrite
@@ -164,35 +186,24 @@ Prove create and update behavior before enabling the schedule.
 
 ## Current live proof
 
-Immutable build `0.1.11` passed the fresh-form candidate/search contract on
+Immutable runtime build `0.1.12` passed four bounded v4 behaviors on
 2026-09-03:
 
-- Console default run `6hV5OdaNo5GsBwWNK`: the restored example form supplied
-  the clearly labeled fake candidate, three bounded sources, and a three-result
-  cap; build `0.1.11` (`MorUFN0ZFQjpmpytr`) succeeded with exit code `0`, all
-  three sources returned nine normalized unique jobs, three AI-scored rows were
-  rendered in the Console dataset, and three `job-fit-result` events exactly
-  consumed the configured `$0.06` maximum charge with no summary warnings;
-- immutable fake-profile canary `UBmk8XgdqimMbJf89`: build `0.1.11`
-  (`MorUFN0ZFQjpmpytr`), all three selected sources (`linkedin`,
-  `remote_boards`, `justjoinit`) succeeded, nine normalized unique jobs were
-  found, the one-result canary cap retained one AI-scored row, and one $0.02
-  `job-fit-result` event reconciled with a warning-free v3 summary.
+- default search `fhMYR6bzdbzdNl84y`: LinkedIn, remote boards, and JustJoinIT
+  all succeeded; three jobs were AI-scored, two fell below the default
+  delivery threshold, and the one delivery-3 row was returned and charged
+  exactly once;
+- filtered shortlist `wkk8NkZv43JEIcv3m`: one deterministic hold was counted
+  and filtered, leaving an empty dataset and zero result charges;
+- audit `lIpiLiudBukaaFI7d`: the same held decision was retained, no row was
+  filtered, and the one retained non-failure decision was charged once;
+- scored inline job `vzhqlbVeXhp5tKs4N`: one AI-scored row returned
+  `fitScore: 92`, `deliveryScore: 5`, and one reconciled result charge.
 
-The contract-compatible predecessor `0.1.10` supplied the broader source and
-client evidence:
-
-- supplied-job run `KuuEnCoMfFbFj3z5R`: one scored row and one reconciled
-  `job-fit-result` event;
-- LinkedIn + remote-board search run `udTJyz3zJWOkKSNUS`: both sources returned
-  one normalized posting, the cap retained one scored row, and one event was
-  reconciled;
-- then-public `latest` all-source run `CEofFmV6UEb82yi7M`: `latest` resolved to
-  build `0.1.10` (`XOOtUsksU2uE89H6l`); all ten adapters reported
-  `succeeded`, 12 normalized rows became 8 unique jobs, the cap retained one
-  scored row, one event was reconciled, and the v3 summary had no warnings;
-- REST starter run `uqwj8p5qPU74JUyEo`: the repository's Node client itself
-  started, polled, settled, and contract-validated one search result.
+Public documentation build `0.1.13` then passed exact-build zero-charge smoke
+`DZdOvX8FxOtgFS6J7`; its runtime container digest is identical to `0.1.12`.
+The older `0.1.10` all-source run `CEofFmV6UEb82yi7M` remains historical
+evidence that all ten adapters succeeded together, not current-release proof.
 
 Those runs prove the Actor path, not hosted MCP, workflow import, scheduling, or
 a named destination write. See the evidence manifest before making a stronger

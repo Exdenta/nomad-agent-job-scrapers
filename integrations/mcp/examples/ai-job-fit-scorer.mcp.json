@@ -40,13 +40,15 @@
       "workArrangementPreferencesComplete": true
     },
     "maxItems": 5,
+    "resultMode": "shortlist",
+    "minDeliveryScore": 2,
     "minRankToForward": 30,
     "recoverHolds": false,
     "aiConcurrency": 2
   },
   "waitSecs": 0,
   "callOptions": {
-    "build": "0.1.11",
+    "build": "0.1.12",
     "maxItems": 5,
     "maxTotalChargeUsd": 0.1
   }

@@ -168,16 +168,17 @@ Save AI job-fit scores to Google Sheets
 
 ### Short description
 
-Watch an AI Job Search & Fit Task at build `0.1.11`, validate evidence-gated
+Watch an AI Job Search & Fit Task at build `0.1.12`, validate evidence-gated
 evaluations and billing, and upsert Google Sheets rows by unique `matchKey`.
 
 ### Full description
 
 Convert a completed AI Job Search & Fit Scorer Task into a candidate-specific
 Google Sheets shortlist. The scenario watches the configured Apify Task,
-requires the expected Actor and exact build `0.1.11`, reads that run's
-`nomad-ai-job-fit-run-summary-v3`, fetches its exact dataset, and validates the
-declared scoring and billing fields before delivery.
+requires the expected Actor and exact build `0.1.12`, reads that run's legacy
+v3 or current `nomad-ai-job-fit-run-summary-v4`, fetches its exact dataset,
+and validates the declared scoring, result-policy, and billing fields before
+delivery.
 
 The scenario skips `ai_failed` rows and projects successful
 `nomad-ai-job-fit-v1` evaluations to the separate 21-column
@@ -202,26 +203,27 @@ hosted Actor supplies the model, so no customer AI-provider key is required.
 ### Setup
 
 1. Create an Apify Task for `nomad-agent/ai-job-fit-scorer` with exact build
-   `0.1.11`, complete bounded input, at most five evaluations, and a `$0.10`
+   `0.1.12`, complete bounded input, at most five evaluations, and a `$0.10`
    maximum total charge.
 2. Import
    [`ai-job-fit-scorer-to-google-sheets.blueprint.json`](ai-job-fit-scorer-to-google-sheets.blueprint.json)
    into a new Make scenario and select that Task in
    **Watch completed AI Job Search & Fit Task runs**.
-3. Keep `expectedbuild=0.1.11`, replace the spreadsheet placeholder, and
+3. Keep `expectedbuild=0.1.12`, replace the spreadsheet placeholder, and
    connect the Apify and Google Sheets modules.
 4. Import
    [`../shared/ai-job-fit-google-sheets-columns.csv`](../shared/ai-job-fit-google-sheets-columns.csv)
    into a tab named `Job Fit`.
 5. Leave the scenario off, run one bounded Task, and reconcile the exact Actor
-   run, v3 summary, charged events, fit rows, and named Sheet rows.
+   run, v4 summary, charged events, fit rows, and named Sheet rows.
 6. Activate only after the complete destination smoke succeeds.
 
 ### Verification boundary
 
-Offline tests cover unique modules, exact Actor/build filters, declared v3
-status and billing checks, `ai_failed` suppression, 21-column projection,
-`matchKey` update/append routes, and credential hygiene. Make's native filters
+Offline tests cover unique modules, exact Actor/build filters, declared v3/v4
+status and billing checks, separate v4 shortlist/audit routes,
+`ai_failed` suppression, 21-column projection, `matchKey` update/append
+routes, and credential hygiene. Make's native filters
 do not prove a fully closed JSON object; the repository's n8n and Python tests
 remain the stronger local contract oracle. Actor canaries already recorded
 elsewhere do not prove this Make scenario or its named Google Sheets write.

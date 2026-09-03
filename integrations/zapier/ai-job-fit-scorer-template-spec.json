@@ -11,7 +11,7 @@
       "app": "Apify",
       "event": "Run Actor",
       "actor": "nomad-agent/ai-job-fit-scorer",
-      "build": "0.1.11",
+      "build": "0.1.12",
       "input": {
         "mode": "search",
         "search": {
@@ -52,6 +52,8 @@
           "workArrangementPreferencesComplete": true
         },
         "maxItems": 5,
+        "resultMode": "shortlist",
+        "minDeliveryScore": 2,
         "minRankToForward": 30,
         "recoverHolds": false,
         "aiConcurrency": 2
@@ -72,9 +74,10 @@
       "conditions": [
         "run.status == SUCCEEDED",
         "run.exitCode == 0",
-        "run.buildNumber == 0.1.11",
+        "run.buildNumber == 0.1.12",
         "row.schemaVersion == nomad-ai-job-fit-v1",
-        "row.evaluationStatus != ai_failed"
+        "row.evaluationStatus == scored",
+        "row.deliveryScore >= 2"
       ]
     },
     {
@@ -115,7 +118,8 @@
   "requiredLiveTests": [
     "successful exact-build bundled-search Actor task",
     "terminal status, exact build, and per-source provenance inspected",
-    "RUN-SUMMARY single job-fit-result charge and $0.25 owner-provider circuit breaker inspected manually because Zapier Apify action does not enforce the closed summary contract",
+    "RUN-SUMMARY v3 legacy or v4 result policy, counts, single job-fit-result charge, and $0.25 owner-provider circuit breaker inspected manually because Zapier Apify action does not enforce the closed summary contract",
+    "for v4 shortlist, every dataset row is scored and meets minDeliveryScore and chargedCount equals outputRows",
     "named Google Sheets row created",
     "same input rerun updates rather than duplicates",
     "partial-source and failed/ai_failed fixtures do not create unsafe writes"

@@ -13,7 +13,7 @@
           "y": 0,
           "name": "Watch completed AI Job Search & Fit Task runs"
         },
-        "notes": "Create an Apify Task for nomad-agent/ai-job-fit-scorer pinned to verified build 0.1.11, use the bounded search starter with maxItems=5, and set max total charge USD 0.10."
+        "notes": "Create an Apify Task for nomad-agent/ai-job-fit-scorer pinned to verified build 0.1.12, use the bounded shortlist starter with resultMode=shortlist, minDeliveryScore=2, maxItems=5, and maximum total charge USD 0.10."
       }
     },
     {
@@ -25,7 +25,7 @@
         "variables": [
           {
             "name": "expectedbuild",
-            "value": "0.1.11"
+            "value": "0.1.12"
           },
           {
             "name": "expectedactorid",
@@ -121,7 +121,7 @@
       "version": 1,
       "parameters": {},
       "filter": {
-        "name": "Require usable v3 output",
+        "name": "Require usable v3 or v4 output",
         "conditions": [
           [
             {
@@ -163,9 +163,79 @@
               "o": "number:equal"
             },
             {
+              "a": "{{3.data.algorithm.name}}",
+              "b": "scoring-v3",
+              "o": "text:equal"
+            },
+            {
+              "a": "{{3.data.status}}",
+              "b": "failed",
+              "o": "text:notequal"
+            },
+            {
+              "a": "{{3.data.ai.providerCostLimitUsd}}",
+              "b": 0.25,
+              "o": "number:equal"
+            },
+            {
+              "a": "{{3.data.ai.maxProviderAttempts}}",
+              "b": 2,
+              "o": "number:equal"
+            },
+            {
+              "a": "{{3.data.billing.eventName}}",
+              "b": "job-fit-result",
+              "o": "text:equal"
+            },
+            {
+              "a": "{{3.data.billing.unitPriceUsd}}",
+              "b": 0.02,
+              "o": "number:equal"
+            },
+            {
               "a": "{{3.data.schemaVersion}}",
               "b": "nomad-ai-job-fit-run-summary-v3",
               "o": "text:equal"
+            }
+          ],
+          [
+            {
+              "a": "{{1.status}}",
+              "b": "SUCCEEDED",
+              "o": "text:equal"
+            },
+            {
+              "a": "{{1.exitCode}}",
+              "b": 0,
+              "o": "number:equal"
+            },
+            {
+              "a": "{{1.actId}}",
+              "b": "{{2.expectedactorid}}",
+              "o": "text:equal"
+            },
+            {
+              "a": "{{1.buildNumber}}",
+              "b": "{{2.expectedbuild}}",
+              "o": "text:equal"
+            },
+            {
+              "a": "{{1.defaultDatasetId}}",
+              "o": "exist"
+            },
+            {
+              "a": "{{1.output.runSummary}}",
+              "o": "exist"
+            },
+            {
+              "a": "{{2.googlespreadsheetid}}",
+              "b": "REPLACE_WITH_GOOGLE_SPREADSHEET_ID",
+              "o": "text:notequal"
+            },
+            {
+              "a": "{{3.statusCode}}",
+              "b": 200,
+              "o": "number:equal"
             },
             {
               "a": "{{3.data.algorithm.name}}",
@@ -196,6 +266,137 @@
               "a": "{{3.data.billing.unitPriceUsd}}",
               "b": 0.02,
               "o": "number:equal"
+            },
+            {
+              "a": "{{3.data.schemaVersion}}",
+              "b": "nomad-ai-job-fit-run-summary-v4",
+              "o": "text:equal"
+            },
+            {
+              "a": "{{3.data.parameters.resultMode}}",
+              "b": "shortlist",
+              "o": "text:equal"
+            },
+            {
+              "a": "{{3.data.parameters.minDeliveryScore}}",
+              "o": "exist"
+            },
+            {
+              "a": "{{3.data.counts.staticDropped}}",
+              "o": "exist"
+            },
+            {
+              "a": "{{3.data.counts.staticHeld}}",
+              "o": "exist"
+            },
+            {
+              "a": "{{3.data.counts.aiScored}}",
+              "o": "exist"
+            },
+            {
+              "a": "{{3.data.counts.resultFilteredOut}}",
+              "o": "exist"
+            }
+          ],
+          [
+            {
+              "a": "{{1.status}}",
+              "b": "SUCCEEDED",
+              "o": "text:equal"
+            },
+            {
+              "a": "{{1.exitCode}}",
+              "b": 0,
+              "o": "number:equal"
+            },
+            {
+              "a": "{{1.actId}}",
+              "b": "{{2.expectedactorid}}",
+              "o": "text:equal"
+            },
+            {
+              "a": "{{1.buildNumber}}",
+              "b": "{{2.expectedbuild}}",
+              "o": "text:equal"
+            },
+            {
+              "a": "{{1.defaultDatasetId}}",
+              "o": "exist"
+            },
+            {
+              "a": "{{1.output.runSummary}}",
+              "o": "exist"
+            },
+            {
+              "a": "{{2.googlespreadsheetid}}",
+              "b": "REPLACE_WITH_GOOGLE_SPREADSHEET_ID",
+              "o": "text:notequal"
+            },
+            {
+              "a": "{{3.statusCode}}",
+              "b": 200,
+              "o": "number:equal"
+            },
+            {
+              "a": "{{3.data.algorithm.name}}",
+              "b": "scoring-v3",
+              "o": "text:equal"
+            },
+            {
+              "a": "{{3.data.status}}",
+              "b": "failed",
+              "o": "text:notequal"
+            },
+            {
+              "a": "{{3.data.ai.providerCostLimitUsd}}",
+              "b": 0.25,
+              "o": "number:equal"
+            },
+            {
+              "a": "{{3.data.ai.maxProviderAttempts}}",
+              "b": 2,
+              "o": "number:equal"
+            },
+            {
+              "a": "{{3.data.billing.eventName}}",
+              "b": "job-fit-result",
+              "o": "text:equal"
+            },
+            {
+              "a": "{{3.data.billing.unitPriceUsd}}",
+              "b": 0.02,
+              "o": "number:equal"
+            },
+            {
+              "a": "{{3.data.schemaVersion}}",
+              "b": "nomad-ai-job-fit-run-summary-v4",
+              "o": "text:equal"
+            },
+            {
+              "a": "{{3.data.parameters.resultMode}}",
+              "b": "audit",
+              "o": "text:equal"
+            },
+            {
+              "a": "{{3.data.parameters.minDeliveryScore}}",
+              "o": "exist"
+            },
+            {
+              "a": "{{3.data.counts.staticDropped}}",
+              "o": "exist"
+            },
+            {
+              "a": "{{3.data.counts.staticHeld}}",
+              "o": "exist"
+            },
+            {
+              "a": "{{3.data.counts.aiScored}}",
+              "o": "exist"
+            },
+            {
+              "a": "{{3.data.counts.resultFilteredOut}}",
+              "b": 0,
+              "o": "number:equal"
             }
           ]
         ]
@@ -220,9 +421,81 @@
       "version": 1,
       "parameters": {},
       "filter": {
-        "name": "Require successful fit row",
+        "name": "Require policy-compatible fit row",
         "conditions": [
           [
+            {
+              "a": "{{3.data.schemaVersion}}",
+              "b": "nomad-ai-job-fit-run-summary-v3",
+              "o": "text:equal"
+            },
+            {
+              "a": "{{4.schemaVersion}}",
+              "b": "nomad-ai-job-fit-v1",
+              "o": "text:equal"
+            },
+            {
+              "a": "{{4.scoring.algorithm}}",
+              "b": "scoring-v3",
+              "o": "text:equal"
+            },
+            {
+              "a": "{{4.evaluationStatus}}",
+              "b": "ai_failed",
+              "o": "text:notequal"
+            },
+            {
+              "a": "{{4.matchKey}}",
+              "o": "exist"
+            }
+          ],
+          [
+            {
+              "a": "{{3.data.schemaVersion}}",
+              "b": "nomad-ai-job-fit-run-summary-v4",
+              "o": "text:equal"
+            },
+            {
+              "a": "{{3.data.parameters.resultMode}}",
+              "b": "shortlist",
+              "o": "text:equal"
+            },
+            {
+              "a": "{{4.schemaVersion}}",
+              "b": "nomad-ai-job-fit-v1",
+              "o": "text:equal"
+            },
+            {
+              "a": "{{4.scoring.algorithm}}",
+              "b": "scoring-v3",
+              "o": "text:equal"
+            },
+            {
+              "a": "{{4.evaluationStatus}}",
+              "b": "scored",
+              "o": "text:equal"
+            },
+            {
+              "a": "{{4.deliveryScore}}",
+              "b": "{{3.data.parameters.minDeliveryScore}}",
+              "o": "number:greaterorequal"
+            },
+            {
+              "a": "{{4.matchKey}}",
+              "o": "exist"
+            }
+          ],
+          [
+            {
+              "a": "{{3.data.schemaVersion}}",
+              "b": "nomad-ai-job-fit-run-summary-v4",
+              "o": "text:equal"
+            },
+            {
+              "a": "{{3.data.parameters.resultMode}}",
+              "b": "audit",
+              "o": "text:equal"
+            },
             {
               "a": "{{4.schemaVersion}}",
               "b": "nomad-ai-job-fit-v1",
@@ -340,7 +613,7 @@
           "y": 0,
           "name": "Project evidence-gated fit row"
         },
-        "notes": "Make filters can validate declared values but not a fully closed JSON object. Keep the n8n/Python contract tests as the stronger local oracle."
+        "notes": "Make filters validate v3 legacy rows and v4 shortlist/audit declarations but cannot prove a fully closed JSON object or aggregate count arithmetic. Keep the n8n/Python contract tests as the stronger local oracle."
       }
     },
     {

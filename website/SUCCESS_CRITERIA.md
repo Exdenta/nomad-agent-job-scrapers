@@ -19,13 +19,15 @@ are separate proof layers.
 ## 2. Claim and contract accuracy
 
 - Current Store defaults are labeled separately from older integration-tested
-  pins: LinkedIn `1.0.6` versus `1.0.2`, EURAXESS `1.0.20` versus `1.0.16`, and
-  scorer `0.1.11` for both, as observed on 2026-09-03.
-- The scorer price is stated only as `$0.02 per successful retained evaluation`;
+  pins: LinkedIn `1.0.6` versus `1.0.2`, EURAXESS `1.0.20` versus `1.0.16`,
+  and scorer documentation build `0.1.13` versus integration-tested runtime
+  `0.1.12`, as observed on 2026-09-03.
+- The scorer price is stated as `$0.02` per returned shortlist row or retained
+  non-failure audit row;
   no unsupported accuracy, customer, adoption, savings, or speed claim appears.
-- `nomad-agent-job-v1`, `null` versus `[]`, exact-build, `RUN-SUMMARY`, partial
-  failure, dataset reconciliation, and named-destination boundaries remain
-  explicit.
+- `nomad-agent-job-v1`, `null` versus `[]`, exact-build, scorer
+  shortlist/audit semantics, `RUN-SUMMARY`, partial failure, dataset
+  reconciliation, and named-destination boundaries remain explicit.
 - n8n/Make artifacts are never described as publicly listed, hosted-import
   tested, or destination-verified unless the corresponding evidence changes.
 - The project states its non-affiliation with LinkedIn, EURAXESS, and job

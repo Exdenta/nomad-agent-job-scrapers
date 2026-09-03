@@ -37,8 +37,8 @@
       <section class="detail-hero">
         <p class="detail-eyebrow">Candidate-specific job decision support</p>
         <h1>AI Job Search &amp; Fit Scorer</h1>
-        <p class="detail-lede">Turn one candidate profile or résumé into an evidence-gated developer-job shortlist. Search ten supported public sources in one run, or score your own normalized jobs, without supplying a customer model key.</p>
-        <div class="detail-badges"><span class="detail-badge">Store + integration-tested build 0.1.11</span><span class="detail-badge">$0.02 per successful retained result</span><span class="detail-badge">nomad-ai-job-fit-v1</span></div>
+        <p class="detail-lede">Search ten public developer-job sources—or score your own jobs—against one résumé or profile. Get a gate-aware shortlist with fit evidence, skill gaps, hard-requirement checks, and application links.</p>
+        <div class="detail-badges"><span class="detail-badge">Public docs 0.1.13 · verified runtime 0.1.12</span><span class="detail-badge">$0.02 per returned shortlist result</span><span class="detail-badge">nomad-ai-job-fit-v1</span></div>
         <div class="detail-actions"><a class="button button-dark" href="https://apify.com/nomad-agent/ai-job-fit-scorer?utm_source=nomad-agent-job-scrapers&amp;utm_medium=owned-site&amp;utm_campaign=actor-discovery&amp;utm_content=detail-ai-job-fit-scorer" target="_blank" rel="noopener noreferrer" data-event="actor_cta_click" data-actor="ai-job-fit-scorer" data-placement="detail-ai-job-fit-scorer">Open the scorer on Apify ↗</a><a class="button button-outline" href="/guides/ai-job-fit-scoring-api" data-event="guide_cta_click" data-actor="ai-job-fit-scorer" data-placement="detail-scorer-guide">Build with the API</a></div>
       </section>
       <div class="detail-layout">
@@ -46,6 +46,7 @@
           <section class="detail-panel">
             <h2>What one run does</h2>
             <p>In <code>search</code> mode, the Actor searches the selected sources, normalizes and deduplicates the returned jobs, then evaluates them for one candidate. In <code>score-jobs</code> mode, it accepts complete <code>nomad-agent-job-v1</code> records from a JSON array, immutable dataset ID, or exact successful upstream run.</p>
+            <p>Default <code>shortlist</code> mode returns only <code>scored</code> rows meeting the gate-aware delivery threshold. <code>audit</code> mode retains drops, holds, and failures. Every v4 run summary reports the evaluated, dropped, held, scored, failed, filtered, and output counts.</p>
             <p>Each retained evaluation carries a raw 0–100 fit score, a gate-adjusted 0–5 delivery score, recommendation, hard-requirement evidence, gap summary, source provenance, and stable keys. It is decision support: it does not apply to jobs, send alerts, learn from clicks, or make hiring decisions.</p>
           </section>
           <section class="detail-panel">
@@ -65,6 +66,8 @@
     "remoteLocations": ["European Union"]
   },
   "maxItems": 5,
+  "resultMode": "shortlist",
+  "minDeliveryScore": 2,
   "minRankToForward": 30,
   "maxAiItems": 5
 }</code></pre>
@@ -72,20 +75,20 @@
           </section>
           <section class="detail-panel">
             <h2>Consume the exact result safely</h2>
-            <ol><li>Start <code>nomad-agent/ai-job-fit-scorer</code> with build <code>0.1.11</code>, explicit input, item cap, and total charge cap.</li><li>Poll only the returned run ID. Continue only for terminal <code>SUCCEEDED</code>, exit code <code>0</code>, and the requested build.</li><li>Read that run’s <code>RUN-SUMMARY</code> and require <code>nomad-ai-job-fit-run-summary-v3</code>, scoring v3, the declared billing meter, and bounded provider guards.</li><li>Fetch that run’s default dataset and reconcile its row count with <code>counts.outputRows</code>.</li><li>Skip <code>ai_failed</code> rows. Upsert successful candidate-specific evaluations by <code>matchKey</code>, not the source-only <code>jobKey</code>.</li></ol>
+            <ol><li>Start <code>nomad-agent/ai-job-fit-scorer</code> with build <code>0.1.12</code>, explicit input, item cap, and total charge cap.</li><li>Poll only the returned run ID. Continue only for terminal <code>SUCCEEDED</code>, exit code <code>0</code>, and the requested build.</li><li>Read that run’s <code>RUN-SUMMARY</code> and require scorer v4, scoring v3, valid result-policy counts, the declared billing meter, and bounded provider guards.</li><li>Fetch that run’s default dataset and reconcile its row count with <code>counts.outputRows</code>.</li><li>In shortlist mode require every row to be scored and meet <code>minDeliveryScore</code>; in audit mode require zero filtered rows. Upsert retained candidate-specific evaluations by <code>matchKey</code>, not the source-only <code>jobKey</code>.</li></ol>
           </section>
           <section class="detail-panel">
             <h2>Pricing and privacy boundaries</h2>
-            <ul><li>The public contract records one <code>job-fit-result</code> event at $0.02 per successful retained evaluation; an <code>ai_failed</code> row is not charged as a successful result.</li><li>Résumé content is processed in memory, but the original Actor input or upload remains subject to the Apify account’s configured retention. Extracted evidence follows the configured provider path with data collection denied; this is not a zero-data-retention claim.</li><li>Public sources may change, block, rate-limit, or omit fields. A verified zero-row source can be clean; an unverified empty or total source failure must fail closed.</li></ul>
+            <ul><li>Shortlist mode charges $0.02 only for returned scored rows meeting the threshold. Audit mode charges retained non-failure decisions, including drops and holds; <code>ai_failed</code> remains uncharged.</li><li>Résumé content is processed in memory, but the original Actor input or upload remains subject to the Apify account’s configured retention. Extracted evidence follows the configured provider path with data collection denied; this is not a zero-data-retention claim.</li><li>Public sources may change, block, rate-limit, or omit fields. A verified zero-row source can be clean; an unverified empty or total source failure must fail closed.</li></ul>
           </section>
           <section class="detail-panel detail-note">
             <h2>Verified proof—and what it does not prove</h2>
-            <p>On 2026-09-03, immutable build <code>0.1.11</code> passed a fresh Console-form run and a bounded fake-profile canary. The canary used LinkedIn, remote boards, and JustJoinIT; all three adapters returned jobs, one evaluation was retained, and one $0.02 result event reconciled with the warning-free v3 summary.</p>
+            <p>On 2026-09-03, immutable runtime build <code>0.1.12</code> passed v4 shortlist filtering, audit retention, a scored inline result, and a three-source default search. In the default search, all three adapters succeeded, three jobs were scored, two were filtered, and the one delivery-3 result reconciled with one $0.02 event. Documentation-only build <code>0.1.13</code> then passed a zero-charge exact-build smoke with the same runtime image.</p>
             <p>This proves the immutable Actor and dataset path. It does not prove hosted MCP exposure, importing an n8n or Make artifact, building a Zap, a schedule firing naturally, or a named Google Sheet receiving a row.</p>
           </section>
           <section class="detail-panel">
             <h2>Troubleshooting</h2>
-            <ul><li><strong>No output:</strong> distinguish a validated <code>empty</code> summary from missing descriptions, all-source failure, or a non-terminal run.</li><li><strong>Duplicate or overwritten candidates:</strong> the destination probably keyed on <code>jobKey</code>; switch to candidate-specific <code>matchKey</code>.</li><li><strong>Unexpected spend:</strong> stop using <code>latest</code>, lower <code>maxItems</code> and <code>maxAiItems</code>, and set the caller’s maximum total charge explicitly.</li><li><strong>Different results:</strong> compare candidate snapshot, source build, search provenance, scoring version, and evidence—not only the displayed score.</li></ul>
+            <ul><li><strong>No output:</strong> inspect v4 <code>resultFilteredOut</code> before assuming nothing was evaluated; then distinguish a valid filtered/clean-empty result from source failure or a non-terminal run.</li><li><strong>Duplicate or overwritten candidates:</strong> the destination probably keyed on <code>jobKey</code>; switch to candidate-specific <code>matchKey</code>.</li><li><strong>Unexpected spend:</strong> stop using <code>latest</code>, lower <code>maxItems</code> and <code>maxAiItems</code>, choose shortlist unless the complete audit is needed, and set the caller’s maximum total charge explicitly.</li><li><strong>Different results:</strong> compare candidate snapshot, source build, search provenance, scoring version, and evidence—not only the displayed score.</li></ul>
           </section>
         </div>
         <aside class="detail-aside" aria-label="AI job fit scorer resources">

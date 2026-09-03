@@ -55,8 +55,8 @@
           </section>
           <section class="detail-panel">
             <h2>AI Job Search &amp; Fit Scorer</h2>
-            <p>Use the scorer when the output must be candidate-specific. It can search ten supported developer-job sources or accept supplied normalized jobs, then returns fit evidence, hard-requirement gates, gaps, a raw 0–100 fit score, and a gate-adjusted 0–5 delivery score.</p>
-            <ul><li><strong>Supported exact build:</strong> <code>0.1.11</code>.</li><li><strong>Meter:</strong> $0.02 for each successful retained evaluation; the maintained five-result starter caps result charges at $0.10.</li><li><strong>Separate contract:</strong> output is <code>nomad-ai-job-fit-v1</code>; candidate-safe destinations upsert by <code>matchKey</code>, not <code>jobKey</code>.</li></ul>
+            <p>Use the scorer when the output must be candidate-specific. It can search ten supported developer-job sources or accept supplied normalized jobs, then returns fit evidence, hard-requirement gates, gaps, a raw 0–100 fit score, and a gate-adjusted 0–5 delivery score. Default shortlist mode filters out holds, drops, failures, and scored rows below the delivery threshold; audit mode retains the complete decision set.</p>
+            <ul><li><strong>Supported integration runtime:</strong> <code>0.1.12</code>; public documentation build <code>0.1.13</code> uses the same runtime image.</li><li><strong>Meter:</strong> $0.02 for each returned shortlist row or retained non-failure audit row; the maintained five-result starter caps result charges at $0.10.</li><li><strong>Separate contract:</strong> output is <code>nomad-ai-job-fit-v1</code>; candidate-safe destinations upsert by <code>matchKey</code>, not <code>jobKey</code>.</li></ul>
             <div class="detail-actions"><a class="button button-dark" href="/actors/ai-job-fit-scorer" data-event="product_page_click" data-actor="ai-job-fit-scorer" data-placement="actors-hub-scorer">Explore fit scoring</a></div>
           </section>
           <section class="detail-panel detail-note">
