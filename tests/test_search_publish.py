@@ -567,6 +567,21 @@ class SearchPublishTests(unittest.TestCase):
         self.assertIn("/v1/urlInspection/index:inspect", script)
         self.assertNotIn("indexing.googleapis.com", script)
 
+    def test_pull_request_quality_workflow_cannot_deploy_or_notify(self) -> None:
+        root = Path(__file__).resolve().parents[1]
+        workflow = (
+            root / ".github" / "workflows" / "quality.yml"
+        ).read_text(encoding="utf-8")
+
+        self.assertIn("pull_request:", workflow)
+        self.assertIn("contents: read", workflow)
+        self.assertNotIn("id-token: write", workflow)
+        self.assertIn("python3 scripts/search_publish.py prepare", workflow)
+        self.assertIn("git status --porcelain=v1", workflow)
+        self.assertIn("python3 -m unittest discover -s tests -v", workflow)
+        self.assertNotIn("firebase deploy", workflow)
+        self.assertNotIn("scripts/search_publish.py notify", workflow)
+
 
 if __name__ == "__main__":
     unittest.main()
