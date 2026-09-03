@@ -167,7 +167,13 @@ Prove create and update behavior before enabling the schedule.
 Immutable build `0.1.11` passed the fresh-form candidate/search contract on
 2026-09-03:
 
-- fake-profile search run `UBmk8XgdqimMbJf89`: build `0.1.11`
+- Console default run `6hV5OdaNo5GsBwWNK`: the restored example form supplied
+  the clearly labeled fake candidate, three bounded sources, and a three-result
+  cap; build `0.1.11` (`MorUFN0ZFQjpmpytr`) succeeded with exit code `0`, all
+  three sources returned nine normalized unique jobs, three AI-scored rows were
+  rendered in the Console dataset, and three `job-fit-result` events exactly
+  consumed the configured `$0.06` maximum charge with no summary warnings;
+- immutable fake-profile canary `UBmk8XgdqimMbJf89`: build `0.1.11`
   (`MorUFN0ZFQjpmpytr`), all three selected sources (`linkedin`,
   `remote_boards`, `justjoinit`) succeeded, nine normalized unique jobs were
   found, the one-result canary cap retained one AI-scored row, and one $0.02

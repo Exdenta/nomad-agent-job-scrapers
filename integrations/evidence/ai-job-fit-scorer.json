@@ -5,9 +5,37 @@
     "buildNumber": "0.1.11",
     "buildId": "MorUFN0ZFQjpmpytr"
   },
-  "recordedAt": "2026-09-03T16:51:04Z",
+  "recordedAt": "2026-09-03T17:10:32Z",
   "actorCanaries": {
     "defaultDemo": {
+      "runId": "6hV5OdaNo5GsBwWNK",
+      "origin": "DEVELOPMENT",
+      "resolvedBuildNumber": "0.1.11",
+      "resolvedBuildId": "MorUFN0ZFQjpmpytr",
+      "status": "SUCCEEDED",
+      "exitCode": 0,
+      "datasetId": "hHx0ThzgNVAMTsrKd",
+      "keyValueStoreId": "UdNXKh2Uxfn1wI849",
+      "maxTotalChargeUsd": 0.06,
+      "sources": ["linkedin", "remote_boards", "justjoinit"],
+      "sourceStatuses": {
+        "linkedin": "succeeded",
+        "remote_boards": "succeeded",
+        "justjoinit": "succeeded"
+      },
+      "sourceRawRows": 9,
+      "sourceNormalizedRows": 9,
+      "sourceUniqueRows": 9,
+      "datasetRows": 3,
+      "evaluationStatuses": ["scored"],
+      "chargedEventCounts": {"job-fit-result": 3},
+      "runSummarySchema": "nomad-ai-job-fit-run-summary-v3",
+      "provider": "openrouter:OpenAI",
+      "model": "openai/gpt-5.6-luna",
+      "providerCostUsd": 0.0034376,
+      "warnings": []
+    },
+    "immutableCanary": {
       "runId": "UBmk8XgdqimMbJf89",
       "resolvedBuildNumber": "0.1.11",
       "resolvedBuildId": "MorUFN0ZFQjpmpytr",
@@ -142,7 +170,7 @@
         },
         {
           "layer": "actor-run",
-          "summary": "Exact build 0.1.11 passed the three-source fake-profile default canary; predecessor 0.1.10 passed supplied-job, two-source, and all-10-source canaries."
+          "summary": "Exact build 0.1.11 passed both the fresh-form Console default run and an immutable three-source fake-profile canary; predecessor 0.1.10 passed supplied-job, two-source, and all-10-source canaries."
         }
       ],
       "blockers": [
@@ -168,7 +196,7 @@
         },
         {
           "layer": "actor-run",
-          "summary": "Exact build 0.1.11 passed the three-source fake-profile default canary; predecessor 0.1.10 passed supplied-job, two-source, and all-10-source canaries."
+          "summary": "Exact build 0.1.11 passed both the fresh-form Console default run and an immutable three-source fake-profile canary; predecessor 0.1.10 passed supplied-job, two-source, and all-10-source canaries."
         }
       ],
       "blockers": [
@@ -194,7 +222,7 @@
         },
         {
           "layer": "actor-run",
-          "summary": "Exact build 0.1.11 passed the three-source fake-profile default canary; predecessor 0.1.10 passed supplied-job, two-source, and all-10-source canaries."
+          "summary": "Exact build 0.1.11 passed both the fresh-form Console default run and an immutable three-source fake-profile canary; predecessor 0.1.10 passed supplied-job, two-source, and all-10-source canaries."
         }
       ],
       "blockers": [
@@ -220,7 +248,7 @@
         },
         {
           "layer": "actor-run",
-          "summary": "Exact build 0.1.11 passed the three-source fake-profile default canary; predecessor 0.1.10 passed supplied-job, two-source, and all-10-source canaries."
+          "summary": "Exact build 0.1.11 passed both the fresh-form Console default run and an immutable three-source fake-profile canary; predecessor 0.1.10 passed supplied-job, two-source, and all-10-source canaries."
         }
       ],
       "blockers": [

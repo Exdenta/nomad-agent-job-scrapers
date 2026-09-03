@@ -277,12 +277,29 @@ process.stdout.write(JSON.stringify(result));
                 item["runId"] for item in evidence["actorCanaries"].values()
             },
             {
+                "6hV5OdaNo5GsBwWNK",
                 "UBmk8XgdqimMbJf89",
                 "KuuEnCoMfFbFj3z5R",
                 "udTJyz3zJWOkKSNUS",
                 "CEofFmV6UEb82yi7M",
                 "uqwj8p5qPU74JUyEo",
             },
+        )
+        default_demo = evidence["actorCanaries"]["defaultDemo"]
+        self.assertEqual(default_demo["runId"], "6hV5OdaNo5GsBwWNK")
+        self.assertEqual(default_demo["origin"], "DEVELOPMENT")
+        self.assertEqual(default_demo["resolvedBuildNumber"], BUILD)
+        self.assertEqual(default_demo["resolvedBuildId"], BUILD_ID)
+        self.assertEqual(default_demo["datasetRows"], 3)
+        self.assertEqual(default_demo["maxTotalChargeUsd"], 0.06)
+        self.assertEqual(default_demo["chargedEventCounts"], {"job-fit-result": 3})
+        self.assertEqual(
+            set(default_demo["sourceStatuses"].values()), {"succeeded"}
+        )
+        self.assertEqual(default_demo["warnings"], [])
+        self.assertEqual(
+            evidence["actorCanaries"]["immutableCanary"]["runId"],
+            "UBmk8XgdqimMbJf89",
         )
         for channel in evidence["channels"].values():
             self.assertTrue(channel["artifactValidated"])
