@@ -5,7 +5,7 @@
     "buildNumber": "0.1.10",
     "buildId": "XOOtUsksU2uE89H6l"
   },
-  "recordedAt": "2026-09-03T09:43:31.284Z",
+  "recordedAt": "2026-09-03T09:59:16Z",
   "actorCanaries": {
     "suppliedJob": {
       "runId": "KuuEnCoMfFbFj3z5R",
@@ -36,6 +36,51 @@
       "provider": "openrouter:OpenAI",
       "model": "openai/gpt-5.6-luna",
       "providerCostUsd": 0.0010194
+    },
+    "allSourcesLatest": {
+      "runId": "CEofFmV6UEb82yi7M",
+      "requestedBuildTag": "latest",
+      "resolvedBuildNumber": "0.1.10",
+      "resolvedBuildId": "XOOtUsksU2uE89H6l",
+      "status": "SUCCEEDED",
+      "exitCode": 0,
+      "datasetId": "JJBKoK8mhiqKnu6dW",
+      "keyValueStoreId": "DnaHw4RkhmoyPMwMc",
+      "sources": [
+        "linkedin",
+        "remote_boards",
+        "builtin",
+        "justjoinit",
+        "nofluffjobs",
+        "hackernews",
+        "ycombinator_was",
+        "wttj",
+        "infojobs",
+        "tecnoempleo"
+      ],
+      "sourceStatuses": {
+        "linkedin": "succeeded",
+        "remote_boards": "succeeded",
+        "builtin": "succeeded",
+        "justjoinit": "succeeded",
+        "nofluffjobs": "succeeded",
+        "hackernews": "succeeded",
+        "ycombinator_was": "succeeded",
+        "wttj": "succeeded",
+        "infojobs": "succeeded",
+        "tecnoempleo": "succeeded"
+      },
+      "sourceRawRows": 12,
+      "sourceNormalizedRows": 12,
+      "sourceUniqueRows": 8,
+      "datasetRows": 1,
+      "evaluationStatuses": ["scored"],
+      "chargedEventCounts": {"job-fit-result": 1},
+      "runSummarySchema": "nomad-ai-job-fit-run-summary-v3",
+      "provider": "openrouter:OpenAI",
+      "model": "openai/gpt-5.6-luna",
+      "providerCostUsd": 0.0012702,
+      "warnings": []
     },
     "restStarter": {
       "runId": "uqwj8p5qPU74JUyEo",
@@ -71,7 +116,7 @@
         },
         {
           "layer": "actor-run",
-          "summary": "Exact build 0.1.10 passed supplied-job and live two-source search canaries with reconciled datasets, summaries, and charges."
+          "summary": "Exact build 0.1.10 passed supplied-job, two-source, and all-10-source latest canaries with reconciled datasets, summaries, and charges."
         }
       ],
       "blockers": [
@@ -97,7 +142,7 @@
         },
         {
           "layer": "actor-run",
-          "summary": "Exact build 0.1.10 passed supplied-job and live two-source search canaries with reconciled datasets, summaries, and charges."
+          "summary": "Exact build 0.1.10 passed supplied-job, two-source, and all-10-source latest canaries with reconciled datasets, summaries, and charges."
         }
       ],
       "blockers": [
@@ -123,7 +168,7 @@
         },
         {
           "layer": "actor-run",
-          "summary": "Exact build 0.1.10 passed supplied-job and live two-source search canaries with reconciled datasets, summaries, and charges."
+          "summary": "Exact build 0.1.10 passed supplied-job, two-source, and all-10-source latest canaries with reconciled datasets, summaries, and charges."
         }
       ],
       "blockers": [
@@ -149,7 +194,7 @@
         },
         {
           "layer": "actor-run",
-          "summary": "Exact build 0.1.10 passed supplied-job and live two-source search canaries with reconciled datasets, summaries, and charges."
+          "summary": "Exact build 0.1.10 passed supplied-job, two-source, and all-10-source latest canaries with reconciled datasets, summaries, and charges."
         }
       ],
       "blockers": [

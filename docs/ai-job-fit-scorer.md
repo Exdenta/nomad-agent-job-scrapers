@@ -137,14 +137,18 @@ Prove create and update behavior before enabling the schedule.
 
 ## Current live proof
 
-Immutable build `0.1.10` passed two bounded canaries and the shipped REST
-starter on 2026-09-03:
+Immutable build `0.1.10` passed supplied-job, two-source, all-10-source, and
+shipped-REST-client canaries on 2026-09-03:
 
 - supplied-job run `KuuEnCoMfFbFj3z5R`: one scored row and one reconciled
   `job-fit-result` event;
 - LinkedIn + remote-board search run `udTJyz3zJWOkKSNUS`: both sources returned
   one normalized posting, the cap retained one scored row, and one event was
   reconciled;
+- public `latest` all-source run `CEofFmV6UEb82yi7M`: `latest` resolved to
+  build `0.1.10` (`XOOtUsksU2uE89H6l`); all ten adapters reported
+  `succeeded`, 12 normalized rows became 8 unique jobs, the cap retained one
+  scored row, one event was reconciled, and the v3 summary had no warnings;
 - REST starter run `uqwj8p5qPU74JUyEo`: the repository's Node client itself
   started, polled, settled, and contract-validated one search result.
 

@@ -279,6 +279,7 @@ process.stdout.write(JSON.stringify(result));
             {
                 "KuuEnCoMfFbFj3z5R",
                 "udTJyz3zJWOkKSNUS",
+                "CEofFmV6UEb82yi7M",
                 "uqwj8p5qPU74JUyEo",
             },
         )
@@ -302,6 +303,7 @@ process.stdout.write(JSON.stringify(result));
             "No zero-data-retention claim",
             "not hosted MCP",
             "named destination write",
+            "all ten adapters",
         ):
             self.assertIn(required, normalized)
 
