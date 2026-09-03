@@ -8,6 +8,7 @@ on:
       - ".firebaserc"
       - ".github/workflows/deploy-website.yml"
       - "firebase.json"
+      - "integrations/shared/nomad-ai-job-fit-*.schema.json"
       - "scripts/search_publish.py"
       - "tests/test_search_publish.py"
       - "tests/test_website.py"
@@ -56,6 +57,15 @@ jobs:
           INDEXNOW_KEY: ${{ secrets.INDEXNOW_KEY }}
         run: python3 scripts/search_publish.py prepare
 
+      - name: Verify generated public artifacts are committed
+        run: |
+          generated_status="$(git status --porcelain=v1 --untracked-files=all -- website/sitemap.xml website/robots.txt website/contracts)"
+          if [ -n "$generated_status" ]; then
+            echo "Generated search artifacts differ from the committed files:"
+            echo "$generated_status"
+            exit 1
+          fi
+
       - name: Run repository tests
         run: python3 -m unittest discover -s tests -v
 
@@ -82,3 +92,13 @@ jobs:
         env:
           INDEXNOW_KEY: ${{ secrets.INDEXNOW_KEY }}
         run: python3 scripts/search_publish.py notify
+
+      - name: Record deployment evidence
+        run: |
+          {
+            echo "## Nomad Agent website deployment"
+            echo "- Commit: \`${GITHUB_SHA}\`"
+            echo "- Canonical origin: https://nomadagent.dev/"
+            echo "- Live HTML: byte-matched before search notification"
+            echo "- Search notification: see the preceding step; acceptance is not indexing proof"
+          } >> "$GITHUB_STEP_SUMMARY"

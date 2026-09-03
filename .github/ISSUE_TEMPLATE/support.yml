@@ -1,0 +1,54 @@
+name: Integration support
+description: Report a reproducible problem with a public contract, example, or integration asset.
+title: "support: "
+labels:
+  - support
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping improve the public integration layer. Do not include tokens, credentials, résumés, applicant data, private datasets, or raw personal information.
+  - type: dropdown
+    id: surface
+    attributes:
+      label: Surface
+      options:
+        - LinkedIn Actor contract
+        - EURAXESS Actor contract
+        - AI Job Search & Fit Scorer contract
+        - n8n
+        - Make
+        - MCP
+        - REST API or webhook
+        - Airtable
+        - Zapier editor recipe
+        - Website or documentation
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Exact Actor build or asset revision
+      description: Use the immutable build number or repository commit when applicable.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: observed
+    attributes:
+      label: Observed behavior
+      description: Redact secrets and personal data. A compact error class or contract path is usually enough.
+    validations:
+      required: true
+  - type: checkboxes
+    id: privacy
+    attributes:
+      label: Privacy confirmation
+      options:
+        - label: I removed credentials, résumés, personal information, and private job records.
+          required: true

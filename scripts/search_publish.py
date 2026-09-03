@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+from dataclasses import dataclass
 from html.parser import HTMLParser
 import json
 import os
@@ -27,21 +28,51 @@ INDEXNOW_ENDPOINT = "https://api.indexnow.org/indexnow"
 INDEXNOW_KEY_PATTERN = re.compile(r"[A-Za-z0-9-]{8,128}\Z")
 SITEMAP_NAMESPACE = "http://www.sitemaps.org/schemas/sitemap/0.9"
 USER_AGENT = "nomad-agent-search-publisher/1.0"
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+SHARED_CONTRACT_DIR = PROJECT_ROOT / "integrations" / "shared"
+PUBLIC_CONTRACT_FILENAMES = (
+    "nomad-ai-job-fit-destination-v1.schema.json",
+    "nomad-ai-job-fit-run-summary-v3.schema.json",
+    "nomad-ai-job-fit-v1.schema.json",
+)
+ROBOTS_META_NAMES = {"robots", "googlebot", "bingbot"}
+
+
+def _robots_directives(value: str) -> set[str]:
+    return set(re.findall(r"[a-z0-9_-]+", value.lower()))
 
 
 class CanonicalParser(HTMLParser):
     def __init__(self) -> None:
         super().__init__(convert_charrefs=True)
         self.canonicals: list[str] = []
+        self.robots_directives: set[str] = set()
 
     def handle_starttag(
         self, tag: str, attrs: list[tuple[str, str | None]]
     ) -> None:
-        if tag != "link":
-            return
-        attributes = {key: value or "" for key, value in attrs}
-        if "canonical" in attributes.get("rel", "").lower().split():
-            self.canonicals.append(attributes.get("href", ""))
+        attributes = {key.lower(): value or "" for key, value in attrs}
+        if tag == "link":
+            if "canonical" in attributes.get("rel", "").lower().split():
+                self.canonicals.append(attributes.get("href", ""))
+        elif (
+            tag == "meta"
+            and attributes.get("name", "").lower() in ROBOTS_META_NAMES
+        ):
+            self.robots_directives.update(
+                _robots_directives(attributes.get("content", ""))
+            )
+
+    @property
+    def noindex(self) -> bool:
+        return "noindex" in self.robots_directives
+
+
+@dataclass(frozen=True)
+class FetchedResource:
+    body: bytes
+    content_type: str
+    x_robots_tag: str
 
 
 def normalize_site_url(raw: str) -> str:
@@ -63,7 +94,7 @@ def validate_canonical(url: str, site_url: str, source: Path) -> str:
     return url
 
 
-def discover_canonical_urls(site_dir: Path, site_url: str) -> list[str]:
+def discover_canonical_documents(site_dir: Path, site_url: str) -> dict[str, Path]:
     site_url = normalize_site_url(site_url)
     urls: dict[str, Path] = {}
     html_paths = sorted(site_dir.rglob("*.html"))
@@ -73,6 +104,12 @@ def discover_canonical_urls(site_dir: Path, site_url: str) -> list[str]:
     for html_path in html_paths:
         parser = CanonicalParser()
         parser.feed(html_path.read_text(encoding="utf-8"))
+        if parser.noindex:
+            if parser.canonicals:
+                raise ValueError(
+                    f"{html_path} is noindex and must not declare a canonical"
+                )
+            continue
         if len(parser.canonicals) != 1:
             raise ValueError(
                 f"{html_path} must contain exactly one canonical link; "
@@ -85,7 +122,15 @@ def discover_canonical_urls(site_dir: Path, site_url: str) -> list[str]:
             )
         urls[canonical] = html_path
 
-    return sorted(urls, key=lambda url: (url != site_url, url))
+    if not urls:
+        raise ValueError(f"no indexable HTML documents found under {site_dir}")
+    return dict(
+        sorted(urls.items(), key=lambda item: (item[0] != site_url, item[0]))
+    )
+
+
+def discover_canonical_urls(site_dir: Path, site_url: str) -> list[str]:
+    return list(discover_canonical_documents(site_dir, site_url))
 
 
 def render_sitemap(urls: Iterable[str]) -> str:
@@ -112,7 +157,35 @@ def validate_indexnow_key(key: str) -> str:
     return key
 
 
+def sync_public_contracts(
+    site_dir: Path,
+    site_url: str,
+    source_dir: Path = SHARED_CONTRACT_DIR,
+) -> list[Path]:
+    site_url = normalize_site_url(site_url)
+    destination_dir = site_dir / "contracts"
+    destination_dir.mkdir(parents=True, exist_ok=True)
+    published: list[Path] = []
+    for filename in PUBLIC_CONTRACT_FILENAMES:
+        source = source_dir / filename
+        content = source.read_bytes()
+        try:
+            schema = json.loads(content)
+        except json.JSONDecodeError as error:
+            raise ValueError(f"{source} is not valid JSON") from error
+        expected_id = urljoin(site_url, f"contracts/{filename}")
+        if schema.get("$id") != expected_id:
+            raise ValueError(
+                f"{source} $id must be the public contract URL {expected_id}"
+            )
+        destination = destination_dir / filename
+        destination.write_bytes(content)
+        published.append(destination)
+    return published
+
+
 def prepare(site_dir: Path, site_url: str, indexnow_key: str | None) -> list[str]:
+    sync_public_contracts(site_dir, site_url)
     urls = discover_canonical_urls(site_dir, site_url)
     (site_dir / "sitemap.xml").write_text(render_sitemap(urls), encoding="utf-8")
     (site_dir / "robots.txt").write_text(render_robots(site_url), encoding="utf-8")
@@ -146,7 +219,18 @@ def _response_summary(error: HTTPError) -> str:
     return f"HTTP {error.code}" + (f": {body}" if body else "")
 
 
-def fetch_text(url: str, attempts: int = 4) -> str:
+def _header_value(response: object, name: str) -> str:
+    headers = getattr(response, "headers", {})
+    get_all = getattr(headers, "get_all", None)
+    if callable(get_all):
+        values = get_all(name) or []
+        if values:
+            return ", ".join(values)
+    value = headers.get(name, "")
+    return value if isinstance(value, str) else str(value or "")
+
+
+def fetch_resource(url: str, attempts: int = 4) -> FetchedResource:
     last_error: Exception | None = None
     for attempt in range(attempts):
         request = Request(url, headers={"User-Agent": USER_AGENT})
@@ -156,12 +240,77 @@ def fetch_text(url: str, attempts: int = 4) -> str:
                     raise RuntimeError(f"GET {url} returned HTTP {response.status}")
                 if response.geturl() != url:
                     raise RuntimeError(f"GET {url} redirected to {response.geturl()}")
-                return response.read().decode("utf-8")
+                return FetchedResource(
+                    body=response.read(),
+                    content_type=_header_value(response, "Content-Type"),
+                    x_robots_tag=_header_value(response, "X-Robots-Tag"),
+                )
         except (HTTPError, URLError, OSError, RuntimeError) as error:
             last_error = error
             if attempt + 1 < attempts:
                 time.sleep(2**attempt)
     raise RuntimeError(f"live verification failed for {url}: {last_error}")
+
+
+def fetch_text(url: str, attempts: int = 4) -> str:
+    return fetch_resource(url, attempts=attempts).body.decode("utf-8")
+
+
+def verify_live_html(
+    url: str,
+    local_path: Path,
+    site_url: str,
+    attempts: int = 4,
+) -> None:
+    resource = fetch_resource(url, attempts=attempts)
+    media_type = resource.content_type.partition(";")[0].strip().lower()
+    if media_type != "text/html":
+        detail = resource.content_type or "missing"
+        raise RuntimeError(
+            f"live HTML {url} has Content-Type {detail!r}; expected text/html"
+        )
+
+    parser = CanonicalParser()
+    parser.feed(resource.body.decode("utf-8"))
+    if parser.noindex:
+        raise RuntimeError(f"live HTML {url} meta robots forbids indexing")
+    if "noindex" in _robots_directives(resource.x_robots_tag):
+        raise RuntimeError(f"live HTML {url} X-Robots-Tag forbids indexing")
+    if len(parser.canonicals) != 1:
+        raise RuntimeError(
+            f"live HTML {url} must contain exactly one canonical link; "
+            f"found {len(parser.canonicals)}"
+        )
+    live_canonical = validate_canonical(
+        parser.canonicals[0], normalize_site_url(site_url), Path(url)
+    )
+    if live_canonical != url:
+        raise RuntimeError(
+            f"live HTML {url} canonical does not match expected URL: "
+            f"{live_canonical}"
+        )
+    if resource.body != local_path.read_bytes():
+        raise RuntimeError(f"live HTML {url} does not match local bytes")
+
+
+def verify_live_contracts(
+    site_dir: Path,
+    site_url: str,
+    attempts: int = 4,
+) -> None:
+    site_url = normalize_site_url(site_url)
+    for filename in PUBLIC_CONTRACT_FILENAMES:
+        url = urljoin(site_url, f"contracts/{filename}")
+        resource = fetch_resource(url, attempts=attempts)
+        media_type = resource.content_type.partition(";")[0].strip().lower()
+        if media_type not in {"application/json", "application/schema+json"}:
+            detail = resource.content_type or "missing"
+            raise RuntimeError(
+                f"live contract {url} has Content-Type {detail!r}; expected JSON"
+            )
+        local_path = site_dir / "contracts" / filename
+        if resource.body != local_path.read_bytes():
+            raise RuntimeError(f"live contract {url} does not match local bytes")
 
 
 def submit_google_sitemap(site_url: str, sitemap_url: str, access_token: str) -> int:
@@ -357,7 +506,8 @@ def inspect(site_dir: Path, site_url: str) -> None:
 def notify(site_dir: Path, site_url: str, indexnow_key: str) -> None:
     site_url = normalize_site_url(site_url)
     key = validate_indexnow_key(indexnow_key)
-    canonical_urls = discover_canonical_urls(site_dir, site_url)
+    canonical_documents = discover_canonical_documents(site_dir, site_url)
+    canonical_urls = list(canonical_documents)
     local_sitemap = (site_dir / "sitemap.xml").read_text(encoding="utf-8")
     if parse_sitemap(local_sitemap) != canonical_urls:
         raise RuntimeError("local sitemap does not match the HTML canonical URLs")
@@ -366,8 +516,9 @@ def notify(site_dir: Path, site_url: str, indexnow_key: str) -> None:
     live_sitemap = fetch_text(sitemap_url)
     if parse_sitemap(live_sitemap) != canonical_urls:
         raise RuntimeError("live sitemap does not match the deployed canonical URLs")
-    for url in canonical_urls:
-        fetch_text(url)
+    for url, local_path in canonical_documents.items():
+        verify_live_html(url, local_path, site_url)
+    verify_live_contracts(site_dir, site_url)
 
     key_url = urljoin(site_url, "indexnow-key.txt")
     if fetch_text(key_url).strip() != key:

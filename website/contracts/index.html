@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Understand the versioned canonical job, flat destination, AI fit evaluation, and run-summary contracts used by Nomad Agent integrations." />
+    <meta name="robots" content="index,follow" />
+    <meta property="og:title" content="Normalized Job and Fit Scoring Contracts | Nomad Agent" />
+    <meta property="og:description" content="Stable identity, unknown-versus-empty semantics, source extensions, destination projections, and exact-run summaries." />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://nomadagent.dev/contracts" />
+    <meta property="og:image" content="https://nomadagent.dev/assets/nomad-agent-social-card.png" />
+    <meta property="og:image:alt" content="Nomad Agent job data for APIs, automations, and AI agents" />
+    <meta property="og:site_name" content="Nomad Agent" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:image:alt" content="Nomad Agent job data for APIs, automations, and AI agents" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Normalized Job and Fit Scoring Contracts | Nomad Agent" />
+    <meta name="twitter:description" content="Versioned schemas for source-linked jobs and candidate-specific evaluations." />
+    <meta name="twitter:image" content="https://nomadagent.dev/assets/nomad-agent-social-card.png" />
+    <title>Normalized Job and Fit Scoring Contracts | Nomad Agent</title>
+    <link rel="canonical" href="https://nomadagent.dev/contracts" />
+    <link rel="icon" type="image/svg+xml" href="/assets/mark.svg" />
+    <link rel="stylesheet" href="/styles.css" />
+    <link rel="stylesheet" href="/detail.css" />
+    <script type="application/ld+json">
+      {"@context":"https://schema.org","@graph":[{"@type":"WebPage","@id":"https://nomadagent.dev/contracts#webpage","url":"https://nomadagent.dev/contracts","name":"Normalized Job and Fit Scoring Contracts","description":"Versioned contracts for source-linked job records, destination projections, fit evaluations, and run summaries."},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://nomadagent.dev/"},{"@type":"ListItem","position":2,"name":"Contracts","item":"https://nomadagent.dev/contracts"}]}]}
+    </script>
+    <script defer src="/script.js"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">Skip to content</a>
+    <header class="topbar"><nav class="nav-container" aria-label="Primary navigation"><a class="brand" href="/" aria-label="Nomad Agent home"><img src="/assets/mark.svg" alt="" width="36" height="36" /><span>Nomad Agent</span></a><div class="nav-actions"><a class="nav-link" href="/actors">Actors</a><a class="nav-link" href="/integrations">Integrations</a><a class="nav-link" href="/guides">Guides</a><a class="nav-primary" href="https://github.com/Exdenta/nomad-agent-job-scrapers/blob/main/docs/contracts.md">View contract docs</a></div></nav></header>
+    <main class="detail-main" id="main-content">
+      <nav class="detail-breadcrumbs" aria-label="Breadcrumb"><a href="/">Home</a><span>/</span><span>Contracts</span></nav>
+      <section class="detail-hero"><p class="detail-eyebrow">Open interoperability layer</p><h1>Normalized job and fit-scoring contracts</h1><p class="detail-lede">Keep source jobs, table projections, candidate evaluations, and run outcomes separate. The contracts make identity, unknown facts, enrichment, retries, and delivery gates explicit.</p><div class="detail-actions"><a class="button button-dark" href="https://github.com/Exdenta/nomad-agent-job-scrapers/blob/main/docs/contracts.md" target="_blank" rel="noopener noreferrer" data-event="asset_cta_click" data-actor="all" data-placement="contracts-docs">Read the complete contract guide ↗</a><a class="button button-outline" href="/integrations/python" data-event="integration_page_click" data-actor="all" data-placement="contracts-python">Validate records locally</a></div></section>
+      <div class="detail-layout"><div class="detail-content">
+        <section class="detail-panel"><h2><code>nomad-agent-job-v1</code>: canonical source job</h2><p>LinkedIn and EURAXESS dataset items have exactly six top-level fields:</p><pre><code>schemaVersion, identity, data, custom, llm, raw</code></pre><ul><li><code>identity</code> retains source and external identity; derive <code>jobKey = source:externalId</code> for idempotent destinations.</li><li><code>data</code> carries normalized cross-source facts.</li><li><code>custom</code> carries a separately versioned source extension rather than forcing specialized evidence into generic fields.</li><li><code>llm</code> records optional enrichment/translation state and provenance.</li><li><code>raw</code> is optional source material and can correctly be <code>null</code> when raw output is disabled.</li></ul></section>
+        <section class="detail-panel"><h2>Unknown is not empty</h2><p><code>null</code> means a field is unknown or unavailable. <code>[]</code> means the source established that the list is empty. A populated array contains supported values. Preserve all three states through parsing, serialization, and destination mapping.</p><p>Static extraction, facts derived from descriptions, normalized values, optional LLM metadata, and raw source material are different evidence layers. Do not fill a missing requirement, language, contact, or salary because nearby prose makes it seem likely.</p></section>
+        <section class="detail-panel"><h2><code>nomad-agent-flat-job-v1</code>: table destination</h2><p>The shared 32-field flat projection supports Sheets, Airtable, CSV, and low-code tools. It serializes arrays and can include a bounded canonical JSON field, but it deliberately omits deep nested detail. It never replaces <code>nomad-agent-job-v1</code>.</p><p>Keep canonical records whenever downstream work needs nested requirements, EURAXESS taxonomy, source evidence, named contacts, raw descriptions, or provenance. The <a href="https://github.com/Exdenta/nomad-agent-job-scrapers/blob/main/integrations/shared/flat-job-v1.schema.json" target="_blank" rel="noopener noreferrer">flat schema is maintained in GitHub ↗</a>.</p></section>
+        <section class="detail-panel"><h2><code>nomad-ai-job-fit-v1</code>: candidate-specific evaluation</h2><p>The scorer consumes canonical jobs but emits a separate closed contract containing candidate hashes, job identity, scoring v3 evidence, gates, raw fit score, delivery score, recommendation, gaps, status, and the complete nested job.</p><p><code>matchKey</code> is the destination upsert key because it incorporates stable candidate facts and scoring family. <code>evaluationKey</code> is the exact content-addressed receipt. Do not run fit rows through the flat-job mapper.</p><ul class="detail-link-list"><li><a href="/contracts/nomad-ai-job-fit-v1.schema.json">Open canonical fit schema (JSON)</a></li><li><a href="/contracts/nomad-ai-job-fit-destination-v1.schema.json">Open fit destination schema (JSON)</a></li></ul></section>
+        <section class="detail-panel"><h2>Run summaries gate consumption</h2><p>LinkedIn and EURAXESS use <code>nomad-agent-run-summary-v4</code>. Its public status, delivered count, warnings, and closed retry object let a caller distinguish completed, clean empty, usable partial, and failed outcomes. Only a valid usable partial summary can recommend one bounded retry.</p><p>The scorer uses <code>nomad-ai-job-fit-run-summary-v3</code> with scoring, source, AI-provider guard, and billing evidence specific to candidate evaluation. Never validate it as scraper v4.</p><ul class="detail-link-list"><li><a href="https://github.com/Exdenta/nomad-agent-job-scrapers/blob/main/integrations/shared/run-summary-v4.schema.json">Open scraper run-summary schema ↗</a></li><li><a href="/contracts/nomad-ai-job-fit-run-summary-v3.schema.json">Open fit run-summary schema (JSON)</a></li></ul></section>
+        <section class="detail-panel detail-note"><h2>Completion rule</h2><p>A schema-valid row does not prove the intended build ran, the complete dataset was fetched, a price was reconciled, or a destination received data. Consumers must join terminal run state, exact build, same-run summary, complete default dataset, and named-destination evidence at the appropriate layer.</p></section>
+        <section class="detail-panel"><h2>Versioning policy</h2><ul><li>Pin an exact Actor build in automation and record the build used to produce data.</li><li>Treat a new schema version as a new contract, not a silent field mutation.</li><li>Preserve source-specific semantics when creating common projections.</li><li>Update validators, examples, workflows, and documentation together.</li><li>Re-run contract and destination checks before moving an integration pin to a newer Store default.</li></ul></section>
+      </div><aside class="detail-aside" aria-label="Contract resources"><section class="detail-panel"><h3>Use the schemas</h3><ul class="detail-link-list"><li><a href="/integrations/python">Python validators</a></li><li><a href="/integrations/api">REST consumption</a></li><li><a href="/methodology">Proof methodology</a></li></ul></section><section class="detail-panel"><h3>Products</h3><ul class="detail-link-list"><li><a href="/actors/linkedin">LinkedIn jobs</a></li><li><a href="/actors/euraxess">EURAXESS jobs</a></li><li><a href="/actors/ai-job-fit-scorer">Job fit scoring</a></li></ul></section></aside></div>
+      <nav class="detail-footer-nav" aria-label="Related pages"><a href="/integrations">Choose an integration →</a><a href="/methodology">Review proof boundaries →</a></nav>
+    </main>
+    <footer class="site-footer"><div class="footer-container"><a href="/about">About</a><a href="/methodology">Methodology</a><a href="/contracts">Contracts</a><a href="/privacy">Privacy</a><a href="/changelog">Changelog</a><span>Independent community project · MIT</span></div></footer>
+  </body>
+</html>

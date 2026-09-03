@@ -1,62 +1,94 @@
 # Website success criteria
 
-The website is complete only when every gate below has current evidence. A visual resemblance alone is not sufficient.
+The expanded site is complete only when every applicable gate below has current
+evidence. Local tests, a deployment, a search notification, and an indexed page
+are separate proof layers.
 
-## 1. Reference-style fidelity
+## 1. Product and intent coverage
 
-- Desktop uses the reference page's white documentation-directory composition: 68 px header, 1280 px container, 832/384 px content split, 32 px gutter, bordered Markdown panel, and sticky related-content sidebar.
-- Typography, compact controls, neutral borders, card radii, shadows, and spacing remain visibly consistent with the reference.
-- At 390 px wide, the layout becomes one column, the menu remains usable, and the page has no horizontal overflow.
+- The homepage presents three honest paths: collect job data, automate delivery,
+  and score fit with evidence.
+- LinkedIn, EURAXESS, and AI Job Fit Scorer each have a canonical product page
+  with a bounded use case, input, output, limitation, version boundary, and
+  direct Store CTA.
+- Actor, integration, guide, and trust hubs make every intended page reachable
+  through ordinary HTML links.
+- Each task-led guide owns one distinct intent from `docs/seo-program.md`; the
+  site does not manufacture thin role/location pages without maintained data.
 
-## 2. Actor promotion and conversion clarity
+## 2. Claim and contract accuracy
 
-- LinkedIn and EURAXESS each receive an outcome-led value proposition, intended use case, and direct Apify CTA.
-- At least one direct Actor CTA is visible before the long documentation panel.
-- The primary path never sends a visitor to a generic organization page when an Actor-specific destination is available.
-- Claims are grounded in the repository and current official Actor pages; no invented accuracy, adoption, pricing, or performance metrics appear.
+- Current Store defaults are labeled separately from older integration-tested
+  pins: LinkedIn `1.0.6` versus `1.0.2`, EURAXESS `1.0.20` versus `1.0.16`, and
+  scorer `0.1.11` for both, as observed on 2026-09-03.
+- The scorer price is stated only as `$0.02 per successful retained evaluation`;
+  no unsupported accuracy, customer, adoption, savings, or speed claim appears.
+- `nomad-agent-job-v1`, `null` versus `[]`, exact-build, `RUN-SUMMARY`, partial
+  failure, dataset reconciliation, and named-destination boundaries remain
+  explicit.
+- n8n/Make artifacts are never described as publicly listed, hosted-import
+  tested, or destination-verified unless the corresponding evidence changes.
+- The project states its non-affiliation with LinkedIn, EURAXESS, and job
+  sources where relevant.
 
-## 3. Conversion attribution
+## 3. Search integrity and structured data
 
-- Every Apify CTA includes deterministic `data-event`, `data-actor`, and `data-placement` metadata.
-- Every direct Actor URL includes campaign, medium, source, and placement attribution parameters.
-- Clicks emit a local `nomad-agent:analytics` browser event and can forward to an installed Plausible hook without requiring analytics or credentials to render the site.
+- Every indexable HTML document has one unique on-origin HTTPS canonical, title,
+  description, H1, Open Graph set, Twitter card, and 1200×630 social image.
+- Homepage JSON-LD describes Organization, WebSite, and the three-product
+  ItemList; supporting pages use truthful breadcrumbs or page entities. No
+  fabricated offers, ratings, reviews, or JobPosting inventory appears.
+- `404.html` is useful, has `noindex,follow`, and declares no canonical.
+- `sitemap.xml` contains exactly the indexable canonicals and `robots.txt`
+  references it.
+- Each public contract URL serves the exact checked-in schema with the matching
+  `$id` and a JSON content type.
 
-## 4. Functional paths
+## 4. Conversion and privacy boundaries
 
-- Header navigation, mobile navigation, anchors, external links, Actor selector, install-command switching, and copy action all work with pointer and keyboard input.
-- Copy feedback is announced accessibly and does not leave controls in a stale state.
-- Local HTML, CSS, JavaScript, and image assets return HTTP 200 from the documented preview command.
+- External Actor CTAs go directly to the correct Store Actor and include unique
+  placement plus source, medium, campaign, and content attribution.
+- Every measured action uses a stable `data-event` and bounded semantic fields.
+- The default runtime creates no cookies, identifiers, query capture, or network
+  analytics request; GPC/DNT suppresses event dispatch.
+- A local browser event or attached analytics collector is not product
+  activation, a successful Actor run, or a verified destination write.
+- Support and design-partner paths warn users not to post resumes, secrets, or
+  personal data in public issues.
 
-## 5. Trust and contract accuracy
+## 5. Accessibility, function, and efficiency
 
-- The six-root `nomad-agent-job-v1` contract and the `null` versus `[]` distinction are presented correctly.
-- Exact-build, `RUN-SUMMARY`, dataset reconciliation, and named-destination boundaries are not overstated.
-- Benchmark status, responsible-use guidance, and the project's unofficial/non-affiliation status are visible.
+- Semantic landmarks, a skip link, one H1, useful accessible names,
+  keyboard-visible focus, and reduced-motion handling are present.
+- Desktop and 390 px layouts have no horizontal overflow; the mobile menu,
+  Escape close, Actor selector, and copy feedback work with keyboard input.
+- All local routes, fragments, styles, scripts, icons, and images return HTTP
+  200 from the documented preview server; a clean page load has no console
+  errors.
+- The site has no runtime package, hosted font, or required third-party request.
+  Each HTML page plus shared CSS/JS/mark remains within the enforced test budget.
+- The Firebase target is explicit, has no Functions or rewrites, and sends the
+  repository security headers.
 
-## 6. Discoverability, accessibility, and efficiency
+## 6. Verification and release gate
 
-- The document has unique metadata, semantic landmarks, useful accessible names, keyboard-visible focus states, and valid JSON-LD describing the two Actors without fabricated review data.
-- Controls expose correct state with ARIA; motion respects `prefers-reduced-motion`.
-- The site remains dependency-free at runtime and the first-party HTML, CSS, JavaScript, and SVG payload stays below 100 KiB uncompressed.
-- Every indexable HTML document has one unique canonical URL; `sitemap.xml` and `robots.txt` publish exactly those URLs.
-- Production search notification runs only after Firebase deployment and live URL verification succeed.
-- A clean browser load produces no console errors.
-
-## 7. Verification gate
-
-- Automated website contract tests pass.
-- The full repository test suite passes.
-- Desktop and mobile browser QA confirms geometry, interactions, sticky behavior, overflow, and console state.
-- Current LinkedIn and EURAXESS Apify destinations resolve before completion is claimed.
+- Focused website, search-publication, measurement, and integration-copy tests
+  pass, followed by the full repository suite.
+- Generated artifacts are clean after `scripts/search_publish.py prepare`.
+- Desktop and mobile browser QA covers representative hub, product, integration,
+  guide, contract, trust, and 404 pages.
+- A current deployment is matched to an exact commit, and live HTML/schema byte
+  parity passes before any search notification.
+- URL Inspection/index monitoring happens after deployment without treating
+  notification acceptance as indexing.
 
 ## Evidence ledger
 
-| Gate | Status | Current evidence |
+| Layer | Current status | Required or retained evidence |
 | --- | --- | --- |
-| Reference fidelity | Passed 2026-08-24 | Browser measurements: 1440 px header 69; grid 1248; content/sidebar 832/384 with 32 px gutter; sticky top 16 after scroll. At 390 px: header 65, content 358, no overflow. Desktop/mobile captures inspected. |
-| Actor promotion | Passed 2026-08-24 | Both direct Actor CTAs are visible above the docs panel; outcome and best-fit copy is Actor-specific; both official Apify destinations returned HTTP 200. |
-| Attribution | Passed 2026-08-24 | Website tests validate all 12 Apify CTAs, unique placements, Actor metadata, and four UTM fields; runtime emits the documented local event and optional Plausible forwarding has no default network call. |
-| Functional paths | Passed 2026-08-24 | Browser QA verified source selection, the exact copied EURAXESS command, accessible copy feedback, mobile open/Escape/close state, body lock release, and anchor/link targets. All local runtime assets returned HTTP 200. |
-| Trust | Passed 2026-08-24 | Automated visible-copy checks cover contract roots, null/empty semantics, run/destination boundaries, benchmark status, and non-affiliation. Numeric accuracy and price claims are absent. |
-| Discoverability/efficiency | Passed 2026-08-24 | Valid two-Actor JSON-LD, unique IDs, local asset integrity, focus/reduced-motion guards, zero browser warnings/errors, and 52,013-byte first-party runtime payload. |
-| Verification | Passed 2026-08-24 | 10 website contract tests and the full 115-test repository suite passed; desktop/mobile browser QA and local/live HTTP probes passed. |
+| Expanded 23-page implementation | Local validation in progress, 2026-09-03 | Checked-in pages, contracts, tests, and browser QA from this change set |
+| Production deployment | Not yet proved for this change set | Exact commit, successful Firebase workflow run, live byte parity |
+| Google/IndexNow notification | Not yet attempted for this change set | Post-parity workflow receipts; never labeled indexing |
+| Crawling and indexing | Monitored separately | URL Inspection and Bing state at 72-hour, 7-, 14-, 28-, 56-, and 84-day checkpoints |
+| Search demand | Awaiting first complete 28-day baseline | Privacy-minimized weekly Search Console artifact; no invented target |
+| Product outcomes/case studies | Not claimed | Consent, exact versions, reproducible metric, destination evidence, approved wording |
