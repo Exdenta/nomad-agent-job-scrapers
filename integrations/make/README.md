@@ -7,7 +7,7 @@ Import either blueprint:
 - [`euraxess-jobs-to-google-sheets.blueprint.json`](euraxess-jobs-to-google-sheets.blueprint.json),
   for a Task pinned to EURAXESS build `1.0.16`;
 - [`ai-job-fit-scorer-to-google-sheets.blueprint.json`](ai-job-fit-scorer-to-google-sheets.blueprint.json),
-  for a Task pinned to AI Job Search & Fit Scorer build `0.1.10`.
+  for a Task pinned to AI Job Search & Fit Scorer build `0.1.11`.
 
 The Apify Task owns the complete Actor input, item limit, exact build, and
 charge cap. The Make scenario consumes the completed Task run:

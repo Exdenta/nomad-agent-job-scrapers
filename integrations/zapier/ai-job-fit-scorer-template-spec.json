@@ -11,7 +11,7 @@
       "app": "Apify",
       "event": "Run Actor",
       "actor": "nomad-agent/ai-job-fit-scorer",
-      "build": "0.1.10",
+      "build": "0.1.11",
       "input": {
         "mode": "search",
         "search": {
@@ -72,7 +72,7 @@
       "conditions": [
         "run.status == SUCCEEDED",
         "run.exitCode == 0",
-        "run.buildNumber == 0.1.10",
+        "run.buildNumber == 0.1.11",
         "row.schemaVersion == nomad-ai-job-fit-v1",
         "row.evaluationStatus != ai_failed"
       ]

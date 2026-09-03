@@ -10,8 +10,8 @@ import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
 INTEGRATIONS = ROOT / "integrations"
-BUILD = "0.1.10"
-BUILD_ID = "XOOtUsksU2uE89H6l"
+BUILD = "0.1.11"
+BUILD_ID = "MorUFN0ZFQjpmpytr"
 
 adapter_spec = importlib.util.spec_from_file_location(
     "ai_job_fit_adapter",
@@ -98,7 +98,7 @@ class AiJobFitScorerIntegrationTests(unittest.TestCase):
             INTEGRATIONS / "api" / "ai-job-fit-scorer-run-and-fetch.mjs"
         )
         runner = runner_path.read_text()
-        self.assertIn("const VERIFIED_BUILD = '0.1.10'", runner)
+        self.assertIn("const VERIFIED_BUILD = '0.1.11'", runner)
         self.assertIn("/v2/actors/${ACTOR}/runs", runner)
         self.assertNotIn("/v2/acts/${ACTOR}/runs", runner)
         self.assertIn("settlementDeadline", runner)
@@ -277,6 +277,7 @@ process.stdout.write(JSON.stringify(result));
                 item["runId"] for item in evidence["actorCanaries"].values()
             },
             {
+                "UBmk8XgdqimMbJf89",
                 "KuuEnCoMfFbFj3z5R",
                 "udTJyz3zJWOkKSNUS",
                 "CEofFmV6UEb82yi7M",

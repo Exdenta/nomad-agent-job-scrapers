@@ -7,8 +7,8 @@ score supplied `nomad-agent-job-v1` records. Each retained evaluation costs
 $0.02 and includes a raw 0–100 fit, a gate-adjusted 0–5 delivery score,
 evidence, gaps, source provenance, and stable destination keys.
 
-This repository supports immutable Actor build `0.1.10`
-(`XOOtUsksU2uE89H6l`). Do not replace that pin with `latest` in an automated
+This repository supports immutable Actor build `0.1.11`
+(`MorUFN0ZFQjpmpytr`). Do not replace that pin with `latest` in an automated
 workflow without re-running the contract and destination checks.
 
 ## Choose a starter
@@ -33,7 +33,7 @@ and search terms:
 
 ```bash
 export APIFY_TOKEN="..."
-export ACTOR_BUILD_NUMBER="0.1.10"
+export ACTOR_BUILD_NUMBER="0.1.11"
 node integrations/api/ai-job-fit-scorer-run-and-fetch.mjs
 ```
 
@@ -42,14 +42,41 @@ result-charge cap. For the smallest paid smoke, copy the input and set
 `maxItems`, `maxAiItems`, `maxItemsPerSource`, and `aiConcurrency` to `1`; run
 with a $0.02 cap in your own caller.
 
+The fresh Apify Console form separately provides a fake software-engineer
+profile and a three-result cap so it can be tried as-is. Those values are UI
+`prefill` examples, not silent API defaults: API and integration callers must
+still send exactly one candidate source.
+
+## Input formats
+
+In `search` mode, provide `search.keywords` plus one candidate source. In
+`score-jobs` mode, provide exactly one of these job sources:
+
+- `jobs`: a JSON array of complete `nomad-agent-job-v1` objects. Each item has
+  exactly the top-level fields `schemaVersion`, `identity`, `data`, `custom`,
+  `llm`, and `raw`; `identity` contains `source` plus `externalId` or `url`, and
+  `raw.description` contains the posting text. See the complete
+  [`linkedin-job.json`](../tests/fixtures/linkedin-job.json) record.
+- `sourceDatasetId`: the immutable Apify dataset ID, not its name or URL. Every
+  row must use the same complete job contract.
+- `sourceActorRunId`: the exact terminal successful upstream run ID, not an
+  Actor ID or run URL. Add `expectedSourceBuild` to fail closed unless that run
+  used the intended immutable build ID or build number.
+
+Choose exactly one candidate source as well: `candidateProfile`, `resume`, or
+`resumeText`. A structured profile needs at least one of `primaryRole`,
+`targetTerms`, `skills`, or `freeText`; only add seniority, experience,
+language, location, and contract constraints that the candidate actually
+provided.
+
 ## Exact-run consumption contract
 
 Every integration should preserve this order:
 
-1. start `nomad-agent/ai-job-fit-scorer` with build `0.1.10`, an explicit input,
+1. start `nomad-agent/ai-job-fit-scorer` with build `0.1.11`, an explicit input,
    item cap, and maximum total charge;
 2. retain the returned run ID and poll only that run to a terminal state;
-3. require `SUCCEEDED`, exit code `0`, build number `0.1.10`, and immutable
+3. require `SUCCEEDED`, exit code `0`, build number `0.1.11`, and immutable
    default dataset and key-value-store IDs;
 4. read `RUN-SUMMARY` from that run and require
    `nomad-ai-job-fit-run-summary-v3`, a usable status, scoring v3, the $0.25
@@ -137,15 +164,24 @@ Prove create and update behavior before enabling the schedule.
 
 ## Current live proof
 
-Immutable build `0.1.10` passed supplied-job, two-source, all-10-source, and
-shipped-REST-client canaries on 2026-09-03:
+Immutable build `0.1.11` passed the fresh-form candidate/search contract on
+2026-09-03:
+
+- fake-profile search run `UBmk8XgdqimMbJf89`: build `0.1.11`
+  (`MorUFN0ZFQjpmpytr`), all three selected sources (`linkedin`,
+  `remote_boards`, `justjoinit`) succeeded, nine normalized unique jobs were
+  found, the one-result canary cap retained one AI-scored row, and one $0.02
+  `job-fit-result` event reconciled with a warning-free v3 summary.
+
+The contract-compatible predecessor `0.1.10` supplied the broader source and
+client evidence:
 
 - supplied-job run `KuuEnCoMfFbFj3z5R`: one scored row and one reconciled
   `job-fit-result` event;
 - LinkedIn + remote-board search run `udTJyz3zJWOkKSNUS`: both sources returned
   one normalized posting, the cap retained one scored row, and one event was
   reconciled;
-- public `latest` all-source run `CEofFmV6UEb82yi7M`: `latest` resolved to
+- then-public `latest` all-source run `CEofFmV6UEb82yi7M`: `latest` resolved to
   build `0.1.10` (`XOOtUsksU2uE89H6l`); all ten adapters reported
   `succeeded`, 12 normalized rows became 8 unique jobs, the cap retained one
   scored row, one event was reconciled, and the v3 summary had no warnings;

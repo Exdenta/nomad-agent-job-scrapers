@@ -11,7 +11,7 @@ https://mcp.apify.com?tools=fetch-actor-details,call-actor,get-actor-run,get-dat
 | --- | --- | --- |
 | LinkedIn | `nomad-agent/linkedin-enrich-translate-normalize-scraper` | `1.0.2` |
 | EURAXESS | `nomad-agent/euraxess-enrich-translate-normalize-scraper` | `1.0.16` |
-| AI Job Search & Fit Scorer | `nomad-agent/ai-job-fit-scorer` | `0.1.10` |
+| AI Job Search & Fit Scorer | `nomad-agent/ai-job-fit-scorer` | `0.1.11` |
 
 Keep the build explicit instead of relying on a movable tag. Confirm Actor
 availability and account access with `fetch-actor-details` before a paid run.

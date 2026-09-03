@@ -2,11 +2,37 @@
   "schemaVersion": "apify-integration-evidence-v1",
   "actor": {
     "id": "nomad-agent/ai-job-fit-scorer",
-    "buildNumber": "0.1.10",
-    "buildId": "XOOtUsksU2uE89H6l"
+    "buildNumber": "0.1.11",
+    "buildId": "MorUFN0ZFQjpmpytr"
   },
-  "recordedAt": "2026-09-03T09:59:16Z",
+  "recordedAt": "2026-09-03T16:51:04Z",
   "actorCanaries": {
+    "defaultDemo": {
+      "runId": "UBmk8XgdqimMbJf89",
+      "resolvedBuildNumber": "0.1.11",
+      "resolvedBuildId": "MorUFN0ZFQjpmpytr",
+      "status": "SUCCEEDED",
+      "exitCode": 0,
+      "datasetId": "uXhx7WvHTAnSbkQM1",
+      "keyValueStoreId": "RwlXw17QBaoyObdYQ",
+      "sources": ["linkedin", "remote_boards", "justjoinit"],
+      "sourceStatuses": {
+        "linkedin": "succeeded",
+        "remote_boards": "succeeded",
+        "justjoinit": "succeeded"
+      },
+      "sourceRawRows": 9,
+      "sourceNormalizedRows": 9,
+      "sourceUniqueRows": 9,
+      "datasetRows": 1,
+      "evaluationStatuses": ["scored"],
+      "chargedEventCounts": {"job-fit-result": 1},
+      "runSummarySchema": "nomad-ai-job-fit-run-summary-v3",
+      "provider": "openrouter:OpenAI",
+      "model": "openai/gpt-5.6-luna",
+      "providerCostUsd": 0.0009775,
+      "warnings": []
+    },
     "suppliedJob": {
       "runId": "KuuEnCoMfFbFj3z5R",
       "status": "SUCCEEDED",
@@ -112,11 +138,11 @@
       "evidence": [
         {
           "layer": "artifact",
-          "summary": "The generic call-actor descriptor is credential-free, bounded, schema-checked, and pinned to build 0.1.10."
+          "summary": "The generic call-actor descriptor is credential-free, bounded, schema-checked, and pinned to build 0.1.11."
         },
         {
           "layer": "actor-run",
-          "summary": "Exact build 0.1.10 passed supplied-job, two-source, and all-10-source latest canaries with reconciled datasets, summaries, and charges."
+          "summary": "Exact build 0.1.11 passed the three-source fake-profile default canary; predecessor 0.1.10 passed supplied-job, two-source, and all-10-source canaries."
         }
       ],
       "blockers": [
@@ -142,7 +168,7 @@
         },
         {
           "layer": "actor-run",
-          "summary": "Exact build 0.1.10 passed supplied-job, two-source, and all-10-source latest canaries with reconciled datasets, summaries, and charges."
+          "summary": "Exact build 0.1.11 passed the three-source fake-profile default canary; predecessor 0.1.10 passed supplied-job, two-source, and all-10-source canaries."
         }
       ],
       "blockers": [
@@ -168,7 +194,7 @@
         },
         {
           "layer": "actor-run",
-          "summary": "Exact build 0.1.10 passed supplied-job, two-source, and all-10-source latest canaries with reconciled datasets, summaries, and charges."
+          "summary": "Exact build 0.1.11 passed the three-source fake-profile default canary; predecessor 0.1.10 passed supplied-job, two-source, and all-10-source canaries."
         }
       ],
       "blockers": [
@@ -190,11 +216,11 @@
       "evidence": [
         {
           "layer": "artifact",
-          "summary": "The editor specification pins build 0.1.10, exact-run storage, result filtering, and matchKey-based Google Sheets upserts."
+          "summary": "The editor specification pins build 0.1.11, exact-run storage, result filtering, and matchKey-based Google Sheets upserts."
         },
         {
           "layer": "actor-run",
-          "summary": "Exact build 0.1.10 passed supplied-job, two-source, and all-10-source latest canaries with reconciled datasets, summaries, and charges."
+          "summary": "Exact build 0.1.11 passed the three-source fake-profile default canary; predecessor 0.1.10 passed supplied-job, two-source, and all-10-source canaries."
         }
       ],
       "blockers": [
