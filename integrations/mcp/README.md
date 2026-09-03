@@ -11,9 +11,17 @@ https://mcp.apify.com?tools=fetch-actor-details,call-actor,get-actor-run,get-dat
 | --- | --- | --- |
 | LinkedIn | `nomad-agent/linkedin-enrich-translate-normalize-scraper` | `1.0.2` |
 | EURAXESS | `nomad-agent/euraxess-enrich-translate-normalize-scraper` | `1.0.16` |
+| AI Job Search & Fit Scorer | `nomad-agent/ai-job-fit-scorer` | `0.1.10` |
 
 Keep the build explicit instead of relying on a movable tag. Confirm Actor
 availability and account access with `fetch-actor-details` before a paid run.
+
+The scorer descriptor is
+[`examples/ai-job-fit-scorer.mcp.json`](examples/ai-job-fit-scorer.mcp.json).
+It requests at most five evaluations with a $0.10 charge cap. Its output is
+`nomad-ai-job-fit-v1` plus `nomad-ai-job-fit-run-summary-v3`, not the six-root
+scraper dataset/v4 summary described below; follow the
+[scorer-specific execution contract](../../docs/ai-job-fit-scorer.md).
 
 ## Client configuration
 

@@ -1,0 +1,124 @@
+{
+  "schemaVersion": "nomad-ai-job-fit-zapier-template-v1",
+  "distribution": "editor-only",
+  "trigger": {
+    "app": "Schedule by Zapier",
+    "event": "Every Day"
+  },
+  "actions": [
+    {
+      "step": 1,
+      "app": "Apify",
+      "event": "Run Actor",
+      "actor": "nomad-agent/ai-job-fit-scorer",
+      "build": "0.1.10",
+      "input": {
+        "mode": "search",
+        "search": {
+          "sources": [
+            "linkedin",
+            "remote_boards",
+            "justjoinit"
+          ],
+          "keywords": [
+            "data engineer",
+            "analytics engineer"
+          ],
+          "postedWithinDays": 14,
+          "maxItemsPerSource": 3,
+          "cacheTtlSeconds": 1800,
+          "concurrency": 3,
+          "sourceTimeoutSecs": 120
+        },
+        "candidateProfile": {
+          "primaryRole": "Data Engineer",
+          "targetTerms": [
+            "Data Engineer",
+            "Analytics Engineer"
+          ],
+          "skills": [
+            "Python",
+            "SQL",
+            "dbt"
+          ],
+          "seniorityLevels": [
+            "mid"
+          ],
+          "remoteLocations": [
+            "European Union"
+          ],
+          "hybridLocations": [],
+          "onsiteLocations": [],
+          "workArrangementPreferencesComplete": true
+        },
+        "maxItems": 5,
+        "minRankToForward": 30,
+        "recoverHolds": false,
+        "aiConcurrency": 2
+      },
+      "maxTotalChargeUsd": 0.1
+    },
+    {
+      "step": 2,
+      "app": "Apify",
+      "event": "Get Dataset Items",
+      "dataset": "exact defaultDatasetId from step 1",
+      "limit": 5
+    },
+    {
+      "step": 3,
+      "app": "Filter by Zapier",
+      "event": "Continue if",
+      "conditions": [
+        "run.status == SUCCEEDED",
+        "run.exitCode == 0",
+        "run.buildNumber == 0.1.10",
+        "row.schemaVersion == nomad-ai-job-fit-v1",
+        "row.evaluationStatus != ai_failed"
+      ]
+    },
+    {
+      "step": 4,
+      "app": "Google Sheets",
+      "event": "Lookup Spreadsheet Row",
+      "lookupColumn": "matchKey"
+    },
+    {
+      "step": 5,
+      "app": "Paths by Zapier",
+      "event": "Update existing or create new row",
+      "mappingColumns": [
+        "schemaVersion",
+        "matchKey",
+        "evaluationKey",
+        "jobKey",
+        "candidateHash",
+        "candidateSnapshotHash",
+        "evaluatedAt",
+        "fitScore",
+        "deliveryScore",
+        "recommendation",
+        "evaluationStatus",
+        "title",
+        "company",
+        "location",
+        "url",
+        "blockingGatesJson",
+        "why",
+        "gapSummary",
+        "sourceRunId",
+        "sourceBuild",
+        "evaluationJson"
+      ]
+    }
+  ],
+  "requiredLiveTests": [
+    "successful exact-build bundled-search Actor task",
+    "terminal status, exact build, and per-source provenance inspected",
+    "RUN-SUMMARY single job-fit-result charge and $0.25 owner-provider circuit breaker inspected manually because Zapier Apify action does not enforce the closed summary contract",
+    "named Google Sheets row created",
+    "same input rerun updates rather than duplicates",
+    "partial-source and failed/ai_failed fixtures do not create unsafe writes"
+  ],
+  "publicationState": "not-created-in-Zapier-editor"
+}

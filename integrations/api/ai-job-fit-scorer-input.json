@@ -1,0 +1,44 @@
+{
+  "mode": "search",
+  "search": {
+    "sources": [
+      "linkedin",
+      "remote_boards",
+      "justjoinit"
+    ],
+    "keywords": [
+      "data engineer",
+      "analytics engineer"
+    ],
+    "postedWithinDays": 14,
+    "maxItemsPerSource": 3,
+    "cacheTtlSeconds": 1800,
+    "concurrency": 3,
+    "sourceTimeoutSecs": 120
+  },
+  "candidateProfile": {
+    "primaryRole": "Data Engineer",
+    "targetTerms": [
+      "Data Engineer",
+      "Analytics Engineer"
+    ],
+    "skills": [
+      "Python",
+      "SQL",
+      "dbt"
+    ],
+    "seniorityLevels": [
+      "mid"
+    ],
+    "remoteLocations": [
+      "European Union"
+    ],
+    "hybridLocations": [],
+    "onsiteLocations": [],
+    "workArrangementPreferencesComplete": true
+  },
+  "maxItems": 5,
+  "minRankToForward": 30,
+  "recoverHolds": false,
+  "aiConcurrency": 2
+}

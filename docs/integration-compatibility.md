@@ -6,10 +6,15 @@ Supported release builds:
 | --- | --- | --- |
 | LinkedIn | `1.0.2` | `firstRunMode`, `schemaVersion`, `keyword`, `location`, `linkedinSearch`, `strictGeography`, `workArrangements`, `postedWithin`, `filters`, `companyProfileEnrichment`, `companyFilters`, `maxItems`, `translateToEnglish`, `aiEnrichment`, `includeRaw`, `dedupe`, `analyticsEnabled` |
 | EURAXESS | `1.0.16` | `schemaVersion`, `keyword`, `location`, `euraxessSearch`, `workArrangements`, `postedWithin`, `filters`, `maxItems`, `translateToEnglish`, `aiEnrichment`, `includeRaw`, `dedupe`, `analyticsEnabled` |
+| AI Job Search & Fit Scorer | `0.1.10` | `mode`, `search`, `jobs`, `sourceDatasetId`, `sourceActorRunId`, `expectedSourceBuild`, `maxItems`, exactly one of `candidateProfile`/`resume`/`resumeText`, `preferences`, `minRankToForward`, `maxAiItems`, `recoverHolds`, `aiConcurrency` |
 
-Both Actors return the six-root `nomad-agent-job-v1` dataset envelope and the
+The LinkedIn and EURAXESS Actors return the six-root `nomad-agent-job-v1` dataset envelope and the
 minimal `nomad-agent-run-summary-v4` completion record. Source-specific inputs
 and custom output fields are not interchangeable.
+
+The fit scorer consumes canonical jobs but returns
+`nomad-ai-job-fit-v1` plus `nomad-ai-job-fit-run-summary-v3`. It is not a third
+scraper profile and must not be sent through the flat-job mapper.
 
 ## Integration parity
 
@@ -22,6 +27,17 @@ and custom output fields are not interchangeable.
 | Agent Skills | Exact-build MCP profile | Exact-build MCP profile | Source-specific references cover every current field | Keeps canonical output; flattens only for a destination |
 | Python parser and flat mapper | Caller verifies build | Caller verifies build | Post-run processing only | Validates source-specific canonical rows and produces the shared projection |
 | Airtable | Upstream runner selects build | Upstream runner selects build | Destination only | Uses the shared 32-field projection and `jobKey` idempotency |
+
+## AI Job Search & Fit Scorer parity
+
+| Integration | Exact build | Input support | Output handling | Live channel boundary |
+| --- | --- | --- | --- | --- |
+| n8n | `0.1.10` | Bounded search starter; edit the complete strict Actor input in Configuration | Validates v3, billing, and fit rows; projects 21 columns and upserts by `matchKey` | Artifact and Actor run tested; import and named Sheet write not tested |
+| Make | Task pins `0.1.10` | The Apify Task owns the complete Actor input and charge cap | Native filters validate declared v3 fields; projects and upserts by `matchKey` | Artifact and Actor run tested; import and named Sheet write not tested |
+| MCP | `callOptions.build: "0.1.10"` | Complete bounded Actor input under `input` | Caller verifies exact run, v3 summary, fit dataset, and charges | Descriptor validated; hosted MCP call not tested |
+| REST API | `build=0.1.10` | Complete Actor input | Boundedly reconciles eventual run/storage receipts and validates the closed fit contract | Exact REST canaries passed |
+| Zapier | Editor pins `0.1.10` | Editor specification carries the bounded complete starter | Filters fit rows, then updates or creates by `matchKey` | Editor build and named Sheet write not tested |
+| Python adapter | Caller verifies build | Post-run processing only | Closed-row validation and fit-specific table projection | Offline tested |
 
 ## Feature transport rules
 

@@ -1,0 +1,69 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://nomadagent.dev/contracts/nomad-ai-job-fit-v1.schema.json",
+  "title": "Nomad AI job-fit evaluation",
+  "type": "object",
+  "required": [
+    "schemaVersion", "matchKey", "evaluationKey", "jobKey",
+    "candidateHash", "candidateSnapshotHash", "evaluatedAt", "fitScore",
+    "deliveryScore", "recommendation", "evaluationStatus", "why",
+    "gapSummary", "blockingGates", "scoreAdjustedForGates", "gates",
+    "staticDecision", "scoring", "job"
+  ],
+  "properties": {
+    "schemaVersion": { "const": "nomad-ai-job-fit-v1" },
+    "matchKey": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "evaluationKey": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "jobKey": { "type": "string", "minLength": 3 },
+    "candidateHash": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "candidateSnapshotHash": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "evaluatedAt": { "type": ["string", "number", "null"] },
+    "source": { "type": ["string", "null"] },
+    "externalId": { "type": ["string", "null"] },
+    "url": { "type": ["string", "null"] },
+    "title": { "type": ["string", "null"] },
+    "company": { "type": ["string", "null"] },
+    "location": { "type": ["string", "null"] },
+    "postedAt": { "type": ["string", "null"] },
+    "fitScore": { "type": ["integer", "null"], "minimum": 0, "maximum": 100 },
+    "deliveryScore": { "type": ["integer", "null"], "minimum": 0, "maximum": 5 },
+    "recommendation": {
+      "type": ["string", "null"],
+      "enum": ["exceptional", "strong", "plausible", "weak", "poor", "incompatible", "blocked", "held", "unavailable", null]
+    },
+    "evaluationStatus": {
+      "enum": ["scored", "static_drop", "static_hold", "forward_cap_hold", "ai_failed"]
+    },
+    "why": { "type": "string" },
+    "gapSummary": { "type": "string" },
+    "blockingGates": { "type": "array", "items": { "type": "string" } },
+    "scoreAdjustedForGates": { "type": "boolean" },
+    "gates": { "type": "object" },
+    "staticDecision": { "type": "object" },
+    "scoring": {
+      "type": "object",
+      "required": ["algorithm", "actorJobSchema", "profileSchema", "staticDecisionSchema", "verdictSchema", "promptVersion", "aiUsed", "contentReceipt", "sourceProvenance"],
+      "properties": {
+        "algorithm": { "const": "scoring-v3" },
+        "actorJobSchema": { "type": "string" },
+        "profileSchema": { "type": "string" },
+        "staticDecisionSchema": { "type": "string" },
+        "verdictSchema": { "type": "string" },
+        "promptVersion": { "type": "string" },
+        "provider": { "type": ["string", "null"] },
+        "model": { "type": ["string", "null"] },
+        "responseId": { "type": ["string", "null"] },
+        "aiUsed": { "type": "boolean" },
+        "recoveredFromHold": { "type": "boolean" },
+        "contentReceipt": { "type": "object" },
+        "sourceProvenance": { "type": "object" }
+      }
+    },
+    "job": {
+      "type": "object",
+      "required": ["schemaVersion", "identity", "data", "custom", "llm", "raw"],
+      "properties": { "schemaVersion": { "const": "nomad-agent-job-v1" } }
+    }
+  },
+  "additionalProperties": false
+}

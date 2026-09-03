@@ -1,0 +1,150 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://nomadagent.dev/contracts/nomad-ai-job-fit-destination-v1.schema.json",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "matchKey",
+    "evaluationKey",
+    "jobKey",
+    "candidateHash",
+    "candidateSnapshotHash",
+    "evaluatedAt",
+    "fitScore",
+    "deliveryScore",
+    "recommendation",
+    "evaluationStatus",
+    "title",
+    "company",
+    "location",
+    "url",
+    "blockingGatesJson",
+    "why",
+    "gapSummary",
+    "sourceRunId",
+    "sourceBuild",
+    "evaluationJson"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": {
+      "const": "nomad-ai-job-fit-destination-v1"
+    },
+    "matchKey": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "evaluationKey": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "jobKey": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "candidateHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "candidateSnapshotHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "evaluatedAt": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "fitScore": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 100
+    },
+    "deliveryScore": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 5
+    },
+    "recommendation": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "evaluationStatus": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "title": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "company": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "location": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "url": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "blockingGatesJson": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "why": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "gapSummary": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "sourceRunId": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "sourceBuild": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "evaluationJson": {
+      "type": [
+        "string",
+        "null"
+      ]
+    }
+  }
+}

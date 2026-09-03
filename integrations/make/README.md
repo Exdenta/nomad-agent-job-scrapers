@@ -5,7 +5,9 @@ Import either blueprint:
 - [`linkedin-jobs-to-google-sheets.blueprint.json`](linkedin-jobs-to-google-sheets.blueprint.json),
   for a Task pinned to LinkedIn build `1.0.2`;
 - [`euraxess-jobs-to-google-sheets.blueprint.json`](euraxess-jobs-to-google-sheets.blueprint.json),
-  for a Task pinned to EURAXESS build `1.0.16`.
+  for a Task pinned to EURAXESS build `1.0.16`;
+- [`ai-job-fit-scorer-to-google-sheets.blueprint.json`](ai-job-fit-scorer-to-google-sheets.blueprint.json),
+  for a Task pinned to AI Job Search & Fit Scorer build `0.1.10`.
 
 The Apify Task owns the complete Actor input, item limit, exact build, and
 charge cap. The Make scenario consumes the completed Task run:
@@ -27,6 +29,12 @@ one bounded sleep-and-retry route; API-origin retried Task runs cannot enter
 that route again. A valid `empty` status writes no rows; missing, invalid,
 failed, aborted, timed-out, or wrong-build runs do not enter delivery.
 
+The fit-scoring blueprint uses the distinct
+`nomad-ai-job-fit-run-summary-v3`/`nomad-ai-job-fit-v1` contract. It requires
+the single `$0.02` event configuration, skips `ai_failed`, and upserts the
+21-column fit projection by candidate-specific `matchKey` rather than
+source-only `jobKey`.
+
 ## Setup
 
 1. Create an Apify Task with the selected Actor, complete strict v1 input,
@@ -41,6 +49,11 @@ failed, aborted, timed-out, or wrong-build runs do not enter delivery.
 6. Start with one result for LinkedIn or five for EURAXESS, with optional
    translation, AI enrichment, analytics, raw output, and cross-run dedupe off.
 7. Activate the scenario only after a manual Task-to-Sheets smoke succeeds.
+
+For the scorer, import
+[`../shared/ai-job-fit-google-sheets-columns.csv`](../shared/ai-job-fit-google-sheets-columns.csv)
+into a sheet named `Job Fit`, set the Task's maximum total charge to `$0.10`,
+and keep five evaluations for the first run.
 
 Do not put retired fields such as `replayEpoch` in the saved Task input.
 

@@ -1,0 +1,534 @@
+{
+  "name": "Search and score developer jobs to Google Sheets",
+  "nodes": [
+    {
+      "id": "manual",
+      "name": "Run manually",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "config",
+      "name": "Configuration",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        220,
+        0
+      ],
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "actor-build",
+              "name": "actorBuild",
+              "value": "0.1.10",
+              "type": "string"
+            },
+            {
+              "id": "actor-input",
+              "name": "actorInputJson",
+              "value": "{\"mode\":\"search\",\"search\":{\"sources\":[\"linkedin\",\"remote_boards\",\"justjoinit\"],\"keywords\":[\"data engineer\",\"analytics engineer\"],\"postedWithinDays\":14,\"maxItemsPerSource\":3,\"cacheTtlSeconds\":1800,\"concurrency\":3,\"sourceTimeoutSecs\":120},\"candidateProfile\":{\"primaryRole\":\"Data Engineer\",\"targetTerms\":[\"Data Engineer\",\"Analytics Engineer\"],\"skills\":[\"Python\",\"SQL\",\"dbt\"],\"seniorityLevels\":[\"mid\"],\"remoteLocations\":[\"European Union\"],\"hybridLocations\":[],\"onsiteLocations\":[],\"workArrangementPreferencesComplete\":true},\"maxItems\":5,\"minRankToForward\":30,\"recoverHolds\":false,\"aiConcurrency\":2}",
+              "type": "string"
+            },
+            {
+              "id": "charge-cap",
+              "name": "maxTotalChargeUsd",
+              "value": 0.1,
+              "type": "number"
+            },
+            {
+              "id": "poll-deadline",
+              "name": "maxPollSeconds",
+              "value": 600,
+              "type": "number"
+            },
+            {
+              "id": "sheet-id",
+              "name": "googleSpreadsheetId",
+              "value": "REPLACE_WITH_GOOGLE_SPREADSHEET_ID",
+              "type": "string"
+            },
+            {
+              "id": "sheet-name",
+              "name": "googleSheetName",
+              "value": "Job Fit",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": false,
+        "options": {}
+      }
+    },
+    {
+      "id": "validate-config",
+      "name": "Validate template setup",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        440,
+        0
+      ],
+      "parameters": {
+        "jsCode": "const cfg = $input.first().json;\nlet actorInput; try { actorInput = JSON.parse(cfg.actorInputJson); } catch (error) { throw new Error(`actorInputJson must be valid JSON: ${error.message}`); }\nif (!actorInput || Array.isArray(actorInput)) throw new Error('actorInputJson must be one object');\nif (actorInput.mode !== 'search' || !actorInput.search || !Array.isArray(actorInput.search.keywords) || actorInput.search.keywords.length < 1) throw new Error('starter requires explicit search keywords');\nif (!Number.isInteger(actorInput.maxItems) || actorInput.maxItems < 1 || actorInput.maxItems > 5) throw new Error('starter maxItems must be 1 through 5');\nif (cfg.actorBuild !== '0.1.10') throw new Error('actorBuild must remain pinned to verified build 0.1.10');\nif (Number(cfg.maxTotalChargeUsd) !== 0.10) throw new Error('starter charge cap must be USD 0.10');\nif (!Number.isInteger(cfg.maxPollSeconds) || cfg.maxPollSeconds < 60 || cfg.maxPollSeconds > 600) throw new Error('maxPollSeconds must be 60 through 600');\nif (!cfg.googleSpreadsheetId || cfg.googleSpreadsheetId.startsWith('REPLACE_WITH_')) throw new Error('replace googleSpreadsheetId before running');\nif (!cfg.googleSheetName) throw new Error('googleSheetName is required');\nreturn [{json:{...cfg,actorInput}}];"
+      }
+    },
+    {
+      "id": "start",
+      "name": "Start exact Actor build",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        660,
+        0
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.apify.com/v2/actors/nomad-agent~ai-job-fit-scorer/runs",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "build",
+              "value": "={{ $('Configuration').first().json.actorBuild }}"
+            },
+            {
+              "name": "maxTotalChargeUsd",
+              "value": "={{ $('Configuration').first().json.maxTotalChargeUsd }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "json",
+        "specifyBody": "json",
+        "jsonBody": "={{ $('Validate template setup').first().json.actorInput }}",
+        "options": {
+          "timeout": 30000
+        }
+      }
+    },
+    {
+      "id": "select",
+      "name": "Select same run",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        880,
+        0
+      ],
+      "parameters": {
+        "jsCode": "const envelope = $input.first().json;\nconst run = envelope && typeof envelope === 'object' ? (envelope.data || envelope) : {};\nif (!run.id || typeof run.status !== 'string') throw new Error('Apify returned no exact run ID/status');\nconst terminal = new Set(['SUCCEEDED','FAILED','ABORTED','TIMED-OUT']);\nif (!terminal.has(run.status)) {\n  const started = Date.parse(run.startedAt), maxSeconds = Number($('Configuration').first().json.maxPollSeconds);\n  if (!Number.isFinite(started) || (Date.now()-started)/1000 > maxSeconds) throw new Error(`Actor polling deadline exceeded after ${maxSeconds} seconds`);\n}\nreturn [{json:run}];"
+      }
+    },
+    {
+      "id": "terminal-if",
+      "name": "Run is terminal?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1100,
+        0
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "terminal-status",
+              "leftValue": "={{ ['SUCCEEDED','FAILED','ABORTED','TIMED-OUT'].includes($json.status) }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "poll",
+      "name": "Poll same Actor run",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1100,
+        180
+      ],
+      "parameters": {
+        "url": "={{ 'https://api.apify.com/v2/actor-runs/' + $json.id }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "waitForFinish",
+              "value": "60"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 70000
+        }
+      }
+    },
+    {
+      "id": "validate-terminal",
+      "name": "Validate terminal run",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1320,
+        -40
+      ],
+      "parameters": {
+        "jsCode": "const run = $input.first().json.data || $input.first().json;\nconst expected = $('Configuration').first().json.actorBuild;\nif (run.status !== 'SUCCEEDED' || run.exitCode !== 0) throw new Error(`Actor run ended ${run.status} exitCode=${run.exitCode}`);\nif (run.buildNumber !== expected) throw new Error(`Actor used build ${run.buildNumber}; expected ${expected}`);\nif (!run.id || !run.defaultDatasetId || !run.defaultKeyValueStoreId) throw new Error('terminal run is missing immutable storage IDs');\nreturn [{json:{runId:run.id,datasetId:run.defaultDatasetId,keyValueStoreId:run.defaultKeyValueStoreId}}];"
+      }
+    },
+    {
+      "id": "read-summary",
+      "name": "Read exact RUN-SUMMARY",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1540,
+        -40
+      ],
+      "parameters": {
+        "url": "={{ 'https://api.apify.com/v2/key-value-stores/' + $json.keyValueStoreId + '/records/RUN-SUMMARY' }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {
+          "timeout": 30000
+        }
+      }
+    },
+    {
+      "id": "validate-summary",
+      "name": "Validate RUN-SUMMARY",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1760,
+        -40
+      ],
+      "parameters": {
+        "jsCode": "const summary = $input.first().json.body || $input.first().json.data || $input.first().json;\nif (!summary || summary.schemaVersion !== 'nomad-ai-job-fit-run-summary-v3') throw new Error('invalid RUN-SUMMARY schema');\nif (!['complete','partial','empty'].includes(summary.status)) throw new Error(`unusable RUN-SUMMARY status ${summary.status}`);\nif (!summary.algorithm || summary.algorithm.name !== 'scoring-v3' || summary.algorithm.interactionStateUsed !== false) throw new Error('unexpected scoring algorithm');\nif (!summary.counts || !Number.isInteger(summary.counts.outputRows) || summary.counts.outputRows < 0) throw new Error('invalid outputRows');\nif (!summary.ai || summary.ai.providerCostLimitUsd !== 0.25 || summary.ai.maxProviderAttempts !== 2 || typeof summary.ai.providerCostLimited !== 'boolean' || typeof summary.ai.providerCostReservedUsd !== 'number' || summary.ai.providerCostReservedUsd < 0 || summary.ai.providerCostReservedUsd > 0.25) throw new Error('unexpected owner provider cost guard');\nconst expectedBillingKeys = ['budgetAuthorizedCount','budgetLimited','chargedCount','eventName','totalChargedUsd','unitPriceUsd'].sort();\nif (!summary.billing || JSON.stringify(Object.keys(summary.billing).sort()) !== JSON.stringify(expectedBillingKeys) || summary.billing.eventName !== 'job-fit-result' || summary.billing.unitPriceUsd !== 0.02 || !Number.isInteger(summary.billing.chargedCount)) throw new Error('unexpected billing contract');\nconst expectedTotal = summary.billing.chargedCount * 0.02;\nif (Math.abs(summary.billing.totalChargedUsd - expectedTotal) > 0.0000001) throw new Error('total charged amount does not reconcile');\nif (summary.status === 'empty' && (!summary.cleanEmpty || summary.counts.outputRows !== 0)) throw new Error('invalid clean-empty summary');\nreturn [{json:summary}];"
+      }
+    },
+    {
+      "id": "dataset",
+      "name": "Fetch exact run dataset",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1980,
+        -40
+      ],
+      "parameters": {
+        "url": "={{ 'https://api.apify.com/v2/datasets/' + $('Validate terminal run').first().json.datasetId + '/items' }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "clean",
+              "value": "true"
+            },
+            {
+              "name": "limit",
+              "value": "5"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 30000
+        }
+      }
+    },
+    {
+      "id": "project",
+      "name": "Validate and project fit rows",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2200,
+        -40
+      ],
+      "parameters": {
+        "jsCode": "const rows = $input.all().flatMap(item => Array.isArray(item.json) ? item.json : [item.json]);\nconst summary = $('Validate RUN-SUMMARY').first().json;\nif (!summary || rows.length !== summary.counts.outputRows) throw new Error(`Dataset rows ${rows.length} do not match RUN-SUMMARY outputRows ${summary && summary.counts && summary.counts.outputRows}`);\nconst expectedKeys = ['blockingGates','candidateHash','candidateSnapshotHash','company','deliveryScore','evaluatedAt','evaluationKey','evaluationStatus','externalId','fitScore','gapSummary','gates','job','jobKey','location','matchKey','postedAt','recommendation','schemaVersion','scoreAdjustedForGates','scoring','source','staticDecision','title','url','why'].sort();\nconst sha256 = /^[a-f0-9]{64}$/;\nconst statuses = new Set(['scored','static_drop','static_hold','forward_cap_hold','ai_failed']);\nconst bounded = row => {\n  const raw = JSON.stringify(row);\n  return raw.length <= 48000 ? raw : JSON.stringify({_truncated:true,originalChars:raw.length,schemaVersion:row.schemaVersion,matchKey:row.matchKey,jobKey:row.jobKey});\n};\nconst output = [];\nconst seen = new Set();\nfor (const row of rows) {\n  if (!row || typeof row !== 'object' || Array.isArray(row)) throw new Error('fit row must be an object');\n  if (JSON.stringify(Object.keys(row).sort()) !== JSON.stringify(expectedKeys) || row.schemaVersion !== 'nomad-ai-job-fit-v1') throw new Error('fit row must be exact nomad-ai-job-fit-v1');\n  if (!sha256.test(row.matchKey) || !sha256.test(row.evaluationKey) || !sha256.test(row.candidateHash) || !sha256.test(row.candidateSnapshotHash)) throw new Error('invalid fit row hashes');\n  if (!statuses.has(row.evaluationStatus)) throw new Error('unknown evaluationStatus');\n  if (!row.job || row.job.schemaVersion !== 'nomad-agent-job-v1') throw new Error('missing canonical job');\n  if (!row.scoring || row.scoring.algorithm !== 'scoring-v3' || !row.scoring.sourceProvenance) throw new Error('missing v3 provenance');\n  if (row.evaluationStatus === 'ai_failed') continue;\n  if (seen.has(row.matchKey)) throw new Error(`duplicate matchKey ${row.matchKey}`);\n  seen.add(row.matchKey);\n  const provenance = row.scoring.sourceProvenance;\n  output.push({json:{\n    schemaVersion:'nomad-ai-job-fit-destination-v1', matchKey:row.matchKey, evaluationKey:row.evaluationKey, jobKey:row.jobKey,\n    candidateHash:row.candidateHash, candidateSnapshotHash:row.candidateSnapshotHash, evaluatedAt:row.evaluatedAt,\n    fitScore:row.fitScore, deliveryScore:row.deliveryScore,\n    recommendation:row.recommendation, evaluationStatus:row.evaluationStatus,\n    title:row.title, company:row.company, location:row.location, url:row.url,\n    blockingGatesJson:JSON.stringify(row.blockingGates), why:row.why, gapSummary:row.gapSummary,\n    sourceRunId:provenance.actorRunId || null, sourceBuild:provenance.buildNumber || provenance.buildId || null,\n    evaluationJson:bounded(row),\n  }});\n}\nconst successful = rows.filter(row => row.evaluationStatus !== 'ai_failed').length;\nif (summary.billing.chargedCount !== successful) throw new Error(`Charged ${summary.billing.chargedCount} but dataset contains ${successful} successful evaluations`);\nreturn output;"
+      }
+    },
+    {
+      "id": "sheets",
+      "name": "Upsert Google Sheets by matchKey",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        2420,
+        -40
+      ],
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $('Configuration').first().json.googleSpreadsheetId }}"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "={{ $('Configuration').first().json.googleSheetName }}"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "schemaVersion": "={{ $json.schemaVersion }}",
+            "matchKey": "={{ $json.matchKey }}",
+            "evaluationKey": "={{ $json.evaluationKey }}",
+            "jobKey": "={{ $json.jobKey }}",
+            "candidateHash": "={{ $json.candidateHash }}",
+            "candidateSnapshotHash": "={{ $json.candidateSnapshotHash }}",
+            "evaluatedAt": "={{ $json.evaluatedAt }}",
+            "fitScore": "={{ $json.fitScore }}",
+            "deliveryScore": "={{ $json.deliveryScore }}",
+            "recommendation": "={{ $json.recommendation }}",
+            "evaluationStatus": "={{ $json.evaluationStatus }}",
+            "title": "={{ $json.title }}",
+            "company": "={{ $json.company }}",
+            "location": "={{ $json.location }}",
+            "url": "={{ $json.url }}",
+            "blockingGatesJson": "={{ $json.blockingGatesJson }}",
+            "why": "={{ $json.why }}",
+            "gapSummary": "={{ $json.gapSummary }}",
+            "sourceRunId": "={{ $json.sourceRunId }}",
+            "sourceBuild": "={{ $json.sourceBuild }}",
+            "evaluationJson": "={{ $json.evaluationJson }}"
+          },
+          "matchingColumns": [
+            "matchKey"
+          ],
+          "schema": []
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "note-config",
+      "name": "1. Configure",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -80,
+        -360
+      ],
+      "parameters": {
+        "content": "## 1. Configure\n\nAdd Apify Header Auth (`Authorization: Bearer <APIFY_TOKEN>`) to every HTTP node and Google Sheets OAuth2 to the last node. Import the shared AI job-fit CSV header, replace the spreadsheet ID, choose explicit search terms, and keep actorBuild pinned to verified build 0.1.10. Keep five jobs and the $0.10 cap for the first run.",
+        "height": 300,
+        "width": 720,
+        "color": 5
+      }
+    },
+    {
+      "id": "note-run",
+      "name": "2. Run and verify",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        640,
+        -360
+      ],
+      "parameters": {
+        "content": "## 2. Run and verify\n\nThe workflow starts one exact Actor build, polls only the returned run ID with a finite deadline, and rejects every terminal outcome except SUCCEEDED/0. It then reads that run's immutable dataset and key-value-store IDs—never a latest-run shortcut.",
+        "height": 300,
+        "width": 840,
+        "color": 6
+      }
+    },
+    {
+      "id": "note-write",
+      "name": "3. Validate and write",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1480,
+        -360
+      ],
+      "parameters": {
+        "content": "## 3. Validate and write\n\nRUN-SUMMARY v3, search provenance, scoring-v3 receipts, the $0.25 owner-provider circuit breaker, counts, and the single $0.02 result meter are reconciled before Google Sheets. AI-failed rows are not written. Successful rows upsert by matchKey, which keeps different candidates separate. Confirm the named row in a disposable sheet before activating anything.",
+        "height": 300,
+        "width": 1040,
+        "color": 4
+      }
+    }
+  ],
+  "connections": {
+    "Run manually": {
+      "main": [
+        [
+          {
+            "node": "Configuration",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Configuration": {
+      "main": [
+        [
+          {
+            "node": "Validate template setup",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate template setup": {
+      "main": [
+        [
+          {
+            "node": "Start exact Actor build",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Start exact Actor build": {
+      "main": [
+        [
+          {
+            "node": "Select same run",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Select same run": {
+      "main": [
+        [
+          {
+            "node": "Run is terminal?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Run is terminal?": {
+      "main": [
+        [
+          {
+            "node": "Validate terminal run",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Poll same Actor run",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Poll same Actor run": {
+      "main": [
+        [
+          {
+            "node": "Select same run",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate terminal run": {
+      "main": [
+        [
+          {
+            "node": "Read exact RUN-SUMMARY",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read exact RUN-SUMMARY": {
+      "main": [
+        [
+          {
+            "node": "Validate RUN-SUMMARY",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate RUN-SUMMARY": {
+      "main": [
+        [
+          {
+            "node": "Fetch exact run dataset",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch exact run dataset": {
+      "main": [
+        [
+          {
+            "node": "Validate and project fit rows",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate and project fit rows": {
+      "main": [
+        [
+          {
+            "node": "Upsert Google Sheets by matchKey",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "ai-job-fit-scorer-0-1-0",
+  "meta": {
+    "templateCredsSetupCompleted": false
+  },
+  "tags": []
+}

@@ -1,0 +1,526 @@
+{
+  "name": "Search and save AI job-fit evaluations to Google Sheets",
+  "flow": [
+    {
+      "id": 1,
+      "module": "apify:finishedTaskRun",
+      "version": 1,
+      "parameters": {},
+      "mapper": {},
+      "metadata": {
+        "designer": {
+          "x": 0,
+          "y": 0,
+          "name": "Watch completed AI Job Search & Fit Task runs"
+        },
+        "notes": "Create an Apify Task for nomad-agent/ai-job-fit-scorer pinned to verified build 0.1.10, use the bounded search starter with maxItems=5, and set max total charge USD 0.10."
+      }
+    },
+    {
+      "id": 2,
+      "module": "util:SetVariables",
+      "version": 1,
+      "parameters": {},
+      "mapper": {
+        "variables": [
+          {
+            "name": "expectedbuild",
+            "value": "0.1.10"
+          },
+          {
+            "name": "expectedactorid",
+            "value": "mBRj1sgHTWmoPJEcb"
+          },
+          {
+            "name": "googlespreadsheetid",
+            "value": "REPLACE_WITH_GOOGLE_SPREADSHEET_ID"
+          },
+          {
+            "name": "googlesheetname",
+            "value": "Job Fit"
+          }
+        ],
+        "scope": "roundtrip"
+      },
+      "metadata": {
+        "designer": {
+          "x": 300,
+          "y": 0,
+          "name": "Configuration"
+        }
+      }
+    },
+    {
+      "id": 3,
+      "module": "http:ActionSendData",
+      "version": 3,
+      "parameters": {
+        "handleErrors": true
+      },
+      "filter": {
+        "name": "Read summary only for exact successful build",
+        "conditions": [
+          [
+            {
+              "a": "{{1.status}}",
+              "b": "SUCCEEDED",
+              "o": "text:equal"
+            },
+            {
+              "a": "{{1.exitCode}}",
+              "b": 0,
+              "o": "number:equal"
+            },
+            {
+              "a": "{{1.actId}}",
+              "b": "{{2.expectedactorid}}",
+              "o": "text:equal"
+            },
+            {
+              "a": "{{1.buildNumber}}",
+              "b": "{{2.expectedbuild}}",
+              "o": "text:equal"
+            },
+            {
+              "a": "{{1.defaultDatasetId}}",
+              "o": "exist"
+            },
+            {
+              "a": "{{1.output.runSummary}}",
+              "o": "exist"
+            },
+            {
+              "a": "{{2.googlespreadsheetid}}",
+              "b": "REPLACE_WITH_GOOGLE_SPREADSHEET_ID",
+              "o": "text:notequal"
+            }
+          ]
+        ]
+      },
+      "mapper": {
+        "url": "{{1.output.runSummary}}",
+        "method": "get",
+        "headers": [],
+        "qs": [],
+        "timeout": "40",
+        "parseResponse": true,
+        "followRedirect": true,
+        "rejectUnauthorized": true
+      },
+      "metadata": {
+        "designer": {
+          "x": 600,
+          "y": 0,
+          "name": "Read exact RUN-SUMMARY"
+        }
+      }
+    },
+    {
+      "id": 4,
+      "module": "apify:fetchDatasetItems",
+      "version": 1,
+      "parameters": {},
+      "filter": {
+        "name": "Require usable v3 output",
+        "conditions": [
+          [
+            {
+              "a": "{{1.status}}",
+              "b": "SUCCEEDED",
+              "o": "text:equal"
+            },
+            {
+              "a": "{{1.exitCode}}",
+              "b": 0,
+              "o": "number:equal"
+            },
+            {
+              "a": "{{1.actId}}",
+              "b": "{{2.expectedactorid}}",
+              "o": "text:equal"
+            },
+            {
+              "a": "{{1.buildNumber}}",
+              "b": "{{2.expectedbuild}}",
+              "o": "text:equal"
+            },
+            {
+              "a": "{{1.defaultDatasetId}}",
+              "o": "exist"
+            },
+            {
+              "a": "{{1.output.runSummary}}",
+              "o": "exist"
+            },
+            {
+              "a": "{{2.googlespreadsheetid}}",
+              "b": "REPLACE_WITH_GOOGLE_SPREADSHEET_ID",
+              "o": "text:notequal"
+            },
+            {
+              "a": "{{3.statusCode}}",
+              "b": 200,
+              "o": "number:equal"
+            },
+            {
+              "a": "{{3.data.schemaVersion}}",
+              "b": "nomad-ai-job-fit-run-summary-v3",
+              "o": "text:equal"
+            },
+            {
+              "a": "{{3.data.algorithm.name}}",
+              "b": "scoring-v3",
+              "o": "text:equal"
+            },
+            {
+              "a": "{{3.data.status}}",
+              "b": "failed",
+              "o": "text:notequal"
+            },
+            {
+              "a": "{{3.data.ai.providerCostLimitUsd}}",
+              "b": 0.25,
+              "o": "number:equal"
+            },
+            {
+              "a": "{{3.data.ai.maxProviderAttempts}}",
+              "b": 2,
+              "o": "number:equal"
+            },
+            {
+              "a": "{{3.data.billing.eventName}}",
+              "b": "job-fit-result",
+              "o": "text:equal"
+            },
+            {
+              "a": "{{3.data.billing.unitPriceUsd}}",
+              "b": 0.02,
+              "o": "number:equal"
+            }
+          ]
+        ]
+      },
+      "mapper": {
+        "type": "clean",
+        "limit": "5",
+        "format": "json",
+        "datasetId": "{{1.defaultDatasetId}}"
+      },
+      "metadata": {
+        "designer": {
+          "x": 900,
+          "y": 0,
+          "name": "Fetch exact run dataset"
+        }
+      }
+    },
+    {
+      "id": 5,
+      "module": "util:SetVariables",
+      "version": 1,
+      "parameters": {},
+      "filter": {
+        "name": "Require successful fit row",
+        "conditions": [
+          [
+            {
+              "a": "{{4.schemaVersion}}",
+              "b": "nomad-ai-job-fit-v1",
+              "o": "text:equal"
+            },
+            {
+              "a": "{{4.scoring.algorithm}}",
+              "b": "scoring-v3",
+              "o": "text:equal"
+            },
+            {
+              "a": "{{4.evaluationStatus}}",
+              "b": "ai_failed",
+              "o": "text:notequal"
+            },
+            {
+              "a": "{{4.matchKey}}",
+              "o": "exist"
+            }
+          ]
+        ]
+      },
+      "mapper": {
+        "variables": [
+          {
+            "name": "schemaVersion",
+            "value": "nomad-ai-job-fit-destination-v1"
+          },
+          {
+            "name": "matchKey",
+            "value": "{{4.matchKey}}"
+          },
+          {
+            "name": "evaluationKey",
+            "value": "{{4.evaluationKey}}"
+          },
+          {
+            "name": "jobKey",
+            "value": "{{4.jobKey}}"
+          },
+          {
+            "name": "candidateHash",
+            "value": "{{4.candidateHash}}"
+          },
+          {
+            "name": "candidateSnapshotHash",
+            "value": "{{4.candidateSnapshotHash}}"
+          },
+          {
+            "name": "evaluatedAt",
+            "value": "{{4.evaluatedAt}}"
+          },
+          {
+            "name": "fitScore",
+            "value": "{{4.fitScore}}"
+          },
+          {
+            "name": "deliveryScore",
+            "value": "{{4.deliveryScore}}"
+          },
+          {
+            "name": "recommendation",
+            "value": "{{4.recommendation}}"
+          },
+          {
+            "name": "evaluationStatus",
+            "value": "{{4.evaluationStatus}}"
+          },
+          {
+            "name": "title",
+            "value": "{{4.title}}"
+          },
+          {
+            "name": "company",
+            "value": "{{4.company}}"
+          },
+          {
+            "name": "location",
+            "value": "{{4.location}}"
+          },
+          {
+            "name": "url",
+            "value": "{{4.url}}"
+          },
+          {
+            "name": "blockingGatesJson",
+            "value": "{{toJSON(4.blockingGates)}}"
+          },
+          {
+            "name": "why",
+            "value": "{{4.why}}"
+          },
+          {
+            "name": "gapSummary",
+            "value": "{{4.gapSummary}}"
+          },
+          {
+            "name": "sourceRunId",
+            "value": "{{4.scoring.sourceProvenance.actorRunId}}"
+          },
+          {
+            "name": "sourceBuild",
+            "value": "{{ifempty(4.scoring.sourceProvenance.buildNumber; 4.scoring.sourceProvenance.buildId)}}"
+          },
+          {
+            "name": "evaluationJson",
+            "value": "{{if(length(toJSON(4)) <= 48000; toJSON(4); concat(\"{\\\"_truncated\\\":true,\\\"matchKey\\\":\\\"\"; 4.matchKey; \"\\\"}\"))}}"
+          }
+        ],
+        "scope": "roundtrip"
+      },
+      "metadata": {
+        "designer": {
+          "x": 1200,
+          "y": 0,
+          "name": "Project evidence-gated fit row"
+        },
+        "notes": "Make filters can validate declared values but not a fully closed JSON object. Keep the n8n/Python contract tests as the stronger local oracle."
+      }
+    },
+    {
+      "id": 6,
+      "module": "google-sheets:filterRows",
+      "version": 2,
+      "parameters": {},
+      "mapper": {
+        "from": "drive",
+        "limit": "1",
+        "continue": true,
+        "filter": [
+          [
+            {
+              "a": "B",
+              "b": "{{5.matchKey}}",
+              "o": "text:equal"
+            }
+          ]
+        ],
+        "sheetId": "{{2.googlesheetname}}",
+        "sortOrder": "asc",
+        "spreadsheetId": "{{2.googlespreadsheetid}}",
+        "tableFirstRow": "A1:U1",
+        "includesHeaders": true
+      },
+      "metadata": {
+        "designer": {
+          "x": 1500,
+          "y": 0,
+          "name": "Find row by matchKey"
+        }
+      }
+    },
+    {
+      "id": 7,
+      "module": "builtin:BasicRouter",
+      "version": 1,
+      "parameters": {},
+      "mapper": null,
+      "metadata": {
+        "designer": {
+          "x": 1800,
+          "y": 0,
+          "name": "Update or append"
+        },
+        "notes": "Map variables 5.1 through 5.21 in shared CSV order to the update and append routes after importing."
+      },
+      "routes": [
+        {
+          "flow": [
+            {
+              "id": 8,
+              "module": "google-sheets:updateRow",
+              "version": 2,
+              "parameters": {},
+              "filter": {
+                "name": "Existing matchKey",
+                "conditions": [
+                  [
+                    {
+                      "a": "{{6.__ROW_NUMBER__}}",
+                      "o": "exist"
+                    }
+                  ]
+                ]
+              },
+              "mapper": {
+                "mode": "map",
+                "spreadsheetId": "{{2.googlespreadsheetid}}",
+                "sheetId": "{{2.googlesheetname}}",
+                "rowNumber": "{{6.__ROW_NUMBER__}}",
+                "tableFirstRow": "A1:U1",
+                "includesHeaders": true,
+                "values": {
+                  "0": "{{5.schemaVersion}}",
+                  "1": "{{5.matchKey}}",
+                  "2": "{{5.evaluationKey}}",
+                  "3": "{{5.jobKey}}",
+                  "4": "{{5.candidateHash}}",
+                  "5": "{{5.candidateSnapshotHash}}",
+                  "6": "{{5.evaluatedAt}}",
+                  "7": "{{5.fitScore}}",
+                  "8": "{{5.deliveryScore}}",
+                  "9": "{{5.recommendation}}",
+                  "10": "{{5.evaluationStatus}}",
+                  "11": "{{5.title}}",
+                  "12": "{{5.company}}",
+                  "13": "{{5.location}}",
+                  "14": "{{5.url}}",
+                  "15": "{{5.blockingGatesJson}}",
+                  "16": "{{5.why}}",
+                  "17": "{{5.gapSummary}}",
+                  "18": "{{5.sourceRunId}}",
+                  "19": "{{5.sourceBuild}}",
+                  "20": "{{5.evaluationJson}}"
+                }
+              },
+              "metadata": {
+                "designer": {
+                  "x": 2100,
+                  "y": -100,
+                  "name": "Update existing evaluation"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "flow": [
+            {
+              "id": 9,
+              "module": "google-sheets:addRow",
+              "version": 2,
+              "parameters": {},
+              "filter": {
+                "name": "New matchKey",
+                "conditions": [
+                  [
+                    {
+                      "a": "{{6.__ROW_NUMBER__}}",
+                      "o": "notexist"
+                    }
+                  ]
+                ]
+              },
+              "mapper": {
+                "mode": "map",
+                "spreadsheetId": "{{2.googlespreadsheetid}}",
+                "sheetId": "{{2.googlesheetname}}",
+                "includesHeaders": true,
+                "values": {
+                  "0": "{{5.schemaVersion}}",
+                  "1": "{{5.matchKey}}",
+                  "2": "{{5.evaluationKey}}",
+                  "3": "{{5.jobKey}}",
+                  "4": "{{5.candidateHash}}",
+                  "5": "{{5.candidateSnapshotHash}}",
+                  "6": "{{5.evaluatedAt}}",
+                  "7": "{{5.fitScore}}",
+                  "8": "{{5.deliveryScore}}",
+                  "9": "{{5.recommendation}}",
+                  "10": "{{5.evaluationStatus}}",
+                  "11": "{{5.title}}",
+                  "12": "{{5.company}}",
+                  "13": "{{5.location}}",
+                  "14": "{{5.url}}",
+                  "15": "{{5.blockingGatesJson}}",
+                  "16": "{{5.why}}",
+                  "17": "{{5.gapSummary}}",
+                  "18": "{{5.sourceRunId}}",
+                  "19": "{{5.sourceBuild}}",
+                  "20": "{{5.evaluationJson}}"
+                }
+              },
+              "metadata": {
+                "designer": {
+                  "x": 2100,
+                  "y": 100,
+                  "name": "Append new evaluation"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "metadata": {
+    "instant": true,
+    "version": 1,
+    "scenario": {
+      "roundtrips": 1,
+      "maxErrors": 1,
+      "autoCommit": true,
+      "sequential": true
+    },
+    "designer": {
+      "orphans": []
+    },
+    "zone": "eu1.make.com"
+  }
+}

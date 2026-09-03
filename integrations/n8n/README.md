@@ -10,11 +10,15 @@ Import an inactive, outcome-ready workflow:
   creates a duplicate-safe job tracker by appending or updating the shared flat
   row on stable `jobKey`; it pins LinkedIn build `1.0.2`;
 - [`euraxess-jobs-to-google-sheets.json`](euraxess-jobs-to-google-sheets.json)
-  creates the same tracker shape for EURAXESS build `1.0.16`.
+  creates the same tracker shape for EURAXESS build `1.0.16`;
+- [`ai-job-fit-scorer-to-google-sheets.json`](ai-job-fit-scorer-to-google-sheets.json)
+  searches and scores developer jobs with build `0.1.10`, validates the
+  distinct fit contract, and upserts candidate-specific evaluations by
+  `matchKey`.
 
 ## Duplicate-safe job tracker
 
-Both workflows follow the same path:
+The normalized-job tracker workflows follow the same path:
 
 ```text
 schedule/manual trigger
@@ -34,6 +38,13 @@ valid usable `partial` outcome can request one automatic retry; the same input,
 build, item cap, and charge cap are reused. Missing, invalid, wrong-build,
 failed, or count-mismatched runs stop before Sheets. A validated `empty` status
 writes no rows.
+
+The fit-scoring workflow follows the same exact-run discipline but requires
+`nomad-ai-job-fit-run-summary-v3` and `nomad-ai-job-fit-v1`. It reconciles the
+single `$0.02` `job-fit-result` meter, skips `ai_failed`, projects the separate
+21-column fit destination schema, and upserts by `matchKey`. Use
+[`ai-job-fit-google-sheets-columns.csv`](../shared/ai-job-fit-google-sheets-columns.csv)
+for that workflow; `jobKey` alone is not candidate-specific.
 
 ## Daily new-job alerts
 
@@ -65,16 +76,25 @@ completion-summary reconciliation is required before delivery.
    object and must not contain retired fields such as `replayEpoch`.
 7. Publish the workflow only after the manual Actor-to-Sheets smoke succeeds.
 
+For the fit scorer, use an Apify maximum total charge of `$0.10`, keep five
+items for the first import, and import the fit-specific shared CSV instead of
+the normalized-job CSV. If an exact-run storage/count check encounters metadata
+that has not settled immediately after completion, retry the same read nodes
+with a short finite delay; never substitute a latest-run lookup.
+
 EURAXESS accepts `postedWithin` values `24h`, `7d`, `30d`, or `any`; it rejects
 `1h` because the source establishes calendar dates, not posting hours.
 
 ## Tracker output and duplicate behavior
 
-The workflow validates the six canonical roots and derives the shared
+The scraper workflows validate the six canonical roots and derive the shared
 32-column `nomad-agent-flat-job-v1` projection. It uses
 `jobKey = source:externalId` as the append-or-update key. Keep the canonical
 dataset elsewhere if downstream logic needs nested requirements, contacts,
 custom fields, provenance, or the distinction between `null` and `[]`.
+
+The scorer keeps its complete `nomad-ai-job-fit-v1` row as the canonical
+evaluation and derives `nomad-ai-job-fit-destination-v1` only for the table.
 
 ## Validation boundary
 

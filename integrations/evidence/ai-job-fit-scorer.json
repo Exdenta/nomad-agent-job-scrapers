@@ -1,0 +1,160 @@
+{
+  "schemaVersion": "apify-integration-evidence-v1",
+  "actor": {
+    "id": "nomad-agent/ai-job-fit-scorer",
+    "buildNumber": "0.1.10",
+    "buildId": "XOOtUsksU2uE89H6l"
+  },
+  "recordedAt": "2026-09-03T09:43:31.284Z",
+  "actorCanaries": {
+    "suppliedJob": {
+      "runId": "KuuEnCoMfFbFj3z5R",
+      "status": "SUCCEEDED",
+      "exitCode": 0,
+      "datasetId": "H7Y9oNf8WqOOppar7",
+      "keyValueStoreId": "KMmo8UC5P8sW0GhLj",
+      "datasetRows": 1,
+      "evaluationStatuses": ["scored"],
+      "chargedEventCounts": {"job-fit-result": 1},
+      "runSummarySchema": "nomad-ai-job-fit-run-summary-v3",
+      "provider": "openrouter:OpenAI",
+      "model": "openai/gpt-5.6-luna",
+      "providerCostUsd": 0.00081685
+    },
+    "search": {
+      "runId": "udTJyz3zJWOkKSNUS",
+      "status": "SUCCEEDED",
+      "exitCode": 0,
+      "datasetId": "pPxzGk3hYEzSGU8Hw",
+      "keyValueStoreId": "MyF4T5A9Kq73IB6cj",
+      "sources": ["linkedin", "remote_boards"],
+      "sourceRowsBeforeCap": 2,
+      "datasetRows": 1,
+      "evaluationStatuses": ["scored"],
+      "chargedEventCounts": {"job-fit-result": 1},
+      "runSummarySchema": "nomad-ai-job-fit-run-summary-v3",
+      "provider": "openrouter:OpenAI",
+      "model": "openai/gpt-5.6-luna",
+      "providerCostUsd": 0.0010194
+    },
+    "restStarter": {
+      "runId": "uqwj8p5qPU74JUyEo",
+      "status": "SUCCEEDED",
+      "exitCode": 0,
+      "datasetId": "cNLSCPwta1wwRpghv",
+      "keyValueStoreId": "HbidXBCRsbf8YINvy",
+      "sources": ["linkedin", "remote_boards"],
+      "datasetRows": 1,
+      "evaluationStatuses": ["scored"],
+      "chargedEventCounts": {"job-fit-result": 1},
+      "runSummarySchema": "nomad-ai-job-fit-run-summary-v3",
+      "clientArtifact": "integrations/api/ai-job-fit-scorer-run-and-fetch.mjs"
+    }
+  },
+  "channels": {
+    "mcp": {
+      "artifactValidated": true,
+      "liveActorRunTested": true,
+      "liveChannelTested": false,
+      "destinationApplicable": false,
+      "liveDestinationWriteTested": false,
+      "review": {
+        "supported": false,
+        "status": "not-supported",
+        "submissionId": null,
+        "publicUrl": null
+      },
+      "evidence": [
+        {
+          "layer": "artifact",
+          "summary": "The generic call-actor descriptor is credential-free, bounded, schema-checked, and pinned to build 0.1.10."
+        },
+        {
+          "layer": "actor-run",
+          "summary": "Exact build 0.1.10 passed supplied-job and live two-source search canaries with reconciled datasets, summaries, and charges."
+        }
+      ],
+      "blockers": [
+        "Call the public Actor through the hosted Apify MCP server and inspect the returned tool, exact run, summary, and dataset."
+      ]
+    },
+    "n8n": {
+      "artifactValidated": true,
+      "liveActorRunTested": true,
+      "liveChannelTested": false,
+      "destinationApplicable": true,
+      "liveDestinationWriteTested": false,
+      "review": {
+        "supported": true,
+        "status": "not-submitted",
+        "submissionId": null,
+        "publicUrl": null
+      },
+      "evidence": [
+        {
+          "layer": "artifact",
+          "summary": "The inactive workflow validates exact-run status, build, summary, dataset rows, billing, scoring receipts, and matchKey upserts."
+        },
+        {
+          "layer": "actor-run",
+          "summary": "Exact build 0.1.10 passed supplied-job and live two-source search canaries with reconciled datasets, summaries, and charges."
+        }
+      ],
+      "blockers": [
+        "Import into an authenticated n8n instance and prove one create plus one update in a named disposable Google Sheet."
+      ]
+    },
+    "make": {
+      "artifactValidated": true,
+      "liveActorRunTested": true,
+      "liveChannelTested": false,
+      "destinationApplicable": true,
+      "liveDestinationWriteTested": false,
+      "review": {
+        "supported": true,
+        "status": "not-submitted",
+        "submissionId": null,
+        "publicUrl": null
+      },
+      "evidence": [
+        {
+          "layer": "artifact",
+          "summary": "The blueprint is bounded, pinned to exact Actor and build identities, and separates validation from Google Sheets upsert routes."
+        },
+        {
+          "layer": "actor-run",
+          "summary": "Exact build 0.1.10 passed supplied-job and live two-source search canaries with reconciled datasets, summaries, and charges."
+        }
+      ],
+      "blockers": [
+        "Import with an exact-build Apify Task and prove one create plus one update in a named disposable Google Sheet."
+      ]
+    },
+    "zapier": {
+      "artifactValidated": true,
+      "liveActorRunTested": true,
+      "liveChannelTested": false,
+      "destinationApplicable": true,
+      "liveDestinationWriteTested": false,
+      "review": {
+        "supported": true,
+        "status": "not-submitted",
+        "submissionId": null,
+        "publicUrl": null
+      },
+      "evidence": [
+        {
+          "layer": "artifact",
+          "summary": "The editor specification pins build 0.1.10, exact-run storage, result filtering, and matchKey-based Google Sheets upserts."
+        },
+        {
+          "layer": "actor-run",
+          "summary": "Exact build 0.1.10 passed supplied-job and live two-source search canaries with reconciled datasets, summaries, and charges."
+        }
+      ],
+      "blockers": [
+        "Build the Zap in the authenticated editor and prove one create plus one update in a named disposable Google Sheet."
+      ]
+    }
+  }
+}
