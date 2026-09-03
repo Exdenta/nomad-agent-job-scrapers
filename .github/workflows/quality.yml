@@ -1,0 +1,51 @@
+name: Validate repository
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: repository-quality-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Static contracts and tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+
+      - name: Prepare deterministic search artifacts
+        run: python3 scripts/search_publish.py prepare
+
+      - name: Reject generated artifact drift
+        run: |
+          generated_status="$(git status --porcelain=v1 --untracked-files=all -- website/sitemap.xml website/robots.txt website/contracts)"
+          if [ -n "$generated_status" ]; then
+            echo "Generated search artifacts differ from the committed files:"
+            echo "$generated_status"
+            exit 1
+          fi
+
+      - name: Check Python and browser-script syntax
+        run: |
+          python3 -m py_compile scripts/search_publish.py scripts/search_performance.py
+          node --check website/script.js
+
+      - name: Run full repository test suite
+        run: python3 -m unittest discover -s tests -v

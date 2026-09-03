@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Review how the Nomad Agent website, job-data integrations, and AI fit scorer minimize credentials, personal data, analytics, and retention." />
+    <meta name="robots" content="index,follow" />
+    <meta property="og:title" content="Privacy and Data Handling | Nomad Agent" />
+    <meta property="og:description" content="Practical data-minimization boundaries for the static website, public job data, destinations, and résumé-based scoring." />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://nomadagent.dev/privacy" />
+    <meta property="og:image" content="https://nomadagent.dev/assets/nomad-agent-social-card.png" />
+    <meta property="og:image:alt" content="Nomad Agent job data for APIs, automations, and AI agents" />
+    <meta property="og:site_name" content="Nomad Agent" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:image:alt" content="Nomad Agent job data for APIs, automations, and AI agents" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Privacy and Data Handling | Nomad Agent" />
+    <meta name="twitter:description" content="Data-minimization and retention guidance for website and integration users." />
+    <meta name="twitter:image" content="https://nomadagent.dev/assets/nomad-agent-social-card.png" />
+    <title>Privacy and Data Handling | Nomad Agent</title>
+    <link rel="canonical" href="https://nomadagent.dev/privacy" />
+    <link rel="icon" type="image/svg+xml" href="/assets/mark.svg" />
+    <link rel="stylesheet" href="/styles.css" />
+    <link rel="stylesheet" href="/detail.css" />
+    <script type="application/ld+json">
+      {"@context":"https://schema.org","@graph":[{"@type":"WebPage","@id":"https://nomadagent.dev/privacy#webpage","url":"https://nomadagent.dev/privacy","name":"Privacy and Data Handling","description":"Data-minimization guidance for the Nomad Agent website, job-data integrations, and fit scorer."},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://nomadagent.dev/"},{"@type":"ListItem","position":2,"name":"Privacy","item":"https://nomadagent.dev/privacy"}]}]}
+    </script>
+    <script defer src="/script.js"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">Skip to content</a>
+    <header class="topbar"><nav class="nav-container" aria-label="Primary navigation"><a class="brand" href="/" aria-label="Nomad Agent home"><img src="/assets/mark.svg" alt="" width="36" height="36" /><span>Nomad Agent</span></a><div class="nav-actions"><a class="nav-link" href="/actors">Actors</a><a class="nav-link" href="/integrations">Integrations</a><a class="nav-link" href="/guides">Guides</a><a class="nav-primary" href="https://github.com/Exdenta/nomad-agent-job-scrapers">View source</a></div></nav></header>
+    <main class="detail-main" id="main-content">
+      <nav class="detail-breadcrumbs" aria-label="Breadcrumb"><a href="/">Home</a><span>/</span><span>Privacy</span></nav>
+      <section class="detail-hero"><p class="detail-eyebrow">Minimize before collecting</p><h1>Privacy and data handling</h1><p class="detail-lede">The website, integration assets, source-job Actors, and candidate scorer have different data flows. Use the narrowest payload, retention, destination, and credential scope for each.</p><div class="detail-actions"><a class="button button-dark" href="https://github.com/Exdenta/nomad-agent-job-scrapers/issues/new/choose" target="_blank" rel="noopener noreferrer" data-event="support_cta_click" data-actor="all" data-placement="privacy-support">Report a privacy concern ↗</a><a class="button button-outline" href="/methodology" data-event="methodology_cta_click" data-actor="all" data-placement="privacy-methodology">Review evidence boundaries</a></div></section>
+      <div class="detail-layout"><div class="detail-content">
+        <section class="detail-panel"><h2>Static website</h2><p>The public site requires no account and contains no form for entering a résumé, token, or personal profile. Its first-party script creates no cookies, user identifiers, query-string capture, or network request by itself. It dispatches sanitized page and CTA events locally and respects Global Privacy Control or Do Not Track.</p><p>A site operator can connect a consent-aware <code>dataLayer</code>, Plausible installation, or subscriber. Event properties are limited to declared categories such as page path, placement, product, destination, content, and format; page code should never place contact data or secrets in those attributes.</p></section>
+        <section class="detail-panel"><h2>Credentials</h2><ul><li>Use OAuth where supported and least-privilege tokens elsewhere.</li><li>Keep tokens in credential managers, process environments, or platform secret stores—not URLs, Actor input, workflow JSON, logs, screenshots, or issue reports.</li><li>Integration assets are credential-free. Importing one does not authenticate or activate it.</li><li>Rotate a credential immediately if it is exposed, then remove it from history and logs.</li></ul></section>
+        <section class="detail-panel"><h2>Public job records</h2><p>A public vacancy can still contain protected text, named contacts, email addresses, or other personal information. Public access is not authorization to collect or republish it. Review source terms, licensing, privacy rules, purpose, geography, and applicable law before running an Actor.</p><p>Disable <code>includeRaw</code> unless raw descriptions are necessary. Retain canonical source links and provenance, avoid copying named contacts into broad-access tables, and define deletion and access controls for every destination.</p></section>
+        <section class="detail-panel"><h2>Candidate profiles and résumés</h2><p>The AI Job Search &amp; Fit Scorer processes one candidate per run. Prefer a structured profile containing only facts required for the decision. Obtain suitable consent before using a real résumé and do not infer constraints the candidate did not provide.</p><p>Résumé content is processed in memory by the Actor, but the original Apify Actor input or upload remains subject to the account’s configured retention. Extracted evidence follows the configured OpenRouter/OpenAI path with provider data collection denied. This is not a claim of zero data retention.</p></section>
+        <section class="detail-panel"><h2>Destinations and derived records</h2><p>Google Sheets, Airtable, Slack, Telegram, email, databases, and webhooks each have their own access, retention, sharing, and deletion behavior. A flat projection can make redistribution easier, but does not change the sensitivity or licensing of the source data.</p><ul><li>Store canonical records only where nested evidence is genuinely needed.</li><li>Limit descriptions and contacts in collaborative tables and chat channels.</li><li>Use opaque deduplication scopes instead of names or email addresses.</li><li>Protect candidate hashes, fit evidence, gaps, and evaluation JSON as candidate data.</li><li>Test with fictional profiles and disposable destinations before real data.</li></ul></section>
+        <section class="detail-panel detail-note"><h2>Public support is public</h2><p>GitHub issues are visible to others. Never include API tokens, résumés, profile text, personal contact details, private dataset or run links, screenshots containing secrets, proprietary job descriptions, or real applicant data. Reduce a problem to synthetic input and redacted structural evidence before reporting it.</p></section>
+        <section class="detail-panel"><h2>Your operating checklist</h2><ol><li>Document purpose, source rights, fields, processors, destination, access, and retention.</li><li>Disable optional raw, enrichment, translation, analytics, and cross-run state by default.</li><li>Use a small fictional-data canary.</li><li>Verify which records and logs each platform stores.</li><li>Set deletion procedures before scheduling.</li><li>Stop and seek privacy or legal review when personal data or redistribution is material.</li></ol><p>This page describes project behavior and safer defaults; it is not legal advice and cannot determine compliance for a specific organization or jurisdiction.</p></section>
+      </div><aside class="detail-aside" aria-label="Privacy resources"><section class="detail-panel"><h3>Read next</h3><ul class="detail-link-list"><li><a href="/contracts">Data semantics</a></li><li><a href="/methodology">Verification methodology</a></li><li><a href="/about">Project boundary</a></li></ul></section><section class="detail-panel"><h3>Safer first run</h3><p>Use a fictional profile, five or fewer rows, raw output off, no destination, and a conservative charge cap.</p></section></aside></div>
+      <nav class="detail-footer-nav" aria-label="Related pages"><a href="/contracts">Understand retained fields →</a><a href="/about">About the project →</a></nav>
+    </main>
+    <footer class="site-footer"><div class="footer-container"><a href="/about">About</a><a href="/methodology">Methodology</a><a href="/contracts">Contracts</a><a href="/privacy">Privacy</a><a href="/changelog">Changelog</a><span>Independent community project · MIT</span></div></footer>
+  </body>
+</html>

@@ -1,0 +1,61 @@
+name: Capture weekly SEO evidence
+
+on:
+  schedule:
+    - cron: "15 5 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: seo-observatory
+  cancel-in-progress: true
+
+jobs:
+  capture:
+    name: Capture Search Console evidence
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment:
+      name: production
+      url: https://nomadagent.dev/
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - name: Install Google authentication client
+        run: python3 -m pip install "google-auth[requests]>=2.38,<3"
+
+      - name: Authenticate with GitHub OIDC
+        uses: google-github-actions/auth@v3
+        with:
+          project_id: hryu-jobs
+          workload_identity_provider: projects/783418209706/locations/global/workloadIdentityPools/github-actions/providers/nomad-agent-job-scrapers
+          service_account: github-nomad-agent-web@hryu-jobs.iam.gserviceaccount.com
+
+      - name: Verify exact Search Console property access
+        run: python3 scripts/search_publish.py preflight
+
+      - name: Run SEO evidence tests
+        run: python3 -m unittest tests.test_search_performance tests.test_search_publish -v
+
+      - name: Capture privacy-minimized search performance
+        run: python3 scripts/search_performance.py --days 28 --omit-query-text --output seo-evidence/search-console.json
+
+      - name: Capture current Google index evidence
+        run: python3 scripts/search_publish.py inspect > seo-evidence/google-indexing.json
+
+      - name: Upload privacy-minimized evidence artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: nomad-agent-seo-evidence-${{ github.run_id }}
+          path: seo-evidence/
+          if-no-files-found: error
+          retention-days: 90

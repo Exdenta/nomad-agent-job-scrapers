@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Compare Nomad Agent job-data Actors for LinkedIn, EURAXESS research vacancies, and evidence-gated AI job-fit scoring." />
+    <meta name="robots" content="index,follow" />
+    <meta property="og:title" content="Job Data and Fit Scoring Actors | Nomad Agent" />
+    <meta property="og:description" content="Choose a source-specialized scraper or candidate-specific job-fit scorer with explicit data contracts and proof boundaries." />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://nomadagent.dev/actors" />
+    <meta property="og:image" content="https://nomadagent.dev/assets/nomad-agent-social-card.png" />
+    <meta property="og:image:alt" content="Nomad Agent job data for APIs, automations, and AI agents" />
+    <meta property="og:site_name" content="Nomad Agent" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:image:alt" content="Nomad Agent job data for APIs, automations, and AI agents" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Job Data and Fit Scoring Actors | Nomad Agent" />
+    <meta name="twitter:description" content="LinkedIn and EURAXESS job data plus evidence-gated AI fit scoring." />
+    <meta name="twitter:image" content="https://nomadagent.dev/assets/nomad-agent-social-card.png" />
+    <title>Job Data and Fit Scoring Actors | Nomad Agent</title>
+    <link rel="canonical" href="https://nomadagent.dev/actors" />
+    <link rel="icon" type="image/svg+xml" href="/assets/mark.svg" />
+    <link rel="stylesheet" href="/styles.css" />
+    <link rel="stylesheet" href="/detail.css" />
+    <script type="application/ld+json">
+      {"@context":"https://schema.org","@graph":[{"@type":"CollectionPage","@id":"https://nomadagent.dev/actors#webpage","url":"https://nomadagent.dev/actors","name":"Job Data and Fit Scoring Actors","description":"A comparison of Nomad Agent job-data and job-fit Actors."},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://nomadagent.dev/"},{"@type":"ListItem","position":2,"name":"Actors","item":"https://nomadagent.dev/actors"}]}]}
+    </script>
+    <script defer src="/script.js"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">Skip to content</a>
+    <header class="topbar"><nav class="nav-container" aria-label="Primary navigation"><a class="brand" href="/" aria-label="Nomad Agent home"><img src="/assets/mark.svg" alt="" width="36" height="36" /><span>Nomad Agent</span></a><div class="nav-actions"><a class="nav-link" href="/actors">Actors</a><a class="nav-link" href="/integrations">Integrations</a><a class="nav-link" href="/guides">Guides</a><a class="nav-primary" href="https://github.com/Exdenta/nomad-agent-job-scrapers">View source</a></div></nav></header>
+    <main class="detail-main" id="main-content">
+      <nav class="detail-breadcrumbs" aria-label="Breadcrumb"><a href="/">Home</a><span>/</span><span>Actors</span></nav>
+      <section class="detail-hero">
+        <p class="detail-eyebrow">Choose the contract that matches the job</p>
+        <h1>Job data and fit-scoring Actors</h1>
+        <p class="detail-lede">Collect source-linked jobs from LinkedIn or EURAXESS, or evaluate developer jobs for one candidate. The products share careful run controls, but their inputs, outputs, pricing, and evidence are deliberately distinct.</p>
+      </section>
+      <div class="detail-layout">
+        <div class="detail-content">
+          <section class="detail-panel">
+            <h2>LinkedIn Jobs Scraper</h2>
+            <p>Use the LinkedIn Actor for public professional vacancies, recurring alerts, trackers, and job-data products. It returns the canonical six-root <code>nomad-agent-job-v1</code> record, keeps original listing identity, and can suppress previously delivered jobs inside an explicit deduplication scope.</p>
+            <ul><li><strong>Current Store default observed 2026-09-03:</strong> <code>1.0.6</code> (immutable build <code>9uyPad4O7Zcjp1AVe</code>).</li><li><strong>Repository integration-tested pin:</strong> <code>1.0.2</code>. Revalidate before moving maintained workflows to the newer default.</li><li><strong>First run:</strong> keep translation, AI enrichment, analytics, raw output, and cross-run deduplication off; request no more than five jobs.</li><li><strong>Do not infer:</strong> a successful Actor run does not prove a named alert or table received rows.</li></ul>
+            <div class="detail-actions"><a class="button button-dark" href="/actors/linkedin" data-event="product_page_click" data-actor="linkedin" data-placement="actors-hub-linkedin">Explore LinkedIn data</a></div>
+          </section>
+          <section class="detail-panel">
+            <h2>EURAXESS Research Jobs Scraper</h2>
+            <p>Use the EURAXESS Actor for PhD, postdoc, fellowship, research, and faculty vacancies. It maps common fields into <code>nomad-agent-job-v1</code> while retaining research domains, funding, programmes, requirements, deadlines, and contacts in a source-specific <code>custom</code> object.</p>
+            <ul><li><strong>Current Store default observed 2026-09-03:</strong> <code>1.0.20</code> (immutable build <code>5n7huEXQYFUBdndQP</code>).</li><li><strong>Repository integration-tested pin:</strong> <code>1.0.16</code>. Revalidate before moving maintained workflows to the newer default.</li><li><strong>Recency:</strong> starts at <code>24h</code> because EURAXESS establishes calendar dates, not posting hours.</li><li><strong>Source boundary:</strong> this is an independent integration, not an official EURAXESS publishing or partner API.</li></ul>
+            <div class="detail-actions"><a class="button button-dark" href="/actors/euraxess" data-event="product_page_click" data-actor="euraxess" data-placement="actors-hub-euraxess">Explore research jobs</a></div>
+          </section>
+          <section class="detail-panel">
+            <h2>AI Job Search &amp; Fit Scorer</h2>
+            <p>Use the scorer when the output must be candidate-specific. It can search ten supported developer-job sources or accept supplied normalized jobs, then returns fit evidence, hard-requirement gates, gaps, a raw 0–100 fit score, and a gate-adjusted 0–5 delivery score.</p>
+            <ul><li><strong>Supported exact build:</strong> <code>0.1.11</code>.</li><li><strong>Meter:</strong> $0.02 for each successful retained evaluation; the maintained five-result starter caps result charges at $0.10.</li><li><strong>Separate contract:</strong> output is <code>nomad-ai-job-fit-v1</code>; candidate-safe destinations upsert by <code>matchKey</code>, not <code>jobKey</code>.</li></ul>
+            <div class="detail-actions"><a class="button button-dark" href="/actors/ai-job-fit-scorer" data-event="product_page_click" data-actor="ai-job-fit-scorer" data-placement="actors-hub-scorer">Explore fit scoring</a></div>
+          </section>
+          <section class="detail-panel detail-note">
+            <h2>Shared proof rule</h2>
+            <p>A page, template, validation test, deployment tag, or successful canary proves only its own layer. Before delivery, verify the returned run ID, terminal status, exact build, Actor-specific <code>RUN-SUMMARY</code>, and exact default dataset. Verify any named Slack, Google Sheets, Airtable, webhook, or other destination separately.</p>
+          </section>
+        </div>
+        <aside class="detail-aside" aria-label="Actor selection help">
+          <section class="detail-panel"><h3>Choose quickly</h3><ul class="detail-link-list"><li><a href="/actors/linkedin">Broad professional jobs</a></li><li><a href="/actors/euraxess">Academic and research jobs</a></li><li><a href="/actors/ai-job-fit-scorer">Candidate-specific ranking</a></li></ul></section>
+          <section class="detail-panel"><h3>Build the next step</h3><ul class="detail-link-list"><li><a href="/integrations">Compare integrations</a></li><li><a href="/contracts">Read data contracts</a></li><li><a href="/methodology">Review proof methodology</a></li></ul></section>
+        </aside>
+      </div>
+      <nav class="detail-footer-nav" aria-label="Related pages"><a href="/integrations">Compare integrations →</a><a href="/guides">Read implementation guides →</a></nav>
+    </main>
+    <footer class="site-footer"><div class="footer-container"><a href="/about">About</a><a href="/methodology">Methodology</a><a href="/contracts">Contracts</a><a href="/privacy">Privacy</a><a href="/changelog">Changelog</a><span>Independent community project · MIT</span></div></footer>
+  </body>
+</html>

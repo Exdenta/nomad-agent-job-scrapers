@@ -1,0 +1,42 @@
+name: Design-partner interest
+description: Propose a bounded, consent-based workflow evaluation or future case study.
+title: "design partner: "
+labels:
+  - design-partner
+body:
+  - type: markdown
+    attributes:
+      value: |
+        This public form is for high-level workflow fit only. Do not post contact details, credentials, résumés, candidate information, private job data, or customer records. A public issue is not consent to publish a case study.
+  - type: dropdown
+    id: outcome
+    attributes:
+      label: Intended outcome
+      options:
+        - Source-linked job search or data feed
+        - Duplicate-safe alert or tracker
+        - Job-fit scoring or shortlist
+        - Integration or agent workflow
+    validations:
+      required: true
+  - type: textarea
+    id: workflow
+    attributes:
+      label: Workflow outline
+      description: Describe sources, destination, approximate frequency, and success criteria without private data.
+    validations:
+      required: true
+  - type: input
+    id: comparison
+    attributes:
+      label: Current alternative
+      description: For example, a manual spreadsheet process or another public API.
+  - type: checkboxes
+    id: boundaries
+    attributes:
+      label: Evidence and consent boundaries
+      options:
+        - label: I understand that testing, destination proof, and publication approval are separate steps.
+          required: true
+        - label: I will not put credentials, résumés, candidate data, or private records in this public issue.
+          required: true
