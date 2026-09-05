@@ -5,7 +5,7 @@ Import either blueprint:
 - [`linkedin-jobs-to-google-sheets.blueprint.json`](linkedin-jobs-to-google-sheets.blueprint.json),
   for a Task pinned to LinkedIn build `1.0.2`;
 - [`euraxess-jobs-to-google-sheets.blueprint.json`](euraxess-jobs-to-google-sheets.blueprint.json),
-  for a Task pinned to EURAXESS build `1.0.16`;
+  for a Task pinned to EURAXESS build `1.0.28`;
 - [`ai-job-fit-scorer-to-google-sheets.blueprint.json`](ai-job-fit-scorer-to-google-sheets.blueprint.json),
   for a Task pinned to AI Job Search & Fit Scorer build `0.1.11`.
 
@@ -78,3 +78,5 @@ mapping, source checks, and credential hygiene are covered by offline tests. A
 destination-specific live test still requires the client's own Make and Google
 Sheets credentials. Importing a blueprint supplies no credentials and does not
 activate the scenario.
+
+For EURAXESS, `empty-limited` means zero rows within the run limits, with `resultsLimited: true` and no automatic retry. The workflow writes no destination rows and must not report that no matching jobs exist. Inspect the run summary before choosing a broader or higher-limit search.

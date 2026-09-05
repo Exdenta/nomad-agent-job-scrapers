@@ -10,7 +10,7 @@ Import an inactive, outcome-ready workflow:
   creates a duplicate-safe job tracker by appending or updating the shared flat
   row on stable `jobKey`; it pins LinkedIn build `1.0.2`;
 - [`euraxess-jobs-to-google-sheets.json`](euraxess-jobs-to-google-sheets.json)
-  creates the same tracker shape for EURAXESS build `1.0.16`;
+  creates the same tracker shape for EURAXESS build `1.0.28`;
 - [`ai-job-fit-scorer-to-google-sheets.json`](ai-job-fit-scorer-to-google-sheets.json)
   searches and scores developer jobs with build `0.1.11`, validates the
   distinct fit contract, and upserts candidate-specific evaluations by
@@ -104,3 +104,5 @@ The tracker additionally covers its terminal run gate and v4 reconciliation.
 A destination-specific live test still requires the client's own n8n and
 Google Sheets, Slack, Telegram, or SMTP credentials. Importing these files
 supplies no credentials and does not activate a schedule.
+
+For EURAXESS, `empty-limited` means zero rows within the run limits, with `resultsLimited: true` and no automatic retry. The workflow writes no destination rows and must not report that no matching jobs exist. Inspect the run summary before choosing a broader or higher-limit search.

@@ -102,7 +102,7 @@ run status, completion records, and dataset retrieval. Setup does not create an
 Apify schedule by itself. Use the n8n daily-alert template or an Apify Task and
 schedule when unattended monitoring is required.
 
-The EURAXESS skill documents the public `1.0` contract on exact build `1.0.16`.
+The EURAXESS skill documents the public `1.0` contract on exact build `1.0.28`.
 Its client setup uses generic `call-actor` to pin and verify that build rather
 than rely on mutable `latest` or `canary` tags. It then validates minimal v4
 `RUN-SUMMARY`, reconciles `delivered` with the dataset, and honors at most one

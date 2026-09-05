@@ -213,7 +213,14 @@ class WebsiteContractTests(unittest.TestCase):
                 self.assertTrue(all(item.get("@context") == "https://schema.org" for item in payloads if isinstance(item, dict)))
                 raw = " ".join(parser.json_ld).lower()
                 self.assertNotIn("aggregaterating", raw)
-                self.assertNotIn('"offers"', raw)
+                if route == "/actors/euraxess":
+                    graph = payloads[0]["@graph"]
+                    app = next(x for x in graph if x["@type"] == "SoftwareApplication")
+                    self.assertEqual(app["offers"]["price"], "0.0009")
+                    self.assertEqual(app["offers"]["priceCurrency"], "USD")
+                    self.assertIn("per delivered job", app["offers"]["description"])
+                else:
+                    self.assertNotIn('"offers"', raw)
         graph = structured_data(self.home)[0]["@graph"]
         by_type = {entry["@type"]: entry for entry in graph}
         self.assertEqual({"Organization", "WebSite", "ItemList"}, set(by_type))

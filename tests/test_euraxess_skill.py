@@ -19,7 +19,7 @@ SUMMARY_SCHEMA = ROOT / "integrations" / "shared" / "run-summary-v4.schema.json"
 SUMMARY_VALIDATOR = ROOT / "integrations" / "shared" / "validate_run_summary.py"
 CUSTOM_SCHEMA = ROOT / "integrations" / "shared" / "euraxess-v1.schema.json"
 CANONICAL_CUSTOM_SCHEMA_SHA256 = (
-    "2007916ebd1d900a7de5c2db69a1790da426c2a21ef1a7013cec1db1c6dcfcb4"
+    "b8bf5e3f85dfc91f1b42396dddec4cc0469029218147141a5e0fec7bb79d36a7"
 )
 CANONICAL_FIXTURE_SHA256 = (
     "9ab8e26a0bd2ae490b7f760923077a27d4d87fb7f7685eac492f50d72a546d0f"
@@ -196,8 +196,8 @@ class EuraxessSkillTest(unittest.TestCase):
         self.assertTrue(skill.startswith("---\nname: euraxess-"))
         self.assertIn("fetch-actor-details,call-actor", metadata)
         self.assertIn('transport: "streamable_http"', metadata)
-        self.assertIn("exact build `1.0.16`", combined)
-        self.assertIn("build `1.0.16`", combined)
+        self.assertIn("exact build `1.0.28`", combined)
+        self.assertIn("build `1.0.28`", combined)
         self.assertIn("nomad-agent-job-search-input-v1", combined)
         self.assertIn("nomad-agent-euraxess-search-v1", combined)
         self.assertIn("RUN-SUMMARY", combined)
@@ -208,7 +208,7 @@ class EuraxessSkillTest(unittest.TestCase):
         self.assertIn("only named people", combined.lower())
         self.assertIn("rejects `1h`", combined)
         self.assertIn("calendar-date", combined)
-        self.assertIn("inclusive cutoff of the previous UTC calendar date", combined)
+        self.assertIn("previous UTC calendar date", combined)
         self.assertIn("older than 24 elapsed hours", combined)
         self.assertIn("subtract 7 or 30", combined)
         self.assertIn("explicitly published under EURAXESS `Where to apply`", combined)
@@ -275,8 +275,8 @@ class EuraxessSkillTest(unittest.TestCase):
         schema = json.loads(raw)
         self.assertEqual(
             schema["$id"],
-            "https://raw.githubusercontent.com/Exdenta/OinkJobSearch/main/"
-            "apify/job_custom_schemas/euraxess-v1.schema.json",
+            "https://raw.githubusercontent.com/Exdenta/nomad-agent-job-scrapers/main/"
+            "integrations/shared/euraxess-v1.schema.json",
         )
         self.assertEqual(
             hashlib.sha256(raw).hexdigest(),
@@ -290,10 +290,10 @@ class EuraxessSkillTest(unittest.TestCase):
         self.assertIn("Actor catalog", readme)
         self.assertIn(SKILL_NAME, readme)
         self.assertIn("LinkedIn `0.6` and EURAXESS `1.0` are public Store Actors", readme)
-        self.assertIn("Store default observed at `1.0.20`", readme)
-        self.assertIn("integrations remain tested against `1.0.16`", readme)
-        self.assertIn("supports exact build `1.0.16`", guide)
-        self.assertIn("build `1.0.16`", guide)
+        self.assertIn("check Apify for the current default", readme)
+        self.assertIn("maintained integration pin `1.0.28`", readme)
+        self.assertIn("pins build `1.0.28`", guide)
+        self.assertIn("build `1.0.28`", guide)
         self.assertIn(f"--skill {SKILL_NAME}", agents)
 
 

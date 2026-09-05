@@ -6,7 +6,7 @@ store with discriminator `nomad-agent-run-summary-v4`.
 The closed public record contains only:
 
 - `schemaVersion`
-- `status`: `succeeded`, `empty`, or usable `partial`
+- `status`: `succeeded`, `empty`, `empty-limited`, or usable `partial`
 - `startedAt` and `finishedAt`
 - `resultsLimited`: the Actor knowingly stopped before processing all candidates
 - `delivered`, which must equal the complete selected dataset row count
@@ -28,3 +28,5 @@ Validate a downloaded record from the installed skill directory:
 ```bash
 python3 scripts/validate_run_summary.py run-summary.json
 ```
+
+`empty-limited` means zero rows within the run limits, with `resultsLimited: true` and no automatic retry. It is not proof that no matching vacancies exist.

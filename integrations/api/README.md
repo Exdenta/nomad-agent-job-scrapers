@@ -6,7 +6,7 @@ integration-specific subset. Pin the exact qualified build in the run query:
 | Actor | API Actor identifier | Required build |
 | --- | --- | --- |
 | LinkedIn | `nomad-agent~linkedin-enrich-translate-normalize-scraper` | `1.0.2` |
-| EURAXESS | `nomad-agent~euraxess-enrich-translate-normalize-scraper` | `1.0.16` |
+| EURAXESS | `nomad-agent~euraxess-enrich-translate-normalize-scraper` | `1.0.28` |
 | AI Job Search & Fit Scorer | `nomad-agent~ai-job-fit-scorer` | `0.1.11` |
 
 Confirm EURAXESS availability before a paid run. Keep the exact build query
@@ -26,7 +26,7 @@ curl --request POST \
 ```
 
 For EURAXESS, substitute its Actor identifier, body file, and
-`build=1.0.16`. The examples request at most five items and disable paid,
+`build=1.0.28`. The examples request at most five items and disable paid,
 stateful, raw, and analytics options. A caller may pass every field in the
 current input schema; see the
 [compatibility matrix](../../docs/integration-compatibility.md).

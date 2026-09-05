@@ -38,10 +38,8 @@ LLM_PATH_TOKEN_RE = re.compile(
     r"\.([A-Za-z][A-Za-z0-9]*)|\[(0|[1-9][0-9]*)\]"
 )
 MISSING = object()
-EURAXESS_CUSTOM_SCHEMA_ID = (
-    "https://raw.githubusercontent.com/Exdenta/OinkJobSearch/main/"
-    "apify/job_custom_schemas/euraxess-v1.schema.json"
-)
+EURAXESS_CUSTOM_SCHEMA_ID = 'https://raw.githubusercontent.com/Exdenta/nomad-agent-job-scrapers/main/integrations/shared/euraxess-v1.schema.json'
+LEGACY_EURAXESS_CUSTOM_SCHEMA_ID = 'https://raw.githubusercontent.com/Exdenta/OinkJobSearch/main/apify/job_custom_schemas/euraxess-v1.schema.json'
 
 
 class ContractValidationError(ValueError):
@@ -442,7 +440,7 @@ def _unparsed_geofield(value: Any, path: str) -> None:
 
 def _euraxess_custom(value: Any, path: str) -> None:
     custom = _object(value, path, {"schemaId", "data"})
-    if custom["schemaId"] != EURAXESS_CUSTOM_SCHEMA_ID:
+    if custom["schemaId"] not in {EURAXESS_CUSTOM_SCHEMA_ID, LEGACY_EURAXESS_CUSTOM_SCHEMA_ID}:
         raise ContractValidationError(
             f"{path}.schemaId must be the EURAXESS v1 extension schema"
         )

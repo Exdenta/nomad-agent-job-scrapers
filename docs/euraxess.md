@@ -1,10 +1,10 @@
-# EURAXESS research and academic jobs
+# EURAXESS Jobs Scraper | Full Details & AI Enrichment
 
 [`nomad-agent/euraxess-enrich-translate-normalize-scraper`](https://apify.com/nomad-agent/euraxess-enrich-translate-normalize-scraper)
 finds public EURAXESS PhD, postdoctoral, fellowship, research, and faculty
 vacancies and returns the shared `nomad-agent-job-v1` contract.
 
-This integration pack supports exact build `1.0.16`. Pin that build in API,
+This integration pack pins build `1.0.28`. Pin that build in API,
 MCP, n8n, and Make clients, and verify it on the completed run before accepting
 results.
 
@@ -58,8 +58,20 @@ python3 scripts/install_skill.py \
 - [REST API and webhook guidance](../integrations/api/README.md)
 - [Airtable destination preset](../integrations/airtable/README.md)
 
-The n8n and Make assets require terminal success, exact build `1.0.16`, a
+The n8n and Make assets require terminal success, exact build `1.0.28`, a
 valid `nomad-agent-run-summary-v4`, and a dataset row count equal to
 `RUN-SUMMARY.delivered`. They preserve the canonical dataset and derive only
 the documented flat view for Google Sheets. Importing a template never adds
 credentials or activates a schedule.
+
+## Release policy
+
+The Store default can move independently of downloaded workflows. This pack uses an exact pin and verifies the completed run against it. Update all maintained EURAXESS references with `python3 scripts/update_euraxess_pin.py OLD NEW`; validate the new Actor runtime and run the integration tests before publishing the assets. Pin updates and local tests do not prove hosted n8n, Make or MCP execution or destination writes.
+
+## Quick choice and sample
+
+Choose this normalized Actor for the shared job format, detailed research fields, optional AI and agent tooling. The related [EURAXESS scraper](https://apify.com/nomad-agent/euraxess-scraper) has its own format and delta alerts. Compare schemas before migrating.
+
+[Full output example](../examples/euraxess-job.json) · [Human quick start and pricing](https://nomadagent.dev/actors/euraxess). The sample is a published vacancy observed September 4, 2026, with the public schema URL; it is not a guarantee of current availability.
+
+For EURAXESS, `empty-limited` means zero rows within the run limits, with `resultsLimited: true` and no automatic retry. The workflow writes no destination rows and must not report that no matching jobs exist. Inspect the run summary before choosing a broader or higher-limit search.

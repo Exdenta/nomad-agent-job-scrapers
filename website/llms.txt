@@ -1,0 +1,19 @@
+# Nomad Agent
+
+> Structured public job data for apps, automations and AI agents.
+
+## EURAXESS research jobs
+- [Overview and pricing](https://nomadagent.dev/actors/euraxess): capabilities, limits and a real output example.
+- [API and export guide](https://nomadagent.dev/guides/euraxess-jobs-api-export): how to collect and export vacancies.
+- [Agent skill](https://github.com/Exdenta/nomad-agent-job-scrapers/blob/main/.agents/skills/euraxess-enrich-translate-normalize-scraper/SKILL.md): bounded MCP calls, current exact pin and result validation.
+- [Integration guide](https://github.com/Exdenta/nomad-agent-job-scrapers/blob/main/docs/euraxess.md): build policy and maintained examples.
+- [JSON example](https://raw.githubusercontent.com/Exdenta/nomad-agent-job-scrapers/main/examples/euraxess-job.json): a full record, not evidence of current vacancy availability.
+- [EURAXESS extension schema](https://raw.githubusercontent.com/Exdenta/nomad-agent-job-scrapers/main/integrations/shared/euraxess-v1.schema.json): custom fields.
+
+## Other resources
+- [Actors](https://nomadagent.dev/actors)
+- [Integration options](https://nomadagent.dev/integrations)
+- [Output contracts](https://nomadagent.dev/contracts)
+- [Privacy](https://nomadagent.dev/privacy)
+
+The Store default may change. Use maintained exact pins and verify the completed run and RUN-SUMMARY before delivering results. Unknown facts remain null. A deployment or local test is not proof of a hosted workflow or destination write.

@@ -10,7 +10,7 @@ https://mcp.apify.com?tools=fetch-actor-details,call-actor,get-actor-run,get-dat
 | Profile | Actor | Exact build |
 | --- | --- | --- |
 | LinkedIn | `nomad-agent/linkedin-enrich-translate-normalize-scraper` | `1.0.2` |
-| EURAXESS | `nomad-agent/euraxess-enrich-translate-normalize-scraper` | `1.0.16` |
+| EURAXESS | `nomad-agent/euraxess-enrich-translate-normalize-scraper` | `1.0.28` |
 | AI Job Search & Fit Scorer | `nomad-agent/ai-job-fit-scorer` | `0.1.11` |
 
 Keep the build explicit instead of relying on a movable tag. Confirm Actor
@@ -92,7 +92,7 @@ contract.
 ## Validation boundary
 
 The maintained profiles and smoke harness target LinkedIn `1.0.2` and
-EURAXESS `1.0.16`. The harness contains no credential and verifies the exact
+EURAXESS `1.0.28`. The harness contains no credential and verifies the exact
 build, terminal result, v4 completion record, delivered count, and canonical
 dataset rows.
 

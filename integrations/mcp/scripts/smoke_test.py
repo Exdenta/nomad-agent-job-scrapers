@@ -50,7 +50,7 @@ PROFILES = {
     "euraxess": {
         "url": PINNED_URL,
         "tool": "call-actor",
-        "build": "1.0.16",
+        "build": "1.0.28",
         "source": "euraxess",
         "input": Path(__file__).resolve().parents[1] / "examples/euraxess-search.mcp.json",
     },

@@ -1,19 +1,19 @@
 # EURAXESS Actor input contract
 
 Target contract: `nomad-agent-job-search-input-v1` with the optional closed
-`nomad-agent-euraxess-search-v1` extension. Pin exact build `1.0.16`, inspect
+`nomad-agent-euraxess-search-v1` extension. Pin exact build `1.0.28`, inspect
 the deployed schema, and stop when it does not exactly match this reference.
 
 | Field | Type | Default | Rules |
 | --- | --- | --- | --- |
-| `schemaVersion` | string | required | Must be `nomad-agent-job-search-input-v1` |
+| `schemaVersion` | string | v1 | Must be `nomad-agent-job-search-input-v1` |
 | `keyword` | string | empty | Title, discipline, skill, or research term |
 | `location` | string | empty | Case-insensitive match against published location/country text |
 | `euraxessSearch` | object | omitted | Separately versioned keyword-expansion extension |
 | `postedWithin` | enum | `24h` | `24h`, `7d`, `30d`, or `any`; EURAXESS rejects `1h` |
 | `workArrangements` | string array | omitted | Unique subset of `remote`, `hybrid`, `onsite`; unknown does not match |
 | `maxItems` | integer | `100` | Increase deliberately; `0` means the bounded 200-item window |
-| `dedupe` | object | enabled | Cross-run delivery suppression; explicitly disable for one-off use |
+| `dedupe` | object | disabled | Enable deliberately for alerts that skip prior deliveries |
 | `filters` | object | omitted | Closed `nomad-agent-job-filter-v1` expression |
 | `aiEnrichment` | object | disabled Silver | Managed optional enrichment; no customer model key required |
 | `translateToEnglish` | boolean | `false` | Managed selected-field translation; no customer provider key required |
@@ -94,7 +94,7 @@ only the complete public plain-text description, fill allowlisted still-null
 paths, and record provenance in `llm`. Provider failure preserves the base
 record and records `llm.status: failed` for that row.
 
-In supported build `1.0.16`, `translateToEnglish` covers title, domains,
+In supported build `1.0.28`, `translateToEnglish` covers title, domains,
 applicant-requirement prose, benefits, eligibility and selection text, work
 authorization, security clearance, and location preference. It does not
 rewrite organisations or place names, identifiers, URLs, source-raw labels,
@@ -123,3 +123,7 @@ one global account-wide key for unrelated searches or users.
 
 Availability observations are a separate evidence layer; they do not act as
 the delivery ledger.
+
+Date cutoffs are inclusive: the previous UTC calendar date for 24h can include jobs older than 24 elapsed hours. The 7d and 30d windows subtract 7 or 30 UTC dates and include the cutoff.
+
+Application email must be explicitly published under EURAXESS `Where to apply`. Emails in the `Contact` block stay in raw evidence unless they identify a named hiring contact.
