@@ -51,7 +51,7 @@ class IntegrationCompatibilityTests(unittest.TestCase):
         api = (ROOT / "integrations" / "api" / "README.md").read_text()
         for text in (make, api):
             self.assertIn("`1.0.2`", text)
-            self.assertIn("`1.0.28`", text)
+            self.assertIn("`latest`", text)
         for field in (
             "linkedinSearch", "strictGeography", "companyProfileEnrichment",
             "companyFilters", "euraxessSearch", "filters",

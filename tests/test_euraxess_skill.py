@@ -196,8 +196,8 @@ class EuraxessSkillTest(unittest.TestCase):
         self.assertTrue(skill.startswith("---\nname: euraxess-"))
         self.assertIn("fetch-actor-details,call-actor", metadata)
         self.assertIn('transport: "streamable_http"', metadata)
-        self.assertIn("exact build `1.0.28`", combined)
-        self.assertIn("build `1.0.28`", combined)
+        self.assertIn("the `latest` selector", combined)
+        self.assertIn('"build": "latest"', combined)
         self.assertIn("nomad-agent-job-search-input-v1", combined)
         self.assertIn("nomad-agent-euraxess-search-v1", combined)
         self.assertIn("RUN-SUMMARY", combined)
@@ -291,9 +291,9 @@ class EuraxessSkillTest(unittest.TestCase):
         self.assertIn(SKILL_NAME, readme)
         self.assertIn("LinkedIn `0.6` and EURAXESS `1.0` are public Store Actors", readme)
         self.assertIn("check Apify for the current default", readme)
-        self.assertIn("maintained integration pin `1.0.28`", readme)
-        self.assertIn("pins build `1.0.28`", guide)
-        self.assertIn("build `1.0.28`", guide)
+        self.assertIn("maintained integration selector `latest`", readme)
+        self.assertIn("selects `latest`", guide)
+        self.assertIn("`buildId`", guide)
         self.assertIn(f"--skill {SKILL_NAME}", agents)
 
 

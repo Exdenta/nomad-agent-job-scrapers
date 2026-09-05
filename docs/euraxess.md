@@ -4,9 +4,9 @@
 finds public EURAXESS PhD, postdoctoral, fellowship, research, and faculty
 vacancies and returns the shared `nomad-agent-job-v1` contract.
 
-This integration pack pins build `1.0.28`. Pin that build in API,
-MCP, n8n, and Make clients, and verify it on the completed run before accepting
-results.
+This integration pack selects `latest`. Select `latest` in API,
+MCP, n8n, and Make clients. Record each completed run’s immutable `buildId` and
+numeric `buildNumber`, then validate its summary and dataset before accepting results.
 
 ## Customer-visible features
 
@@ -58,7 +58,7 @@ python3 scripts/install_skill.py \
 - [REST API and webhook guidance](../integrations/api/README.md)
 - [Airtable destination preset](../integrations/airtable/README.md)
 
-The n8n and Make assets require terminal success, exact build `1.0.28`, a
+The n8n and Make assets require terminal success, the `latest` selector, a
 valid `nomad-agent-run-summary-v4`, and a dataset row count equal to
 `RUN-SUMMARY.delivered`. They preserve the canonical dataset and derive only
 the documented flat view for Google Sheets. Importing a template never adds
@@ -66,7 +66,7 @@ credentials or activates a schedule.
 
 ## Release policy
 
-The Store default can move independently of downloaded workflows. This pack uses an exact pin and verifies the completed run against it. Update all maintained EURAXESS references with `python3 scripts/update_euraxess_pin.py OLD NEW`; validate the new Actor runtime and run the integration tests before publishing the assets. Pin updates and local tests do not prove hosted n8n, Make or MCP execution or destination writes.
+The maintained starters select `latest`. Record the immutable `buildId` and numeric `buildNumber` returned by every run, then validate its terminal state, summary and dataset. The alias may advance between runs. Local tests and Actor execution do not prove hosted n8n, Make or MCP execution or destination writes.
 
 ## Quick choice and sample
 

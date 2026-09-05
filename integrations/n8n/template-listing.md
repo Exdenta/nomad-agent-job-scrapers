@@ -165,7 +165,7 @@ Actor run, and upsert duplicate-safe Google Sheets rows by stable job identity.
 
 Build a repeatable tracker for PhD, postdoc, fellowship, research, and faculty
 vacancies from EURAXESS. The workflow runs manually or daily, calls the Nomad
-Agent EURAXESS Actor at exact build `1.0.28`, polls the original run ID, and
+Agent EURAXESS Actor at the `latest` selector, polls the original run ID, and
 requires terminal success, exit code 0, the expected build, and a valid factual
 `nomad-agent-run-summary-v4` record.
 
@@ -197,7 +197,7 @@ No community node or AI-provider credential is required.
    named `Jobs`.
 3. Assign one scoped Apify Header Auth credential to all four Apify HTTP nodes.
 4. Connect Google Sheets to **Upsert jobs in Google Sheets**.
-5. Replace the spreadsheet placeholder and keep build `1.0.28`, five results,
+5. Replace the spreadsheet placeholder and keep selector `latest`, five results,
    and the starter charge cap for the first run.
 6. Set a bounded keyword, location, or `euraxessSearch` plan; use
    `advancedInputJson` for other current Actor fields.

@@ -95,15 +95,15 @@ Save EURAXESS jobs to Google Sheets
 
 ### Short description
 
-Watch a completed EURAXESS Task at build `1.0.28`, validate its factual run
+Watch a completed EURAXESS Task at selector `latest`, validate its factual run
 summary, and upsert normalized research jobs in Google Sheets by `jobKey`.
 
 ### Full description
 
 Create a repeatable Google Sheets tracker for PhD, postdoc, fellowship,
 research, and faculty vacancies collected from EURAXESS. The scenario watches
-completed Apify Task runs, accepts only terminal `SUCCEEDED` from exact build
-`1.0.28`, reads `nomad-agent-run-summary-v4` from the run's signed output link,
+completed Apify Task runs, accepts only terminal `SUCCEEDED` with immutable build evidence from a Task selecting
+`latest`, reads `nomad-agent-run-summary-v4` from the run's signed output link,
 and fetches that run's default dataset.
 
 Validated EURAXESS `nomad-agent-job-v1` rows are flattened to the shared
@@ -130,13 +130,13 @@ analytics, raw output, and cross-run deduplication off. EURAXESS supports
 
 1. Create an Apify Task for
    `nomad-agent/euraxess-enrich-translate-normalize-scraper` with complete
-   strict input, exact build `1.0.28`, no more than five results for the first
+   strict input, the `latest` selector, no more than five results for the first
    run, and a conservative maximum total charge.
 2. Import
    [`euraxess-jobs-to-google-sheets.blueprint.json`](euraxess-jobs-to-google-sheets.blueprint.json)
    into a new Make scenario and select that Task in
    **Watch completed EURAXESS Task runs**.
-3. Set `actorbuild` to `1.0.28`, replace the Task and spreadsheet placeholders,
+3. Set `actorbuild` to `latest`, replace the Task and spreadsheet placeholders,
    and connect Apify and Google Sheets.
 4. Import [`google-sheets-columns.csv`](google-sheets-columns.csv) into a tab
    named `Jobs`.

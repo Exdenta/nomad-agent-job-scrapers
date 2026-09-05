@@ -35,14 +35,13 @@ https://mcp.apify.com?tools=fetch-actor-details,call-actor,get-actor-run,get-dat
 Read the skill's
 [client setup](../.agents/skills/euraxess-enrich-translate-normalize-scraper/references/client-setup.md)
 before use. Use generic `call-actor` with
-`callOptions.build: "1.0.28"`, `callOptions.maxItems`, and a conservative
-`callOptions.maxTotalChargeUsd`; require the completed run to report build
-`1.0.28`.
-Validate terminal success and the exact build, read and validate minimal v4
+`callOptions.build: "latest"`, `callOptions.maxItems`, and a conservative
+`callOptions.maxTotalChargeUsd`; record the completed run’s immutable `buildId` and numeric `buildNumber`.
+Validate terminal success and the returned build evidence, read and validate minimal v4
 `RUN-SUMMARY`, honor at most one retry, then validate and reconcile the default dataset. Do not
 reuse LinkedIn source-specific input fields for EURAXESS.
 
 The maintained profiles and smoke harness target LinkedIn `1.0.2` and
-EURAXESS `1.0.28`. A successful Actor or MCP check confirms only the Actor,
+EURAXESS `latest`. A successful Actor or MCP check confirms only the Actor,
 completion record, and dataset path. Destination-platform writes require a
 separate test with the client's own credentials and disposable destination.

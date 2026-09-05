@@ -1,5 +1,8 @@
 # n8n job alerts and trackers
 
+
+EURAXESS starters select `latest` and retain each run’s immutable `buildId` and numeric `buildNumber`. References to exact configured pins below apply to the other Actor targets. Validate the EURAXESS run, summary and dataset before delivery; `latest` itself is not immutable evidence.
+
 Import an inactive, outcome-ready workflow:
 
 - [`linkedin-daily-job-alerts.json`](linkedin-daily-job-alerts.json) searches
@@ -10,7 +13,7 @@ Import an inactive, outcome-ready workflow:
   creates a duplicate-safe job tracker by appending or updating the shared flat
   row on stable `jobKey`; it pins LinkedIn build `1.0.2`;
 - [`euraxess-jobs-to-google-sheets.json`](euraxess-jobs-to-google-sheets.json)
-  creates the same tracker shape for EURAXESS build `1.0.28`;
+  creates the same tracker shape for EURAXESS selector `latest`;
 - [`ai-job-fit-scorer-to-google-sheets.json`](ai-job-fit-scorer-to-google-sheets.json)
   searches and scores developer jobs with build `0.1.11`, validates the
   distinct fit contract, and upserts candidate-specific evaluations by

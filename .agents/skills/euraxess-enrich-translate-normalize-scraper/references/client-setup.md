@@ -5,8 +5,8 @@ Connecting MCP adds authenticated live tools. Neither step changes Actor
 availability or deploys code.
 
 Use generic
-`call-actor` with exact `callOptions.build: "1.0.28"` and verify the same build
-number on the authoritative run; do not rely on either mutable tag.
+`call-actor` with `callOptions.build: "latest"`. Record the immutable `buildId`
+and numeric `buildNumber` on the authoritative run; the alias may advance between runs.
 
 Scoped endpoint:
 
@@ -62,10 +62,9 @@ intentional.
 1. Confirm the server is connected and the account may access the exact Actor.
 2. Fetch Actor details and pricing; verify the deployed schema before calling.
 3. Call generic `call-actor` with the canonical Actor name, strict v1 input,
-   `callOptions.build: "1.0.28"`, `callOptions.maxItems: 5`, and a conservative
+   `callOptions.build: "latest"`, `callOptions.maxItems: 5`, and a conservative
    `callOptions.maxTotalChargeUsd`.
-4. Require the run response to report `buildNumber: "1.0.28"` and stop on any
-   mismatch.
+4. Require the run response to include its immutable `buildId` and numeric `buildNumber`; record both and stop if either is missing or invalid.
 5. Keep dedupe, translation, enrichment, and analytics disabled for the first
    bounded run.
 6. Poll to terminal. If MCP omits `buildNumber`, verify the same run through

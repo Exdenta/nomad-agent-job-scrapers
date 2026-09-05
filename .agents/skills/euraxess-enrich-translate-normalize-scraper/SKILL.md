@@ -5,7 +5,7 @@ description: Find EURAXESS research jobs through Apify, validate the nested job 
 
 # EURAXESS Jobs Scraper | Full Details & AI Enrichment
 
-Use exact build `1.0.28`. Verify access and current pricing with `fetch-actor-details` before a paid run. Installing this skill does not configure or authorize Apify; use [client setup](references/client-setup.md) if tools are unavailable. Never request an API token in chat.
+Use the `latest` selector. Verify access and current pricing with `fetch-actor-details` before a paid run. Installing this skill does not configure or authorize Apify; use [client setup](references/client-setup.md) if tools are unavailable. Never request an API token in chat.
 
 ## Search
 
@@ -26,7 +26,7 @@ Use generic MCP `call-actor` with this complete envelope. Adapt the keyword and 
     "analyticsEnabled": false
   },
   "waitSecs": 0,
-  "callOptions": {"build": "1.0.28", "maxItems": 5, "maxTotalChargeUsd": 0.1}
+  "callOptions": {"build": "latest", "maxItems": 5, "maxTotalChargeUsd": 0.1}
 }
 ```
 
@@ -36,7 +36,7 @@ Read [input details](references/input-contract.md) only for filters, workplace c
 
 ## Accept results
 
-1. Poll the returned run ID with `get-actor-run` until terminal, bounded by its configured timeout. Require `SUCCEEDED`, exit code `0` and `buildNumber: "1.0.28"`. If MCP omits the build, check the same run through the authenticated API. Stop before dataset retrieval on a missing or different build, `FAILED`, `TIMED-OUT` or `ABORTED`.
+1. Poll the returned run ID with `get-actor-run` until terminal, bounded by its configured timeout. Require `SUCCEEDED`, exit code `0`, a nonempty immutable `buildId`, and a numeric `buildNumber`. Record both returned build fields. If MCP omits them, check the same run through the authenticated API. Stop before dataset retrieval on missing build evidence, `FAILED`, `TIMED-OUT` or `ABORTED`.
 2. Read the same run's default key-value-store `RUN-SUMMARY` with `get-key-value-store-record`. Validate it using `scripts/validate_run_summary.py`. Missing or invalid summaries stop delivery. See [summary semantics](references/run-summary.md) for details.
 3. Paginate the same run's default dataset with `get-dataset-items`. Its full count must equal `RUN-SUMMARY.delivered`. A valid `empty` with zero rows is an empty search. `empty-limited` means the limits prevented a conclusive search; report that limitation.
 4. Only a usable `partial` with `retry.recommended: true` may be retried. Wait `afterSeconds` (1–3600 seconds), repeat the exact input, build, item cap and charge cap at most once, then validate the selected run and reconcile its rows. Never automatically retry other outcomes.

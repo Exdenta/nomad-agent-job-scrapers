@@ -47,7 +47,7 @@ class IntegrationListingCopyTests(unittest.TestCase):
         ):
             self.assertIn(f"]({asset})", copy)
 
-        for build in ("1.0.2", "1.0.28", "0.1.11"):
+        for build in ("1.0.2", "latest", "0.1.11"):
             self.assertIn(f"`{build}`", copy)
         for product_url in (
             "https://nomadagent.dev/actors/linkedin",
@@ -69,7 +69,7 @@ class IntegrationListingCopyTests(unittest.TestCase):
         ):
             self.assertIn(f"]({asset})", copy)
 
-        for build in ("1.0.2", "1.0.28", "0.1.11"):
+        for build in ("1.0.2", "latest", "0.1.11"):
             self.assertIn(f"`{build}`", copy)
         for product_url in (
             "https://nomadagent.dev/actors/linkedin",

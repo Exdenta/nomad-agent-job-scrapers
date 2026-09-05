@@ -1,7 +1,7 @@
 # EURAXESS Actor input contract
 
 Target contract: `nomad-agent-job-search-input-v1` with the optional closed
-`nomad-agent-euraxess-search-v1` extension. Pin exact build `1.0.28`, inspect
+`nomad-agent-euraxess-search-v1` extension. Use the `latest` selector, inspect
 the deployed schema, and stop when it does not exactly match this reference.
 
 | Field | Type | Default | Rules |
@@ -94,7 +94,7 @@ only the complete public plain-text description, fill allowlisted still-null
 paths, and record provenance in `llm`. Provider failure preserves the base
 record and records `llm.status: failed` for that row.
 
-In supported build `1.0.28`, `translateToEnglish` covers title, domains,
+In the current input contract, `translateToEnglish` covers title, domains,
 applicant-requirement prose, benefits, eligibility and selection text, work
 authorization, security clearance, and location preference. It does not
 rewrite organisations or place names, identifiers, URLs, source-raw labels,

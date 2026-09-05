@@ -13,7 +13,7 @@
           "y": 0,
           "name": "Watch completed EURAXESS Task runs"
         },
-        "notes": "Select the Apify Task pinned to exact EURAXESS build 1.0.28. Only terminal successful runs are evaluated; one valid partial v4 outcome may repeat the same Task once."
+        "notes": "Select the Apify Task selecting latest; retain the returned immutable build ID and number. Only terminal successful runs are evaluated; one valid partial v4 outcome may repeat the same Task once."
       }
     },
     {
@@ -33,7 +33,7 @@
           },
           {
             "name": "actorbuild",
-            "value": "1.0.28"
+            "value": "latest"
           },
           {
             "name": "googlespreadsheetid",
@@ -42,6 +42,14 @@
           {
             "name": "googlesheetname",
             "value": "Jobs"
+          },
+          {
+            "name": "resolvedbuildid",
+            "value": "{{1.buildId}}"
+          },
+          {
+            "name": "resolvedbuildnumber",
+            "value": "{{1.buildNumber}}"
           }
         ],
         "scope": "roundtrip"
@@ -52,7 +60,7 @@
           "y": 0,
           "name": "Configuration"
         },
-        "notes": "Replace the Task ID and spreadsheet ID. Select the same Task pinned to exact build 1.0.28 in the trigger. Keep maxitems small for the first destination smoke test."
+        "notes": "Replace the Task ID and spreadsheet ID. Select the same Task selecting latest in the trigger. Keep maxitems small for the first destination smoke test."
       }
     },
     {
@@ -92,7 +100,7 @@
         "notes": "Reads the Actor output schema's signed runSummary link. Missing or malformed v4 stops the scenario; one valid partial outcome may authorize the bounded retry route."
       },
       "filter": {
-        "name": "Read status only for the exact successful Actor build",
+        "name": "Read status for a successful latest run with immutable build evidence",
         "conditions": [
           [
             {
@@ -102,12 +110,40 @@
             },
             {
               "a": "{{1.buildNumber}}",
-              "b": "{{2.actorbuild}}",
-              "o": "text:equal"
+              "o": "exist"
             },
             {
               "a": "{{1.output.runSummary}}",
               "o": "exist"
+            },
+            {
+              "a": "{{1.buildId}}",
+              "o": "exist"
+            },
+            {
+              "a": "{{1.exitCode}}",
+              "b": "0",
+              "o": "number:equal"
+            },
+            {
+              "a": "{{2.actorbuild}}",
+              "b": "latest",
+              "o": "text:equal"
+            },
+            {
+              "a": "{{length(trim(1.buildId))}}",
+              "b": "0",
+              "o": "number:greater"
+            },
+            {
+              "a": "{{length(trim(1.buildNumber))}}",
+              "b": "0",
+              "o": "number:greater"
+            },
+            {
+              "a": "{{replace(1.buildNumber; \"/^[0-9]+[.][0-9]+[.][0-9]+$/\"; \"\")}}",
+              "b": "",
+              "o": "text:equal"
             }
           ]
         ]
