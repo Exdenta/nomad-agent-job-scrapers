@@ -74,3 +74,7 @@ The maintained starters select `latest`. Record the immutable `buildId` and nume
 [Full output example](../examples/euraxess-job.json) · [Human quick start and pricing](https://nomadagent.dev/actors/euraxess). The sample is a published vacancy observed September 4, 2026, with the public schema URL; it is not a guarantee of current availability.
 
 For EURAXESS, `empty-limited` means zero rows within the run limits, with `resultsLimited: true` and no automatic retry. The workflow writes no destination rows and must not report that no matching jobs exist. Inspect the run summary before choosing a broader or higher-limit search.
+
+## Console deduplication input
+
+The deduplication scope key is optional. The Actor accepts the Console form value `"dedupe": {"enabled": false}` without a `key` and uses an empty scope key internally. Deduplication stays disabled. With `enabled: true`, an omitted key uses the normal query scope; an explicit key is preserved. Invalid types and unknown deduplication fields are rejected.
