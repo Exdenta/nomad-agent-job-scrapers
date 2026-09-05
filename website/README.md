@@ -7,7 +7,7 @@ directory from the isolated `nomad-agent-job-scrapers` site in project
 
 ## Information architecture
 
-The site has three product pages, seven integration pages, four task-led guides,
+The site has four product pages, seven integration pages, four task-led guides,
 and About, methodology, privacy, changelog, and contract pages. Every indexable
 HTML file declares one absolute canonical. `404.html` is intentionally
 `noindex,follow` and has no canonical.

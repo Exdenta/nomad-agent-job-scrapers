@@ -113,3 +113,13 @@ current account.
 The installed skill also contains `references/client-setup.md`, so an agent can
 explain the Codex or Claude Code connection boundary without copying an Apify
 token into a prompt or repository.
+
+## Y Combinator normalized jobs
+
+The [ycombinator-enrich-translate-normalize-scraper](../.agents/skills/ycombinator-enrich-translate-normalize-scraper/SKILL.md) skill covers startup-job search, recurring-alert dedupe, exact-build calls, and v4 completion checks.
+
+```bash
+python3 scripts/install_skill.py --skill ycombinator-enrich-translate-normalize-scraper --client both --target /path/to/project
+```
+
+See the [YC guide](ycombinator.md) for current prices and source limitations.

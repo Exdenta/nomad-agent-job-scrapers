@@ -64,3 +64,17 @@ prove writes to n8n, Make, Google Sheets, Airtable, or a webhook destination.
 Destination-specific live validation requires the client's own disposable
 destination and credentials. Importing a template supplies no credentials and
 does not activate a schedule.
+
+## Y Combinator normalized profile
+
+| Surface | Exact build | Verification boundary |
+| --- | --- | --- |
+| Actor, REST recipe, Agent Skill | `1.0.6` (`6aqB3jicww58310qm`) | Actor execution and public-schema validation; hosted MCP and named destinations remain untested |
+
+Input fields: `firstRunMode`, `schemaVersion`, `keyword`, `location`,
+`workArrangements`, `postedWithin`, `orderBy`, `maxItems`, `ycSearch`, `dedupe`,
+`filters`, `aiEnrichment`, `translateToEnglish`, `includeRaw`, `analyticsEnabled`.
+Output is `nomad-agent-job-v1`, source `ycombinator_was`, public `ycombinator-v2`
+custom extension, and `nomad-agent-run-summary-v4`. Existing n8n, Make, Zapier,
+Airtable, and source-specific Python projections have no YC compatibility claim.
+See [the guide](ycombinator.md) for bounded API/MCP recipes.

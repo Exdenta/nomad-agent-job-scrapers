@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Collect Y Combinator startup jobs with complete descriptions, salary ranges, company details, and source links for recruiting pipelines and recurring alerts." />
+    <meta name="robots" content="index,follow" />
+    <meta property="og:title" content="Y Combinator Jobs Scraper API | Nomad Agent" />
+    <meta property="og:description" content="YC startup jobs for pipelines and alerts, starting at $0.90 per 1,000 delivered jobs in result events." />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://nomadagent.dev/actors/ycombinator" />
+    <meta property="og:image" content="https://nomadagent.dev/assets/nomad-agent-social-card.png" />
+    <meta property="og:image:alt" content="Nomad Agent job data for APIs, automations, and AI agents" />
+    <meta property="og:site_name" content="Nomad Agent" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:image:alt" content="Nomad Agent job data for APIs, automations, and AI agents" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Y Combinator Jobs Scraper API | Nomad Agent" />
+    <meta name="twitter:description" content="Structured YC startup jobs with original descriptions and stable identity for recurring alerts." />
+    <meta name="twitter:image" content="https://nomadagent.dev/assets/nomad-agent-social-card.png" />
+    <title>Y Combinator Jobs Scraper API | Nomad Agent</title>
+    <link rel="canonical" href="https://nomadagent.dev/actors/ycombinator" />
+    <link rel="icon" type="image/svg+xml" href="/assets/mark.svg" />
+    <link rel="stylesheet" href="/styles.css" />
+    <link rel="stylesheet" href="/detail.css" />
+    <script type="application/ld+json">
+      {"@context":"https://schema.org","@graph":[{"@type":"WebPage","@id":"https://nomadagent.dev/actors/ycombinator#webpage","url":"https://nomadagent.dev/actors/ycombinator","name":"Y Combinator Jobs Scraper API","description":"YC startup jobs for pipelines and alerts with complete descriptions and explicit source limitations."},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://nomadagent.dev/"},{"@type":"ListItem","position":2,"name":"Actors","item":"https://nomadagent.dev/actors"},{"@type":"ListItem","position":3,"name":"Y Combinator Jobs Scraper","item":"https://nomadagent.dev/actors/ycombinator"}]}]}
+    </script>
+    <script defer src="/script.js"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">Skip to content</a>
+    <header class="topbar"><nav class="nav-container" aria-label="Primary navigation"><a class="brand" href="/" aria-label="Nomad Agent home"><img src="/assets/mark.svg" alt="" width="36" height="36" /><span>Nomad Agent</span></a><div class="nav-actions"><a class="nav-link" href="/actors">Actors</a><a class="nav-link" href="/integrations">Integrations</a><a class="nav-link" href="/guides">Guides</a><a class="nav-primary" href="https://github.com/Exdenta/nomad-agent-job-scrapers">View source</a></div></nav></header>
+    <main class="detail-main" id="main-content">
+      <nav class="detail-breadcrumbs" aria-label="Breadcrumb"><a href="/">Home</a><span>/</span><a href="/actors">Actors</a><span>/</span><span>Y Combinator</span></nav>
+      <section class="detail-hero">
+        <p class="detail-eyebrow">Startup jobs for pipelines and alerts</p>
+        <h1>Y Combinator Jobs Scraper API</h1>
+        <p class="detail-lede">Bring YC startup openings into your recruiting pipeline, job board, or recurring alert. Get complete descriptions, salary ranges, company details, and source links in one consistent record.</p>
+        <div class="detail-badges"><span class="detail-badge">$0.90 / 1,000 base results</span><span class="detail-badge">Exact release 1.0.6</span><span class="detail-badge">Optional AI enrichment</span></div>
+        <div class="detail-actions"><a class="button button-dark" href="https://apify.com/nomad-agent/ycombinator-enrich-translate-normalize-scraper?utm_source=nomad-agent-job-scrapers&amp;utm_medium=owned-site&amp;utm_campaign=actor-discovery&amp;utm_content=detail-ycombinator" target="_blank" rel="noopener noreferrer" data-event="actor_cta_click" data-actor="ycombinator" data-placement="detail-ycombinator">Open on Apify ↗</a><a class="button button-outline" href="https://github.com/Exdenta/nomad-agent-job-scrapers/blob/main/docs/ycombinator.md" data-event="guide_cta_click" data-actor="ycombinator" data-placement="detail-ycombinator-guide">Get the five-job recipe</a></div>
+      </section>
+      <div class="detail-layout"><div class="detail-content">
+        <section class="detail-panel"><h2>Built for repeatable job workflows</h2><p>Use the normalized Actor for startup sourcing, custom job boards, and alerts that suppress previously delivered matches. Its record shape is shared with the normalized LinkedIn and EURAXESS scrapers, and YC-specific cohort, equity, and company context stay available.</p><p>The separate legacy YC Actor serves existing flat-export workflows. Choose this normalized profile when you need nested data and pipeline controls. Job identity remains <code>ycombinator_was:externalId</code>.</p></section>
+        <section class="detail-panel"><h2>Start with five jobs</h2><p>Paste this into the Actor’s Input JSON editor. The trial leaves paid extras and cross-run deduplication off. Add a keyword or city after checking the first results.</p><pre><code>{
+  "schemaVersion": "nomad-agent-job-search-input-v1",
+  "firstRunMode": false,
+  "postedWithin": "any",
+  "maxItems": 5,
+  "dedupe": {"enabled": false, "key": ""},
+  "aiEnrichment": {"enabled": false, "accuracy": "silver"},
+  "translateToEnglish": false,
+  "includeRaw": true
+}</code></pre><p>Five delivered base results cost $0.0045 in Actor result events. For recurring alerts, enable deduplication with a stable key for the alert stream.</p></section>
+        <section class="detail-panel"><h2>Pay for delivered results</h2><p>Prices checked September 5, 2026: $0.0009 per delivered job, plus optional Silver enrichment at $0.006, Gold at $0.010, or confirmed English translation at $0.006 per qualifying job.</p><p>100 base results cost $0.09 in Actor events. With Silver enrichment on all 100, that is $0.69. Failed enrichment is not charged as enrichment. Check the live Pricing tab and your Apify plan for current rates and any other platform costs.</p><p>English translation is usually unnecessary for this largely English source. First-run mode enables a paid five-result Silver-and-translation preset; the recipe above leaves it off.</p></section>
+        <section class="detail-panel detail-note"><h2>Know what the source establishes</h2><ul><li>Runs filter a regularly refreshed inventory of complete public postings; they do not fetch YC pages on demand. Stale or unavailable inventory fails the run.</li><li>Recency means the first observation hour, not the employer’s publication date. Availability is a dated observation.</li><li>A salary such as “$230K - $280K” can have parsed amounts with unknown currency and period.</li><li>A city label can remain unparsed. A physical location does not establish onsite or hybrid work, so those workplace filters can return few matches.</li><li>Unknown values stay null; explicitly empty lists stay empty. Founders are company context, not hiring contacts.</li></ul><p>This independent service is unaffiliated with Y Combinator or Work at a Startup.</p></section>
+        <section class="detail-panel"><h2>Use it from an API or AI agent</h2><p>The exact release is <code>1.0.6</code>, immutable build <code>6aqB3jicww58310qm</code>. Use the guide’s bounded API/MCP recipe and installable Agent Skill. Verify the returned build, run summary, and dataset count; a successful platform status alone does not prove complete coverage.</p><p>The public YC v2 schema describes source-specific data. Existing destination templates for other scrapers are not automatically compatible. Hosted MCP and named destination writes require their own checks.</p></section>
+      </div><aside class="detail-aside" aria-label="Y Combinator Actor resources"><section class="detail-panel"><h3>Build with it</h3><ul class="detail-link-list"><li><a href="https://github.com/Exdenta/nomad-agent-job-scrapers/blob/main/docs/ycombinator.md">Inputs, API, and MCP guide ↗</a></li><li><a href="https://github.com/Exdenta/nomad-agent-job-scrapers/blob/main/.agents/skills/ycombinator-enrich-translate-normalize-scraper/SKILL.md">Installable Agent Skill ↗</a></li><li><a href="https://raw.githubusercontent.com/Exdenta/nomad-agent-job-scrapers/main/integrations/shared/ycombinator-v2.schema.json">Public YC v2 schema ↗</a></li><li><a href="/contracts">Understand normalized records</a></li></ul></section></aside></div>
+      <nav class="detail-footer-nav" aria-label="Related pages"><a href="/actors">Compare job-data Actors →</a><a href="/methodology">How to verify a run →</a></nav>
+    </main>
+    <footer class="site-footer"><div class="footer-container"><a href="/about">About</a><a href="/methodology">Methodology</a><a href="/contracts">Contracts</a><a href="/privacy">Privacy</a><a href="/changelog">Changelog</a><span>Independent community project · MIT</span></div></footer>
+  </body>
+</html>

@@ -149,3 +149,5 @@ design partner and retain only:
 
 If any item is missing, keep the evidence private and describe the work as a
 design-partner test rather than a customer result.
+
+| `/actors/ycombinator` | Y Combinator jobs scraper for startup pipelines and alerts | Normalized YC Actor guide and source limitations |

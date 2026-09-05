@@ -19,7 +19,7 @@ SOCIAL_IMAGE = f"{ORIGIN}/assets/nomad-agent-social-card.png"
 # Intent owners come from docs/seo-program.md; its first milestone adds these
 # hubs and trust pages to the public surface.
 EXPECTED_CANONICALS = {
-    "/", "/actors", "/actors/linkedin", "/actors/euraxess", "/actors/ai-job-fit-scorer",
+    "/", "/actors", "/actors/ycombinator", "/actors/linkedin", "/actors/euraxess", "/actors/ai-job-fit-scorer",
     "/integrations", "/integrations/n8n", "/integrations/make", "/integrations/mcp",
     "/integrations/api", "/integrations/airtable", "/integrations/python", "/integrations/zapier",
     "/guides", "/guides/linkedin-jobs-api-alternatives", "/guides/linkedin-job-alerts-n8n",
@@ -28,6 +28,7 @@ EXPECTED_CANONICALS = {
 }
 HUBS = {"/", "/actors", "/integrations", "/guides"}
 ACTOR_PATHS = {
+    "ycombinator": "/nomad-agent/ycombinator-enrich-translate-normalize-scraper",
     "linkedin": "/nomad-agent/linkedin-enrich-translate-normalize-scraper",
     "euraxess": "/nomad-agent/euraxess-enrich-translate-normalize-scraper",
     "ai-job-fit-scorer": "/nomad-agent/ai-job-fit-scorer",
@@ -38,6 +39,7 @@ PUBLIC_SCHEMAS = (
     "nomad-ai-job-fit-v1.schema.json",
 )
 PROGRAM_INTENT_ROUTES = {
+    "/actors/ycombinator",
     "/", "/actors/linkedin", "/actors/euraxess", "/actors/ai-job-fit-scorer",
     "/integrations/n8n", "/integrations/make", "/integrations/mcp", "/integrations/api",
     "/integrations/airtable", "/integrations/python", "/integrations/zapier", "/contracts",
@@ -217,7 +219,7 @@ class WebsiteContractTests(unittest.TestCase):
         self.assertEqual({"Organization", "WebSite", "ItemList"}, set(by_type))
         self.assertEqual(by_type["WebSite"].get("alternateName"), "Nomad Agent Job Data")
         items = by_type["ItemList"]["itemListElement"]
-        self.assertEqual(len(items), 3)
+        self.assertEqual(len(items), len(ACTOR_PATHS))
         self.assertEqual({urlsplit(item["item"]["sameAs"]).path for item in items}, set(ACTOR_PATHS.values()))
 
     def test_non_hub_pages_have_valid_breadcrumbs(self) -> None:

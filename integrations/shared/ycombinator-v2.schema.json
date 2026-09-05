@@ -1,0 +1,193 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/Exdenta/nomad-agent-job-scrapers/main/integrations/shared/ycombinator-v2.schema.json",
+  "title": "Y Combinator Work at a Startup custom job facts v2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "companyBatch",
+    "companySlug",
+    "locationRaw",
+    "jobTypeRaw",
+    "equityRaw",
+    "visaPolicyRaw",
+    "skills",
+    "interviewProcessHtml",
+    "customQuestions",
+    "company"
+  ],
+  "properties": {
+    "companyBatch": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "companySlug": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "locationRaw": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "jobTypeRaw": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "equityRaw": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "visaPolicyRaw": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "skills": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
+    "interviewProcessHtml": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "customQuestions": {
+      "type": [
+        "array",
+        "object",
+        "null"
+      ]
+    },
+    "company": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "tagline",
+        "location",
+        "teamSize",
+        "lastActiveAt",
+        "hiringDescription",
+        "hiringDescriptionHtml",
+        "technologyDescription",
+        "technologyDescriptionHtml",
+        "founders"
+      ],
+      "properties": {
+        "tagline": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "location": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "teamSize": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "lastActiveAt": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "hiringDescription": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "hiringDescriptionHtml": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "technologyDescription": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "technologyDescriptionHtml": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "founders": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "name",
+              "avatarUrl",
+              "linkedinUrl",
+              "pastCompanies",
+              "bio"
+            ],
+            "properties": {
+              "name": {
+                "type": "string",
+                "minLength": 1
+              },
+              "avatarUrl": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "linkedinUrl": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "pastCompanies": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "bio": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

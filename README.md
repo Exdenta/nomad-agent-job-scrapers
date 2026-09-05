@@ -42,6 +42,7 @@ customer model key.
 | [`LinkedIn Jobs Scraper \| AI Enrichment`](https://apify.com/nomad-agent/linkedin-enrich-translate-normalize-scraper) | Public LinkedIn job search | Find fresh jobs, suppress already-delivered matches, and send clean records with complete descriptions when available to alerts, trackers, job boards, or agents. Optional enrichment and translation stay off until selected. | Public Store Actor; see the [current default build API](https://api.apify.com/v2/acts/nomad-agent~linkedin-enrich-translate-normalize-scraper/builds/default). Integrations remain tested against `1.0.2` |
 | [`EURAXESS Jobs Scraper — Research & Academic Jobs`](https://apify.com/nomad-agent/euraxess-enrich-translate-normalize-scraper) | PhD, postdoc, fellowship, research, and faculty vacancies | Research domains, requirements, funding, deadlines, contacts, multilingual keyword expansion, strict filters, deduplication, optional enrichment, and translation | Public Store Actor; Store default observed at `1.0.20` on 2026-09-03; integrations remain tested against `1.0.16` |
 | [`AI Job Search & Fit Scorer — 10 Sources + V3 Matching`](https://apify.com/nomad-agent/ai-job-fit-scorer) | Candidate-specific developer-job shortlists | Search 10 public developer-job sources—or score your own job list—against a résumé or candidate profile; get ranked matches with 0–100 fit, hard-requirement checks, evidence, skill gaps, and application links | Public Store Actor; Store default and integration-tested build `0.1.11` observed on 2026-09-03; $0.02 per successful retained evaluation |
+| [Y Combinator Jobs Scraper](https://apify.com/nomad-agent/ycombinator-enrich-translate-normalize-scraper) | Startup pipelines and recurring alerts | Complete descriptions, stable job identity, deduplication, optional enrichment | Exact release `1.0.6`; Actor execution proof, destination templates untested |
 
 Implementation guides: [LinkedIn jobs](https://nomadagent.dev/actors/linkedin) ·
 [EURAXESS jobs](https://nomadagent.dev/actors/euraxess) ·
@@ -49,7 +50,7 @@ Implementation guides: [LinkedIn jobs](https://nomadagent.dev/actors/linkedin) �
 [n8n workflows](https://nomadagent.dev/integrations/n8n) ·
 [Make blueprints](https://nomadagent.dev/integrations/make)
 
-The two source-specialized scrapers target the six-root `nomad-agent-job-v1`
+The three source-specialized scrapers target the six-root `nomad-agent-job-v1`
 envelope, but source-specific
 inputs, evidence, custom fields, deployment state, and
 pricing must not be assumed interchangeable. See the
@@ -151,8 +152,8 @@ not feed that projection into consumers expecting the six-root job envelope.
 
 ## Agent skills
 
-Repository-scoped Codex skills live under `.agents/skills` for both normalized
-Actors. Claude Code users can install either into `.claude/skills`:
+Repository-scoped Codex skills live under `.agents/skills` for the normalized
+Actors. Claude Code users can install them into `.claude/skills`:
 
 Set up the LinkedIn skill and the five scoped Apify MCP tools together in the
 target project:
@@ -220,3 +221,15 @@ commercial use.
 The license applies only to files published in this repository. Hosted Apify
 Actor implementations are not included here and are not licensed by this
 repository.
+
+## Y Combinator startup jobs
+
+| Actor | Best for | Contract and release |
+| --- | --- | --- |
+| [Y Combinator Jobs Scraper](https://apify.com/nomad-agent/ycombinator-enrich-translate-normalize-scraper) | Startup recruiting pipelines and recurring alerts | Six-root normalized records; exact release `1.0.6` |
+
+[YC guide](docs/ycombinator.md) · [Website](https://nomadagent.dev/actors/ycombinator) · [Agent Skill](.agents/skills/ycombinator-enrich-translate-normalize-scraper/SKILL.md) · [Public YC v2 schema](integrations/shared/ycombinator-v2.schema.json).
+
+This normalized profile is separate from the legacy flat-export YC Actor.
+It starts at $0.90 per 1,000 delivered jobs in Actor result events, checked
+2026-09-05. Destination templates for other sources are not YC-validated.
