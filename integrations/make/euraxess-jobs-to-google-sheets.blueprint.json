@@ -13,7 +13,7 @@
           "y": 0,
           "name": "Watch completed EURAXESS Task runs"
         },
-        "notes": "Select the Apify Task selecting latest; retain the returned immutable build ID and number. Only terminal successful runs are evaluated; one valid partial v4 outcome may repeat the same Task once."
+        "notes": "Select the Apify Task using EURAXESS build latest. Only terminal successful runs are evaluated; one valid partial v4 outcome may repeat the same Task once."
       }
     },
     {
@@ -60,7 +60,7 @@
           "y": 0,
           "name": "Configuration"
         },
-        "notes": "Replace the Task ID and spreadsheet ID. Select the same Task selecting latest in the trigger. Keep maxitems small for the first destination smoke test."
+        "notes": "Replace the Task ID and spreadsheet ID. Select the same Task using build latest in the trigger. Keep maxitems small for the first destination smoke test."
       }
     },
     {
@@ -144,6 +144,11 @@
               "a": "{{replace(1.buildNumber; \"/^[0-9]+[.][0-9]+[.][0-9]+$/\"; \"\")}}",
               "b": "",
               "o": "text:equal"
+            },
+            {
+              "a": "{{1.options.build}}",
+              "o": "text:equal",
+              "b": "latest"
             }
           ]
         ]

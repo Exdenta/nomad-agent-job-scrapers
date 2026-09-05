@@ -1,14 +1,14 @@
 # Make to Google Sheets
 
 
-EURAXESS starters select `latest` and retain each run’s immutable `buildId` and numeric `buildNumber`. References to exact configured pins below apply to the other Actor targets. Validate the EURAXESS run, summary and dataset before delivery; `latest` itself is not immutable evidence.
+All maintained starters select `latest` and retain each run’s immutable `buildId` and numeric `buildNumber`. Validate the run, summary and dataset before delivery; the selector itself is not immutable evidence.
 
 Import either blueprint:
 
 - [`linkedin-jobs-to-google-sheets.blueprint.json`](linkedin-jobs-to-google-sheets.blueprint.json),
-  for a Task pinned to LinkedIn build `1.0.2`;
+  for a Task using LinkedIn build `latest`;
 - [`euraxess-jobs-to-google-sheets.blueprint.json`](euraxess-jobs-to-google-sheets.blueprint.json),
-  for a Task selecting EURAXESS `latest`;
+  for a Task using EURAXESS build `latest`;
 - [`ai-job-fit-scorer-to-google-sheets.blueprint.json`](ai-job-fit-scorer-to-google-sheets.blueprint.json),
   for a Task using AI Job Search & Fit Scorer build `latest`.
 

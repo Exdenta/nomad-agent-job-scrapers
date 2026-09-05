@@ -21,14 +21,14 @@ Save LinkedIn jobs to Google Sheets
 
 ### Short description
 
-Watch a completed Apify Task, validate exact LinkedIn build `1.0.2`, flatten
+Watch a completed Apify Task, validate exact LinkedIn build `latest`, flatten
 normalized jobs, and update or append Google Sheets rows by stable `jobKey`.
 
 ### Full description
 
 Turn a bounded LinkedIn job-search Task into a duplicate-safe Google Sheets
 tracker. The scenario watches completed Apify Task runs, requires terminal
-`SUCCEEDED` from exact build `1.0.2`, reads the factual
+`SUCCEEDED` from build selector `latest`, reads the factual
 `nomad-agent-run-summary-v4` record through that run's signed output link, and
 fetches only the selected run's default dataset.
 
@@ -56,13 +56,13 @@ off for the first smoke.
 
 1. Create an Apify Task for
    `nomad-agent/linkedin-enrich-translate-normalize-scraper` with complete
-   strict input, exact build `1.0.2`, a one-item first run, and a conservative
+   strict input, build selector `latest`, a one-item first run, and a conservative
    maximum total charge.
 2. Import
    [`linkedin-jobs-to-google-sheets.blueprint.json`](linkedin-jobs-to-google-sheets.blueprint.json)
    into a new Make scenario and select that Task in
    **Watch completed LinkedIn Task runs**.
-3. Set `actorbuild` to `1.0.2`, replace the Task and spreadsheet placeholders,
+3. Set `actorbuild` to `latest`, replace the Task and spreadsheet placeholders,
    and connect the Apify and Google Sheets modules.
 4. Import [`google-sheets-columns.csv`](google-sheets-columns.csv) into a tab
    named `Jobs`.
@@ -95,7 +95,7 @@ Save EURAXESS jobs to Google Sheets
 
 ### Short description
 
-Watch a completed EURAXESS Task at selector `latest`, validate its factual run
+Watch a completed EURAXESS Task at build `latest`, validate its factual run
 summary, and upsert normalized research jobs in Google Sheets by `jobKey`.
 
 ### Full description
@@ -130,7 +130,7 @@ analytics, raw output, and cross-run deduplication off. EURAXESS supports
 
 1. Create an Apify Task for
    `nomad-agent/euraxess-enrich-translate-normalize-scraper` with complete
-   strict input, the `latest` selector, no more than five results for the first
+   strict input, build selector `latest`, no more than five results for the first
    run, and a conservative maximum total charge.
 2. Import
    [`euraxess-jobs-to-google-sheets.blueprint.json`](euraxess-jobs-to-google-sheets.blueprint.json)

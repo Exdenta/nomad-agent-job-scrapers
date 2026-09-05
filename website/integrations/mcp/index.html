@@ -6,6 +6,7 @@
 
 
 
+    <meta name="description" content="Connect your MCP client to scoped Apify tools for normalized job searches and candidate fit scoring, with explicit item and charge limits." />
     <meta name="robots" content="index,follow" />
     <meta property="og:title" content="Job Search and Fit Scoring with MCP | Nomad Agent" />
     <meta property="og:description" content="Exact-build, cost-capped job Actor calls through five scoped Apify MCP tools." />
@@ -31,7 +32,7 @@
     </script>
     <script defer src="/script.js"></script>
 
-  <meta name="description" content="Connect ChatGPT, Claude, Cursor, Codex, or another MCP client to scoped Apify tools for normalized job search and fit scoring." />
+
   </head>
   <body>
     <a class="skip-link" href="#main-content">Skip to content</a>
@@ -41,9 +42,9 @@
       <section class="detail-hero"><p class="detail-eyebrow">Agent integration</p><h1>Job search and fit scoring through MCP</h1><p class="detail-lede">Give an MCP client only the Apify tools needed to inspect, run, and validate one Actor. Generic calls keep exact builds, inputs, item limits, and maximum charges visible to the agent and operator.</p><div class="detail-badges"><span class="detail-badge">Five scoped tools</span><span class="detail-badge">OAuth preferred</span><span class="detail-badge">Bounded examples</span></div><div class="detail-actions"><a class="button button-dark" href="https://github.com/Exdenta/nomad-agent-job-scrapers/tree/main/integrations/mcp" target="_blank" rel="noopener noreferrer" data-event="asset_cta_click" data-actor="all" data-placement="mcp-config-pack">Get MCP configurations ↗</a><a class="button button-outline" href="/actors/linkedin" data-event="product_page_click" data-actor="linkedin" data-placement="mcp-linkedin-product">Explore LinkedIn jobs</a></div></section>
       <div class="detail-layout"><div class="detail-content">
         <section class="detail-panel"><h2>Use the least-privilege server</h2><p>Expose only Actor discovery, run, exact-run status, dataset, and key-value-store access:</p><pre><code>https://mcp.apify.com?tools=fetch-actor-details,call-actor,get-actor-run,get-dataset-items,get-key-value-store-record</code></pre><p>Prefer OAuth. Environment-token examples read <code>APIFY_TOKEN</code> from the client process and never embed its value in repository configuration.</p></section>
-        <section class="detail-panel"><h2>Maintained repository profiles</h2><p>LinkedIn keeps its documented tested pin. EURAXESS selects <code>latest</code> and records each returned immutable build ID and number before validating the run.</p><ul><li><strong>LinkedIn:</strong> generic <code>call-actor</code> with build <code>1.0.2</code> and scraper v4/canonical-job validation.</li><li><strong>EURAXESS:</strong> selector <code>latest</code>, with source access checked before the paid call and EURAXESS-specific fields retained.</li><li><strong>AI Job Search &amp; Fit Scorer:</strong> build <code>latest</code>, five-result shortlist descriptor, delivery score 2, $0.10 cap, and the distinct scorer v4 fit contract.</li></ul><p>Before paying, call <code>fetch-actor-details</code> and verify current access, input schema, pricing, and availability. Do not assume the three Actors share fields or billing.</p></section>
+        <section class="detail-panel"><h2>Maintained repository profiles</h2><p>LinkedIn selects <code>latest</code> and records each returned immutable build. EURAXESS selects <code>latest</code> and records each returned immutable build ID and number before validating the run.</p><ul><li><strong>LinkedIn:</strong> generic <code>call-actor</code> with build <code>latest</code> and scraper v4/canonical-job validation.</li><li><strong>EURAXESS:</strong> selector <code>latest</code>, with source access checked before the paid call and EURAXESS-specific fields retained.</li><li><strong>AI Job Search &amp; Fit Scorer:</strong> build <code>latest</code>, five-result shortlist descriptor, delivery score 2, $0.10 cap, and the distinct scorer v4 fit contract.</li></ul><p>Before paying, call <code>fetch-actor-details</code> and verify current access, input schema, pricing, and availability. Do not assume the three Actors share fields or billing.</p></section>
         <section class="detail-panel"><h2>Bounded agent request</h2><pre><code>Search for up to five remote or hybrid TypeScript developer jobs in Spain,
-posted within the last seven days. Use LinkedIn build 1.0.2. Set a conservative
+posted within the last seven days. Use LinkedIn build selector latest. Set a conservative
 maximum total charge. Do not translate, enrich with AI, include raw descriptions,
 enable analytics, or enable cross-run deduplication. Keep canonical records.</code></pre><p>A good client should show the exact tool call before execution. For recurring searches, add one stable opaque dedupe scope only after the first stateless run has been inspected.</p></section>
         <section class="detail-panel"><h2>Exact-run verification sequence</h2><ol><li>Use <code>call-actor</code> with the complete input and <code>callOptions</code> containing exact build, item cap, and maximum charge; do not wait synchronously.</li><li>Poll the returned ID with <code>get-actor-run</code> until terminal. Continue only for <code>SUCCEEDED</code>.</li><li>Because an MCP projection can omit build number, re-read the exact run through the Apify REST API when necessary to prove the build.</li><li>Read that run’s <code>RUN-SUMMARY</code>, apply only the Actor-specific contract, and honor at most one explicit scraper-v4 retry recommendation.</li><li>Fetch and paginate the exact default dataset; reconcile row count and validate each canonical record.</li></ol></section>

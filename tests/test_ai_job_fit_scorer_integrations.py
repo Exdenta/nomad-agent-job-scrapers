@@ -559,7 +559,7 @@ try {
         text = (ROOT / "docs" / "ai-job-fit-scorer.md").read_text()
         normalized = " ".join(text.split())
         for required in (
-            BUILD,
+            "latest",
             BUILD_ID,
             "$0.02",
             "matchKey",

@@ -16,7 +16,7 @@ class EuraxessLatestTests(unittest.TestCase):
         spec = importlib.util.spec_from_file_location('latest_smoke', ROOT / 'integrations/mcp/scripts/smoke_test.py')
         module = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(module)
-        valid = {'buildId': 'futureImmutableBuild', 'buildNumber': '1.0.999'}
+        valid = {'buildId': 'futureImmutableBuild', 'buildNumber': '1.0.999', 'options': {'build': 'latest'}}
         module._require_build(valid, 'latest')
         for invalid in [{}, {'buildNumber': '1.0.999'}, {'buildId': 'x', 'buildNumber': 'latest'}, {'buildId': ' ', 'buildNumber': '1.0.999'}]:
             with self.subTest(invalid=invalid), self.assertRaises(RuntimeError):
@@ -27,7 +27,7 @@ class EuraxessLatestTests(unittest.TestCase):
     def test_n8n_retains_build_identity_and_rejects_failed_or_unidentified_runs(self):
         workflow = json.loads((ROOT / 'integrations/n8n/euraxess-jobs-to-google-sheets.json').read_text())
         code = next(n['parameters']['jsCode'] for n in workflow['nodes'] if n['name'] == 'Validate terminal run')
-        runner = "const p=JSON.parse(require('fs').readFileSync(0,'utf8')); const fn=new Function('$input','$',p.code); try {process.stdout.write(JSON.stringify(fn({first:()=>({json:p.run})},()=>({first:()=>({json:{actorBuild:'latest'}})}))));} catch(e) {process.stderr.write(String(e));process.exit(1);}"
+        runner = "global.$runIndex=0; const p=JSON.parse(require('fs').readFileSync(0,'utf8')); const fn=new Function('$input','$',p.code); try {process.stdout.write(JSON.stringify(fn({first:()=>({json:p.run})},name=>({first:()=>({json:name==='Configuration'?{actorBuild:'latest'}:{id:'run',buildId:'futureImmutableBuild',buildNumber:'1.0.999'}})}))));} catch(e) {process.stderr.write(String(e));process.exit(1);}"
         valid = {'id': 'run', 'status': 'SUCCEEDED', 'exitCode': 0, 'buildId': 'futureImmutableBuild', 'buildNumber': '1.0.999', 'defaultDatasetId': 'dataset'}
         def run(value):
             return subprocess.run(['node', '-e', runner], input=json.dumps({'code': code, 'run': value}), text=True, capture_output=True)
@@ -48,7 +48,7 @@ class EuraxessLatestTests(unittest.TestCase):
         self.assertEqual(variables['resolvedbuildid'], '{{1.buildId}}')
         self.assertEqual(variables['resolvedbuildnumber'], '{{1.buildNumber}}')
         clause = modules[3]['filter']['conditions'][0]
-        valid = {'{{1.status}}': 'SUCCEEDED', '{{1.buildNumber}}': '1.0.999', '{{1.buildId}}': 'futureImmutableBuild', '{{1.output.runSummary}}': 'https://example.com/summary', '{{1.exitCode}}': 0, '{{2.actorbuild}}': 'latest'}
+        valid = {'{{1.options.build}}': 'latest', '{{1.status}}': 'SUCCEEDED', '{{1.buildNumber}}': '1.0.999', '{{1.buildId}}': 'futureImmutableBuild', '{{1.output.runSummary}}': 'https://example.com/summary', '{{1.exitCode}}': 0, '{{2.actorbuild}}': 'latest'}
         def matches(values):
             for condition in clause:
                 expression = condition['a']

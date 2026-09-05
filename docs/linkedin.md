@@ -103,8 +103,7 @@ for job in client.dataset(run["defaultDatasetId"]).iterate_items():
 ```
 
 This standalone example follows `latest`. Check the [current default build API](https://api.apify.com/v2/acts/nomad-agent~linkedin-enrich-translate-normalize-scraper/builds/default)
-for the default build number and immutable ID. Maintained integration templates
-use their own tested exact pins; follow the selected template's compatibility
+for the default build number and immutable ID. Maintained integration templates select `latest`; follow the selected template's compatibility
 guide when running it. A `1.0.x` check alone does not prove compatibility.
 
 [Integration guides and templates](https://github.com/Exdenta/nomad-agent-job-scrapers)

@@ -25,7 +25,7 @@ update Google Sheets rows by stable job identity without duplicate rows.
 
 Turn a repeatable LinkedIn job search into a clean, searchable Google Sheets
 tracker. The workflow runs manually or every day at 08:00 UTC, calls the
-Nomad Agent LinkedIn Actor at exact build `1.0.2`, polls only that run, and
+Nomad Agent LinkedIn Actor at build selector `latest`, polls only that run, and
 stops unless the terminal status, exit code, build, and factual `RUN-SUMMARY`
 are valid.
 
@@ -60,7 +60,7 @@ No community node or AI-provider credential is required.
    HTTP nodes.
 4. Connect Google Sheets to **Upsert jobs in Google Sheets**.
 5. Replace `REPLACE_WITH_GOOGLE_SPREADSHEET_ID` and review
-   **Configuration**. Keep build `1.0.2`, `maxItems=1`, and the `$0.10` charge
+   **Configuration**. Keep build `latest`, `maxItems=1`, and the `$0.10` charge
    cap for the first run.
 6. Run the workflow manually and confirm the exact Apify run, dataset count,
    and resulting Sheet row.
@@ -99,7 +99,7 @@ and send each new job to one selected Slack, Telegram, or email destination.
 
 Create one bounded daily LinkedIn job alert without maintaining a separate
 delivery database in n8n. The workflow runs manually or at 08:00 UTC, validates
-its configuration before the paid call, and calls exact Actor build `1.0.2`
+its configuration before the paid call, and calls Actor build selector `latest`
 through Apify's synchronous dataset endpoint. The starter requests at most ten
 jobs and caps the run at `$0.10`.
 
@@ -124,7 +124,7 @@ and dataset reconciliation are required before delivery.
 
 1. Import [`linkedin-daily-job-alerts.json`](linkedin-daily-job-alerts.json).
 2. Add a scoped Apify Header Auth credential to **Find only new jobs**.
-3. In **Alert configuration**, keep build `1.0.2`, choose `slack`,
+3. In **Alert configuration**, keep build `latest`, choose `slack`,
    `telegram`, or `email`, replace the destination placeholder, and replace
    the alert-scope placeholder with a stable opaque value.
 4. Add credentials only to the selected delivery node. Email also needs a
@@ -165,7 +165,7 @@ Actor run, and upsert duplicate-safe Google Sheets rows by stable job identity.
 
 Build a repeatable tracker for PhD, postdoc, fellowship, research, and faculty
 vacancies from EURAXESS. The workflow runs manually or daily, calls the Nomad
-Agent EURAXESS Actor at the `latest` selector, polls the original run ID, and
+Agent EURAXESS Actor at build selector `latest`, polls the original run ID, and
 requires terminal success, exit code 0, the expected build, and a valid factual
 `nomad-agent-run-summary-v4` record.
 
@@ -197,7 +197,7 @@ No community node or AI-provider credential is required.
    named `Jobs`.
 3. Assign one scoped Apify Header Auth credential to all four Apify HTTP nodes.
 4. Connect Google Sheets to **Upsert jobs in Google Sheets**.
-5. Replace the spreadsheet placeholder and keep selector `latest`, five results,
+5. Replace the spreadsheet placeholder and keep build `latest`, five results,
    and the starter charge cap for the first run.
 6. Set a bounded keyword, location, or `euraxessSearch` plan; use
    `advancedInputJson` for other current Actor fields.

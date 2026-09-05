@@ -4,7 +4,7 @@ Supported release builds:
 
 | Actor | Exact build | Current input fields |
 | --- | --- | --- |
-| LinkedIn | `1.0.2` | `firstRunMode`, `schemaVersion`, `keyword`, `location`, `linkedinSearch`, `strictGeography`, `workArrangements`, `postedWithin`, `filters`, `companyProfileEnrichment`, `companyFilters`, `maxItems`, `translateToEnglish`, `aiEnrichment`, `includeRaw`, `dedupe`, `analyticsEnabled` |
+| LinkedIn | `latest` | `firstRunMode`, `schemaVersion`, `keyword`, `location`, `linkedinSearch`, `strictGeography`, `workArrangements`, `postedWithin`, `filters`, `companyProfileEnrichment`, `companyFilters`, `maxItems`, `translateToEnglish`, `aiEnrichment`, `includeRaw`, `dedupe`, `analyticsEnabled` |
 | EURAXESS | `latest` | `schemaVersion`, `keyword`, `location`, `euraxessSearch`, `workArrangements`, `postedWithin`, `filters`, `maxItems`, `translateToEnglish`, `aiEnrichment`, `includeRaw`, `dedupe`, `analyticsEnabled` |
 | AI Job Search & Fit Scorer | `latest` | `mode`, `search`, `jobs`, `sourceDatasetId`, `sourceActorRunId`, `expectedSourceBuild`, `maxItems`, exactly one of `candidateProfile`/`resume`/`resumeText`, `preferences`, `resultMode`, `minDeliveryScore`, `minRankToForward`, `maxAiItems`, `recoverHolds`, `aiConcurrency` |
 
@@ -21,10 +21,10 @@ scraper profile and must not be sent through the flat-job mapper.
 
 | Integration | LinkedIn build | EURAXESS build | Input support | Output handling |
 | --- | --- | --- | --- | --- |
-| n8n | `1.0.2` | `latest` | Safe starter fields plus `advancedInputJson` for every current input | The tracker validates v4 and the dataset; the alert starter validates exact canonical rows from a bounded synchronous run |
-| Make | Task pins `1.0.2` | Task selects `latest` | The Apify Task owns the complete Actor input | Validates completion and projects the completed dataset |
-| MCP | `callOptions.build: "1.0.2"` | `callOptions.build: "latest"` | The complete Actor input is passed under `input` | Verifies terminal status, v4, exact build, retry bound, and canonical rows |
-| REST API and webhooks | `build=1.0.2` | `build=latest` | The request body is the complete Actor input | Polls or re-reads the completed run, validates v4, and paginates the dataset |
+| n8n | `latest` | `latest` | Safe starter fields plus `advancedInputJson` for every current input | The tracker validates v4 and the dataset; the alert starter validates exact canonical rows from a bounded synchronous run |
+| Make | Task selects `latest` | Task selects `latest` | The Apify Task owns the complete Actor input | Validates completion and projects the completed dataset |
+| MCP | `callOptions.build: "latest"` | `callOptions.build: "latest"` | The complete Actor input is passed under `input` | Verifies terminal status, v4, exact build, retry bound, and canonical rows |
+| REST API and webhooks | `build=latest` | `build=latest` | The request body is the complete Actor input | Polls or re-reads the completed run, validates v4, and paginates the dataset |
 | Agent Skills | Exact-build MCP profile | Exact-build MCP profile | Source-specific references cover every current field | Keeps canonical output; flattens only for a destination |
 | Python parser and flat mapper | Caller verifies build | Caller verifies build | Post-run processing only | Validates source-specific canonical rows and produces the shared projection |
 | Airtable | Upstream runner selects build | Upstream runner selects build | Destination only | Uses the shared 32-field projection and `jobKey` idempotency |
@@ -70,7 +70,7 @@ does not activate a schedule.
 
 | Surface | Exact build | Verification boundary |
 | --- | --- | --- |
-| Actor, REST recipe, Agent Skill | `1.0.6` (`6aqB3jicww58310qm`) | Actor execution and public-schema validation; hosted MCP and named destinations remain untested |
+| Actor, REST recipe, Agent Skill | `latest` (`6aqB3jicww58310qm`) | Actor execution and public-schema validation; hosted MCP and named destinations remain untested |
 
 Input fields: `firstRunMode`, `schemaVersion`, `keyword`, `location`,
 `workArrangements`, `postedWithin`, `orderBy`, `maxItems`, `ycSearch`, `dedupe`,

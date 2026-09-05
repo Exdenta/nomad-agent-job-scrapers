@@ -36,12 +36,12 @@ Read the skill's
 [client setup](../.agents/skills/euraxess-enrich-translate-normalize-scraper/references/client-setup.md)
 before use. Use generic `call-actor` with
 `callOptions.build: "latest"`, `callOptions.maxItems`, and a conservative
-`callOptions.maxTotalChargeUsd`; record the completed run’s immutable `buildId` and numeric `buildNumber`.
-Validate terminal success and the returned build evidence, read and validate minimal v4
+`callOptions.maxTotalChargeUsd`; retain the numeric build number and immutable build ID returned at run start and require the same identity in the completed run.
+Validate terminal success and the exact build, read and validate minimal v4
 `RUN-SUMMARY`, honor at most one retry, then validate and reconcile the default dataset. Do not
 reuse LinkedIn source-specific input fields for EURAXESS.
 
-The maintained profiles and smoke harness target LinkedIn `1.0.2` and
+The maintained profiles and smoke harness target LinkedIn `latest` and
 EURAXESS `latest`. A successful Actor or MCP check confirms only the Actor,
 completion record, and dataset path. Destination-platform writes require a
 separate test with the client's own credentials and disposable destination.

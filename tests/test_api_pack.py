@@ -34,7 +34,7 @@ class ApiPackTests(unittest.TestCase):
     def test_readme_pins_both_builds_and_preserves_the_run_contract(self) -> None:
         text = (PACK / "README.md").read_text(encoding="utf-8")
         for required in (
-            "build=1.0.2",
+            "build=latest",
             "build=latest",
             "maxTotalChargeUsd",
             "Authorization: Bearer $APIFY_TOKEN",
@@ -62,7 +62,7 @@ class ApiPackTests(unittest.TestCase):
             / "input-contract.md"
         ).read_text(encoding="utf-8")
         normalized = " ".join(contract.split())
-        self.assertIn("build `1.0.2`", normalized)
+        self.assertIn("build `latest`", normalized)
         self.assertIn("declares the `firstRunMode` convenience field", normalized)
         self.assertIn("starter examples intentionally omit it", normalized)
         self.assertIn("paid events", normalized)

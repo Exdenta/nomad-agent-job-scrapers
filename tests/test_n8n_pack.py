@@ -51,9 +51,11 @@ process.stdout.write(JSON.stringify(output));
 const fs = require('fs');
 const workflow = JSON.parse(fs.readFileSync(process.argv[1], 'utf8'));
 const run = JSON.parse(process.argv[2]);
+global.$runIndex = 0;
 global.$input = { first: () => ({ json: { data: run } }) };
 global.$ = (name) => {
-  if (name === 'Configuration') return { first: () => ({ json: { actorBuild: '1.0.2' } }) };
+  if (name === 'Configuration') return { first: () => ({ json: { actorBuild: 'latest' } }) };
+  if (name === 'Run Actor on Apify') return { first: () => ({ json: { data: { id: run.id, buildNumber: '1.0.2', buildId: 'build-1' } } }) };
   throw new Error(`unexpected node reference: ${name}`);
 };
 const node = workflow.nodes.find(value => value.name === 'Validate terminal run');
@@ -210,7 +212,7 @@ process.stdout.write(JSON.stringify(output));
         ):
             self.assertIn(heading, combined)
         self.assertIn("jobKey", combined)
-        self.assertIn("1.0.2", combined)
+        self.assertIn("latest", combined)
         rectangles = []
         for note in notes:
             params = note["parameters"]
@@ -270,7 +272,7 @@ process.stdout.write(JSON.stringify(output));
                 "assignments"
             ]
         }
-        self.assertEqual(assignments["actorBuild"], "1.0.2")
+        self.assertEqual(assignments["actorBuild"], "latest")
         self.assertEqual(assignments["advancedInputJson"], "{}")
         self.assertEqual(assignments["maxItems"], 1)
         self.assertEqual(assignments["maxRescheduleRetries"], 1)
@@ -286,7 +288,7 @@ process.stdout.write(JSON.stringify(output));
         self.assertIn("REPLACE_WITH_", script)
         self.assertIn("maxItems must be an integer from 0 to 200", script)
         self.assertIn("maxRescheduleRetries must be 0 or 1", script)
-        self.assertIn("actorBuild must be a pinned version", script)
+        self.assertIn("actorBuild must be latest", script)
         self.assertIn("advancedInputJson", script)
         self.assertIn("actorInput", script)
         self.assertIn("remote", script)
@@ -384,7 +386,7 @@ process.stdout.write(JSON.stringify(output));
             "id": "run-1",
             "status": "SUCCEEDED",
             "exitCode": 0,
-            "buildNumber": "1.0.2",
+            "buildNumber": "1.0.2", "buildId": "build-1",
             "defaultDatasetId": "dataset-1",
         })
         self.assertEqual(completed.returncode, 0, completed.stderr)
@@ -395,16 +397,16 @@ process.stdout.write(JSON.stringify(output));
     def test_failed_or_wrong_build_run_is_not_retried_or_delivered(self) -> None:
         failed = self.run_terminal_node({
             "id": "run-2", "status": "FAILED", "exitCode": 1,
-            "buildNumber": "1.0.2", "defaultDatasetId": "dataset-2",
+            "buildNumber": "1.0.2", "buildId": "build-1", "defaultDatasetId": "dataset-2",
         })
         self.assertNotEqual(failed.returncode, 0)
         self.assertIn("failed terminal runs cannot be retried", failed.stderr)
         wrong_build = self.run_terminal_node({
             "id": "run-3", "status": "SUCCEEDED", "exitCode": 0,
-            "buildNumber": "0.6.36", "defaultDatasetId": "dataset-3",
+            "buildNumber": "0.6.36", "buildId": "build-other", "defaultDatasetId": "dataset-3",
         })
         self.assertNotEqual(wrong_build.returncode, 0)
-        self.assertIn("expected 1.0.2", wrong_build.stderr)
+        self.assertIn("changed execution identity", wrong_build.stderr)
 
     def test_workflow_uses_v4_and_one_retry_nodes(self) -> None:
         rendered = json.dumps(self.workflow)
@@ -503,7 +505,7 @@ process.stdout.write(JSON.stringify(output));
             "Find and save new LinkedIn jobs to Google Sheets with Apify", listing
         )
         self.assertIn("n8n Cloud", listing)
-        self.assertIn("1.0.2", listing)
+        self.assertIn("latest", listing)
         self.assertIn("destination-specific live test", listing)
         self.assertIn("no separate delivery cache", listing)
 

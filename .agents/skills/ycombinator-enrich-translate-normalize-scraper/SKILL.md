@@ -5,8 +5,8 @@ description: Search and interpret normalized Y Combinator Work at a Startup jobs
 
 # Y Combinator startup jobs
 
-Use `nomad-agent/ycombinator-enrich-translate-normalize-scraper` at exact build `1.0.6`
-(immutable build `6aqB3jicww58310qm`). Read [the input and output guide](references/guide.md)
+Use `nomad-agent/ycombinator-enrich-translate-normalize-scraper` at build selector `latest`
+and record the numeric build number and immutable build ID returned by Apify. Read [the input and output guide](references/guide.md)
 for recipes, costs, filter grammar, and source boundaries. The service filters
 an inventory; each user run does not contact YC directly.
 
@@ -16,10 +16,9 @@ use five results, `postedWithin: any`, `firstRunMode: false`, enrichment and
 translation off, and dedupe off. Enable recurring dedupe only with a stable
 stream key. Narrow filters may yield zero; do not silently broaden them.
 
-Use generic Apify `call-actor` with the exact build and explicit item, timeout,
+Use generic Apify `call-actor` with `callOptions.build: "latest"` and explicit item, timeout,
 and charge limits. Inspect the current tool schema before composing the call.
-If this build is inaccessible, report that condition rather than silently using
-`latest`. The Actor and REST path can be verified independently of hosted MCP.
+If the Actor or selected release is inaccessible, report that condition without substituting another Actor or selector. The Actor and REST path can be verified independently of hosted MCP.
 
 After a run:
 

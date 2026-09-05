@@ -44,7 +44,7 @@ PROFILES = {
     "linkedin": {
         "url": PINNED_URL,
         "tool": "call-actor",
-        "build": "1.0.2",
+        "build": "latest",
         "source": "linkedin",
         "input": Path(__file__).resolve().parents[1] / "examples/linkedin-search.mcp.json",
     },
@@ -240,9 +240,10 @@ def _run_to_terminal(
 
 def _require_build(run: dict[str, Any], expected: str) -> None:
     if expected == "latest":
-        if not isinstance(run.get("buildId"), str) or not run["buildId"].strip() or not re.fullmatch(r"\d+\.\d+\.\d+", str(run.get("buildNumber", ""))):
-            raise RuntimeError("latest run is missing immutable buildId or numeric buildNumber")
-        print(f"Resolved build: buildId={run['buildId']} buildNumber={run['buildNumber']}")
+        if not isinstance(run.get("buildId"), str) or not run["buildId"].strip() or not re.fullmatch(r"[0-9]+[.][0-9]+[.][0-9]+", str(run.get("buildNumber", ""))):
+            raise RuntimeError("run omitted its resolved build identity")
+        if run.get("options", {}).get("build") != "latest":
+            raise RuntimeError("run was not requested through latest")
         return
     if run.get("buildNumber") != expected:
         raise RuntimeError(
@@ -356,7 +357,7 @@ def main() -> int:
         tool_arguments["waitSecs"] = 0
         call_options = tool_arguments.get("callOptions", {})
         if call_options.get("build") != profile["build"]:
-            raise RuntimeError("MCP smoke input must pin the qualified build")
+            raise RuntimeError("MCP smoke input must select latest")
         if call_options.get("maxItems", 0) > 5:
             raise RuntimeError("MCP callOptions may request at most 5 items")
         run = _run_to_terminal(

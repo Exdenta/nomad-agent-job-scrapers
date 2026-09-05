@@ -24,8 +24,8 @@ reference.
 | `dedupe` | object | `{"enabled": true, "key": "default"}` | Optional cross-run delivery ledger; use an isolated key per alert or disable explicitly for one-off runs |
 | `analyticsEnabled` | boolean | `false` | Explicit opt-in only |
 
-Supported LinkedIn build `1.0.2` declares the `firstRunMode` convenience
-field. The pinned API, MCP, n8n, and Make starter examples intentionally omit
+Supported LinkedIn build `latest` declares the `firstRunMode` convenience
+field. The maintained API, MCP, n8n, and Make starter examples intentionally omit
 it and continue to send bounded settings explicitly so paid enrichment and
 translation stay off. When a caller deliberately sends `firstRunMode: true`,
 the Actor preserves search/filter fields, caps effective `maxItems` at 5,
@@ -42,13 +42,13 @@ Use a single input to combine up to eight keyword/location partitions:
 {
   "schemaVersion": "nomad-agent-job-search-input-v1",
   "linkedinSearch": {
-    "schemaVersion": "nomad-agent-linkedin-search-v1",
+    "schemaVersion": "nomad-agent-linkedin-search-v2",
     "searches": [
       {"keyword": "frontend engineer", "location": "Spain"},
       {"keyword": "TypeScript developer", "location": "European Union"}
-    ],
-    "orderBy": "newest"
+    ]
   },
+  "orderBy": "newest",
   "postedWithin": "7d",
   "maxItems": 50
 }
@@ -93,7 +93,7 @@ Filters use the separately versioned `nomad-agent-job-filter-v1` expression:
 Use only paths and operators accepted by the deployed tool schema. Filters
 evaluate source-language values.
 
-In supported build `1.0.2`, `translateToEnglish` covers title, classifications,
+In supported build `latest`, `translateToEnglish` covers title, classifications,
 domains, applicant-requirement prose, benefits, eligibility and selection
 text, work authorization, security clearance, and location preference. It
 does not rewrite company or place names, identifiers, URLs, source-raw labels,

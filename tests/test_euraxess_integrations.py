@@ -175,7 +175,7 @@ process.stdout.write(JSON.stringify(new Function(node.parameters.jsCode)()));
         self.assertIn("nomad-agent-run-summary-v4", rendered)
         self.assertNotIn("nomad-agent-fleet-run-summary-v2", rendered)
         self.assertNotIn("sources.euraxess", rendered)
-        self.assertIn("{{1.buildNumber}}", rendered)
+        self.assertIn("{{1.options.build}}", rendered)
         self.assertIn("{{2.actorbuild}}", rendered)
         self.assertIn('"b": "euraxess"', rendered)
         self.assertIn("apify:runTask", rendered)

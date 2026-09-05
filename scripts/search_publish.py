@@ -33,6 +33,7 @@ SHARED_CONTRACT_DIR = PROJECT_ROOT / "integrations" / "shared"
 PUBLIC_CONTRACT_FILENAMES = (
     "nomad-ai-job-fit-destination-v1.schema.json",
     "nomad-ai-job-fit-run-summary-v3.schema.json",
+    "nomad-ai-job-fit-run-summary-v4.schema.json",
     "nomad-ai-job-fit-v1.schema.json",
 )
 ROBOTS_META_NAMES = {"robots", "googlebot", "bingbot"}

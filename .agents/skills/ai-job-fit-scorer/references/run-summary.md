@@ -52,7 +52,7 @@ is how many the caller's charge cap allowed; `aiAttempted` equals
   or a lower `minDeliveryScore` only if the user wants to see them.
 - Zero evaluations with `cleanEmpty == false`: inspect the terminal reason
   and budget fields; this does not establish that no jobs were found.
-- `status` not usable, or `actor.buildNumber` different from the pin: stop and
+- `status` not usable, or `actor.buildNumber` different from the resolved run receipt: stop and
   report the run ID and status message.
 
 Validate a downloaded record from the installed skill directory:
