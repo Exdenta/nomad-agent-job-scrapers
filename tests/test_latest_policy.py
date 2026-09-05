@@ -25,16 +25,16 @@ class LatestPolicyTests(unittest.TestCase):
 const fs = require('fs');
 const workflow = JSON.parse(fs.readFileSync(process.argv[1], 'utf8'));
 const drift = process.argv[2] === 'drift';
-const started = {actId:'mBRj1sgHTWmoPJEcb',id:'run-future',buildId:'build-future',buildNumber:'9.8.7'};
+const started = {actId:process.argv[1].includes('ai-job-fit')?'mBRj1sgHTWmoPJEcb':'kqIdAA2UQiPdOtzEB',id:'run-future',buildId:'build-future',buildNumber:'9.8.7'};
 const run = {...started,status:'SUCCEEDED',exitCode:0,defaultDatasetId:'dataset-future',defaultKeyValueStoreId:'store-future'};
 if (drift) run.buildId = 'another-build';
 global.$runIndex = 0;
 global.$input = {first:()=>({json:{data:run}})};
-global.$ = name => ({first:()=>({json:name === 'Configuration' ? {actorBuild:'latest'} : {data:started}})});
-const node = workflow.nodes.find(n => n.name === 'Validate terminal run');
+global.$ = name => ({first:()=>({json:['Configuration','Alert configuration'].includes(name) ? {actorBuild:'latest'} : {data:started}})});
+const node = workflow.nodes.find(n => ['Validate terminal run','Validate alert run'].includes(n.name));
 process.stdout.write(JSON.stringify(new Function(node.parameters.jsCode)()));
 """
-        for name in ['linkedin-jobs-to-google-sheets.json', 'euraxess-jobs-to-google-sheets.json', 'ai-job-fit-scorer-to-google-sheets.json']:
+        for name in ['linkedin-jobs-to-google-sheets.json', 'euraxess-jobs-to-google-sheets.json', 'ai-job-fit-scorer-to-google-sheets.json', 'linkedin-daily-job-alerts.json']:
             for mode in ['future', 'drift']:
                 with self.subTest(workflow=name, mode=mode):
                     result = subprocess.run(['node','-e',harness,str(ROOT/'integrations/n8n'/name),mode],capture_output=True,text=True)

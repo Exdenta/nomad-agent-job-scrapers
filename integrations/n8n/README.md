@@ -53,7 +53,7 @@ for that workflow; `jobKey` alone is not candidate-specific.
 
 ## Daily new-job alerts
 
-The alert workflow uses the bounded synchronous dataset endpoint for a shorter
+The alert workflow uses the bounded asynchronous run endpoint for a shorter
 first automation. It requires build selector `latest`, a run charge cap, no more
 than 25 requested jobs, strict six-root `nomad-agent-job-v1` rows, LinkedIn
 source identity, and stable `jobKey = source:externalId` within-run dedupe.

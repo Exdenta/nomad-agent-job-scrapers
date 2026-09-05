@@ -124,7 +124,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const cfg = $input.first().json;\nconst text = (value) => typeof value === 'string' ? value.trim() : '';\nlet advancedInput;\ntry { advancedInput = JSON.parse(text(cfg.advancedInputJson) || '{}'); }\ncatch (error) { throw new Error(`Configuration: advancedInputJson must be valid JSON (${error.message})`); }\nif (!advancedInput || typeof advancedInput !== 'object' || Array.isArray(advancedInput)) throw new Error('Configuration: advancedInputJson must contain one JSON object');\nif (text(cfg.actorBuild) !== 'latest') throw new Error('Configuration: this template supports exact Actor build latest');\nconst deliveryChannel = text(cfg.deliveryChannel).toLowerCase();\nif (!new Set(['slack', 'telegram', 'email']).has(deliveryChannel)) throw new Error('Configuration: deliveryChannel must be slack, telegram, or email');\nconst deliveryTarget = text(cfg.deliveryTarget);\nif (!deliveryTarget || deliveryTarget.startsWith('REPLACE_WITH_')) throw new Error('Configuration: replace deliveryTarget with a Slack channel ID, Telegram chat ID, or email address');\nconst emailFrom = text(cfg.emailFrom);\nif (deliveryChannel === 'email' && (!emailFrom.includes('@') || emailFrom.startsWith('REPLACE_WITH_'))) throw new Error('Configuration: email delivery requires a verified emailFrom address');\nconst dedupeScope = text(cfg.dedupeScope);\nif (!dedupeScope || dedupeScope.startsWith('REPLACE_WITH_')) throw new Error('Configuration: replace dedupeScope with a stable opaque name for this alert');\nconst maxItems = Number(cfg.maxItems);\nif (!Number.isInteger(maxItems) || maxItems < 1 || maxItems > 25) throw new Error('Configuration: maxItems must be an integer from 1 to 25');\nconst chargeCap = Number(cfg.maxTotalChargeUsd);\nif (!Number.isFinite(chargeCap) || chargeCap <= 0 || chargeCap > 1) throw new Error('Configuration: maxTotalChargeUsd must be greater than 0 and at most 1');\nconst actorInput = {\n  schemaVersion: 'nomad-agent-job-search-input-v1',\n  keyword: text(cfg.keyword),\n  location: text(cfg.location),\n  postedWithin: text(cfg.postedWithin),\n  workArrangements: text(cfg.workArrangementsCsv).split(',').map(value => value.trim()).filter(Boolean),\n  maxItems,\n  translateToEnglish: false,\n  aiEnrichment: { enabled: false, accuracy: 'silver' },\n  includeRaw: false,\n  dedupe: { enabled: true, key: dedupeScope },\n  analyticsEnabled: false,\n  ...advancedInput,\n  maxItems,\n  dedupe: { enabled: true, key: dedupeScope },\n};\nif (actorInput.schemaVersion !== 'nomad-agent-job-search-input-v1') throw new Error('Configuration: actor input schemaVersion must be nomad-agent-job-search-input-v1');\nif (!new Set(['1h', '24h', '7d', '30d', 'any']).has(actorInput.postedWithin)) throw new Error('Configuration: postedWithin must be 1h, 24h, 7d, 30d, or any');\nif (!Array.isArray(actorInput.workArrangements) || actorInput.workArrangements.some(value => !new Set(['remote', 'hybrid', 'onsite']).has(value))) throw new Error('Configuration: workArrangements must contain only remote, hybrid, or onsite');\nreturn [{ json: { ...cfg, deliveryChannel, deliveryTarget, emailFrom, actorInput } }];"
+        "jsCode": "const cfg = $input.first().json;\nconst text = (value) => typeof value === 'string' ? value.trim() : '';\nlet advancedInput;\ntry { advancedInput = JSON.parse(text(cfg.advancedInputJson) || '{}'); }\ncatch (error) { throw new Error(`Configuration: advancedInputJson must be valid JSON (${error.message})`); }\nif (!advancedInput || typeof advancedInput !== 'object' || Array.isArray(advancedInput)) throw new Error('Configuration: advancedInputJson must contain one JSON object');\nif (text(cfg.actorBuild) !== 'latest') throw new Error('Configuration: this template supports Actor build selector latest');\nconst deliveryChannel = text(cfg.deliveryChannel).toLowerCase();\nif (!new Set(['slack', 'telegram', 'email']).has(deliveryChannel)) throw new Error('Configuration: deliveryChannel must be slack, telegram, or email');\nconst deliveryTarget = text(cfg.deliveryTarget);\nif (!deliveryTarget || deliveryTarget.startsWith('REPLACE_WITH_')) throw new Error('Configuration: replace deliveryTarget with a Slack channel ID, Telegram chat ID, or email address');\nconst emailFrom = text(cfg.emailFrom);\nif (deliveryChannel === 'email' && (!emailFrom.includes('@') || emailFrom.startsWith('REPLACE_WITH_'))) throw new Error('Configuration: email delivery requires a verified emailFrom address');\nconst dedupeScope = text(cfg.dedupeScope);\nif (!dedupeScope || dedupeScope.startsWith('REPLACE_WITH_')) throw new Error('Configuration: replace dedupeScope with a stable opaque name for this alert');\nconst maxItems = Number(cfg.maxItems);\nif (!Number.isInteger(maxItems) || maxItems < 1 || maxItems > 25) throw new Error('Configuration: maxItems must be an integer from 1 to 25');\nconst chargeCap = Number(cfg.maxTotalChargeUsd);\nif (!Number.isFinite(chargeCap) || chargeCap <= 0 || chargeCap > 1) throw new Error('Configuration: maxTotalChargeUsd must be greater than 0 and at most 1');\nconst actorInput = {\n  schemaVersion: 'nomad-agent-job-search-input-v1',\n  keyword: text(cfg.keyword),\n  location: text(cfg.location),\n  postedWithin: text(cfg.postedWithin),\n  workArrangements: text(cfg.workArrangementsCsv).split(',').map(value => value.trim()).filter(Boolean),\n  maxItems,\n  translateToEnglish: false,\n  aiEnrichment: { enabled: false, accuracy: 'silver' },\n  includeRaw: false,\n  dedupe: { enabled: true, key: dedupeScope },\n  analyticsEnabled: false,\n  ...advancedInput,\n  maxItems,\n  dedupe: { enabled: true, key: dedupeScope },\n};\nif (actorInput.schemaVersion !== 'nomad-agent-job-search-input-v1') throw new Error('Configuration: actor input schemaVersion must be nomad-agent-job-search-input-v1');\nif (!new Set(['1h', '24h', '7d', '30d', 'any']).has(actorInput.postedWithin)) throw new Error('Configuration: postedWithin must be 1h, 24h, 7d, 30d, or any');\nif (!Array.isArray(actorInput.workArrangements) || actorInput.workArrangements.some(value => !new Set(['remote', 'hybrid', 'onsite']).has(value))) throw new Error('Configuration: workArrangements must contain only remote, hybrid, or onsite');\nreturn [{ json: { ...cfg, deliveryChannel, deliveryTarget, emailFrom, actorInput } }];"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -138,7 +138,7 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "https://api.apify.com/v2/acts/nomad-agent~linkedin-enrich-translate-normalize-scraper/run-sync-get-dataset-items",
+        "url": "https://api.apify.com/v2/acts/nomad-agent~linkedin-enrich-translate-normalize-scraper/runs",
         "authentication": "genericCredentialType",
         "genericAuthType": "httpHeaderAuth",
         "sendQuery": true,
@@ -163,7 +163,7 @@
         "rawContentType": "application/json",
         "body": "={{ JSON.stringify($('Validate alert setup').first().json.actorInput) }}",
         "options": {
-          "timeout": 310000,
+          "timeout": 30000,
           "response": {
             "response": {
               "responseFormat": "json"
@@ -187,7 +187,7 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        20,
+        1220,
         180
       ],
       "id": "4b93959f-16c9-47fd-af32-b9d0f354c051",
@@ -220,7 +220,7 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        280,
+        1480,
         -40
       ],
       "id": "3538d1d7-60cd-4e6e-93bd-416dc90ddc35",
@@ -242,7 +242,7 @@
       "type": "n8n-nodes-base.slack",
       "typeVersion": 2.3,
       "position": [
-        540,
+        1740,
         -40
       ],
       "id": "e088f7b1-88a2-4b74-91c0-c95df1dc6e08",
@@ -275,7 +275,7 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        280,
+        1480,
         180
       ],
       "id": "ba989712-8f6b-4a9a-9f79-8f4d51f9e434",
@@ -288,7 +288,7 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        540,
+        1740,
         180
       ],
       "id": "64b7d84d-1810-4b1b-b61e-14bb2f995320",
@@ -308,7 +308,7 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        800,
+        2000,
         180
       ],
       "id": "28e817cf-7399-49f0-aa87-e3d562652dd3",
@@ -341,7 +341,7 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        280,
+        1480,
         400
       ],
       "id": "df1e5683-8aba-4556-a88e-fda340add24c",
@@ -361,7 +361,7 @@
       "type": "n8n-nodes-base.emailSend",
       "typeVersion": 2.1,
       "position": [
-        540,
+        1740,
         400
       ],
       "id": "3cac4496-bfc6-4e79-98eb-36df7801a972",
@@ -369,7 +369,7 @@
     },
     {
       "parameters": {
-        "content": "## Send only new LinkedIn jobs every day\n\n1. Add a scoped Apify token as an n8n Header Auth credential on **Find only new jobs**: `Authorization` = `Bearer YOUR_APIFY_TOKEN`.\n2. In **Alert configuration**, choose `slack`, `telegram`, or `email`; replace the destination placeholder; and give this alert a stable opaque dedupe scope.\n3. Add the matching Slack, Telegram, or SMTP credential only to the selected delivery node. For email, also set a verified sender address.\n4. The workflow follows `latest`. The starter searches ten recent jobs with AI enrichment, translation, raw descriptions, and analytics disabled.\n5. Run manually first. The Actor's cross-run deduplication makes later runs return only jobs not already delivered in this alert scope. The workflow also removes duplicate `jobKey` values within each response.\n6. Publish only after the manual destination smoke succeeds. Empty results send no message. This import contains no credentials and is not evidence of a live Slack, Telegram, or email test.\n\nThis quick-start workflow uses Apify's bounded synchronous dataset endpoint. Use the tracker workflow when you need v4 RUN-SUMMARY reconciliation and retry handling before delivery.",
+        "content": "## Send only new LinkedIn jobs every day\n\n1. Add a scoped Apify token as an n8n Header Auth credential on all three Apify HTTP nodes: `Authorization` = `Bearer YOUR_APIFY_TOKEN`.\n2. In **Alert configuration**, choose `slack`, `telegram`, or `email`; replace the destination placeholder; and give this alert a stable opaque dedupe scope.\n3. Add the matching Slack, Telegram, or SMTP credential only to the selected delivery node. For email, also set a verified sender address.\n4. The workflow follows `latest`. The starter searches ten recent jobs with AI enrichment, translation, raw descriptions, and analytics disabled.\n5. Run manually first. The Actor's cross-run deduplication makes later runs return only jobs not already delivered in this alert scope. The workflow also removes duplicate `jobKey` values within each response.\n6. Publish only after the manual destination smoke succeeds. Empty results send no message. This import contains no credentials and is not evidence of a live Slack, Telegram, or email test.\n\nThis quick-start workflow verifies the exact completed Actor run before fetching its dataset. Use the tracker workflow when you need v4 RUN-SUMMARY reconciliation and retry handling before delivery.\n\nAssign the same Apify Header Auth credential to all three HTTP nodes. The workflow records the exact started run, polls it for at most six minutes, validates terminal success and resolved build identity, then fetches only that run’s dataset.",
         "height": 450,
         "width": 700,
         "color": 5
@@ -382,6 +382,138 @@
       ],
       "id": "c06d22cc-86a5-4504-a1f6-f963f2512b3e",
       "name": "Setup notes"
+    },
+    {
+      "parameters": {
+        "jsCode": "const envelope = $input.first().json;\nconst run = envelope && typeof envelope === 'object' ? (envelope.data || envelope) : {};\nif (!run.id || typeof run.status !== 'string') {\n  throw new Error('Apify returned no run ID or run status');\n}\n\nconst startEnvelope = $('Find only new jobs').first().json;\nconst started = startEnvelope.data || startEnvelope;\nif (run.id !== started.id || run.buildId !== started.buildId || run.buildNumber !== started.buildNumber) throw new Error('Actor poll changed execution identity');\nconst startedAt = Date.parse(started.startedAt || '');\nif (!Number.isFinite(startedAt) || Date.now() - startedAt > 360000) throw new Error('Alert polling deadline exceeded');\n\nreturn [{ json: run }];"
+      },
+      "id": "5df65c83-f5e4-4621-8be0-e9816210fc58",
+      "name": "Select alert run",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1080,
+        180
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "b56eaf6a-745d-4efc-819f-d7057b0d6ca0-condition",
+              "leftValue": "={{ ['SUCCEEDED', 'FAILED', 'ABORTED', 'TIMED-OUT'].includes($json.status) }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "37f66b7c-9612-434a-9ea4-73131a979e30",
+      "name": "Alert run is terminal?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1300,
+        180
+      ]
+    },
+    {
+      "parameters": {
+        "url": "={{ 'https://api.apify.com/v2/actor-runs/' + $json.id }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "waitForFinish",
+              "value": "60"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 70000,
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          }
+        }
+      },
+      "id": "6471a270-8f29-4ded-aa58-8919431f4b5f",
+      "name": "Poll same alert run",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1520,
+        180
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const envelope = $input.first().json;\nconst run = envelope && typeof envelope === 'object' ? (envelope.data || envelope) : {};\nif (run.actId !== 'kqIdAA2UQiPdOtzEB') throw new Error('Unexpected alert Actor identity');\nconst expectedBuild = String($('Alert configuration').first().json.actorBuild || '').trim();\nif (run.status !== 'SUCCEEDED' || run.exitCode !== 0) {\n  throw new Error(`Actor run ${run.id || 'unknown'} ended with ${run.status || 'unknown'} (exitCode=${run.exitCode ?? 'unknown'}); failed terminal runs cannot be retried from RUN-SUMMARY`);\n}\nif (expectedBuild !== 'latest' || !/^[0-9]+[.][0-9]+[.][0-9]+$/.test(run.buildNumber || '') || !run.buildId) throw new Error('Actor run omitted its resolved build identity');\nconst startedEnvelope = $('Find only new jobs').first().json;\nconst started = startedEnvelope.data || startedEnvelope;\nif (started.id !== run.id || started.buildId !== run.buildId || started.buildNumber !== run.buildNumber) throw new Error('Actor poll changed execution identity');\nif (!run.id || !run.defaultDatasetId) {\n  throw new Error('Successful Actor run is missing its run ID or default dataset ID');\n}\nreturn [{ json: {\n  runId: run.id,\n  buildId: run.buildId,\n  buildNumber: run.buildNumber,\n  defaultDatasetId: run.defaultDatasetId,\n  datasetItemCount: run.stats && Number.isInteger(run.stats.datasetItems) ? run.stats.datasetItems : null\n} }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1740,
+        180
+      ],
+      "id": "65a0c037-eed3-49ba-9070-21b1109df811",
+      "name": "Validate alert run"
+    },
+    {
+      "parameters": {
+        "url": "={{ 'https://api.apify.com/v2/actor-runs/' + $json.runId + '/dataset/items' }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "format",
+              "value": "json"
+            },
+            {
+              "name": "clean",
+              "value": "true"
+            },
+            {
+              "name": "limit",
+              "value": "={{ $('Alert configuration').first().json.maxItems }}"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 30000,
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1960,
+        180
+      ],
+      "id": "a51aa675-f810-47fa-a7a3-abdc678af6b0",
+      "name": "Get verified alert jobs"
     }
   ],
   "connections": {
@@ -433,7 +565,7 @@
       "main": [
         [
           {
-            "node": "Validate and format new jobs",
+            "node": "Select alert run",
             "type": "main",
             "index": 0
           }
@@ -506,6 +638,68 @@
           }
         ],
         []
+      ]
+    },
+    "Select alert run": {
+      "main": [
+        [
+          {
+            "node": "Alert run is terminal?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Alert run is terminal?": {
+      "main": [
+        [
+          {
+            "node": "Validate alert run",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Poll same alert run",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Poll same alert run": {
+      "main": [
+        [
+          {
+            "node": "Select alert run",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate alert run": {
+      "main": [
+        [
+          {
+            "node": "Get verified alert jobs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get verified alert jobs": {
+      "main": [
+        [
+          {
+            "node": "Validate and format new jobs",
+            "type": "main",
+            "index": 0
+          }
+        ]
       ]
     }
   },

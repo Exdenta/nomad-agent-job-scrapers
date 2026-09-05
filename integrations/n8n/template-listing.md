@@ -100,7 +100,7 @@ and send each new job to one selected Slack, Telegram, or email destination.
 Create one bounded daily LinkedIn job alert without maintaining a separate
 delivery database in n8n. The workflow runs manually or at 08:00 UTC, validates
 its configuration before the paid call, and calls Actor build selector `latest`
-through Apify's synchronous dataset endpoint. The starter requests at most ten
+through same-run polling and validated dataset retrieval. The starter requests at most ten
 jobs and caps the run at `$0.10`.
 
 The Actor's opaque alert scope enables source-side cross-run deduplication, so
@@ -123,7 +123,7 @@ and dataset reconciliation are required before delivery.
 ### Setup
 
 1. Import [`linkedin-daily-job-alerts.json`](linkedin-daily-job-alerts.json).
-2. Add a scoped Apify Header Auth credential to **Find only new jobs**.
+2. Assign a scoped Apify Header Auth credential to **Find only new jobs**, **Poll same alert run**, and **Get verified alert jobs**.
 3. In **Alert configuration**, keep build `latest`, choose `slack`,
    `telegram`, or `email`, replace the destination placeholder, and replace
    the alert-scope placeholder with a stable opaque value.

@@ -137,7 +137,7 @@ process.stdout.write(JSON.stringify(output));
         self.assertEqual(params["method"], "POST")
         self.assertEqual(params["authentication"], "genericCredentialType")
         self.assertEqual(params["genericAuthType"], "httpHeaderAuth")
-        self.assertIn("run-sync-get-dataset-items", params["url"])
+        self.assertTrue(params["url"].endswith("/runs"))
         self.assertNotIn("token=", params["url"].lower())
         query = {
             item["name"]: item["value"]
@@ -149,8 +149,35 @@ process.stdout.write(JSON.stringify(output));
         )
         self.assertIn("maxTotalChargeUsd", query)
         self.assertEqual(query["timeout"], "300")
-        self.assertEqual(params["options"]["timeout"], 310_000)
+        self.assertEqual(params["options"]["timeout"], 30_000)
         self.assertNotIn("credentials", node)
+
+    def test_delivery_requires_the_verified_run_path(self):
+        connections = self.workflow["connections"]
+        self.assertEqual(connections["Find only new jobs"]["main"][0][0]["node"], "Select alert run")
+        self.assertEqual(connections["Alert run is terminal?"]["main"][0][0]["node"], "Validate alert run")
+        self.assertEqual(connections["Alert run is terminal?"]["main"][1][0]["node"], "Poll same alert run")
+        self.assertEqual(connections["Validate alert run"]["main"][0][0]["node"], "Get verified alert jobs")
+        self.assertEqual(connections["Get verified alert jobs"]["main"][0][0]["node"], "Validate and format new jobs")
+        self.assertIn("$json.runId", self.nodes["Get verified alert jobs"]["parameters"]["url"])
+
+    def test_poll_guard_rejects_run_drift_and_expired_deadline(self):
+        script = r"""
+const fs = require('fs');
+const workflow = JSON.parse(fs.readFileSync(process.argv[1], 'utf8'));
+const mode = process.argv[2];
+const started = {id:'run',status:'RUNNING',buildId:'build',buildNumber:'9.8.7',startedAt:new Date().toISOString()};
+if (mode === 'expired') started.startedAt = '2000-01-01T00:00:00.000Z';
+const run = {...started}; if (mode === 'drift') run.id = 'another-run';
+global.$input = {first:()=>({json:{data:run}})};
+global.$ = ()=>({first:()=>({json:{data:started}})});
+const code = workflow.nodes.find(n=>n.name==='Select alert run').parameters.jsCode;
+process.stdout.write(JSON.stringify(new Function(code)()));
+"""
+        for mode in ['current','drift','expired']:
+            result = subprocess.run(['node','-e',script,str(WORKFLOW_PATH),mode],capture_output=True,text=True)
+            if mode == 'current': self.assertEqual(result.returncode,0,result.stderr)
+            else: self.assertNotEqual(result.returncode,0)
 
     def test_canonical_fixture_formats_source_faithful_alert(self) -> None:
         fixture = json.loads(FIXTURE_PATH.read_text(encoding="utf-8"))
