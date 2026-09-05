@@ -38,7 +38,7 @@
         <p class="detail-eyebrow">Source-specialized job-data Actor</p>
         <h1>LinkedIn Jobs Scraper API</h1>
         <p class="detail-lede">Find fresh public LinkedIn vacancies with explicit filters, source-linked identity, duplicate-safe recurring runs, and optional description-backed enrichment or English translation.</p>
-        <div class="detail-badges"><span class="detail-badge">Store default 1.0.6 observed 2026-09-03</span><span class="detail-badge">Integration-tested pin 1.0.2</span><span class="detail-badge">nomad-agent-job-v1</span></div>
+        <div class="detail-badges"><span class="detail-badge"><a href="https://api.apify.com/v2/acts/nomad-agent~linkedin-enrich-translate-normalize-scraper/builds/default">Current Store default ↗</a></span><span class="detail-badge">Integration-tested pin 1.0.2</span><span class="detail-badge">nomad-agent-job-v1</span></div>
         <div class="detail-actions"><a class="button button-dark" href="https://apify.com/nomad-agent/linkedin-enrich-translate-normalize-scraper?utm_source=nomad-agent-job-scrapers&amp;utm_medium=owned-site&amp;utm_campaign=actor-discovery&amp;utm_content=detail-linkedin" target="_blank" rel="noopener noreferrer" data-event="actor_cta_click" data-actor="linkedin" data-placement="detail-linkedin">Open on Apify ↗</a><a class="button button-outline" href="/guides/linkedin-job-alerts-n8n" data-event="guide_cta_click" data-actor="linkedin" data-placement="detail-linkedin-alert-guide">Build a daily alert</a></div>
       </section>
       <div class="detail-layout">
@@ -72,7 +72,7 @@
           </section>
           <section class="detail-panel">
             <h2>Exact-run completion checklist</h2>
-            <p>The current Store default observed on 2026-09-03 is build number <code>1.0.6</code> (immutable build <code>9uyPad4O7Zcjp1AVe</code>). The checked-in integration pack is still tested against <code>1.0.2</code>. Keep that older exact pin for the maintained examples until the newer build completes contract and destination regression checks; do not treat <code>1.0.2</code> as the current Store default.</p>
+            <p>The <a href="https://api.apify.com/v2/acts/nomad-agent~linkedin-enrich-translate-normalize-scraper/builds/default">current default build API</a> returns the default build number and immutable build ID. The checked-in integration pack is still tested against <code>1.0.2</code>. Keep that older exact pin for the maintained examples until the newer build completes contract and destination regression checks; do not treat <code>1.0.2</code> as the current Store default.</p>
             <ol><li>Pin the build intentionally and set a conservative item and maximum charge cap.</li><li>Retain the returned run ID and poll that exact run to a terminal status.</li><li>Require <code>SUCCEEDED</code>, the requested build, and a valid <code>nomad-agent-run-summary-v4</code> from the same run’s key-value store.</li><li>Honor no more than one retry, and only when a usable <code>partial</code> summary explicitly recommends it.</li><li>Fetch the same run’s default dataset and require its complete row count to equal <code>RUN-SUMMARY.delivered</code>.</li><li>Validate all six roots and <code>identity.source = linkedin</code> before delivery.</li></ol>
           </section>
           <section class="detail-panel detail-note">
@@ -87,7 +87,7 @@
         </div>
         <aside class="detail-aside" aria-label="LinkedIn Actor resources">
           <section class="detail-panel"><h3>Build with it</h3><ul class="detail-link-list"><li><a href="/integrations/n8n">n8n alerts and trackers</a></li><li><a href="/integrations/api">REST API and webhooks</a></li><li><a href="/integrations/mcp">MCP clients</a></li><li><a href="/integrations/airtable">Airtable projection</a></li></ul></section>
-          <section class="detail-panel"><h3>Source references</h3><ul class="detail-link-list"><li><a href="https://github.com/Exdenta/nomad-agent-job-scrapers/blob/main/docs/contracts.md">Canonical contract ↗</a></li><li><a href="https://github.com/Exdenta/nomad-agent-job-scrapers/blob/main/docs/integration-compatibility.md">Compatibility matrix ↗</a></li><li><a href="/contracts">Contract overview</a></li></ul></section>
+          <section class="detail-panel"><h3>Source references</h3><ul class="detail-link-list"><li><a href="https://github.com/Exdenta/nomad-agent-job-scrapers/blob/main/docs/linkedin.md">LinkedIn quick-start guide ↗</a></li><li><a href="https://github.com/Exdenta/nomad-agent-job-scrapers/blob/main/docs/contracts.md">Canonical contract ↗</a></li><li><a href="https://github.com/Exdenta/nomad-agent-job-scrapers/blob/main/docs/integration-compatibility.md">Compatibility matrix ↗</a></li><li><a href="/contracts">Contract overview</a></li></ul></section>
         </aside>
       </div>
       <nav class="detail-footer-nav" aria-label="Related pages"><a href="/guides/linkedin-jobs-api-alternatives">LinkedIn jobs API options →</a><a href="/integrations/n8n">Build an n8n workflow →</a></nav>

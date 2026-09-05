@@ -10,13 +10,14 @@ are published at [nomadagent.dev](https://nomadagent.dev/). The operating rules
 for search discovery, measurement, and evidence-led content are documented in
 the [SEO program](docs/seo-program.md).
 
-## LinkedIn Jobs Scraper | Remove Duplicates | AI Enrichment
+## LinkedIn Jobs Scraper | AI Enrichment
 
-Find fresh public LinkedIn jobs, keep recurring alerts and trackers free of
-duplicate deliveries, and send clean source-linked records into Google Sheets,
-Slack, Telegram, email, Airtable, Make, n8n, MCP clients, or your own API.
-Start with enrichment and translation off; enable either only when the extra
-structured fields or English display values are useful to the workflow.
+Get LinkedIn jobs ready for alerts, job boards, and spreadsheets. Keep full
+descriptions and original links, skip jobs already returned by earlier runs,
+and add AI enrichment or English translation when needed.
+
+[Start with five jobs](docs/linkedin.md) and a small cost cap. Enrichment and
+translation are optional paid extras.
 
 - [Build a daily new-job alert](integrations/n8n/linkedin-daily-job-alerts.json)
 - [Build a duplicate-safe Google Sheets job tracker](integrations/n8n/linkedin-jobs-to-google-sheets.json)
@@ -38,7 +39,7 @@ customer model key.
 
 | Actor | Best for | Key advantages | Availability and verification boundary |
 | --- | --- | --- | --- |
-| [`LinkedIn Jobs Scraper \| Remove Duplicates \| AI Enrichment`](https://apify.com/nomad-agent/linkedin-enrich-translate-normalize-scraper) | Public LinkedIn job search | Find fresh jobs, suppress already-delivered matches, and send clean records with complete descriptions when available to alerts, trackers, job boards, or agents. Optional enrichment and translation stay off until selected. | Public Store Actor; Store default observed at `1.0.6` on 2026-09-03; integrations remain tested against `1.0.2` |
+| [`LinkedIn Jobs Scraper \| AI Enrichment`](https://apify.com/nomad-agent/linkedin-enrich-translate-normalize-scraper) | Public LinkedIn job search | Find fresh jobs, suppress already-delivered matches, and send clean records with complete descriptions when available to alerts, trackers, job boards, or agents. Optional enrichment and translation stay off until selected. | Public Store Actor; see the [current default build API](https://api.apify.com/v2/acts/nomad-agent~linkedin-enrich-translate-normalize-scraper/builds/default). Integrations remain tested against `1.0.2` |
 | [`EURAXESS Jobs Scraper — Research & Academic Jobs`](https://apify.com/nomad-agent/euraxess-enrich-translate-normalize-scraper) | PhD, postdoc, fellowship, research, and faculty vacancies | Research domains, requirements, funding, deadlines, contacts, multilingual keyword expansion, strict filters, deduplication, optional enrichment, and translation | Public Store Actor; Store default observed at `1.0.20` on 2026-09-03; integrations remain tested against `1.0.16` |
 | [`AI Job Search & Fit Scorer — 10 Sources + V3 Matching`](https://apify.com/nomad-agent/ai-job-fit-scorer) | Candidate-specific developer-job shortlists | Search 10 public developer-job sources—or score your own job list—against a résumé or candidate profile; get ranked matches with 0–100 fit, hard-requirement checks, evidence, skill gaps, and application links | Public Store Actor; Store default and integration-tested build `0.1.11` observed on 2026-09-03; $0.02 per successful retained evaluation |
 
