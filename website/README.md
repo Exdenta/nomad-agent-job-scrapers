@@ -1,6 +1,6 @@
-# Nomad Agent website
+# Job Atlas website
 
-Static, dependency-free site for the Nomad Agent job-data catalog. The public
+Static, dependency-free site for the Job Atlas job-data catalog. The public
 origin is `https://nomadagent.dev/`; Firebase Hosting serves the files in this
 directory from the isolated `nomad-agent-job-scrapers` site in project
 `hryu-jobs`.

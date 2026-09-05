@@ -218,7 +218,7 @@ process.stdout.write(JSON.stringify(new Function(node.parameters.jsCode)()));
                 encoding="utf-8"
             )
         )
-        self.assertEqual(example["actor"], "nomad-agent/euraxess-enrich-translate-normalize-scraper")
+        self.assertEqual(example["actor"], "job-atlas/euraxess-enrich-translate-normalize-scraper")
         self.assertEqual(example["callOptions"]["build"], "latest")
         self.assertLessEqual(example["callOptions"]["maxItems"], 5)
         self.assertLessEqual(example["input"]["maxItems"], 5)

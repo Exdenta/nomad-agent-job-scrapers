@@ -1,4 +1,4 @@
-# Nomad Agent SEO program
+# Job Atlas SEO program
 
 This document is the operating contract for growing
 [nomadagent.dev](https://nomadagent.dev/) without weakening product accuracy,
@@ -10,7 +10,7 @@ The pre-expansion state is preserved in the
 ## Positioning
 
 **For** developers, automation builders, recruiters, and job-search product
-teams who need source-linked job data, **Nomad Agent Job Data** is a set of
+teams who need source-linked job data, **Job Atlas Job Data** is a set of
 job-data APIs, integration packs, and AI matching tools that preserve identity,
 provenance, and failure state. **Unlike** copying search-result rows into an
 unversioned table, the project publishes bounded inputs, versioned contracts,

@@ -138,7 +138,7 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "https://api.apify.com/v2/acts/nomad-agent~linkedin-enrich-translate-normalize-scraper/runs",
+        "url": "https://api.apify.com/v2/acts/job-atlas~linkedin-enrich-translate-normalize-scraper/runs",
         "authentication": "genericCredentialType",
         "genericAuthType": "httpHeaderAuth",
         "sendQuery": true,
@@ -464,7 +464,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const envelope = $input.first().json;\nconst run = envelope && typeof envelope === 'object' ? (envelope.data || envelope) : {};\nif (run.actId !== 'kqIdAA2UQiPdOtzEB') throw new Error('Unexpected alert Actor identity');\nconst expectedBuild = String($('Alert configuration').first().json.actorBuild || '').trim();\nif (run.status !== 'SUCCEEDED' || run.exitCode !== 0) {\n  throw new Error(`Actor run ${run.id || 'unknown'} ended with ${run.status || 'unknown'} (exitCode=${run.exitCode ?? 'unknown'}); failed terminal runs cannot be retried from RUN-SUMMARY`);\n}\nif (expectedBuild !== 'latest' || !/^[0-9]+[.][0-9]+[.][0-9]+$/.test(run.buildNumber || '') || !run.buildId) throw new Error('Actor run omitted its resolved build identity');\nconst startedEnvelope = $('Find only new jobs').first().json;\nconst started = startedEnvelope.data || startedEnvelope;\nif (started.id !== run.id || started.buildId !== run.buildId || started.buildNumber !== run.buildNumber) throw new Error('Actor poll changed execution identity');\nif (!run.id || !run.defaultDatasetId) {\n  throw new Error('Successful Actor run is missing its run ID or default dataset ID');\n}\nreturn [{ json: {\n  runId: run.id,\n  buildId: run.buildId,\n  buildNumber: run.buildNumber,\n  defaultDatasetId: run.defaultDatasetId,\n  datasetItemCount: run.stats && Number.isInteger(run.stats.datasetItems) ? run.stats.datasetItems : null\n} }];"
+        "jsCode": "const envelope = $input.first().json;\nconst run = envelope && typeof envelope === 'object' ? (envelope.data || envelope) : {};\nif (run.actId !== 'KMflYVTHiIAXE6nKN') throw new Error('Unexpected alert Actor identity');\nconst expectedBuild = String($('Alert configuration').first().json.actorBuild || '').trim();\nif (run.status !== 'SUCCEEDED' || run.exitCode !== 0) {\n  throw new Error(`Actor run ${run.id || 'unknown'} ended with ${run.status || 'unknown'} (exitCode=${run.exitCode ?? 'unknown'}); failed terminal runs cannot be retried from RUN-SUMMARY`);\n}\nif (expectedBuild !== 'latest' || !/^[0-9]+[.][0-9]+[.][0-9]+$/.test(run.buildNumber || '') || !run.buildId) throw new Error('Actor run omitted its resolved build identity');\nconst startedEnvelope = $('Find only new jobs').first().json;\nconst started = startedEnvelope.data || startedEnvelope;\nif (started.id !== run.id || started.buildId !== run.buildId || started.buildNumber !== run.buildNumber) throw new Error('Actor poll changed execution identity');\nif (!run.id || !run.defaultDatasetId) {\n  throw new Error('Successful Actor run is missing its run ID or default dataset ID');\n}\nreturn [{ json: {\n  runId: run.id,\n  buildId: run.buildId,\n  buildNumber: run.buildNumber,\n  defaultDatasetId: run.defaultDatasetId,\n  datasetItemCount: run.stats && Number.isInteger(run.stats.datasetItems) ? run.stats.datasetItems : null\n} }];"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,

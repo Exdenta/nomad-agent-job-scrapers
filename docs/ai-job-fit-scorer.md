@@ -1,6 +1,6 @@
 # AI Job Search & Fit Scorer integration guide
 
-[`nomad-agent/ai-job-fit-scorer`](https://apify.com/nomad-agent/ai-job-fit-scorer)
+[`job-atlas/ai-job-fit-scorer`](https://apify.com/job-atlas/ai-job-fit-scorer)
 turns one résumé or structured candidate profile into a ranked developer-job
 shortlist. It can search and deduplicate 10 public job sources in one run, or
 score supplied `nomad-agent-job-v1` records. Default `shortlist` mode returns
@@ -98,7 +98,7 @@ provided.
 
 Every integration should preserve this order:
 
-1. start `nomad-agent/ai-job-fit-scorer` with build `latest`, an explicit input,
+1. start `job-atlas/ai-job-fit-scorer` with build `latest`, an explicit input,
    item cap, and maximum total charge;
 2. retain the returned run ID and poll only that run to a terminal state;
 3. require `SUCCEEDED`, exit code `0`, the immutable build ID and number returned at start, and

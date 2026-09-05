@@ -1,6 +1,8 @@
-# Nomad Agent Job Scrapers
+# Job Atlas Job Scrapers
 
-Open schemas, integration recipes, and agent skills for Nomad Agent job-search
+[Website](https://nomadagent.dev/) · [Job Atlas on Apify](https://apify.com/job-atlas) · [Release evidence](docs/job-atlas.md)
+
+Open schemas, integration recipes, and agent skills for Job Atlas job-search
 Actors. The Actor implementations may be hosted services; this repository
 publishes their interoperability layer, not a claim that every scraper is open
 source.
@@ -39,10 +41,10 @@ drop/hold/failure audit when requested, without requiring a customer model key.
 
 | Actor | Best for | Key advantages | Availability and verification boundary |
 | --- | --- | --- | --- |
-| [`LinkedIn Jobs Scraper \| AI Enrichment`](https://apify.com/nomad-agent/linkedin-enrich-translate-normalize-scraper) | Public LinkedIn job search | Find fresh jobs, suppress already-delivered matches, and send clean records with complete descriptions when available to alerts, trackers, job boards, or agents. Optional enrichment and translation stay off until selected. | Public Store Actor; see the [current default build API](https://api.apify.com/v2/acts/nomad-agent~linkedin-enrich-translate-normalize-scraper/builds/default). Integrations follow `latest` |
-| [`EURAXESS Jobs Scraper &#124; Full Details & AI Enrichment`](https://apify.com/nomad-agent/euraxess-enrich-translate-normalize-scraper) | PhD, postdoc, fellowship, research, and faculty vacancies | Research domains, requirements, funding, deadlines, contacts, multilingual keyword expansion, strict filters, deduplication, optional enrichment, and translation | Public Store Actor; maintained integration selector `latest`; check Apify for the current default |
-| [`AI Job Search & Fit Scorer — 10 Sources + AI Matching`](https://apify.com/nomad-agent/ai-job-fit-scorer) | Candidate-specific developer-job shortlists | Search 10 public developer-job sources or score your own job list against a résumé or profile. Get a ranked shortlist with a 0–100 fit score, a 0–5 delivery score after hard-requirement checks, evidence, skill gaps, and links to the postings. No model key needed. | Public Store Actor; live-verified documentation build `0.1.24`, production selector `latest` on 2026-09-05; $0.02 per returned shortlist row or retained non-failure audit row |
-| [Y Combinator Jobs Scraper](https://apify.com/nomad-agent/ycombinator-enrich-translate-normalize-scraper) | Startup pipelines and recurring alerts | Complete descriptions, stable job identity, deduplication, optional enrichment | Exact release `1.0.6`; Actor execution proof, destination templates untested |
+| [`LinkedIn Jobs Scraper \| AI Enrichment`](https://apify.com/job-atlas/linkedin-enrich-translate-normalize-scraper) | Public LinkedIn job search | Find fresh jobs, suppress already-delivered matches, and send clean records with complete descriptions when available to alerts, trackers, job boards, or agents. Optional enrichment and translation stay off until selected. | Public Store Actor; see the [current default build API](https://api.apify.com/v2/acts/job-atlas~linkedin-enrich-translate-normalize-scraper/builds/default). Integrations follow `latest` |
+| [`EURAXESS Jobs Scraper &#124; Full Details & AI Enrichment`](https://apify.com/job-atlas/euraxess-enrich-translate-normalize-scraper) | PhD, postdoc, fellowship, research, and faculty vacancies | Research domains, requirements, funding, deadlines, contacts, multilingual keyword expansion, strict filters, deduplication, optional enrichment, and translation | Public Store Actor; maintained integration selector `latest`; check Apify for the current default |
+| [`AI Job Search & Fit Scorer — 10 Sources + AI Matching`](https://apify.com/job-atlas/ai-job-fit-scorer) | Candidate-specific developer-job shortlists | Search 10 public developer-job sources or score your own job list against a résumé or profile. Get a ranked shortlist with a 0–100 fit score, a 0–5 delivery score after hard-requirement checks, evidence, skill gaps, and links to the postings. No model key needed. | Public Store Actor; Job Atlas production selector `latest`; see [current release evidence](docs/job-atlas.md); $0.02 per returned shortlist row or retained non-failure audit row |
+| [Y Combinator Jobs Scraper](https://apify.com/job-atlas/ycombinator-enrich-translate-normalize-scraper) | Startup pipelines and recurring alerts | Complete descriptions, stable job identity, deduplication, optional enrichment | Job Atlas release selector `latest`; Actor execution proof, destination templates untested |
 
 Implementation guides: [LinkedIn jobs](https://nomadagent.dev/actors/linkedin) ·
 [EURAXESS jobs](https://nomadagent.dev/actors/euraxess) ·
@@ -231,7 +233,7 @@ repository.
 
 | Actor | Best for | Contract and release |
 | --- | --- | --- |
-| [Y Combinator Jobs Scraper](https://apify.com/nomad-agent/ycombinator-enrich-translate-normalize-scraper) | Startup recruiting pipelines and recurring alerts | Six-root normalized records; exact release `latest` |
+| [Y Combinator Jobs Scraper](https://apify.com/job-atlas/ycombinator-enrich-translate-normalize-scraper) | Startup recruiting pipelines and recurring alerts | Six-root normalized records; exact release `latest` |
 
 [YC guide](docs/ycombinator.md) · [Website](https://nomadagent.dev/actors/ycombinator) · [Agent Skill](.agents/skills/ycombinator-enrich-translate-normalize-scraper/SKILL.md) · [Public YC v2 schema](integrations/shared/ycombinator-v2.schema.json).
 

@@ -1,13 +1,15 @@
 # REST API and webhook integration
 
+Current starters target Job Atlas. [Migration steps and evidence limits](https://github.com/Exdenta/nomad-agent-job-scrapers/blob/main/docs/job-atlas.md): recreate saved Tasks for Job Atlas; historical destination proofs remain tied to their original organization.
+
 The Apify REST API transports the complete Actor input without an
 integration-specific subset. Select `latest` in the run query:
 
 | Actor | API Actor identifier | Required build |
 | --- | --- | --- |
-| LinkedIn | `nomad-agent~linkedin-enrich-translate-normalize-scraper` | `latest` |
-| EURAXESS | `nomad-agent~euraxess-enrich-translate-normalize-scraper` | `latest` |
-| AI Job Search & Fit Scorer | `nomad-agent~ai-job-fit-scorer` | `latest` |
+| LinkedIn | `job-atlas~linkedin-enrich-translate-normalize-scraper` | `latest` |
+| EURAXESS | `job-atlas~euraxess-enrich-translate-normalize-scraper` | `latest` |
+| AI Job Search & Fit Scorer | `job-atlas~ai-job-fit-scorer` | `latest` |
 
 Confirm EURAXESS availability before a paid run. EURAXESS uses `build=latest`; record the immutable `buildId` and numeric `buildNumber` returned by the run. Other Actor targets keep their documented selectors.
 The scorer also selects `latest` and validates the immutable build returned by that exact run.
@@ -22,7 +24,7 @@ curl --request POST \
   --header "Authorization: Bearer $APIFY_TOKEN" \
   --header "Content-Type: application/json" \
   --data @integrations/api/linkedin-search.json \
-  "https://api.apify.com/v2/acts/nomad-agent~linkedin-enrich-translate-normalize-scraper/runs?build=latest&maxTotalChargeUsd=0.10"
+  "https://api.apify.com/v2/acts/job-atlas~linkedin-enrich-translate-normalize-scraper/runs?build=latest&maxTotalChargeUsd=0.10"
 ```
 
 For EURAXESS, substitute its Actor identifier, body file, and

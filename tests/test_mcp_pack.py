@@ -57,7 +57,7 @@ class McpPackTests(unittest.TestCase):
                 encoding="utf-8"
             )
         )
-        self.assertEqual(value["actor"], "nomad-agent/linkedin-enrich-translate-normalize-scraper")
+        self.assertEqual(value["actor"], "job-atlas/linkedin-enrich-translate-normalize-scraper")
         self.assertEqual(value["callOptions"]["build"], "latest")
         actor_input = value["input"]
         self.assertLessEqual(actor_input["maxItems"], 5)
@@ -107,7 +107,7 @@ class McpPackTests(unittest.TestCase):
         )
         self.assertEqual(
             value["actor"],
-            "nomad-agent/euraxess-enrich-translate-normalize-scraper",
+            "job-atlas/euraxess-enrich-translate-normalize-scraper",
         )
         self.assertEqual(value["callOptions"], {
             "build": "latest",

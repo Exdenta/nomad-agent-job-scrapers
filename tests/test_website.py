@@ -14,7 +14,7 @@ from urllib.parse import parse_qs, unquote, urlsplit
 ROOT = Path(__file__).resolve().parents[1]
 WEBSITE = ROOT / "website"
 ORIGIN = "https://nomadagent.dev"
-SOCIAL_IMAGE = f"{ORIGIN}/assets/nomad-agent-social-card.png"
+SOCIAL_IMAGE = f"{ORIGIN}/assets/job-atlas-social-card.png"
 
 # Intent owners come from docs/seo-program.md; its first milestone adds these
 # hubs and trust pages to the public surface.
@@ -28,10 +28,10 @@ EXPECTED_CANONICALS = {
 }
 HUBS = {"/", "/actors", "/integrations", "/guides"}
 ACTOR_PATHS = {
-    "ycombinator": "/nomad-agent/ycombinator-enrich-translate-normalize-scraper",
-    "linkedin": "/nomad-agent/linkedin-enrich-translate-normalize-scraper",
-    "euraxess": "/nomad-agent/euraxess-enrich-translate-normalize-scraper",
-    "ai-job-fit-scorer": "/nomad-agent/ai-job-fit-scorer",
+    "ycombinator": "/job-atlas/ycombinator-enrich-translate-normalize-scraper",
+    "linkedin": "/job-atlas/linkedin-enrich-translate-normalize-scraper",
+    "euraxess": "/job-atlas/euraxess-enrich-translate-normalize-scraper",
+    "ai-job-fit-scorer": "/job-atlas/ai-job-fit-scorer",
 }
 PUBLIC_SCHEMAS = (
     "nomad-ai-job-fit-destination-v1.schema.json",
@@ -190,7 +190,7 @@ class WebsiteContractTests(unittest.TestCase):
                 self.assertEqual(canonical(parser), [ORIGIN + route])
                 self.assertIn(data.get("og:type"), {"website", "article"})
                 self.assertEqual(data.get("og:url"), ORIGIN + route)
-                self.assertEqual(data.get("og:site_name"), "Nomad Agent")
+                self.assertEqual(data.get("og:site_name"), "Job Atlas")
                 self.assertEqual(data.get("og:image"), SOCIAL_IMAGE)
                 self.assertEqual(data.get("og:image:width"), "1200")
                 self.assertEqual(data.get("og:image:height"), "630")
@@ -225,7 +225,7 @@ class WebsiteContractTests(unittest.TestCase):
         graph = structured_data(self.home)[0]["@graph"]
         by_type = {entry["@type"]: entry for entry in graph}
         self.assertEqual({"Organization", "WebSite", "ItemList"}, set(by_type))
-        self.assertEqual(by_type["WebSite"].get("alternateName"), "Nomad Agent Job Data")
+        self.assertEqual(by_type["WebSite"].get("alternateName"), "Job Atlas Job Data")
         items = by_type["ItemList"]["itemListElement"]
         self.assertEqual(len(items), len(ACTOR_PATHS))
         self.assertEqual({urlsplit(item["item"]["sameAs"]).path for item in items}, set(ACTOR_PATHS.values()))
@@ -340,7 +340,7 @@ class WebsiteContractTests(unittest.TestCase):
                 self.assertEqual(json.loads(published.read_text(encoding="utf-8")).get("$id"), f"{ORIGIN}/contracts/{filename}")
 
     def test_social_card_is_exact_standard_dimensions(self) -> None:
-        raw = (WEBSITE / "assets" / "nomad-agent-social-card.png").read_bytes()
+        raw = (WEBSITE / "assets" / "job-atlas-social-card.png").read_bytes()
         self.assertEqual(raw[:8], b"\x89PNG\r\n\x1a\n")
         self.assertEqual(raw[12:16], b"IHDR")
         self.assertEqual(struct.unpack(">II", raw[16:24]), (1200, 630))

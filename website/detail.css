@@ -378,3 +378,5 @@
     flex-direction: column;
   }
 }
+
+.detail-panel a.button-dark { color: #fff; }

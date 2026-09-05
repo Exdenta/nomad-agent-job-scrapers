@@ -1,4 +1,4 @@
-# Nomad Agent
+# Job Atlas
 
 > Structured public job data for apps, automations and AI agents.
 

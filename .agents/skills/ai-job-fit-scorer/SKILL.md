@@ -1,11 +1,11 @@
 ---
 name: ai-job-fit-scorer
-description: Search developer jobs and score them for one candidate with the Apify Actor nomad-agent/ai-job-fit-scorer. Use to build a bounded search-and-score or score-supplied-jobs input, run it through Apify MCP using latest and validate the resolved immutable build, validate nomad-ai-job-fit-v1 rows and the nomad-ai-job-fit-run-summary-v4 record, and present a shortlist with fit scores, delivery scores, evidence, and gaps.
+description: Search developer jobs and score them for one candidate with the Apify Actor job-atlas/ai-job-fit-scorer. Use to build a bounded search-and-score or score-supplied-jobs input, run it through Apify MCP using latest and validate the resolved immutable build, validate nomad-ai-job-fit-v1 rows and the nomad-ai-job-fit-run-summary-v4 record, and present a shortlist with fit scores, delivery scores, evidence, and gaps.
 ---
 
 # AI job search and fit scoring
 
-Use this skill for the `nomad-agent/ai-job-fit-scorer` contract. This skill
+Use this skill for the `job-atlas/ai-job-fit-scorer` contract. This skill
 uses the production `latest` selector. Capture the immutable build ID and
 number returned by each run and validate its summary against that receipt.
 
@@ -104,7 +104,7 @@ this outer envelope; the bounded input above belongs under `input`:
 
 ```json
 {
-  "actor": "nomad-agent/ai-job-fit-scorer",
+  "actor": "job-atlas/ai-job-fit-scorer",
   "input": {
     "mode": "search",
     "search": {"sources": ["linkedin"], "keywords": ["platform engineer"], "maxItemsPerSource": 5},

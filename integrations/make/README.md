@@ -1,5 +1,7 @@
 # Make to Google Sheets
 
+Current starters target Job Atlas. [Migration steps and evidence limits](https://github.com/Exdenta/nomad-agent-job-scrapers/blob/main/docs/job-atlas.md): recreate saved Tasks for Job Atlas; historical destination proofs remain tied to their original organization.
+
 
 All maintained starters select `latest` and retain each run’s immutable `buildId` and numeric `buildNumber`. Validate the run, summary and dataset before delivery; the selector itself is not immutable evidence.
 

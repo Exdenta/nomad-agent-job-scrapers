@@ -1,6 +1,6 @@
 # EURAXESS Jobs Scraper | Full Details & AI Enrichment
 
-[`nomad-agent/euraxess-enrich-translate-normalize-scraper`](https://apify.com/nomad-agent/euraxess-enrich-translate-normalize-scraper)
+[`job-atlas/euraxess-enrich-translate-normalize-scraper`](https://apify.com/job-atlas/euraxess-enrich-translate-normalize-scraper)
 finds public EURAXESS PhD, postdoctoral, fellowship, research, and faculty
 vacancies and returns the shared `nomad-agent-job-v1` contract.
 
@@ -70,7 +70,6 @@ The maintained starters select `latest`. Record the immutable `buildId` and nume
 
 ## Quick choice and sample
 
-Choose this normalized Actor for the shared job format, detailed research fields, optional AI and agent tooling. The related [EURAXESS scraper](https://apify.com/nomad-agent/euraxess-scraper) has its own format and delta alerts. Compare schemas before migrating.
 
 [Full output example](../examples/euraxess-job.json) · [Human quick start and pricing](https://nomadagent.dev/actors/euraxess). The sample is a published vacancy observed September 4, 2026, with the public schema URL; it is not a guarantee of current availability.
 

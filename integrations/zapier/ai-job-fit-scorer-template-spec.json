@@ -10,7 +10,7 @@
       "step": 1,
       "app": "Apify",
       "event": "Run Actor",
-      "actor": "nomad-agent/ai-job-fit-scorer",
+      "actor": "job-atlas/ai-job-fit-scorer",
       "build": "latest",
       "input": {
         "mode": "search",
@@ -72,7 +72,7 @@
       "outputName": "run",
       "requireBeforeNextStep": [
         "run.id == startedRun.id",
-        "run.actId == mBRj1sgHTWmoPJEcb",
+        "run.actId == OZ919PaAyAbifOdcL",
         "run.status == SUCCEEDED",
         "run.exitCode == 0",
         "run.buildId is nonempty",
@@ -114,7 +114,7 @@
         "summary.actor.buildId == run.buildId",
         "summary.actor.buildNumber == run.buildNumber",
         "run.id == startedRun.id",
-        "run.actId == mBRj1sgHTWmoPJEcb",
+        "run.actId == OZ919PaAyAbifOdcL",
         "run.status == SUCCEEDED",
         "run.exitCode == 0",
         "run.buildId is nonempty",

@@ -55,7 +55,7 @@ off for the first smoke.
 ### Setup
 
 1. Create an Apify Task for
-   `nomad-agent/linkedin-enrich-translate-normalize-scraper` with complete
+   `job-atlas/linkedin-enrich-translate-normalize-scraper` with complete
    strict input, build selector `latest`, a one-item first run, and a conservative
    maximum total charge.
 2. Import
@@ -84,7 +84,7 @@ destination delivery.
 - Blueprint: [`linkedin-jobs-to-google-sheets.blueprint.json`](linkedin-jobs-to-google-sheets.blueprint.json)
 - Product guide: <https://nomadagent.dev/actors/linkedin>
 - Setup and support: <https://nomadagent.dev/integrations/make>
-- Actor: <https://apify.com/nomad-agent/linkedin-enrich-translate-normalize-scraper>
+- Actor: <https://apify.com/job-atlas/linkedin-enrich-translate-normalize-scraper>
 - Source and issues: <https://github.com/Exdenta/nomad-agent-job-scrapers>
 
 ## Template 2: EURAXESS jobs to Google Sheets
@@ -129,7 +129,7 @@ analytics, raw output, and cross-run deduplication off. EURAXESS supports
 ### Setup
 
 1. Create an Apify Task for
-   `nomad-agent/euraxess-enrich-translate-normalize-scraper` with complete
+   `job-atlas/euraxess-enrich-translate-normalize-scraper` with complete
    strict input, build selector `latest`, no more than five results for the first
    run, and a conservative maximum total charge.
 2. Import
@@ -157,7 +157,7 @@ claim that the template is submitted, approved, shared, or public.
 - Blueprint: [`euraxess-jobs-to-google-sheets.blueprint.json`](euraxess-jobs-to-google-sheets.blueprint.json)
 - Product guide: <https://nomadagent.dev/actors/euraxess>
 - Setup and support: <https://nomadagent.dev/integrations/make>
-- Actor: <https://apify.com/nomad-agent/euraxess-enrich-translate-normalize-scraper>
+- Actor: <https://apify.com/job-atlas/euraxess-enrich-translate-normalize-scraper>
 - Source and issues: <https://github.com/Exdenta/nomad-agent-job-scrapers>
 
 ## Template 3: AI job-fit scores to Google Sheets
@@ -202,7 +202,7 @@ hosted Actor supplies the model, so no customer AI-provider key is required.
 
 ### Setup
 
-1. Create an Apify Task for `nomad-agent/ai-job-fit-scorer` with production selector
+1. Create an Apify Task for `job-atlas/ai-job-fit-scorer` with production selector
    `latest`, complete bounded input, at most five evaluations, and a `$0.10`
    maximum total charge.
 2. Import
@@ -233,7 +233,7 @@ elsewhere do not prove this Make scenario or its named Google Sheets write.
 - Blueprint: [`ai-job-fit-scorer-to-google-sheets.blueprint.json`](ai-job-fit-scorer-to-google-sheets.blueprint.json)
 - Product guide: <https://nomadagent.dev/actors/ai-job-fit-scorer>
 - Setup and support: <https://nomadagent.dev/integrations/make>
-- Actor: <https://apify.com/nomad-agent/ai-job-fit-scorer>
+- Actor: <https://apify.com/job-atlas/ai-job-fit-scorer>
 - Source and issues: <https://github.com/Exdenta/nomad-agent-job-scrapers>
 
 ## License

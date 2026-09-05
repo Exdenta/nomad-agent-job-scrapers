@@ -132,7 +132,7 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "https://api.apify.com/v2/acts/nomad-agent~euraxess-enrich-translate-normalize-scraper/runs",
+        "url": "https://api.apify.com/v2/acts/job-atlas~euraxess-enrich-translate-normalize-scraper/runs",
         "authentication": "genericCredentialType",
         "genericAuthType": "httpHeaderAuth",
         "sendQuery": true,

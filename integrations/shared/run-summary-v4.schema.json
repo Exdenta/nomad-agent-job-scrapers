@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://raw.githubusercontent.com/Exdenta/nomad-agent-job-scrapers/main/integrations/shared/run-summary-v4.schema.json",
-  "title": "Nomad Agent public run summary v4",
+  "title": "Job Atlas public run summary v4",
   "description": "Minimal public outcome for one completed Actor run. Internal source diagnostics are intentionally excluded.",
   "type": "object",
   "additionalProperties": false,

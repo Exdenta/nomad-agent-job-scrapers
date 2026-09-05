@@ -1,11 +1,13 @@
 # Zapier editor recipe
 
+Current starters target Job Atlas. [Migration steps and evidence limits](https://github.com/Exdenta/nomad-agent-job-scrapers/blob/main/docs/job-atlas.md): recreate saved Tasks for Job Atlas; historical destination proofs remain tied to their original organization.
+
 Zapier has no portable workflow-import format for this template. Build the Zap
 from [`ai-job-fit-scorer-template-spec.json`](ai-job-fit-scorer-template-spec.json) and preserve these controls.
 
 1. Trigger: **Schedule by Zapier → Every Day**. Keep the Zap off during setup.
 2. Action: **Apify → Run Actor**.
-   - Actor: `nomad-agent/ai-job-fit-scorer`
+   - Actor: `job-atlas/ai-job-fit-scorer`
    - build: keep the template on selector `latest`; record the returned immutable build
    - input: the bounded five-item search starter after reviewing the explicit
      search terms and candidate profile; keep `resultMode: "shortlist"` and

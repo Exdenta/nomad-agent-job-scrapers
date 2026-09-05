@@ -89,7 +89,7 @@ class AiJobFitScorerIntegrationTests(unittest.TestCase):
                 / "ai-job-fit-scorer.mcp.json"
             ).read_text()
         )
-        self.assertEqual(mcp["actor"], "nomad-agent/ai-job-fit-scorer")
+        self.assertEqual(mcp["actor"], "job-atlas/ai-job-fit-scorer")
         self.assertEqual(mcp["input"], actor_input)
         self.assertEqual(
             mcp["callOptions"],
@@ -129,7 +129,7 @@ class AiJobFitScorerIntegrationTests(unittest.TestCase):
 process.env.APIFY_TOKEN = 'test-token';
 globalThis.fetch = async (url) => {{
   const run = {{
-    id:'run-v4', actId:'mBRj1sgHTWmoPJEcb', status:'SUCCEEDED', exitCode:0, buildNumber:'0.9.99', buildId:'build-future',
+    id:'run-v4', actId:'OZ919PaAyAbifOdcL', status:'SUCCEEDED', exitCode:0, buildNumber:'0.9.99', buildId:'build-future',
     defaultDatasetId:'dataset-v4', defaultKeyValueStoreId:'store-v4',
     chargedEventCounts:{{'job-fit-result':0}}
   }};
@@ -143,7 +143,7 @@ globalThis.fetch = async (url) => {{
     body = {{
       schemaVersion:'nomad-ai-job-fit-run-summary-v4', status:'complete',
       cleanEmpty:false,
-      actor:{{id:'mBRj1sgHTWmoPJEcb',runId:'run-v4',buildId:'build-future',buildNumber:'0.9.99'}},
+      actor:{{id:'OZ919PaAyAbifOdcL',runId:'run-v4',buildId:'build-future',buildNumber:'0.9.99'}},
       algorithm:{{name:'scoring-v3',interactionStateUsed:false}},
       parameters:{{resultMode:'shortlist',minDeliveryScore:2}},
       counts:{{evaluatedJobs:1,staticDropped:0,staticHeld:0,aiScored:1,
@@ -183,7 +183,7 @@ await import({json.dumps(module_url)});
             ("buildNumber", "0.9.99", "0.9.98"),
         ]:
             with self.subTest(mismatched_summary=field):
-                actor_block = "actor:{id:'mBRj1sgHTWmoPJEcb',runId:'run-v4',buildId:'build-future',buildNumber:'0.9.99'}"
+                actor_block = "actor:{id:'OZ919PaAyAbifOdcL',runId:'run-v4',buildId:'build-future',buildNumber:'0.9.99'}"
                 mutated = runner.replace(actor_block, actor_block.replace(f"{field}:'{original}'", f"{field}:'{changed}'"))
                 rejected = subprocess.run(["node", "--input-type=module", "-e", mutated], cwd=ROOT, capture_output=True, text=True)
                 self.assertNotEqual(rejected.returncode, 0)
@@ -274,7 +274,7 @@ await import({json.dumps(module_url)});
         self.assertEqual(assignments["maxTotalChargeUsd"], 0.10)
         self.assertEqual(
             nodes["Start exact Actor build"]["parameters"]["url"],
-            "https://api.apify.com/v2/acts/nomad-agent~ai-job-fit-scorer/runs",
+            "https://api.apify.com/v2/acts/job-atlas~ai-job-fit-scorer/runs",
         )
         self.assertEqual(
             nodes["Upsert Google Sheets by matchKey"]["parameters"]["columns"]["matchingColumns"],
@@ -332,7 +332,7 @@ global.$ = () => ({first: () => ({json:{data:started}})});
 const node = workflow.nodes.find(value => value.name === 'Validate terminal run');
 process.stdout.write(JSON.stringify(new Function(node.parameters.jsCode)()));
 """
-        run = dict(id="new-run", actId="mBRj1sgHTWmoPJEcb", buildId="new-build", buildNumber="0.9.99", status="SUCCEEDED", exitCode=0, defaultDatasetId="dataset", defaultKeyValueStoreId="store")
+        run = dict(id="new-run", actId="OZ919PaAyAbifOdcL", buildId="new-build", buildNumber="0.9.99", status="SUCCEEDED", exitCode=0, defaultDatasetId="dataset", defaultKeyValueStoreId="store")
         for field in [None, "id", "actId", "buildId", "buildNumber"]:
             with self.subTest(changed=field):
                 terminal = dict(run)
@@ -353,7 +353,7 @@ const workflow = JSON.parse(fs.readFileSync(process.argv[1], 'utf8'));
 const summary = JSON.parse(process.argv[2]);
 const node = workflow.nodes.find(value => value.name === 'Validate RUN-SUMMARY');
 global.$input = {first: () => ({json: summary})};
-global.$ = () => ({first: () => ({json: {actorId:'mBRj1sgHTWmoPJEcb',runId:'run-new',buildId:'new-build',buildNumber:'0.9.99'}})});
+global.$ = () => ({first: () => ({json: {actorId:'OZ919PaAyAbifOdcL',runId:'run-new',buildId:'new-build',buildNumber:'0.9.99'}})});
 try {
   const result = new Function(node.parameters.jsCode)();
   process.stdout.write(JSON.stringify(result));
@@ -373,7 +373,7 @@ try {
 
         base = {
             "schemaVersion": "nomad-ai-job-fit-run-summary-v4",
-            "actor": {"id":"mBRj1sgHTWmoPJEcb","runId":"run-new","buildId":"new-build","buildNumber":"0.9.99"},
+            "actor": {"id":"OZ919PaAyAbifOdcL","runId":"run-new","buildId":"new-build","buildNumber":"0.9.99"},
             "status": "complete",
             "cleanEmpty": False,
             "algorithm": {"name": "scoring-v3", "interactionStateUsed": False},
@@ -460,7 +460,7 @@ try {
             for item in by_name["Configuration"]["mapper"]["variables"]
         }
         self.assertNotIn("expectedbuild", config)
-        self.assertEqual(config["expectedactorid"], "mBRj1sgHTWmoPJEcb")
+        self.assertEqual(config["expectedactorid"], "OZ919PaAyAbifOdcL")
         rendered_blueprint = json.dumps(blueprint)
         self.assertIn("RUN-SUMMARY", rendered_blueprint)
         self.assertIn("nomad-ai-job-fit-run-summary-v4", rendered_blueprint)

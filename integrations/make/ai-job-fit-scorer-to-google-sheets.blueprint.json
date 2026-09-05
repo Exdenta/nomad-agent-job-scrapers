@@ -13,7 +13,7 @@
           "y": 0,
           "name": "Watch completed AI Job Search & Fit Task runs"
         },
-        "notes": "Create an Apify Task for nomad-agent/ai-job-fit-scorer using build latest and preserving the immutable build returned by the completed run, use the bounded shortlist starter with resultMode=shortlist, minDeliveryScore=2, maxItems=5, and maximum total charge USD 0.10."
+        "notes": "Create an Apify Task for job-atlas/ai-job-fit-scorer using build latest and preserving the immutable build returned by the completed run, use the bounded shortlist starter with resultMode=shortlist, minDeliveryScore=2, maxItems=5, and maximum total charge USD 0.10."
       }
     },
     {
@@ -25,7 +25,7 @@
         "variables": [
           {
             "name": "expectedactorid",
-            "value": "mBRj1sgHTWmoPJEcb"
+            "value": "OZ919PaAyAbifOdcL"
           },
           {
             "name": "googlespreadsheetid",

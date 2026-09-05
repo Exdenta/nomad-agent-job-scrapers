@@ -90,7 +90,7 @@
       ],
       "parameters": {
         "method": "POST",
-        "url": "https://api.apify.com/v2/acts/nomad-agent~ai-job-fit-scorer/runs",
+        "url": "https://api.apify.com/v2/acts/job-atlas~ai-job-fit-scorer/runs",
         "authentication": "genericCredentialType",
         "genericAuthType": "httpHeaderAuth",
         "sendQuery": true,
@@ -199,7 +199,7 @@
         -40
       ],
       "parameters": {
-        "jsCode": "const run = $input.first().json.data || $input.first().json;\nconst startResponse = $('Start exact Actor build').first().json;\nconst started = startResponse.data || startResponse;\nif (run.status !== 'SUCCEEDED' || run.exitCode !== 0) throw new Error(`Actor run ended ${run.status} exitCode=${run.exitCode}`);\nif (run.actId !== 'mBRj1sgHTWmoPJEcb' || !run.buildId || !/^\\d+\\.\\d+\\.\\d+$/.test(run.buildNumber || '')) throw new Error('missing immutable Actor build identity');\nif (run.id !== started.id || run.buildId !== started.buildId || run.buildNumber !== started.buildNumber) throw new Error('terminal receipt changed the started run or build');\nif (!run.id || !run.defaultDatasetId || !run.defaultKeyValueStoreId) throw new Error('terminal run is missing immutable storage IDs');\nreturn [{json:{runId:run.id,actorId:run.actId,buildId:run.buildId,buildNumber:run.buildNumber,datasetId:run.defaultDatasetId,keyValueStoreId:run.defaultKeyValueStoreId}}];"
+        "jsCode": "const run = $input.first().json.data || $input.first().json;\nconst startResponse = $('Start exact Actor build').first().json;\nconst started = startResponse.data || startResponse;\nif (run.status !== 'SUCCEEDED' || run.exitCode !== 0) throw new Error(`Actor run ended ${run.status} exitCode=${run.exitCode}`);\nif (run.actId !== 'OZ919PaAyAbifOdcL' || !run.buildId || !/^\\d+\\.\\d+\\.\\d+$/.test(run.buildNumber || '')) throw new Error('missing immutable Actor build identity');\nif (run.id !== started.id || run.buildId !== started.buildId || run.buildNumber !== started.buildNumber) throw new Error('terminal receipt changed the started run or build');\nif (!run.id || !run.defaultDatasetId || !run.defaultKeyValueStoreId) throw new Error('terminal run is missing immutable storage IDs');\nreturn [{json:{runId:run.id,actorId:run.actId,buildId:run.buildId,buildNumber:run.buildNumber,datasetId:run.defaultDatasetId,keyValueStoreId:run.defaultKeyValueStoreId}}];"
       }
     },
     {

@@ -4,7 +4,7 @@
 
 ```text
 Use generic call-actor for
-nomad-agent/linkedin-enrich-translate-normalize-scraper at build selector latest.
+job-atlas/linkedin-enrich-translate-normalize-scraper at build selector latest.
 Search for at most 5 remote or hybrid TypeScript developer jobs in Spain from
 the last 7 days. Disable translation, AI enrichment, analytics, raw output, and
 cross-run dedupe. Use a $0.10 charge cap and waitSecs 0.
@@ -23,7 +23,7 @@ raw. Report a valid empty dataset as no matching jobs.
 
 ```text
 Use generic call-actor for
-nomad-agent/euraxess-enrich-translate-normalize-scraper at build selector latest.
+job-atlas/euraxess-enrich-translate-normalize-scraper at build selector latest.
 Search for at most 5 postdoctoral machine-learning jobs in Germany. Disable
 translation, AI enrichment, analytics, raw output, and cross-run dedupe. Use a
 $0.10 charge cap and waitSecs 0.

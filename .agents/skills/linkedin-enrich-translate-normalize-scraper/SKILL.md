@@ -1,6 +1,6 @@
 ---
 name: linkedin-enrich-translate-normalize-scraper
-description: Find and integrate public LinkedIn jobs with the Apify Actor nomad-agent/linkedin-enrich-translate-normalize-scraper. Use to build bounded searches, preserve and validate nomad-agent-job-v1 records, connect through Apify MCP, flatten results for tables, or troubleshoot the Actor contract.
+description: Find and integrate public LinkedIn jobs with the Apify Actor job-atlas/linkedin-enrich-translate-normalize-scraper. Use to build bounded searches, preserve and validate nomad-agent-job-v1 records, connect through Apify MCP, flatten results for tables, or troubleshoot the Actor contract.
 ---
 
 # LinkedIn job search with structured output
@@ -85,7 +85,7 @@ Apply these rules:
 
    ```json
    {
-     "actor": "nomad-agent/linkedin-enrich-translate-normalize-scraper",
+     "actor": "job-atlas/linkedin-enrich-translate-normalize-scraper",
      "input": {"schemaVersion": "nomad-agent-job-search-input-v1", "maxItems": 5},
      "waitSecs": 0,
      "callOptions": {"build": "latest", "maxItems": 5, "maxTotalChargeUsd": 0.1}

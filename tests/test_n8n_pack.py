@@ -238,7 +238,7 @@ process.stdout.write(JSON.stringify(output));
         self.assertEqual(params["authentication"], "genericCredentialType")
         self.assertEqual(params["genericAuthType"], "httpHeaderAuth")
         self.assertIn(
-            "nomad-agent~linkedin-enrich-translate-normalize-scraper/"
+            "job-atlas~linkedin-enrich-translate-normalize-scraper/"
             "runs",
             params["url"],
         )

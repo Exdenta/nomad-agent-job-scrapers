@@ -1,5 +1,7 @@
 # MCP: normalized LinkedIn and EURAXESS jobs
 
+Current starters target Job Atlas. [Migration steps and evidence limits](https://github.com/Exdenta/nomad-agent-job-scrapers/blob/main/docs/job-atlas.md): recreate saved Tasks for Job Atlas; historical destination proofs remain tied to their original organization.
+
 
 All maintained starters select `latest` and retain each run’s immutable `buildId` and numeric `buildNumber`. Validate the run, summary and dataset before delivery; the selector itself is not immutable evidence.
 
@@ -12,9 +14,9 @@ https://mcp.apify.com?tools=fetch-actor-details,call-actor,get-actor-run,get-dat
 
 | Profile | Actor | Exact build |
 | --- | --- | --- |
-| LinkedIn | `nomad-agent/linkedin-enrich-translate-normalize-scraper` | `latest` |
-| EURAXESS | `nomad-agent/euraxess-enrich-translate-normalize-scraper` | `latest` |
-| AI Job Search & Fit Scorer | `nomad-agent/ai-job-fit-scorer` | `latest` |
+| LinkedIn | `job-atlas/linkedin-enrich-translate-normalize-scraper` | `latest` |
+| EURAXESS | `job-atlas/euraxess-enrich-translate-normalize-scraper` | `latest` |
+| AI Job Search & Fit Scorer | `job-atlas/ai-job-fit-scorer` | `latest` |
 
 Keep the build explicit instead of relying on a movable tag. Confirm Actor
 availability and account access with `fetch-actor-details` before a paid run.

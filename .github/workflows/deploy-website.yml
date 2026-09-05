@@ -96,7 +96,7 @@ jobs:
       - name: Record deployment evidence
         run: |
           {
-            echo "## Nomad Agent website deployment"
+            echo "## Job Atlas website deployment"
             echo "- Commit: \`${GITHUB_SHA}\`"
             echo "- Canonical origin: https://nomadagent.dev/"
             echo "- Live HTML: byte-matched before search notification"

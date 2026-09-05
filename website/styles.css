@@ -2312,3 +2312,11 @@ main {
     grid-column: 1 / -1;
   }
 }
+
+/* Catalog identity shared with Job Atlas Actor documentation. */
+.atlas-release-note { margin: 0 auto 28px; padding: 18px 22px; max-width: 1120px; border: 1px solid #dbeafe; border-radius: 12px; background: #eff6ff; color: #334155; font-size: 14px; line-height: 1.7; }
+.atlas-release-note a { color: #1d4ed8; }
+
+@media (min-width: 761px) { .product-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+.product-actions a.button-dark { color: #fff; }

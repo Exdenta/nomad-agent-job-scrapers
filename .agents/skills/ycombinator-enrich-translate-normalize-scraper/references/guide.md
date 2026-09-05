@@ -1,6 +1,6 @@
 # Y Combinator startup jobs for pipelines and alerts
 
-Use [the normalized YC Actor](https://apify.com/nomad-agent/ycombinator-enrich-translate-normalize-scraper) for
+Use [the normalized YC Actor](https://apify.com/job-atlas/ycombinator-enrich-translate-normalize-scraper) for
 startup recruiting pipelines, job boards, and recurring alerts. It returns
 `nomad-agent-job-v1` with `identity.source = ycombinator_was`, keeping stable
 job identity across source integrations. The legacy flat-export Actor remains
@@ -88,7 +88,7 @@ execution proof only; hosted MCP and named destination writes are separate.
 
 ```bash
 curl --fail-with-body -X POST \
-  'https://api.apify.com/v2/acts/nomad-agent~ycombinator-enrich-translate-normalize-scraper/runs?build=latest&maxTotalChargeUsd=0.05&timeout=600&memory=512' \
+  'https://api.apify.com/v2/acts/job-atlas~ycombinator-enrich-translate-normalize-scraper/runs?build=latest&maxTotalChargeUsd=0.05&timeout=600&memory=512' \
   -H "Authorization: Bearer $APIFY_TOKEN" \
   -H 'Content-Type: application/json' \
   --data '{"schemaVersion":"nomad-agent-job-search-input-v1","postedWithin":"any","maxItems":5,"dedupe":{"enabled":false,"key":""},"firstRunMode":false,"aiEnrichment":{"enabled":false,"accuracy":"silver"},"translateToEnglish":false}'
