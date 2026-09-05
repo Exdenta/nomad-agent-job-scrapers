@@ -140,3 +140,5 @@ The [Agent Skill](../.agents/skills/ycombinator-enrich-translate-normalize-scrap
 input and completion checks. Existing LinkedIn/EURAXESS destination templates
 have not been ported or live-tested for this YC profile; do not merely replace
 their Actor slug. See the [compatibility matrix](integration-compatibility.md).
+
+The `dedupe.key` field is optional. Both `{"enabled": false}` and `{"enabled": true}` are accepted; an omitted key uses an empty, search-specific scope. Explicit keys keep their existing meaning.

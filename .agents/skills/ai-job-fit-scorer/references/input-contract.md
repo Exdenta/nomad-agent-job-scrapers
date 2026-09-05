@@ -97,3 +97,7 @@ as a contradiction, so guessing can only lower quality.
   shortlist mode filters those rows out.
 - `callOptions.maxTotalChargeUsd` limits how many jobs can be evaluated
   before their scores are known, so a low cap can stop evaluation early.
+
+### Source permissions
+
+Selecting `sourceDatasetId` grants this run read-only access to that dataset. For `sourceActorRunId` outside the Actor's limited access, supply `sourceApifyToken` with read access to the run and its dataset. The token is an encrypted input; it is never included in results or run summaries. Using the dataset ID avoids needing a separate token.

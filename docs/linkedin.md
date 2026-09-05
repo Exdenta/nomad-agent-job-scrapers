@@ -123,3 +123,5 @@ exclude jobs with missing evidence.
 This independent Actor is not affiliated with or endorsed by LinkedIn.
 Contact the Actor creator through the Apify issue tab for help or privacy requests.
 For corrections or removal, include the job URL or ID and avoid private information.
+
+The `dedupe.key` field is optional. Both `{"enabled": false}` and `{"enabled": true}` are accepted; an omitted key uses an empty, search-specific scope. Explicit keys keep their existing meaning.

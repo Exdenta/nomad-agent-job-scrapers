@@ -239,3 +239,7 @@ evidence that all ten adapters succeeded together, not current-release proof.
 Those runs prove the Actor path, not hosted MCP, workflow import, scheduling, or
 a named destination write. See the evidence manifest before making a stronger
 claim.
+
+## Reading an existing dataset or run
+
+Selecting `sourceDatasetId` grants this run read-only access to that dataset. For `sourceActorRunId` outside the Actor's limited access, supply `sourceApifyToken` with read access to the run and its dataset. The token is an encrypted input; it is never included in results or run summaries. Using the dataset ID avoids needing a separate token.
