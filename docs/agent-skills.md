@@ -14,6 +14,7 @@ with:
 ```text
 $linkedin-enrich-translate-normalize-scraper
 $euraxess-enrich-translate-normalize-scraper
+$ai-job-fit-scorer
 ```
 
 To install it into another project:
@@ -123,3 +124,19 @@ python3 scripts/install_skill.py --skill ycombinator-enrich-translate-normalize-
 ```
 
 See the [YC guide](ycombinator.md) for current prices and source limitations.
+
+## AI Job Search & Fit Scorer
+
+The scorer skill searches or evaluates supplied jobs for one candidate. It
+uses `nomad-ai-job-fit-v1` rows and `nomad-ai-job-fit-run-summary-v4`, separate
+from the scraper contracts. It uses build `latest` and includes standalone
+row and summary validators, bundled canonical schemas, and MCP setup guidance.
+
+```bash
+python3 scripts/install_skill.py --skill ai-job-fit-scorer \
+  --client both --target /path/to/project
+```
+
+Invoke `$ai-job-fit-scorer` in Codex or `/ai-job-fit-scorer` in Claude Code.
+Installation adds the skill only. Connect and authorize Apify separately as
+described in the installed `references/client-setup.md`.

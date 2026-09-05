@@ -1,0 +1,141 @@
+{
+  "mode": "score-jobs",
+  "jobs": [
+    {
+      "schemaVersion": "nomad-agent-job-v1",
+      "identity": {
+        "source": "linkedin",
+        "externalId": "sample-123",
+        "url": "https://www.linkedin.com/jobs/view/sample-123"
+      },
+      "data": {
+        "title": "Platform Engineer",
+        "company": {
+          "name": "Example Labs",
+          "sourceId": null,
+          "department": null,
+          "url": null,
+          "logoUrl": null
+        },
+        "classification": { "industries": null, "jobFunctions": null },
+        "domains": null,
+        "domainsRaw": null,
+        "locations": [
+          {
+            "raw": "Madrid, Spain",
+            "countryName": "Spain",
+            "countryCode": "ES",
+            "city": "Madrid",
+            "region": null,
+            "postalCode": null,
+            "streetAddress": null,
+            "facilityName": null,
+            "positionsAvailable": null,
+            "latitude": null,
+            "longitude": null
+          }
+        ],
+        "employment": {
+          "workArrangements": ["hybrid"],
+          "applicantLocationRequirements": null,
+          "workSchedules": null,
+          "contractTypes": ["full-time"],
+          "durationMonths": null,
+          "hoursPerWeek": null,
+          "hoursPerWeekRaw": null,
+          "startDate": null,
+          "startDateRaw": null
+        },
+        "application": {
+          "postedAt": null,
+          "deadline": null,
+          "referenceNumber": null,
+          "referenceNumberIssuer": null,
+          "applicantSnapshot": null,
+          "url": null,
+          "email": null,
+          "directApply": null,
+          "applyMethodRaw": null,
+          "availability": {
+            "status": "observed_available",
+            "evidence": [{ "kind": "detail_http_status", "value": "200" }],
+            "observedAt": "2026-08-30T08:00:00Z"
+          },
+          "hiringContacts": null,
+          "eligibilityCriteria": null,
+          "selectionProcess": null
+        },
+        "seniority": { "raw": null, "levels": ["mid"] },
+        "requirements": {
+          "education": null,
+          "experience": null,
+          "languages": null,
+          "requiredSkills": [
+            { "name": "Python", "yearsRequired": null },
+            { "name": "PostgreSQL", "yearsRequired": null }
+          ],
+          "preferredSkills": null,
+          "certifications": null,
+          "skillsQualifications": null,
+          "specificRequirements": null
+        },
+        "benefits": null,
+        "funding": { "programme": null },
+        "compensation": {
+          "currency": null,
+          "exact": null,
+          "minimum": null,
+          "maximum": null,
+          "period": null,
+          "raw": null
+        },
+        "constraints": {
+          "visaSponsorship": null,
+          "workAuthorization": null,
+          "securityClearance": null,
+          "locationPreference": null
+        }
+      },
+      "custom": null,
+      "llm": {
+        "status": "not_requested",
+        "requestedFields": [],
+        "filledFields": [],
+        "provider": null,
+        "model": null,
+        "promptVersion": null,
+        "completedAt": null
+      },
+      "raw": {
+        "description": "Build reliable Python services and PostgreSQL data pipelines. Five years of backend experience preferred. Hybrid in Madrid, Spain.",
+        "descriptionHtml": null
+      }
+    }
+  ],
+  "candidateProfile": {
+    "primaryRole": "Platform Engineer",
+    "targetTerms": ["Platform Engineer", "Backend Engineer"],
+    "skills": ["Python", "PostgreSQL", "Docker"],
+    "seniorityLevels": ["mid"],
+    "yearsExperience": 5,
+    "workableLanguages": [
+      { "language": "English", "level": "C1", "evidence": "CV: English C1" }
+    ],
+    "workableLanguagesComplete": false,
+    "acceptedWorkArrangements": ["hybrid"],
+    "remoteLocations": [],
+    "hybridLocations": ["Madrid, Spain"],
+    "onsiteLocations": [],
+    "workArrangementPreferencesComplete": true,
+    "acceptedCountryCodes": ["ES"],
+    "acceptedContractTypes": ["permanent"],
+    "acceptedContractTypesComplete": true,
+    "freeText": "Individual-contributor product engineering roles."
+  },
+  "maxItems": 25,
+  "resultMode": "shortlist",
+  "minDeliveryScore": 2,
+  "minRankToForward": 30,
+  "recoverHolds": false,
+  "aiConcurrency": 4
+}

@@ -11,7 +11,7 @@
       "app": "Apify",
       "event": "Run Actor",
       "actor": "nomad-agent/ai-job-fit-scorer",
-      "build": "0.1.11",
+      "build": "latest",
       "input": {
         "mode": "search",
         "search": {
@@ -52,39 +52,91 @@
           "workArrangementPreferencesComplete": true
         },
         "maxItems": 5,
+        "resultMode": "shortlist",
+        "minDeliveryScore": 2,
         "minRankToForward": 30,
         "recoverHolds": false,
         "aiConcurrency": 2
       },
-      "maxTotalChargeUsd": 0.1
+      "maxTotalChargeUsd": 0.1,
+      "outputName": "startedRun",
+      "waitForFinish": true
     },
     {
       "step": 2,
-      "app": "Apify",
-      "event": "Get Dataset Items",
-      "dataset": "exact defaultDatasetId from step 1",
-      "limit": 5
+      "app": "Webhooks by Zapier",
+      "event": "GET",
+      "url": "https://api.apify.com/v2/actor-runs/{{1.startedRun.id}}",
+      "authentication": "Apify bearer token from a private Zapier connection; never embed a credential in the specification",
+      "responseRoot": "data",
+      "outputName": "run",
+      "requireBeforeNextStep": [
+        "run.id == startedRun.id",
+        "run.actId == mBRj1sgHTWmoPJEcb",
+        "run.status == SUCCEEDED",
+        "run.exitCode == 0",
+        "run.buildId is nonempty",
+        "run.buildNumber is a numeric immutable build number",
+        "run.buildId == startedRun.buildId",
+        "run.buildNumber == startedRun.buildNumber"
+      ],
+      "nonTerminalPolicy": "Stop without writing; configure Run Actor to wait for completion before this step."
     },
     {
       "step": 3,
+      "app": "Webhooks by Zapier",
+      "event": "GET",
+      "url": "https://api.apify.com/v2/key-value-stores/{{2.run.defaultKeyValueStoreId}}/records/RUN-SUMMARY",
+      "authentication": "Same private Apify bearer connection as step 2",
+      "responseRoot": "body",
+      "outputName": "summary"
+    },
+    {
+      "step": 4,
+      "app": "Apify",
+      "event": "Get Dataset Items",
+      "dataset": "{{2.run.defaultDatasetId}}",
+      "limit": 5,
+      "outputName": "row"
+    },
+    {
+      "step": 5,
       "app": "Filter by Zapier",
       "event": "Continue if",
       "conditions": [
         "run.status == SUCCEEDED",
         "run.exitCode == 0",
-        "run.buildNumber == 0.1.11",
         "row.schemaVersion == nomad-ai-job-fit-v1",
-        "row.evaluationStatus != ai_failed"
-      ]
+        "row.evaluationStatus == scored",
+        "row.deliveryScore >= 2",
+        "summary.actor.id == run.actId",
+        "summary.actor.runId == run.id",
+        "summary.actor.buildId == run.buildId",
+        "summary.actor.buildNumber == run.buildNumber",
+        "run.id == startedRun.id",
+        "run.actId == mBRj1sgHTWmoPJEcb",
+        "run.status == SUCCEEDED",
+        "run.exitCode == 0",
+        "run.buildId is nonempty",
+        "run.buildNumber is a numeric immutable build number",
+        "run.buildId == startedRun.buildId",
+        "run.buildNumber == startedRun.buildNumber"
+      ],
+      "bindings": {
+        "startedRun": "{{1.startedRun}}",
+        "run": "{{2.run}}",
+        "summary": "{{3.summary}}",
+        "row": "{{4.row}}"
+      }
     },
     {
-      "step": 4,
+      "step": 6,
       "app": "Google Sheets",
       "event": "Lookup Spreadsheet Row",
       "lookupColumn": "matchKey"
     },
     {
-      "step": 5,
+      "step": 7,
       "app": "Paths by Zapier",
       "event": "Update existing or create new row",
       "mappingColumns": [
@@ -115,7 +167,8 @@
   "requiredLiveTests": [
     "successful exact-build bundled-search Actor task",
     "terminal status, exact build, and per-source provenance inspected",
-    "RUN-SUMMARY single job-fit-result charge and $0.25 owner-provider circuit breaker inspected manually because Zapier Apify action does not enforce the closed summary contract",
+    "RUN-SUMMARY v3 legacy or v4 result policy, counts, single job-fit-result charge, and $0.25 owner-provider circuit breaker inspected manually because Zapier Apify action does not enforce the closed summary contract",
+    "for v4 shortlist, every dataset row is scored and meets minDeliveryScore and chargedCount equals outputRows",
     "named Google Sheets row created",
     "same input rerun updates rather than duplicates",
     "partial-source and failed/ai_failed fixtures do not create unsafe writes"

@@ -36,6 +36,7 @@ ACTOR_PATHS = {
 PUBLIC_SCHEMAS = (
     "nomad-ai-job-fit-destination-v1.schema.json",
     "nomad-ai-job-fit-run-summary-v3.schema.json",
+    "nomad-ai-job-fit-run-summary-v4.schema.json",
     "nomad-ai-job-fit-v1.schema.json",
 )
 PROGRAM_INTENT_ROUTES = {
@@ -325,7 +326,7 @@ class WebsiteContractTests(unittest.TestCase):
         visible = " ".join(text for parser in self.parsers.values() for text in parser.visible_text)
         for phrase in ("nomad-agent-job-v1", "named destination", "not affiliated with or endorsed by", "not a live release"):
             self.assertIn(phrase, visible)
-        self.assertIn("$0.02 per successful retained evaluation", visible)
+        self.assertIn("$0.02 per returned shortlist result", visible)
         self.assertNotIn("$0.02 per job", visible)
         self.assertNotIn("$0.02 per run", visible)
         self.assertNotRegex(visible, r"\b(?:100|[1-9]\d(?:\.\d+)?)\s*%")

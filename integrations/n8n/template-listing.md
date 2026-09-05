@@ -235,9 +235,9 @@ and upsert evidence-gated fit scores to Google Sheets by candidate-specific ID.
 
 Turn a bounded developer-job search into a candidate-specific shortlist. On a
 manual trigger, the workflow calls the AI Job Search & Fit Scorer at exact
-build `0.1.11`, polls the same run until terminal, validates the distinct
-`nomad-ai-job-fit-run-summary-v3` contract and billing fields, and fetches only
-that run's dataset.
+build `latest`, polls the same run until terminal, validates legacy v3 or the
+current `nomad-ai-job-fit-run-summary-v4` result policy and billing fields,
+and fetches only that run's dataset.
 
 Valid `nomad-ai-job-fit-v1` evaluations are projected to the separate
 21-column `nomad-ai-job-fit-destination-v1` table. The workflow skips
@@ -267,17 +267,18 @@ customer AI-provider key.
    Google Sheets to **Upsert Google Sheets by matchKey**.
 4. Replace the spreadsheet placeholder and edit the structured search and
    candidate profile in **Configuration**.
-5. Keep exact build `0.1.11`, five evaluations, and the `$0.10` maximum total
+5. Keep production selector `latest`, five evaluations, and the `$0.10` maximum total
    charge for the first run.
-6. Run manually and reconcile the terminal Actor run, v3 summary, charged
+6. Run manually and reconcile the terminal Actor run, v4 summary, charged
    events, exact dataset, and named Sheet rows.
 7. Add a schedule only after the complete smoke has succeeded.
 
 ### Verification boundary
 
 Offline tests cover the inactive graph, exact build and charge cap,
-same-run polling, v3 status and billing validation, closed fit-row projection,
-`ai_failed` suppression, 21-column mapping, `matchKey` upsert, and credential
+same-run polling, v3/v4 status and billing validation, v4 shortlist/audit
+policy checks, closed fit-row projection, `ai_failed` suppression, 21-column
+mapping, `matchKey` upsert, and credential
 hygiene. Separately recorded Actor canaries do not prove this n8n workflow or a
 named Sheet write. The workflow has not been imported into a hosted n8n account
 or submitted to the template library.

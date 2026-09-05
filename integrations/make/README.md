@@ -10,14 +10,14 @@ Import either blueprint:
 - [`euraxess-jobs-to-google-sheets.blueprint.json`](euraxess-jobs-to-google-sheets.blueprint.json),
   for a Task selecting EURAXESS `latest`;
 - [`ai-job-fit-scorer-to-google-sheets.blueprint.json`](ai-job-fit-scorer-to-google-sheets.blueprint.json),
-  for a Task pinned to AI Job Search & Fit Scorer build `0.1.11`.
+  for a Task using AI Job Search & Fit Scorer build `latest`.
 
-The Apify Task owns the complete Actor input, item limit, exact build, and
+The Apify Task owns the complete Actor input, item limit, build selector, and
 charge cap. The Make scenario consumes the completed Task run:
 
 ```text
 completed Task run
-  -> require SUCCEEDED and the configured exact build
+  -> require SUCCEEDED and validate the resolved immutable build
   -> read minimal RUN-SUMMARY v4 from the completed run store
   -> wait and repeat the same Task at most once when v4 recommends it
   -> fetch the selected run's default dataset
@@ -32,19 +32,22 @@ one bounded sleep-and-retry route; API-origin retried Task runs cannot enter
 that route again. A valid `empty` status writes no rows; missing, invalid,
 failed, aborted, timed-out, or wrong-build runs do not enter delivery.
 
-The fit-scoring blueprint uses the distinct
-`nomad-ai-job-fit-run-summary-v3`/`nomad-ai-job-fit-v1` contract. It requires
-the single `$0.02` event configuration, skips `ai_failed`, and upserts the
+The fit-scoring blueprint accepts the distinct legacy v3 or current
+`nomad-ai-job-fit-run-summary-v4`/`nomad-ai-job-fit-v1` contract. Its native
+routes distinguish v4 `shortlist` and `audit` policies, require the single
+`$0.02` event configuration, skip `ai_failed`, and upsert the
 21-column fit projection by candidate-specific `matchKey` rather than
 source-only `jobKey`.
 
 ## Setup
 
 1. Create an Apify Task with the selected Actor, complete strict v1 input,
-   exact build, bounded item limit, and conservative charge cap.
+   documented build selector, bounded item limit, and conservative charge cap.
+   The scorer Task must select `latest`.
 2. Import the matching blueprint and select that Task in **Watch completed Task
    runs**.
-3. Set `actorbuild` to the same exact build used by the Task.
+3. For the scraper blueprints, set `actorbuild` to the documented build.
+   The scorer instead validates the immutable build returned by the Task run.
 4. Import [`google-sheets-columns.csv`](google-sheets-columns.csv) into a sheet
    named `Jobs`.
 5. Replace the spreadsheet placeholder and select the Google Sheets connection

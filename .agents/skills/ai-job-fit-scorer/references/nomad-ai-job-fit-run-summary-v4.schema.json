@@ -1,0 +1,399 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://nomadagent.dev/contracts/nomad-ai-job-fit-run-summary-v4.schema.json",
+  "title": "Nomad AI search-and-fit run summary v4",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "recordType",
+    "actor",
+    "algorithm",
+    "status",
+    "cleanEmpty",
+    "startedAt",
+    "finishedAt",
+    "evaluationAsOf",
+    "source",
+    "candidate",
+    "parameters",
+    "counts",
+    "ai",
+    "billing",
+    "terminal",
+    "warnings"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "nomad-ai-job-fit-run-summary-v4"
+    },
+    "recordType": {
+      "const": "RUN-SUMMARY"
+    },
+    "actor": {
+      "type": "object"
+    },
+    "status": {
+      "enum": [
+        "complete",
+        "partial",
+        "empty",
+        "failed",
+        "cancelled",
+        "aborted"
+      ]
+    },
+    "cleanEmpty": {
+      "type": "boolean"
+    },
+    "startedAt": {
+      "type": "string"
+    },
+    "finishedAt": {
+      "type": "string"
+    },
+    "evaluationAsOf": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "algorithm": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "interactionStateUsed"
+      ],
+      "properties": {
+        "name": {
+          "const": "scoring-v3"
+        },
+        "interactionStateUsed": {
+          "const": false
+        }
+      }
+    },
+    "source": {
+      "type": "object",
+      "required": [
+        "mode"
+      ],
+      "properties": {
+        "mode": {
+          "enum": [
+            "unresolved",
+            "search",
+            "inline",
+            "dataset",
+            "actor-run"
+          ]
+        },
+        "scope": {
+          "type": "string"
+        },
+        "selectedSources": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "sources": {
+          "type": "object"
+        },
+        "totalRaw": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "totalNormalized": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "totalAfterFilters": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "totalUnique": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "descriptionTruncatedCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "truncated": {
+          "type": "boolean"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "mode": {
+                "const": "search"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "scope",
+              "selectedSources",
+              "truncated"
+            ]
+          }
+        }
+      ]
+    },
+    "candidate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "candidateHash",
+        "candidateSnapshotHash",
+        "derivedFromResume",
+        "resumeChars"
+      ],
+      "properties": {
+        "candidateHash": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "candidateSnapshotHash": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "derivedFromResume": {
+          "type": "boolean"
+        },
+        "resumeChars": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "usedExampleProfile": {
+          "type": "boolean"
+        }
+      }
+    },
+    "parameters": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "resultMode",
+        "minDeliveryScore"
+      ],
+      "properties": {
+        "mode": {
+          "enum": [
+            "search",
+            "score-jobs"
+          ]
+        },
+        "maxItems": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 200
+        },
+        "resultMode": {
+          "enum": [
+            "shortlist",
+            "audit"
+          ]
+        },
+        "minDeliveryScore": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 5
+        },
+        "minRankToForward": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "maxAiItems": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 200
+        },
+        "recoverHolds": {
+          "type": "boolean"
+        },
+        "aiConcurrency": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 8
+        }
+      }
+    },
+    "counts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "sourceJobs",
+        "budgetAuthorizedJobs",
+        "evaluatedJobs",
+        "staticDropped",
+        "staticHeld",
+        "aiAttempted",
+        "aiScored",
+        "aiFailed",
+        "resultFilteredOut",
+        "outputRows"
+      ],
+      "properties": {
+        "sourceJobs": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "budgetAuthorizedJobs": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "evaluatedJobs": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "staticDropped": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "staticHeld": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "aiAttempted": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "aiScored": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "aiFailed": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "resultFilteredOut": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "outputRows": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "ai": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "provider",
+        "model",
+        "profileExtractionUsed",
+        "providerCostUsd",
+        "providerCostLimitUsd",
+        "providerCostReservedUsd",
+        "providerCostLimited",
+        "maxProviderAttempts",
+        "inputTokens",
+        "outputTokens"
+      ],
+      "properties": {
+        "provider": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "model": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "profileExtractionUsed": {
+          "type": "boolean"
+        },
+        "providerCostUsd": {
+          "type": "number",
+          "minimum": 0
+        },
+        "providerCostLimitUsd": {
+          "const": 0.25
+        },
+        "providerCostReservedUsd": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 0.25
+        },
+        "providerCostLimited": {
+          "type": "boolean"
+        },
+        "maxProviderAttempts": {
+          "const": 2
+        },
+        "inputTokens": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "outputTokens": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "billing": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "eventName",
+        "unitPriceUsd",
+        "chargedCount",
+        "totalChargedUsd",
+        "budgetAuthorizedCount",
+        "budgetLimited"
+      ],
+      "properties": {
+        "eventName": {
+          "const": "job-fit-result"
+        },
+        "unitPriceUsd": {
+          "const": 0.02
+        },
+        "chargedCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "totalChargedUsd": {
+          "type": "number",
+          "minimum": 0
+        },
+        "budgetAuthorizedCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "budgetLimited": {
+          "type": "boolean"
+        }
+      }
+    },
+    "terminal": {
+      "type": "object",
+      "required": [
+        "reason"
+      ]
+    },
+    "warnings": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}

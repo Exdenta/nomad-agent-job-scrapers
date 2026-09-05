@@ -1,0 +1,444 @@
+{
+  "schemaVersion": "nomad-ai-job-fit-v1",
+  "matchKey": "9d1e4f3e44a494a5762adfd1d91ca67cfeb07d8bc72f9b025f701548e2c87d0b",
+  "evaluationKey": "2de865d80d6decfbc2fca1fb9d75ce6470c79bf0a5f4687f7860b78a39736e0d",
+  "jobKey": "linkedin:4436371317",
+  "candidateHash": "c61557c7acbb2b791ebe09cc74cd3d3d29344035853528bb77833f83e760f31c",
+  "candidateSnapshotHash": "505e87a12cceb8cad1a7e7b2360d92b2ee1b339a30dd06234e7c699f071fe9b2",
+  "evaluatedAt": "2026-09-05T16:55:35Z",
+  "source": "linkedin",
+  "externalId": "4436371317",
+  "url": "https://www.linkedin.com/jobs/view/senior-software-engineer-java-at-clear-4436371317",
+  "title": "Senior Software Engineer, Java",
+  "company": "CLEAR",
+  "location": "New York, NY",
+  "postedAt": "2026-09-05",
+  "fitScore": 78,
+  "deliveryScore": 4,
+  "recommendation": "strong",
+  "evaluationStatus": "scored",
+  "why": "Strong match for a senior full-stack software engineering role: eight years of backend/full-stack experience, React, TypeScript, AWS, Docker, Kubernetes, APIs, and CI/CD align well with the posting.",
+  "gapSummary": "The posting highlights Java, which is not listed in the candidate’s skills. Work arrangement, New York logistics, and work authorization are not specified.",
+  "blockingGates": [],
+  "scoreAdjustedForGates": false,
+  "gates": {
+    "coreRole": {
+      "status": "pass",
+      "postingEvidence": "\"Senior Fullstack Software Engineers\" to build scalable full-stack applications.",
+      "candidateEvidence": "Candidate is a Software Engineer with experience building backend and full-stack web services."
+    },
+    "mandatoryRequirements": {
+      "status": "pass",
+      "postingEvidence": "Requires 6+ years using technologies such as Java, React, and TypeScript, plus AWS, Docker, Kubernetes, GitHub, and CI/CD.",
+      "candidateEvidence": "Eight years’ experience; lists React, TypeScript, AWS, Docker, Kubernetes, Git, and CI/CD. Java is not listed, but the posting says technologies such as."
+    },
+    "experienceSeniority": {
+      "status": "pass",
+      "postingEvidence": "Title is \"Senior Software Engineer, Java\" and posting requires \"6+ years\" of professional experience.",
+      "candidateEvidence": "Candidate has eight years of experience and accepts mid and senior levels; no senior-role rejection is stated."
+    },
+    "workModeLocation": {
+      "status": "unknown",
+      "postingEvidence": "Posting lists New York, NY; work arrangement is not specified.",
+      "candidateEvidence": "Candidate accepts remote, hybrid, and onsite work worldwide, but specific New York ability is not established."
+    },
+    "explicitPreferences": {
+      "status": "pass",
+      "postingEvidence": "Role targets Software Engineer and full-stack engineering work.",
+      "candidateEvidence": "Target terms include Software Engineer, Backend Engineer, and Full Stack Engineer; no conflicting preference is stated."
+    }
+  },
+  "staticDecision": {
+    "schemaVersion": "nomad-scoring-v3-static-decision-v3",
+    "action": "forward",
+    "lane": "rank-forward",
+    "rankScore": 52,
+    "knownComparisons": 3,
+    "unknownComparisons": 7,
+    "unknownRescue": false,
+    "reasons": [
+      "static rank 52 meets forward threshold 30"
+    ],
+    "signals": [
+      {
+        "name": "content_validity",
+        "status": "pass",
+        "hard": true,
+        "postingValue": "Senior Software Engineer, Java",
+        "profileValue": null,
+        "evidence": "no explicit invalidity",
+        "source": "source-envelope",
+        "similarity": null,
+        "exactMatch": null
+      },
+      {
+        "name": "work_arrangement",
+        "status": "unknown",
+        "hard": true,
+        "postingValue": null,
+        "profileValue": [
+          "remote",
+          "hybrid",
+          "onsite"
+        ],
+        "evidence": "constraint is missing, empty, or not explicitly closed",
+        "source": "data.employment.workArrangements",
+        "similarity": null,
+        "exactMatch": null
+      },
+      {
+        "name": "physical_country",
+        "status": "unknown",
+        "hard": true,
+        "postingValue": [
+          {
+            "raw": "New York, NY",
+            "countryName": null,
+            "countryCode": null,
+            "city": null,
+            "region": null
+          }
+        ],
+        "profileValue": null,
+        "evidence": "posting did not establish exclusively physical arrangements",
+        "source": "data.employment.workArrangements",
+        "similarity": null,
+        "exactMatch": null
+      },
+      {
+        "name": "required_language",
+        "status": "unknown",
+        "hard": true,
+        "postingValue": null,
+        "profileValue": [
+          {
+            "language": "English",
+            "level": "B2",
+            "evidence": "Example profile: professional working proficiency"
+          }
+        ],
+        "evidence": "required language or complete candidate language set is missing",
+        "source": "data.requirements.languages",
+        "similarity": null,
+        "exactMatch": null
+      },
+      {
+        "name": "contract_type",
+        "status": "unknown",
+        "hard": true,
+        "postingValue": null,
+        "profileValue": [],
+        "evidence": "posting or closed candidate contract set is missing",
+        "source": "data.employment.contractTypes",
+        "similarity": null,
+        "exactMatch": null
+      },
+      {
+        "name": "target_terms",
+        "status": "match",
+        "hard": false,
+        "postingValue": [
+          "Senior Software Engineer, Java"
+        ],
+        "profileValue": [
+          "Software Engineer",
+          "Backend Engineer",
+          "Full Stack Engineer",
+          "Platform Engineer"
+        ],
+        "evidence": "provider-free semantic approximation=0.667; shared tokens=['engineer', 'software']; exact whole terms=[]",
+        "source": "data.title|data.classification|data.domains",
+        "similarity": 0.6666666666666666,
+        "exactMatch": false
+      },
+      {
+        "name": "required_skills",
+        "status": "unknown",
+        "hard": false,
+        "postingValue": null,
+        "profileValue": [
+          "Python",
+          "TypeScript",
+          "JavaScript",
+          "React",
+          "Node.js",
+          "SQL",
+          "PostgreSQL",
+          "Docker",
+          "Kubernetes",
+          "AWS",
+          "REST APIs",
+          "Git",
+          "CI/CD"
+        ],
+        "evidence": "one side is unknown",
+        "source": "data.requirements.requiredSkills",
+        "similarity": null,
+        "exactMatch": null
+      },
+      {
+        "name": "preferred_skills",
+        "status": "unknown",
+        "hard": false,
+        "postingValue": null,
+        "profileValue": [
+          "Python",
+          "TypeScript",
+          "JavaScript",
+          "React",
+          "Node.js",
+          "SQL",
+          "PostgreSQL",
+          "Docker",
+          "Kubernetes",
+          "AWS",
+          "REST APIs",
+          "Git",
+          "CI/CD"
+        ],
+        "evidence": "one side is unknown",
+        "source": "data.requirements.preferredSkills",
+        "similarity": null,
+        "exactMatch": null
+      },
+      {
+        "name": "seniority",
+        "status": "unknown",
+        "hard": false,
+        "postingValue": {
+          "levels": null,
+          "experience": null
+        },
+        "profileValue": {
+          "levels": [
+            "mid",
+            "senior"
+          ],
+          "yearsExperience": 8
+        },
+        "evidence": "no comparable structured seniority or experience facts",
+        "source": "data.seniority.levels|data.requirements.experience",
+        "similarity": null,
+        "exactMatch": null
+      },
+      {
+        "name": "semantic_proxy",
+        "status": "match",
+        "hard": false,
+        "postingValue": [
+          "Senior Software Engineer, Java"
+        ],
+        "profileValue": [
+          "Software Engineer",
+          "Backend Engineer",
+          "Full Stack Engineer",
+          "Platform Engineer",
+          "Python",
+          "TypeScript",
+          "JavaScript",
+          "React",
+          "Node.js",
+          "SQL",
+          "PostgreSQL",
+          "Docker"
+        ],
+        "evidence": "provider-free semantic approximation=0.667; shared tokens=['engineer', 'software']; exact whole terms=[]",
+        "source": "structured-target-skill-domain-proxy",
+        "similarity": 0.6666666666666666,
+        "exactMatch": false
+      }
+    ]
+  },
+  "scoring": {
+    "algorithm": "scoring-v3",
+    "actorJobSchema": "nomad-agent-job-v1",
+    "profileSchema": "nomad-scoring-v3-profile-v2",
+    "staticDecisionSchema": "nomad-scoring-v3-static-decision-v3",
+    "verdictSchema": "nomad-scoring-v3-verdict-v2",
+    "promptVersion": "nomad-scoring-v3-prompt-v2",
+    "provider": "openrouter:OpenAI",
+    "model": "openai/gpt-5.6-luna",
+    "responseId": "gen-1788627336-8qC2ANmelP3KtUa9XLJf",
+    "aiUsed": true,
+    "recoveredFromHold": false,
+    "contentReceipt": {
+      "schemaVersion": "nomad-scoring-v3-content-receipt-v1",
+      "actorBuild": null,
+      "normalizedRecordChars": 7915,
+      "normalizedRecordSha256": "a514532832004a68b2977e42edd1eaa949f98f0285cf6e12f6fd3be9c53e8533",
+      "descriptionChars": 5991,
+      "descriptionSha256": "b5b532beeb209c2b143aec441f7eef8fbeb914951117268ec36df3f5005e897f",
+      "descriptionComplete": true,
+      "htmlAvailable": false,
+      "htmlChars": 0,
+      "htmlSent": false
+    },
+    "sourceProvenance": {
+      "mode": "search",
+      "scope": "web-developer",
+      "actorRunId": null,
+      "actorId": null,
+      "buildId": null,
+      "buildNumber": null,
+      "datasetId": null,
+      "selectedSources": [
+        "linkedin",
+        "remote_boards",
+        "justjoinit"
+      ],
+      "keywords": [
+        "software engineer"
+      ],
+      "location": null,
+      "countryCodes": [],
+      "remoteOnly": false,
+      "postedWithinDays": 14,
+      "sources": {
+        "linkedin": {
+          "status": "succeeded",
+          "querySupport": "native",
+          "requestCount": 1,
+          "rawFetched": 10,
+          "normalized": 10,
+          "afterFilters": 10,
+          "errorType": null
+        },
+        "remote_boards": {
+          "status": "succeeded",
+          "querySupport": "native",
+          "requestCount": 1,
+          "rawFetched": 10,
+          "normalized": 10,
+          "afterFilters": 10,
+          "errorType": null
+        },
+        "justjoinit": {
+          "status": "succeeded",
+          "querySupport": "native",
+          "requestCount": 1,
+          "rawFetched": 10,
+          "normalized": 10,
+          "afterFilters": 10,
+          "errorType": null
+        }
+      },
+      "totalRaw": 30,
+      "totalNormalized": 30,
+      "totalAfterFilters": 30,
+      "totalUnique": 30,
+      "descriptionTruncatedCount": 0,
+      "truncated": true
+    }
+  },
+  "job": {
+    "schemaVersion": "nomad-agent-job-v1",
+    "identity": {
+      "source": "linkedin",
+      "externalId": "4436371317",
+      "url": "https://www.linkedin.com/jobs/view/senior-software-engineer-java-at-clear-4436371317"
+    },
+    "data": {
+      "title": "Senior Software Engineer, Java",
+      "company": {
+        "name": "CLEAR",
+        "sourceId": null,
+        "department": null,
+        "url": null,
+        "logoUrl": null
+      },
+      "classification": {
+        "industries": null,
+        "jobFunctions": null
+      },
+      "domains": null,
+      "domainsRaw": null,
+      "locations": [
+        {
+          "raw": "New York, NY",
+          "countryName": null,
+          "countryCode": null,
+          "city": null,
+          "region": null,
+          "postalCode": null,
+          "streetAddress": null,
+          "facilityName": null,
+          "positionsAvailable": null,
+          "latitude": null,
+          "longitude": null
+        }
+      ],
+      "employment": {
+        "workArrangements": null,
+        "applicantLocationRequirements": null,
+        "workSchedules": null,
+        "contractTypes": null,
+        "durationMonths": null,
+        "hoursPerWeek": null,
+        "hoursPerWeekRaw": null,
+        "startDate": null,
+        "startDateRaw": null
+      },
+      "application": {
+        "postedAt": "2026-09-05",
+        "deadline": null,
+        "referenceNumber": null,
+        "referenceNumberIssuer": null,
+        "applicantSnapshot": null,
+        "url": "https://www.linkedin.com/jobs/view/senior-software-engineer-java-at-clear-4436371317",
+        "email": null,
+        "directApply": null,
+        "applyMethodRaw": null,
+        "availability": null,
+        "hiringContacts": null,
+        "eligibilityCriteria": null,
+        "selectionProcess": null
+      },
+      "seniority": {
+        "raw": null,
+        "levels": null
+      },
+      "requirements": {
+        "education": null,
+        "experience": null,
+        "languages": null,
+        "requiredSkills": null,
+        "preferredSkills": null,
+        "certifications": null,
+        "skillsQualifications": null,
+        "specificRequirements": null
+      },
+      "benefits": null,
+      "funding": {
+        "programme": null
+      },
+      "compensation": {
+        "currency": null,
+        "exact": null,
+        "minimum": null,
+        "maximum": null,
+        "period": null,
+        "raw": null
+      },
+      "constraints": {
+        "visaSponsorship": null,
+        "workAuthorization": null,
+        "securityClearance": null,
+        "locationPreference": null
+      }
+    },
+    "custom": null,
+    "llm": {
+      "status": "not_requested",
+      "requestedFields": [],
+      "filledFields": [],
+      "provider": null,
+      "model": null,
+      "promptVersion": null,
+      "completedAt": null
+    },
+    "raw": {
+      "description": "CLEAR is building THE secure identity company of the future. Our mission is to make experiences safer and easier—physically and digitally. With more than 38 million Members and a growing network of partners across the world, CLEAR's secure identity platform is transforming the way people live, work, and travel. Whether it’s at the airport, stadium, or throughout your everyday life, CLEAR unlocks the magic of frictionless experiences. We're looking for Senior Fullstack Software Engineers to help build the next generation of CLEAR's identity platform. Beyond verifying identity, we're creating a secure, networked digital identity that enables seamless experiences across travel, enterprise, healthcare, financial services, and beyond. As a Senior Software Engineer, you'll own complex technical problems from design through deployment, partnering closely with Product, Design, Security, and Operations to deliver reliable, scalable solutions. We're looking for engineers with a strong builder mindset who thrive in ambiguity, take ownership, and enjoy turning ideas into production systems. Level and team matching (open roles across the three pillars that make up Technology at CLEAR: Core Identity, CLEAR1, and CLEAR Travel) will occur towards the end of our interview process. Tech stack overview: Java / React / Typescript What you’ll do: Design, build, test, and deploy scalable full-stack applications that power CLEAR's identity platform. Own projects end-to-end from technical discovery and architecture through implementation, rollout, and operational support. Partner closely with Product, Design, Data, Security, and Operations to translate business problems into simple, scalable technical solutions. Drive engineering excellence by improving system reliability, performance, testing, observability, and developer experience. Contribute to architectural decisions and continuously improve the scalability, security, and maintainability of our platform. Mentor teammates through thoughtful code reviews, technical collaboration, and sharing engineering best practices. What you’re great at: 6+ years of professional full-stack software engineering experience building production applications using technologies such as Java, React, and TypeScript. Strong technical fundamentals across distributed systems, APIs, cloud infrastructure, and modern software architecture. Experience building and operating cloud-native applications using AWS and technologies such as Docker, Kubernetes, GitHub, and CI/CD pipelines. A demonstrated history of owning complex, cross-functional projects and driving them from idea to production with a bias for action. Excellent communication skills with the ability to explain technical concepts and influence both technical and non-technical stakeholders. Comfortable operating in ambiguous environments, making thoughtful tradeoffs, and independently driving work forward. A collaborative mindset with a passion for mentoring others, continuously improving engineering practices, and building products that deliver measurable customer and business impact. Our process: We keep a swift process with shorter timelines that make the best use of everyone’s time. Our process is usually completed in about 3 weeks. Here’s what you can expect: Recruiter Call → Zoom Technical Screen → Onsite Panel Interviews → Final Manager Conversations → Offer How You’ll be Rewarded: At CLEAR, we help YOU move forward - because when you’re at your best, we’re at our best. You’ll work with talented team members motivated by our mission of making experiences safer and easier. Located in New York City, our Headquarters offers close collaboration with and access to a hands-on senior leadership team, a bright and energetic space with an open concept, and plenty of conference rooms and casual co-working spaces. We also offer catered lunches every day and have fully stocked kitchens. Outside of the office, we invest in your well-being and learning & development with stipends and reimbursement programs. We offer holistic total rewards, including comprehensive healthcare plans, family building benefits (fertility and adoption/surrogacy support), flexible time off, free OneMedical memberships for you and your dependents, and a 401(k) retirement plan with employer match. The total compensation range for this role is $225,000 - $300,000, depending on levels of skills and experience. This range represents the combined base salary, and new hire equity package (in Restricted Stock Units) for this position at CLEAR. Additionally, this role will be eligible for refresh equity grants as part of our ongoing compensation program. Actual compensation will vary based on factors including, but not limited to, location, education, skills, experience, and performance. All stock based compensation will be subject to the terms and conditions of applicable agreements CLEAR provides reasonable accommodation to qualified individuals with disabilities or protected needs. Please let us know if you require a reasonable accommodation to apply for a job or perform your job. Examples of reasonable accommodation include, but are not limited to, time off, extra breaks, making a change to the application process or work procedures, policy exceptions, providing documents in an alternative format, live captioning or using a sign language interpreter, or using specialized equipment. We are committed to a transparent and secure hiring process. All communications related to this role will come directly from a CLEAR employee through valid CLEAR channels (e.g., a valid @clearme.com email address or verified CLEAR LinkedIn profile). We encourage candidates to remain alert to job scams and to report any suspicious activity. Qualified applicants will receive consideration for employment without regard to race, color, religion, sex, sexual orientation, gender identity, national origin, disability, protected veteran status or other characteristics protected by law.",
+      "descriptionHtml": null
+    }
+  }
+}

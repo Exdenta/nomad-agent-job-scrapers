@@ -6,14 +6,15 @@ Supported release builds:
 | --- | --- | --- |
 | LinkedIn | `1.0.2` | `firstRunMode`, `schemaVersion`, `keyword`, `location`, `linkedinSearch`, `strictGeography`, `workArrangements`, `postedWithin`, `filters`, `companyProfileEnrichment`, `companyFilters`, `maxItems`, `translateToEnglish`, `aiEnrichment`, `includeRaw`, `dedupe`, `analyticsEnabled` |
 | EURAXESS | `latest` | `schemaVersion`, `keyword`, `location`, `euraxessSearch`, `workArrangements`, `postedWithin`, `filters`, `maxItems`, `translateToEnglish`, `aiEnrichment`, `includeRaw`, `dedupe`, `analyticsEnabled` |
-| AI Job Search & Fit Scorer | `0.1.11` | `mode`, `search`, `jobs`, `sourceDatasetId`, `sourceActorRunId`, `expectedSourceBuild`, `maxItems`, exactly one of `candidateProfile`/`resume`/`resumeText`, `preferences`, `minRankToForward`, `maxAiItems`, `recoverHolds`, `aiConcurrency` |
+| AI Job Search & Fit Scorer | `latest` | `mode`, `search`, `jobs`, `sourceDatasetId`, `sourceActorRunId`, `expectedSourceBuild`, `maxItems`, exactly one of `candidateProfile`/`resume`/`resumeText`, `preferences`, `resultMode`, `minDeliveryScore`, `minRankToForward`, `maxAiItems`, `recoverHolds`, `aiConcurrency` |
 
 The LinkedIn and EURAXESS Actors return the six-root `nomad-agent-job-v1` dataset envelope and the
 minimal `nomad-agent-run-summary-v4` completion record. Source-specific inputs
 and custom output fields are not interchangeable.
 
 The fit scorer consumes canonical jobs but returns
-`nomad-ai-job-fit-v1` plus `nomad-ai-job-fit-run-summary-v3`. It is not a third
+`nomad-ai-job-fit-v1` plus current `nomad-ai-job-fit-run-summary-v4`.
+Maintained consumers also accept legacy v3. It is not a third
 scraper profile and must not be sent through the flat-job mapper.
 
 ## Integration parity
@@ -32,11 +33,11 @@ scraper profile and must not be sent through the flat-job mapper.
 
 | Integration | Exact build | Input support | Output handling | Live channel boundary |
 | --- | --- | --- | --- | --- |
-| n8n | `0.1.11` | Bounded search starter; edit the complete strict Actor input in Configuration | Validates v3, billing, and fit rows; projects 21 columns and upserts by `matchKey` | Artifact and Actor run tested; import and named Sheet write not tested |
-| Make | Task pins `0.1.11` | The Apify Task owns the complete Actor input and charge cap | Native filters validate declared v3 fields; projects and upserts by `matchKey` | Artifact and Actor run tested; import and named Sheet write not tested |
-| MCP | `callOptions.build: "0.1.11"` | Complete bounded Actor input under `input` | Caller verifies exact run, v3 summary, fit dataset, and charges | Descriptor validated; hosted MCP call not tested |
-| REST API | `build=0.1.11` | Complete Actor input | Boundedly reconciles eventual run/storage receipts and validates the closed fit contract | Exact Actor canary passed; shipped REST client was proven on predecessor `0.1.10` |
-| Zapier | Editor pins `0.1.11` | Editor specification carries the bounded complete starter | Filters fit rows, then updates or creates by `matchKey` | Editor build and named Sheet write not tested |
+| n8n | `latest` | Bounded shortlist starter; edit the complete strict Actor input in Configuration | Validates v3/v4, result-policy billing, and fit rows; projects 21 columns and upserts by `matchKey` | Artifact and Actor run tested; import and named Sheet write not tested |
+| Make | Task uses `latest` | The Apify Task owns the complete Actor input and charge cap | Native filters separate legacy v3, v4 shortlist, and v4 audit; projects and upserts by `matchKey` | Artifact and Actor run tested; import and named Sheet write not tested |
+| MCP | `callOptions.build: "latest"` | Complete bounded shortlist input under `input` | Caller verifies exact run, v4 policy summary, fit dataset, and charges | Descriptor validated; hosted MCP call not tested |
+| REST API | `build=latest` | Complete Actor input | Boundedly reconciles run/storage/charge receipts and validates v3/v4 plus shortlist/audit semantics | Exact v4 Actor canaries passed; this updated client has offline execution coverage but was not used to create a fresh paid run |
+| Zapier | Editor uses `latest` | Editor specification carries the bounded shortlist starter | Filters to scored rows at the delivery threshold, then updates or creates by `matchKey` | Editor build and named Sheet write not tested |
 | Python adapter | Caller verifies build | Post-run processing only | Closed-row validation and fit-specific table projection | Offline tested |
 
 ## Feature transport rules

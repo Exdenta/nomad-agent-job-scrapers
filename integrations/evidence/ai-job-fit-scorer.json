@@ -2,153 +2,27 @@
   "schemaVersion": "apify-integration-evidence-v1",
   "actor": {
     "id": "nomad-agent/ai-job-fit-scorer",
-    "buildNumber": "0.1.11",
-    "buildId": "MorUFN0ZFQjpmpytr"
+    "buildNumber": "0.1.22",
+    "buildId": "XQhyxEg3YZ3NMel70"
   },
-  "recordedAt": "2026-09-03T17:10:32Z",
-  "actorCanaries": {
-    "defaultDemo": {
-      "runId": "6hV5OdaNo5GsBwWNK",
-      "origin": "DEVELOPMENT",
-      "resolvedBuildNumber": "0.1.11",
-      "resolvedBuildId": "MorUFN0ZFQjpmpytr",
-      "status": "SUCCEEDED",
-      "exitCode": 0,
-      "datasetId": "hHx0ThzgNVAMTsrKd",
-      "keyValueStoreId": "UdNXKh2Uxfn1wI849",
-      "maxTotalChargeUsd": 0.06,
-      "sources": ["linkedin", "remote_boards", "justjoinit"],
-      "sourceStatuses": {
-        "linkedin": "succeeded",
-        "remote_boards": "succeeded",
-        "justjoinit": "succeeded"
-      },
-      "sourceRawRows": 9,
-      "sourceNormalizedRows": 9,
-      "sourceUniqueRows": 9,
-      "datasetRows": 3,
-      "evaluationStatuses": ["scored"],
-      "chargedEventCounts": {"job-fit-result": 3},
-      "runSummarySchema": "nomad-ai-job-fit-run-summary-v3",
-      "provider": "openrouter:OpenAI",
-      "model": "openai/gpt-5.6-luna",
-      "providerCostUsd": 0.0034376,
-      "warnings": []
-    },
-    "immutableCanary": {
-      "runId": "UBmk8XgdqimMbJf89",
-      "resolvedBuildNumber": "0.1.11",
-      "resolvedBuildId": "MorUFN0ZFQjpmpytr",
-      "status": "SUCCEEDED",
-      "exitCode": 0,
-      "datasetId": "uXhx7WvHTAnSbkQM1",
-      "keyValueStoreId": "RwlXw17QBaoyObdYQ",
-      "sources": ["linkedin", "remote_boards", "justjoinit"],
-      "sourceStatuses": {
-        "linkedin": "succeeded",
-        "remote_boards": "succeeded",
-        "justjoinit": "succeeded"
-      },
-      "sourceRawRows": 9,
-      "sourceNormalizedRows": 9,
-      "sourceUniqueRows": 9,
-      "datasetRows": 1,
-      "evaluationStatuses": ["scored"],
-      "chargedEventCounts": {"job-fit-result": 1},
-      "runSummarySchema": "nomad-ai-job-fit-run-summary-v3",
-      "provider": "openrouter:OpenAI",
-      "model": "openai/gpt-5.6-luna",
-      "providerCostUsd": 0.0009775,
-      "warnings": []
-    },
-    "suppliedJob": {
-      "runId": "KuuEnCoMfFbFj3z5R",
-      "status": "SUCCEEDED",
-      "exitCode": 0,
-      "datasetId": "H7Y9oNf8WqOOppar7",
-      "keyValueStoreId": "KMmo8UC5P8sW0GhLj",
-      "datasetRows": 1,
-      "evaluationStatuses": ["scored"],
-      "chargedEventCounts": {"job-fit-result": 1},
-      "runSummarySchema": "nomad-ai-job-fit-run-summary-v3",
-      "provider": "openrouter:OpenAI",
-      "model": "openai/gpt-5.6-luna",
-      "providerCostUsd": 0.00081685
-    },
-    "search": {
-      "runId": "udTJyz3zJWOkKSNUS",
-      "status": "SUCCEEDED",
-      "exitCode": 0,
-      "datasetId": "pPxzGk3hYEzSGU8Hw",
-      "keyValueStoreId": "MyF4T5A9Kq73IB6cj",
-      "sources": ["linkedin", "remote_boards"],
-      "sourceRowsBeforeCap": 2,
-      "datasetRows": 1,
-      "evaluationStatuses": ["scored"],
-      "chargedEventCounts": {"job-fit-result": 1},
-      "runSummarySchema": "nomad-ai-job-fit-run-summary-v3",
-      "provider": "openrouter:OpenAI",
-      "model": "openai/gpt-5.6-luna",
-      "providerCostUsd": 0.0010194
-    },
-    "allSourcesLatest": {
-      "runId": "CEofFmV6UEb82yi7M",
-      "requestedBuildTag": "latest",
-      "resolvedBuildNumber": "0.1.10",
-      "resolvedBuildId": "XOOtUsksU2uE89H6l",
-      "status": "SUCCEEDED",
-      "exitCode": 0,
-      "datasetId": "JJBKoK8mhiqKnu6dW",
-      "keyValueStoreId": "DnaHw4RkhmoyPMwMc",
-      "sources": [
-        "linkedin",
-        "remote_boards",
-        "builtin",
-        "justjoinit",
-        "nofluffjobs",
-        "hackernews",
-        "ycombinator_was",
-        "wttj",
-        "infojobs",
-        "tecnoempleo"
-      ],
-      "sourceStatuses": {
-        "linkedin": "succeeded",
-        "remote_boards": "succeeded",
-        "builtin": "succeeded",
-        "justjoinit": "succeeded",
-        "nofluffjobs": "succeeded",
-        "hackernews": "succeeded",
-        "ycombinator_was": "succeeded",
-        "wttj": "succeeded",
-        "infojobs": "succeeded",
-        "tecnoempleo": "succeeded"
-      },
-      "sourceRawRows": 12,
-      "sourceNormalizedRows": 12,
-      "sourceUniqueRows": 8,
-      "datasetRows": 1,
-      "evaluationStatuses": ["scored"],
-      "chargedEventCounts": {"job-fit-result": 1},
-      "runSummarySchema": "nomad-ai-job-fit-run-summary-v3",
-      "provider": "openrouter:OpenAI",
-      "model": "openai/gpt-5.6-luna",
-      "providerCostUsd": 0.0012702,
-      "warnings": []
-    },
-    "restStarter": {
-      "runId": "uqwj8p5qPU74JUyEo",
-      "status": "SUCCEEDED",
-      "exitCode": 0,
-      "datasetId": "cNLSCPwta1wwRpghv",
-      "keyValueStoreId": "HbidXBCRsbf8YINvy",
-      "sources": ["linkedin", "remote_boards"],
-      "datasetRows": 1,
-      "evaluationStatuses": ["scored"],
-      "chargedEventCounts": {"job-fit-result": 1},
-      "runSummarySchema": "nomad-ai-job-fit-run-summary-v3",
-      "clientArtifact": "integrations/api/ai-job-fit-scorer-run-and-fetch.mjs"
-    }
+  "recordedAt": "2026-09-05",
+  "deployment": {
+    "state": "LIVE_VERIFIED",
+    "isPublic": true,
+    "latestBuildNumber": "0.1.24",
+    "latestBuildId": "xQR0NAjBhmJdxG0XK",
+    "defaultBuildSelector": "latest",
+    "note": "Public copy, form schema, example, and production-selector release. Runtime source files are unchanged from 0.1.22. Maintained starters select latest and bind summary actor/run/build fields to the immutable returned receipt. Historical example fixtures retain 0.1.22. Latest and default were read back before releaseActorRun.",
+    "sourceVersionBuildTag": "latest"
+  },
+  "historicalCompatibilityEvidence": {
+    "buildNumber": "0.1.10",
+    "runSummarySchema": "nomad-ai-job-fit-run-summary-v3",
+    "suppliedJobRunId": "KuuEnCoMfFbFj3z5R",
+    "twoSourceRunId": "udTJyz3zJWOkKSNUS",
+    "allTenSourcesRunId": "CEofFmV6UEb82yi7M",
+    "restStarterRunId": "uqwj8p5qPU74JUyEo",
+    "note": "These predecessor runs remain evidence for v3 compatibility and all-ten-source coverage; they are not current-release proof."
   },
   "channels": {
     "mcp": {
@@ -166,11 +40,15 @@
       "evidence": [
         {
           "layer": "artifact",
-          "summary": "The generic call-actor descriptor is credential-free, bounded, schema-checked, and pinned to build 0.1.11."
+          "summary": "The generic call-actor descriptor is credential-free, bounded, explicit about shortlist mode, and configured for latest with immutable run-receipt validation."
+        },
+        {
+          "layer": "historical-actor-run",
+          "summary": "Historical evidence: Build 0.1.12 passed v4 shortlist filtering, audit retention, a scored inline result, and a three-source default search."
         },
         {
           "layer": "actor-run",
-          "summary": "Exact build 0.1.11 passed both the fresh-form Console default run and an immutable three-source fake-profile canary; predecessor 0.1.10 passed supplied-job, two-source, and all-10-source canaries."
+          "summary": "Existing 0.1.22 run AkjZ6lVDultxapjdP returned three scored rows for the built-in fictional candidate and reconciled three charges ($0.06). No live channel or destination write was tested."
         }
       ],
       "blockers": [
@@ -192,11 +70,15 @@
       "evidence": [
         {
           "layer": "artifact",
-          "summary": "The inactive workflow validates exact-run status, build, summary, dataset rows, billing, scoring receipts, and matchKey upserts."
+          "summary": "The inactive workflow accepts v3/v4 summaries, reconciles v4 result policy and billing, validates fit rows, and upserts by matchKey."
+        },
+        {
+          "layer": "historical-actor-run",
+          "summary": "Historical evidence: Build 0.1.12 passed the four Actor-side v4 behaviors represented by the workflow."
         },
         {
           "layer": "actor-run",
-          "summary": "Exact build 0.1.11 passed both the fresh-form Console default run and an immutable three-source fake-profile canary; predecessor 0.1.10 passed supplied-job, two-source, and all-10-source canaries."
+          "summary": "Existing 0.1.22 run AkjZ6lVDultxapjdP returned three scored rows for the built-in fictional candidate and reconciled three charges ($0.06). No live channel or destination write was tested."
         }
       ],
       "blockers": [
@@ -218,11 +100,15 @@
       "evidence": [
         {
           "layer": "artifact",
-          "summary": "The blueprint is bounded, pinned to exact Actor and build identities, and separates validation from Google Sheets upsert routes."
+          "summary": "The blueprint is bounded, pins exact Actor and build identities, and has separate v3, v4 shortlist, and v4 audit filters."
+        },
+        {
+          "layer": "historical-actor-run",
+          "summary": "Historical evidence: Build 0.1.12 passed the four Actor-side v4 behaviors represented by the blueprint."
         },
         {
           "layer": "actor-run",
-          "summary": "Exact build 0.1.11 passed both the fresh-form Console default run and an immutable three-source fake-profile canary; predecessor 0.1.10 passed supplied-job, two-source, and all-10-source canaries."
+          "summary": "Existing 0.1.22 run AkjZ6lVDultxapjdP returned three scored rows for the built-in fictional candidate and reconciled three charges ($0.06). No live channel or destination write was tested."
         }
       ],
       "blockers": [
@@ -244,16 +130,238 @@
       "evidence": [
         {
           "layer": "artifact",
-          "summary": "The editor specification pins build 0.1.11, exact-run storage, result filtering, and matchKey-based Google Sheets upserts."
+          "summary": "The editor specification selects latest, shortlist mode, delivery score 2, exact-run storage, and matchKey-based Google Sheets upserts."
+        },
+        {
+          "layer": "historical-actor-run",
+          "summary": "Historical evidence: Build 0.1.12 passed the v4 shortlist behavior required by the editor recipe."
         },
         {
           "layer": "actor-run",
-          "summary": "Exact build 0.1.11 passed both the fresh-form Console default run and an immutable three-source fake-profile canary; predecessor 0.1.10 passed supplied-job, two-source, and all-10-source canaries."
+          "summary": "Existing 0.1.22 run AkjZ6lVDultxapjdP returned three scored rows for the built-in fictional candidate and reconciled three charges ($0.06). No live channel or destination write was tested."
         }
       ],
       "blockers": [
         "Build the Zap in the authenticated editor and prove one create plus one update in a named disposable Google Sheet."
       ]
+    }
+  },
+  "historicalDeployment": {
+    "state": "LIVE_VERIFIED",
+    "isPublic": true,
+    "latestBuildNumber": "0.1.13",
+    "latestBuildId": "7wXjnRw6XvfiUQUwB",
+    "latestIsDocumentationOnly": true,
+    "runtimeImageMatchesBuild": "0.1.12",
+    "pricing": {
+      "model": "PAY_PER_EVENT",
+      "eventName": "job-fit-result",
+      "unitPriceUsd": 0.02
+    },
+    "documentationSmoke": {
+      "runId": "DZdOvX8FxOtgFS6J7",
+      "resolvedBuildNumber": "0.1.13",
+      "resolvedBuildId": "7wXjnRw6XvfiUQUwB",
+      "status": "SUCCEEDED",
+      "exitCode": 0,
+      "runSummarySchema": "nomad-ai-job-fit-run-summary-v4",
+      "resultMode": "shortlist",
+      "minDeliveryScore": 2,
+      "evaluatedJobs": 1,
+      "staticHeld": 1,
+      "resultFilteredOut": 1,
+      "datasetRows": 0,
+      "chargedEventCounts": {
+        "job-fit-result": 0
+      }
+    }
+  },
+  "currentActorRun": {
+    "runId": "AkjZ6lVDultxapjdP",
+    "resolvedBuildNumber": "0.1.22",
+    "resolvedBuildId": "XQhyxEg3YZ3NMel70",
+    "status": "SUCCEEDED",
+    "exitCode": 0,
+    "selector": "latest",
+    "datasetId": "POcNi5cIr3NmI2pmJ",
+    "keyValueStoreId": "XZZMXE6QEuPFWvsH6",
+    "datasetRows": 3,
+    "usedExampleProfile": true,
+    "chargedEventCounts": {
+      "job-fit-result": 3
+    },
+    "runSummarySchema": "nomad-ai-job-fit-run-summary-v4",
+    "readBackOn": "2026-09-05"
+  },
+  "historicalActorCanaries": {
+    "defaultShortlist": {
+      "runId": "fhMYR6bzdbzdNl84y",
+      "resolvedBuildNumber": "0.1.12",
+      "resolvedBuildId": "eLfTnCWohYVKejvsD",
+      "status": "SUCCEEDED",
+      "exitCode": 0,
+      "datasetId": "p1WDiebgYf4b1LKcF",
+      "keyValueStoreId": "DUavMQTlhJQaf4dpj",
+      "maxTotalChargeUsd": 0.06,
+      "sources": [
+        "linkedin",
+        "remote_boards",
+        "justjoinit"
+      ],
+      "sourceStatuses": {
+        "linkedin": "succeeded",
+        "remote_boards": "succeeded",
+        "justjoinit": "succeeded"
+      },
+      "sourceJobs": 3,
+      "evaluatedJobs": 3,
+      "aiScored": 3,
+      "resultMode": "shortlist",
+      "minDeliveryScore": 2,
+      "resultFilteredOut": 2,
+      "datasetRows": 1,
+      "evaluationStatuses": [
+        "scored"
+      ],
+      "chargedEventCounts": {
+        "job-fit-result": 1
+      },
+      "runSummarySchema": "nomad-ai-job-fit-run-summary-v4",
+      "provider": "openrouter:OpenAI",
+      "model": "openai/gpt-5.6-luna",
+      "providerCostUsd": 0.00339865,
+      "warnings": []
+    },
+    "filteredShortlist": {
+      "runId": "wkk8NkZv43JEIcv3m",
+      "resolvedBuildNumber": "0.1.12",
+      "resolvedBuildId": "eLfTnCWohYVKejvsD",
+      "status": "SUCCEEDED",
+      "exitCode": 0,
+      "resultMode": "shortlist",
+      "minDeliveryScore": 2,
+      "evaluatedJobs": 1,
+      "staticHeld": 1,
+      "resultFilteredOut": 1,
+      "datasetRows": 0,
+      "chargedEventCounts": {
+        "job-fit-result": 0
+      },
+      "runSummarySchema": "nomad-ai-job-fit-run-summary-v4"
+    },
+    "auditRetainsHold": {
+      "runId": "lIpiLiudBukaaFI7d",
+      "resolvedBuildNumber": "0.1.12",
+      "resolvedBuildId": "eLfTnCWohYVKejvsD",
+      "status": "SUCCEEDED",
+      "exitCode": 0,
+      "resultMode": "audit",
+      "minDeliveryScore": 2,
+      "evaluatedJobs": 1,
+      "staticHeld": 1,
+      "resultFilteredOut": 0,
+      "datasetRows": 1,
+      "evaluationStatuses": [
+        "static_hold"
+      ],
+      "chargedEventCounts": {
+        "job-fit-result": 1
+      },
+      "runSummarySchema": "nomad-ai-job-fit-run-summary-v4"
+    },
+    "scoredInline": {
+      "runId": "vzhqlbVeXhp5tKs4N",
+      "resolvedBuildNumber": "0.1.12",
+      "resolvedBuildId": "eLfTnCWohYVKejvsD",
+      "status": "SUCCEEDED",
+      "exitCode": 0,
+      "resultMode": "shortlist",
+      "minDeliveryScore": 2,
+      "evaluatedJobs": 1,
+      "aiScored": 1,
+      "resultFilteredOut": 0,
+      "datasetRows": 1,
+      "evaluationStatuses": [
+        "scored"
+      ],
+      "fitScore": 92,
+      "deliveryScore": 5,
+      "chargedEventCounts": {
+        "job-fit-result": 1
+      },
+      "runSummarySchema": "nomad-ai-job-fit-run-summary-v4"
+    }
+  },
+  "releaseActorRun": {
+    "runId": "2LeF5m1YjsWw2rMWD",
+    "resolvedBuildNumber": "0.1.24",
+    "resolvedBuildId": "xQR0NAjBhmJdxG0XK",
+    "status": "SUCCEEDED",
+    "exitCode": 0,
+    "selector": "latest",
+    "buildParameterOmitted": true,
+    "startedAt": "2026-09-05T19:11:15.721Z",
+    "finishedAt": "2026-09-05T19:11:42.234Z",
+    "datasetId": "jenzbtO5UVovcyGnM",
+    "keyValueStoreId": "F2DWca0SUZgvmyqYy",
+    "datasetRows": 3,
+    "usedExampleProfile": true,
+    "chargedEventCounts": {
+      "job-fit-result": 3
+    },
+    "totalResultChargeUsd": 0.06,
+    "maxTotalChargeUsd": 0.06,
+    "runSummarySchema": "nomad-ai-job-fit-run-summary-v4",
+    "warningNote": "The default run uses a fictional example candidate and is limited to three evaluated jobs.",
+    "prePromotionCanary": {
+      "runId": "Z0i7In8Kibqh4Qoe8",
+      "mode": "score-jobs",
+      "datasetRows": 1,
+      "totalResultChargeUsd": 0.02
+    },
+    "sourceStatuses": {
+      "linkedin": "succeeded",
+      "remote_boards": "succeeded",
+      "justjoinit": "succeeded"
+    }
+  },
+  "productionSelector": "latest",
+  "precedingDocumentationRelease": {
+    "deployment": {
+      "state": "LIVE_VERIFIED",
+      "isPublic": true,
+      "latestBuildNumber": "0.1.23",
+      "latestBuildId": "s2oMxT94Pbe0cNqY5",
+      "defaultBuildSelector": "latest",
+      "note": "Earlier documentation build accepted during this release session, before the production-selector migration."
+    },
+    "run": {
+      "runId": "GcTl6gbZSbrnhLRfT",
+      "resolvedBuildNumber": "0.1.23",
+      "resolvedBuildId": "s2oMxT94Pbe0cNqY5",
+      "status": "SUCCEEDED",
+      "exitCode": 0,
+      "selector": "latest",
+      "buildParameterOmitted": true,
+      "startedAt": "2026-09-05T18:54:01.815Z",
+      "finishedAt": "2026-09-05T18:54:30.350Z",
+      "datasetId": "MgJQNyp8BhrSXQUio",
+      "keyValueStoreId": "IN7Kk1YIhaBgbAqgo",
+      "datasetRows": 3,
+      "usedExampleProfile": true,
+      "chargedEventCounts": {
+        "job-fit-result": 3
+      },
+      "totalResultChargeUsd": 0.06,
+      "maxTotalChargeUsd": 0.06,
+      "runSummarySchema": "nomad-ai-job-fit-run-summary-v4",
+      "warningNote": "The default run uses a fictional example candidate and is limited to three evaluated jobs.",
+      "prePromotionCanary": {
+        "runId": "uAR0mHTrqeTfXWG07",
+        "mode": "score-jobs",
+        "datasetRows": 1,
+        "totalResultChargeUsd": 0.02
+      }
     }
   }
 }

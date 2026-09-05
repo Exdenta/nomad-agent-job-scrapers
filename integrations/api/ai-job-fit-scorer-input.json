@@ -38,6 +38,8 @@
     "workArrangementPreferencesComplete": true
   },
   "maxItems": 5,
+  "resultMode": "shortlist",
+  "minDeliveryScore": 2,
   "minRankToForward": 30,
   "recoverHolds": false,
   "aiConcurrency": 2

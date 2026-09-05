@@ -1,0 +1,45 @@
+{
+  "mode": "search",
+  "search": {
+    "sources": ["linkedin", "remote_boards", "justjoinit"],
+    "keywords": ["platform engineer", "backend engineer", "python"],
+    "location": "Madrid",
+    "remoteOnly": false,
+    "titleExclude": ["intern", "junior"],
+    "postedWithinDays": 7,
+    "maxItemsPerSource": 8,
+    "cacheTtlSeconds": 1800,
+    "concurrency": 3,
+    "sourceTimeoutSecs": 120
+  },
+  "maxItems": 20,
+  "candidateProfile": {
+    "primaryRole": "Platform Engineer",
+    "targetTerms": ["Platform Engineer", "Backend Engineer"],
+    "skills": ["Python", "PostgreSQL", "Docker", "Kubernetes"],
+    "seniorityLevels": ["mid", "senior"],
+    "yearsExperience": 6,
+    "workableLanguages": [
+      {
+        "language": "English",
+        "level": "C1",
+        "evidence": "Candidate profile: English C1"
+      }
+    ],
+    "workableLanguagesComplete": false,
+    "acceptedWorkArrangements": ["remote", "hybrid"],
+    "remoteLocations": ["Spain", "European Union"],
+    "hybridLocations": ["Madrid, Spain"],
+    "onsiteLocations": [],
+    "workArrangementPreferencesComplete": true,
+    "acceptedCountryCodes": ["ES"],
+    "acceptedContractTypes": ["permanent", "full-time"],
+    "acceptedContractTypesComplete": false,
+    "freeText": "Individual-contributor product engineering roles."
+  },
+  "resultMode": "shortlist",
+  "minDeliveryScore": 2,
+  "minRankToForward": 30,
+  "recoverHolds": false,
+  "aiConcurrency": 4
+}

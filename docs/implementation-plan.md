@@ -34,7 +34,7 @@ Actor builds, input coverage, output handling, and the current validation
 status of each pack.
 
 The repository integration-tested pins are LinkedIn `1.0.2`, EURAXESS
-`1.0.16`, and scorer `0.1.11`. They are compatibility boundaries, not an
+`1.0.16`, and scorer `latest`. They are compatibility boundaries, not an
 automatic statement that a source pin is the current Store default. Public
 product and setup pages live at `https://nomadagent.dev/actors` and
 `https://nomadagent.dev/integrations`.

@@ -3,15 +3,15 @@
 import { readFile } from 'node:fs/promises';
 
 const ACTOR = 'nomad-agent~ai-job-fit-scorer';
-const VERIFIED_BUILD = '0.1.11';
-const EXPECTED_BUILD = (process.env.ACTOR_BUILD_NUMBER || VERIFIED_BUILD).trim();
+const BUILD_SELECTOR = 'latest';
+const ACTOR_ID = 'mBRj1sgHTWmoPJEcb';
 const MAX_TOTAL_CHARGE_USD = 0.10;
 const TERMINAL = new Set(['SUCCEEDED', 'FAILED', 'ABORTED', 'TIMED-OUT']);
 const token = (process.env.APIFY_TOKEN || '').trim();
 const base = (process.env.APIFY_API_BASE_URL || 'https://api.apify.com').replace(/\/$/, '');
 if (!token) throw new Error('APIFY_TOKEN is required');
-if (EXPECTED_BUILD !== VERIFIED_BUILD) {
-  throw new Error(`ACTOR_BUILD_NUMBER must remain pinned to verified build ${VERIFIED_BUILD}`);
+if (process.env.ACTOR_BUILD_NUMBER && process.env.ACTOR_BUILD_NUMBER.trim() !== BUILD_SELECTOR) {
+  throw new Error('The production starter requires ACTOR_BUILD_NUMBER=latest');
 }
 
 const inputPath = process.argv[2] || new URL('./ai-job-fit-scorer-input.json', import.meta.url);
@@ -44,7 +44,7 @@ async function request(path, options = {}) {
 const sleep = (milliseconds) => new Promise((resolve) => setTimeout(resolve, milliseconds));
 
 const query = new URLSearchParams({
-  build: EXPECTED_BUILD,
+  build: BUILD_SELECTOR,
   maxTotalChargeUsd: String(MAX_TOTAL_CHARGE_USD),
 });
 const started = await request(`/v2/actors/${ACTOR}/runs?${query}`, {
@@ -54,35 +54,53 @@ const started = await request(`/v2/actors/${ACTOR}/runs?${query}`, {
 let run = started.data;
 if (!run?.id) throw new Error('Actor start response contained no run ID');
 const exactRunId = run.id;
+const resolvedBuildId = run.buildId;
+const resolvedBuildNumber = run.buildNumber;
+if (run.actId !== ACTOR_ID || !resolvedBuildId || !/^\d+\.\d+\.\d+$/.test(resolvedBuildNumber || '')) {
+  throw new Error('Actor start omitted the immutable build identity');
+}
+function validateRunIdentity(receipt) {
+  if (receipt?.id !== exactRunId || receipt.actId !== ACTOR_ID
+      || receipt.buildId !== resolvedBuildId || receipt.buildNumber !== resolvedBuildNumber) {
+    throw new Error('run receipt changed the exact run or resolved build identity');
+  }
+}
 const deadline = Date.now() + 10 * 60_000;
 
 while (!TERMINAL.has(run.status)) {
   if (Date.now() >= deadline) throw new Error('Actor polling deadline exceeded after 600 seconds');
   const polled = await request(`/v2/actor-runs/${exactRunId}?waitForFinish=60`);
   run = polled.data;
-  if (run?.id !== exactRunId) throw new Error('poll response changed the exact run ID');
+  validateRunIdentity(run);
 }
 
 if (run.status !== 'SUCCEEDED' || run.exitCode !== 0) {
   throw new Error(`Actor run ${exactRunId} ended ${run.status} exitCode=${run.exitCode}`);
 }
-if (run.buildNumber !== EXPECTED_BUILD) {
-  throw new Error(`Actor used build ${run.buildNumber}; expected ${EXPECTED_BUILD}`);
-}
+validateRunIdentity(run);
 if (!run.defaultDatasetId || !run.defaultKeyValueStoreId) {
   throw new Error('terminal run omitted its immutable storage IDs');
 }
 
+const datasetId = run.defaultDatasetId;
+const storeId = run.defaultKeyValueStoreId;
 let summary;
 let rows;
 const settlementDeadline = Date.now() + 45_000;
 while (true) {
   const refreshed = await request(`/v2/actor-runs/${exactRunId}`);
   run = refreshed.data;
-  if (run?.id !== exactRunId) throw new Error('settlement read changed the exact run ID');
+  validateRunIdentity(run);
+  if (run.status !== 'SUCCEEDED' || run.exitCode !== 0 || run.defaultDatasetId !== datasetId || run.defaultKeyValueStoreId !== storeId) {
+    throw new Error('settlement read changed terminal status or exact-run storage');
+  }
   summary = await request(
     `/v2/key-value-stores/${run.defaultKeyValueStoreId}/records/RUN-SUMMARY`,
   );
+  if (summary?.actor?.id !== ACTOR_ID || summary.actor.runId !== exactRunId
+      || summary.actor.buildId !== resolvedBuildId || summary.actor.buildNumber !== resolvedBuildNumber) {
+    throw new Error('RUN-SUMMARY does not match the exact run and resolved build');
+  }
   rows = await request(
     `/v2/datasets/${run.defaultDatasetId}/items?clean=true&limit=${actorInput.maxItems}`,
   );
@@ -103,9 +121,14 @@ while (true) {
   }
   await sleep(3_000);
 }
-if (summary.schemaVersion !== 'nomad-ai-job-fit-run-summary-v3') {
+const acceptedSummarySchemas = new Set([
+  'nomad-ai-job-fit-run-summary-v3',
+  'nomad-ai-job-fit-run-summary-v4',
+]);
+if (!acceptedSummarySchemas.has(summary.schemaVersion)) {
   throw new Error('unexpected RUN-SUMMARY schema');
 }
+const isV4 = summary.schemaVersion === 'nomad-ai-job-fit-run-summary-v4';
 if (!['complete', 'partial', 'empty'].includes(summary.status)) {
   throw new Error(`unusable RUN-SUMMARY status ${summary.status}`);
 }
@@ -114,6 +137,39 @@ if (summary.algorithm?.name !== 'scoring-v3' || summary.algorithm?.interactionSt
 }
 if (!Number.isInteger(summary.counts?.outputRows) || summary.counts.outputRows < 0) {
   throw new Error('RUN-SUMMARY contains an invalid outputRows count');
+}
+if (isV4) {
+  const countNames = [
+    'evaluatedJobs', 'staticDropped', 'staticHeld', 'aiScored', 'aiFailed',
+    'resultFilteredOut', 'outputRows',
+  ];
+  if (countNames.some((name) => !Number.isInteger(summary.counts[name]) || summary.counts[name] < 0)) {
+    throw new Error('RUN-SUMMARY contains invalid v4 evaluation counts');
+  }
+  if (
+    summary.counts.staticDropped + summary.counts.staticHeld
+      + summary.counts.aiScored + summary.counts.aiFailed
+    !== summary.counts.evaluatedJobs
+  ) {
+    throw new Error('v4 evaluation counts do not partition evaluatedJobs');
+  }
+  if (summary.counts.resultFilteredOut + summary.counts.outputRows !== summary.counts.evaluatedJobs) {
+    throw new Error('v4 filtered and output counts do not reconcile');
+  }
+  if (
+    !['shortlist', 'audit'].includes(summary.parameters?.resultMode)
+    || !Number.isInteger(summary.parameters?.minDeliveryScore)
+    || summary.parameters.minDeliveryScore < 0
+    || summary.parameters.minDeliveryScore > 5
+  ) {
+    throw new Error('RUN-SUMMARY contains an invalid v4 result policy');
+  }
+  if (
+    summary.parameters.resultMode === 'audit'
+    && (summary.counts.resultFilteredOut !== 0 || summary.counts.outputRows !== summary.counts.evaluatedJobs)
+  ) {
+    throw new Error('v4 audit counts do not preserve the complete dataset');
+  }
 }
 if (
   !summary.ai
@@ -143,6 +199,14 @@ const expectedTotal = summary.billing.chargedCount * 0.02;
 if (Math.abs(summary.billing.totalChargedUsd - expectedTotal) > 0.0000001) {
   throw new Error('total charged amount does not reconcile');
 }
+if (isV4) {
+  const expectedCharged = summary.parameters.resultMode === 'shortlist'
+    ? summary.counts.outputRows
+    : summary.counts.outputRows - summary.counts.aiFailed;
+  if (summary.billing.chargedCount !== expectedCharged) {
+    throw new Error('v4 billing does not reconcile with result policy');
+  }
+}
 if (summary.status === 'empty' && (!summary.cleanEmpty || summary.counts.outputRows !== 0)) {
   throw new Error('invalid clean-empty RUN-SUMMARY');
 }
@@ -151,10 +215,13 @@ if (!Array.isArray(rows) || rows.length !== summary.counts.outputRows) {
   throw new Error('dataset count does not reconcile with RUN-SUMMARY');
 }
 const successful = rows.filter((row) => row.evaluationStatus !== 'ai_failed');
-if (successful.length !== summary.billing.chargedCount) {
-  throw new Error('successful row count does not reconcile with billed evaluations');
+const expectedChargedRows = isV4 && summary.parameters.resultMode === 'shortlist'
+  ? rows.length
+  : successful.length;
+if (expectedChargedRows !== summary.billing.chargedCount) {
+  throw new Error('dataset rows do not reconcile with result-policy billing');
 }
-if ((run.chargedEventCounts?.['job-fit-result'] ?? 0) !== successful.length) {
+if ((run.chargedEventCounts?.['job-fit-result'] ?? 0) !== expectedChargedRows) {
   throw new Error('run charge receipt does not reconcile with successful evaluations');
 }
 const expectedKeys = [
@@ -186,8 +253,19 @@ for (const row of rows) {
   ) {
     throw new Error('dataset contains an unexpected result contract');
   }
+  if (
+    isV4
+    && summary.parameters.resultMode === 'shortlist'
+    && (
+      row.evaluationStatus !== 'scored'
+      || !Number.isInteger(row.deliveryScore)
+      || row.deliveryScore < summary.parameters.minDeliveryScore
+    )
+  ) {
+    throw new Error('dataset contains a row outside the v4 shortlist policy');
+  }
   if (seen.has(row.matchKey)) throw new Error(`dataset repeats matchKey ${row.matchKey}`);
   seen.add(row.matchKey);
 }
 
-process.stdout.write(`${JSON.stringify({ runId: exactRunId, summary, rows }, null, 2)}\n`);
+process.stdout.write(`${JSON.stringify({ runId: exactRunId, buildId: resolvedBuildId, buildNumber: resolvedBuildNumber, summary, rows }, null, 2)}\n`);

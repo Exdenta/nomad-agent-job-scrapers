@@ -15,7 +15,7 @@ Import an inactive, outcome-ready workflow:
 - [`euraxess-jobs-to-google-sheets.json`](euraxess-jobs-to-google-sheets.json)
   creates the same tracker shape for EURAXESS selector `latest`;
 - [`ai-job-fit-scorer-to-google-sheets.json`](ai-job-fit-scorer-to-google-sheets.json)
-  searches and scores developer jobs with build `0.1.11`, validates the
+  searches and scores developer jobs with build `latest`, validates the
   distinct fit contract, and upserts candidate-specific evaluations by
   `matchKey`.
 
@@ -42,10 +42,12 @@ build, item cap, and charge cap are reused. Missing, invalid, wrong-build,
 failed, or count-mismatched runs stop before Sheets. A validated `empty` status
 writes no rows.
 
-The fit-scoring workflow follows the same exact-run discipline but requires
-`nomad-ai-job-fit-run-summary-v3` and `nomad-ai-job-fit-v1`. It reconciles the
-single `$0.02` `job-fit-result` meter, skips `ai_failed`, projects the separate
-21-column fit destination schema, and upserts by `matchKey`. Use
+The fit-scoring workflow follows the same exact-run discipline and accepts
+legacy `nomad-ai-job-fit-run-summary-v3` or current
+`nomad-ai-job-fit-run-summary-v4` with `nomad-ai-job-fit-v1`. Its starter
+uses `shortlist` at delivery score `2`; it reconciles the result-policy
+counts and single `$0.02` `job-fit-result` meter, skips `ai_failed`, projects
+the separate 21-column fit destination schema, and upserts by `matchKey`. Use
 [`ai-job-fit-google-sheets-columns.csv`](../shared/ai-job-fit-google-sheets-columns.csv)
 for that workflow; `jobKey` alone is not candidate-specific.
 
