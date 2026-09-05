@@ -18,7 +18,7 @@ you need them.
 ## Start with a small search
 
 1. Enter a **Job keyword** and **Location**.
-2. Set **Maximum results** to **5** and leave **First-run mode** and **Add company details** off for a basic search.
+2. Set **Maximum results** to **5** and leave **First-run mode** and **Add company details** off for a basic search. Clear any **Company filters** already in the form.
 3. Set Apify's **Maximum cost per run** to **$0.10**, then click **Start**.
 4. Open the results to review the jobs and export your data.
 
@@ -60,7 +60,7 @@ editors. Clear the main keyword and location when providing multiple searches.
   and URLs stay in their original form.
 - **Company details:** adds available facts from the job's linked public company
   page, with no separate result-event charge. Company filters require this option.
-  Off by default. Unavailable profiles are excluded by default when company filters are used.
+  Unavailable profiles are excluded by default when company filters are used.
 
 ## What you get
 
