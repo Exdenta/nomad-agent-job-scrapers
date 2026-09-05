@@ -43,9 +43,9 @@ not truncated. A complete record is in
 
 | Field | Type | Runtime behavior |
 | --- | --- | --- |
-| `sources` | array, 1–10 unique keys | Closed set: `linkedin`, `remote_boards`, `builtin`, `justjoinit`, `nofluffjobs`, `hackernews`, `ycombinator_was`, `wttj`, `infojobs`, `tecnoempleo`. Default: the first, second, and fourth. Unknown keys fail the run. |
+| `sources` | array, 1–10 unique keys | Closed set: `linkedin`, `remote_boards`, `builtin`, `justjoinit`, `nofluffjobs`, `hackernews`, `ycombinator_was`, `wttj`, `infojobs`, `tecnoempleo`. Default: all ten listed sources. Unknown keys fail the run. |
 | `keywords` | array of 1–10 strings, each ≤ 100 chars | Required. Built In and No Fluff Jobs use developer categories instead and report keyword support as unsupported. |
-| `location` | string ≤ 200 chars | Native filter on LinkedIn, Just Join IT, InfoJobs, and Tecnoempleo. Other sources ignore it. |
+| `location` | string ≤ 200 chars | Native filter on LinkedIn and Just Join IT. InfoJobs maps recognized Spanish province names or its provider IDs (Madrid = `33`); unrecognized locations leave its nationwide search unfiltered. Tecnoempleo resolves province names. Other sources ignore it. |
 | `countryCodes` | array of two-letter codes, ≤ 30 | Forwarded to Welcome to the Jungle only. Upper-cased. |
 | `remoteOnly` | boolean, default false | Keeps only jobs explicitly normalized as fully remote; hybrid and unknown are dropped. |
 | `titleExclude` | array of ≤ 20 strings | Title exclusion on LinkedIn, remote boards, Just Join IT, No Fluff Jobs, Y Combinator, InfoJobs, and Tecnoempleo. |
