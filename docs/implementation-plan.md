@@ -36,8 +36,8 @@ status of each pack.
 The repository integration-tested pins are LinkedIn `1.0.2`, EURAXESS
 `1.0.16`, and scorer `0.1.22`. They are compatibility boundaries, not an
 automatic statement that a source pin is the current Store default. Public
-product and setup pages live at `https://nomadagent.dev/actors` and
-`https://nomadagent.dev/integrations`.
+product and setup pages live at `https://jobatlas.dev/actors` and
+`https://jobatlas.dev/integrations`.
 
 Templates never include credentials or activate schedules when imported.
 Start with the bounded examples, keep optional paid features disabled until

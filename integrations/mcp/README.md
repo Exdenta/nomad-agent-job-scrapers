@@ -1,5 +1,8 @@
 # MCP: normalized LinkedIn and EURAXESS jobs
 
+
+EURAXESS starters select `latest` and retain each run’s immutable `buildId` and numeric `buildNumber`. References to exact configured pins below apply to the other Actor targets. Validate the EURAXESS run, summary and dataset before delivery; `latest` itself is not immutable evidence.
+
 Use the generic Apify MCP tools so every paid run has an exact build and cost
 cap:
 
@@ -10,19 +13,17 @@ https://mcp.apify.com?tools=fetch-actor-details,call-actor,get-actor-run,get-dat
 | Profile | Actor | Exact build |
 | --- | --- | --- |
 | LinkedIn | `nomad-agent/linkedin-enrich-translate-normalize-scraper` | `1.0.2` |
-| EURAXESS | `nomad-agent/euraxess-enrich-translate-normalize-scraper` | `1.0.16` |
-| AI Job Search & Fit Scorer | `nomad-agent/ai-job-fit-scorer` | `0.1.22` |
+| EURAXESS | `nomad-agent/euraxess-enrich-translate-normalize-scraper` | `latest` |
+| AI Job Search & Fit Scorer | `nomad-agent/ai-job-fit-scorer` | `0.1.11` |
 
 Keep the build explicit instead of relying on a movable tag. Confirm Actor
 availability and account access with `fetch-actor-details` before a paid run.
 
 The scorer descriptor is
 [`examples/ai-job-fit-scorer.mcp.json`](examples/ai-job-fit-scorer.mcp.json).
-It requests at most five evaluations in default `shortlist` mode at delivery
-score `2`, with a $0.10 charge cap. Its output is
-`nomad-ai-job-fit-v1` plus the scorer-specific
-`nomad-ai-job-fit-run-summary-v4` (with legacy v3 accepted by the clients),
-not the six-root scraper dataset/v4 summary described below; follow the
+It requests at most five evaluations with a $0.10 charge cap. Its output is
+`nomad-ai-job-fit-v1` plus `nomad-ai-job-fit-run-summary-v3`, not the six-root
+scraper dataset/v4 summary described below; follow the
 [scorer-specific execution contract](../../docs/ai-job-fit-scorer.md).
 
 ## Client configuration
@@ -94,7 +95,7 @@ contract.
 ## Validation boundary
 
 The maintained profiles and smoke harness target LinkedIn `1.0.2` and
-EURAXESS `1.0.16`. The harness contains no credential and verifies the exact
+EURAXESS `latest`. The harness contains no credential and verifies the exact
 build, terminal result, v4 completion record, delivered count, and canonical
 dataset rows.
 

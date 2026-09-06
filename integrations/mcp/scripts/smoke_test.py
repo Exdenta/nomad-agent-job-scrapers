@@ -6,6 +6,7 @@ import argparse
 from http.client import IncompleteRead, RemoteDisconnected
 import json
 import os
+import re
 from pathlib import Path
 import sys
 import time
@@ -50,7 +51,7 @@ PROFILES = {
     "euraxess": {
         "url": PINNED_URL,
         "tool": "call-actor",
-        "build": "1.0.16",
+        "build": "latest",
         "source": "euraxess",
         "input": Path(__file__).resolve().parents[1] / "examples/euraxess-search.mcp.json",
     },
@@ -238,6 +239,11 @@ def _run_to_terminal(
 
 
 def _require_build(run: dict[str, Any], expected: str) -> None:
+    if expected == "latest":
+        if not isinstance(run.get("buildId"), str) or not run["buildId"].strip() or not re.fullmatch(r"\d+\.\d+\.\d+", str(run.get("buildNumber", ""))):
+            raise RuntimeError("latest run is missing immutable buildId or numeric buildNumber")
+        print(f"Resolved build: buildId={run['buildId']} buildNumber={run['buildNumber']}")
+        return
     if run.get("buildNumber") != expected:
         raise RuntimeError(
             f"run used build {run.get('buildNumber')!r}; expected {expected}"

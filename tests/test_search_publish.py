@@ -42,22 +42,22 @@ class SearchPublishTests(unittest.TestCase):
         with TemporaryDirectory() as directory:
             site_dir = Path(directory)
             (site_dir / "index.html").write_text(
-                '<link rel="canonical" href="https://nomadagent.dev/">',
+                '<link rel="canonical" href="https://jobatlas.dev/">',
                 encoding="utf-8",
             )
             docs_dir = site_dir / "docs"
             docs_dir.mkdir()
             (docs_dir / "index.html").write_text(
-                '<link rel="canonical" href="https://nomadagent.dev/docs">',
+                '<link rel="canonical" href="https://jobatlas.dev/docs">',
                 encoding="utf-8",
             )
 
             urls = search_publish.prepare(
-                site_dir, "https://nomadagent.dev", "abcDEF12-345"
+                site_dir, "https://jobatlas.dev", "abcDEF12-345"
             )
 
             self.assertEqual(
-                urls, ["https://nomadagent.dev/", "https://nomadagent.dev/docs"]
+                urls, ["https://jobatlas.dev/", "https://jobatlas.dev/docs"]
             )
             self.assertEqual(
                 search_publish.parse_sitemap(
@@ -66,7 +66,7 @@ class SearchPublishTests(unittest.TestCase):
                 urls,
             )
             self.assertIn(
-                "Sitemap: https://nomadagent.dev/sitemap.xml",
+                "Sitemap: https://jobatlas.dev/sitemap.xml",
                 (site_dir / "robots.txt").read_text(encoding="utf-8"),
             )
             self.assertEqual(
@@ -84,7 +84,7 @@ class SearchPublishTests(unittest.TestCase):
         with TemporaryDirectory() as directory:
             site_dir = Path(directory)
             (site_dir / "index.html").write_text(
-                '<link rel="canonical" href="https://nomadagent.dev/">',
+                '<link rel="canonical" href="https://jobatlas.dev/">',
                 encoding="utf-8",
             )
             (site_dir / "404.html").write_text(
@@ -94,9 +94,9 @@ class SearchPublishTests(unittest.TestCase):
 
             self.assertEqual(
                 search_publish.discover_canonical_urls(
-                    site_dir, "https://nomadagent.dev/"
+                    site_dir, "https://jobatlas.dev/"
                 ),
-                ["https://nomadagent.dev/"],
+                ["https://jobatlas.dev/"],
             )
 
     def test_discovery_rejects_missing_duplicate_and_off_origin_canonicals(self) -> None:
@@ -104,10 +104,10 @@ class SearchPublishTests(unittest.TestCase):
             ("<title>No canonical</title>", "exactly one canonical"),
             (
                 '<link rel="canonical" href="https://example.com/">',
-                "must use the nomadagent.dev HTTPS origin",
+                "must use the jobatlas.dev HTTPS origin",
             ),
             (
-                '<link rel="canonical" href="https://nomadagent.dev/#section">',
+                '<link rel="canonical" href="https://jobatlas.dev/#section">',
                 "cannot contain a query or fragment",
             ),
         )
@@ -117,7 +117,7 @@ class SearchPublishTests(unittest.TestCase):
                 (site_dir / "index.html").write_text(html, encoding="utf-8")
                 with self.assertRaisesRegex(ValueError, expected):
                     search_publish.discover_canonical_urls(
-                        site_dir, "https://nomadagent.dev/"
+                        site_dir, "https://jobatlas.dev/"
                     )
 
     def test_google_submission_uses_encoded_property_and_sitemap(self) -> None:
@@ -129,8 +129,8 @@ class SearchPublishTests(unittest.TestCase):
 
         with patch.object(search_publish, "urlopen", fake_urlopen):
             status = search_publish.submit_google_sitemap(
-                "https://nomadagent.dev/",
-                "https://nomadagent.dev/sitemap.xml",
+                "https://jobatlas.dev/",
+                "https://jobatlas.dev/sitemap.xml",
                 "test-token",
             )
 
@@ -139,8 +139,8 @@ class SearchPublishTests(unittest.TestCase):
         self.assertEqual(timeout, 30)
         self.assertEqual(request.get_method(), "PUT")
         self.assertIn(
-            "sites/https%3A%2F%2Fnomadagent.dev%2F/sitemaps/"
-            "https%3A%2F%2Fnomadagent.dev%2Fsitemap.xml",
+            "sites/https%3A%2F%2Fjobatlas.dev%2F/sitemaps/"
+            "https%3A%2F%2Fjobatlas.dev%2Fsitemap.xml",
             request.full_url,
         )
         self.assertEqual(request.get_header("Authorization"), "Bearer test-token")
@@ -152,10 +152,10 @@ class SearchPublishTests(unittest.TestCase):
             captured.append((request, timeout))
             return FakeResponse(202, request.full_url)
 
-        urls = ["https://nomadagent.dev/", "https://nomadagent.dev/docs"]
+        urls = ["https://jobatlas.dev/", "https://jobatlas.dev/docs"]
         with patch.object(search_publish, "urlopen", fake_urlopen):
             status = search_publish.submit_indexnow(
-                "https://nomadagent.dev/", urls, "abcDEF12-345"
+                "https://jobatlas.dev/", urls, "abcDEF12-345"
             )
 
         request, timeout = captured[0]
@@ -164,10 +164,10 @@ class SearchPublishTests(unittest.TestCase):
         self.assertEqual(timeout, 30)
         self.assertEqual(request.full_url, search_publish.INDEXNOW_ENDPOINT)
         self.assertEqual(request.get_method(), "POST")
-        self.assertEqual(payload["host"], "nomadagent.dev")
+        self.assertEqual(payload["host"], "jobatlas.dev")
         self.assertEqual(payload["key"], "abcDEF12-345")
         self.assertEqual(
-            payload["keyLocation"], "https://nomadagent.dev/indexnow-key.txt"
+            payload["keyLocation"], "https://jobatlas.dev/indexnow-key.txt"
         )
         self.assertEqual(payload["urlList"], urls)
 
@@ -176,7 +176,7 @@ class SearchPublishTests(unittest.TestCase):
             {
                 "siteEntry": [
                     {
-                        "siteUrl": "https://nomadagent.dev/",
+                        "siteUrl": "https://jobatlas.dev/",
                         "permissionLevel": "siteFullUser",
                     }
                 ]
@@ -190,7 +190,7 @@ class SearchPublishTests(unittest.TestCase):
 
         with patch.object(search_publish, "urlopen", fake_urlopen):
             permission = search_publish.verify_google_property_access(
-                "https://nomadagent.dev/", "test-token"
+                "https://jobatlas.dev/", "test-token"
             )
         self.assertEqual(permission, "siteFullUser")
 
@@ -198,7 +198,7 @@ class SearchPublishTests(unittest.TestCase):
             {
                 "siteEntry": [
                     {
-                        "siteUrl": "https://nomadagent.dev/",
+                        "siteUrl": "https://jobatlas.dev/",
                         "permissionLevel": "siteRestrictedUser",
                     }
                 ]
@@ -211,7 +211,7 @@ class SearchPublishTests(unittest.TestCase):
             lambda request, timeout: FakeResponse(200, request.full_url, restricted),
         ), self.assertRaisesRegex(RuntimeError, "needs full access"):
             search_publish.verify_google_property_access(
-                "https://nomadagent.dev/", "test-token"
+                "https://jobatlas.dev/", "test-token"
             )
 
     def test_google_inspection_returns_index_status_without_requesting_indexing(self) -> None:
@@ -234,8 +234,8 @@ class SearchPublishTests(unittest.TestCase):
 
         with patch.object(search_publish, "urlopen", fake_urlopen):
             result = search_publish.inspect_google_url(
-                "https://nomadagent.dev/",
-                "https://nomadagent.dev/actors/linkedin/",
+                "https://jobatlas.dev/",
+                "https://jobatlas.dev/actors/linkedin/",
                 "test-token",
             )
 
@@ -246,8 +246,8 @@ class SearchPublishTests(unittest.TestCase):
         self.assertEqual(
             json.loads(request.data),
             {
-                "inspectionUrl": "https://nomadagent.dev/actors/linkedin/",
-                "siteUrl": "https://nomadagent.dev/",
+                "inspectionUrl": "https://jobatlas.dev/actors/linkedin/",
+                "siteUrl": "https://jobatlas.dev/",
                 "languageCode": "en-US",
             },
         )
@@ -285,10 +285,10 @@ class SearchPublishTests(unittest.TestCase):
         self.assertEqual(token, "adc-token")
 
     def test_live_html_verification_accepts_exact_indexable_artifact(self) -> None:
-        url = "https://nomadagent.dev/docs"
+        url = "https://jobatlas.dev/docs"
         body = (
             b'<!doctype html><meta name="robots" content="index,follow">'
-            b'<link rel="canonical" href="https://nomadagent.dev/docs">'
+            b'<link rel="canonical" href="https://jobatlas.dev/docs">'
         )
         with TemporaryDirectory() as directory:
             local_path = Path(directory) / "index.html"
@@ -305,14 +305,14 @@ class SearchPublishTests(unittest.TestCase):
                 lambda request, timeout: response,
             ):
                 search_publish.verify_live_html(
-                    url, local_path, "https://nomadagent.dev/", attempts=1
+                    url, local_path, "https://jobatlas.dev/", attempts=1
                 )
 
     def test_live_html_verification_rejects_stale_artifact(self) -> None:
-        url = "https://nomadagent.dev/docs"
+        url = "https://jobatlas.dev/docs"
         local = (
             b'<!doctype html><link rel="canonical" '
-            b'href="https://nomadagent.dev/docs"><p>current</p>'
+            b'href="https://jobatlas.dev/docs"><p>current</p>'
         )
         live = local.replace(b"current", b"stale")
         with TemporaryDirectory() as directory:
@@ -329,21 +329,21 @@ class SearchPublishTests(unittest.TestCase):
                 ),
             ), self.assertRaisesRegex(RuntimeError, "does not match local bytes"):
                 search_publish.verify_live_html(
-                    url, local_path, "https://nomadagent.dev/", attempts=1
+                    url, local_path, "https://jobatlas.dev/", attempts=1
                 )
 
     def test_live_html_verification_rejects_noindex_directives(self) -> None:
-        url = "https://nomadagent.dev/docs"
+        url = "https://jobatlas.dev/docs"
         cases = (
             (
                 b'<!doctype html><meta name="robots" content="noindex,follow">'
-                b'<link rel="canonical" href="https://nomadagent.dev/docs">',
+                b'<link rel="canonical" href="https://jobatlas.dev/docs">',
                 {"Content-Type": "text/html"},
                 "meta robots",
             ),
             (
                 b'<!doctype html><link rel="canonical" '
-                b'href="https://nomadagent.dev/docs">',
+                b'href="https://jobatlas.dev/docs">',
                 {
                     "Content-Type": "text/html",
                     "X-Robots-Tag": "noindex, follow",
@@ -363,14 +363,14 @@ class SearchPublishTests(unittest.TestCase):
                     ),
                 ), self.assertRaisesRegex(RuntimeError, expected):
                     search_publish.verify_live_html(
-                        url, local_path, "https://nomadagent.dev/", attempts=1
+                        url, local_path, "https://jobatlas.dev/", attempts=1
                     )
 
     def test_live_html_verification_rejects_wrong_content_type_and_canonical(self) -> None:
-        url = "https://nomadagent.dev/docs"
+        url = "https://jobatlas.dev/docs"
         body = (
             b'<!doctype html><link rel="canonical" '
-            b'href="https://nomadagent.dev/docs">'
+            b'href="https://jobatlas.dev/docs">'
         )
         cases = (
             (
@@ -396,11 +396,11 @@ class SearchPublishTests(unittest.TestCase):
                     ),
                 ), self.assertRaisesRegex(RuntimeError, expected):
                     search_publish.verify_live_html(
-                        url, local_path, "https://nomadagent.dev/", attempts=1
+                        url, local_path, "https://jobatlas.dev/", attempts=1
                     )
 
     def test_live_contract_verification_requires_exact_json_artifacts(self) -> None:
-        site_url = "https://nomadagent.dev/"
+        site_url = "https://jobatlas.dev/"
         root = Path(__file__).resolve().parents[1]
         bodies = {
             f"{site_url}contracts/{filename}": (
@@ -458,8 +458,8 @@ class SearchPublishTests(unittest.TestCase):
             )
 
     def test_notify_stops_before_submissions_when_live_html_gate_fails(self) -> None:
-        site_url = "https://nomadagent.dev/"
-        html = b'<link rel="canonical" href="https://nomadagent.dev/">'
+        site_url = "https://jobatlas.dev/"
+        html = b'<link rel="canonical" href="https://jobatlas.dev/">'
         with TemporaryDirectory() as directory:
             site_dir = Path(directory)
             (site_dir / "index.html").write_bytes(html)
@@ -498,7 +498,7 @@ class SearchPublishTests(unittest.TestCase):
             self.assertEqual(published.read_bytes(), source.read_bytes())
             self.assertEqual(
                 json.loads(published.read_bytes())["$id"],
-                f"https://nomadagent.dev/contracts/{filename}",
+                f"https://jobatlas.dev/contracts/{filename}",
             )
 
     def test_repository_404_is_useful_noindex_without_canonical(self) -> None:
@@ -513,9 +513,9 @@ class SearchPublishTests(unittest.TestCase):
         self.assertIn("Return home", not_found)
         self.assertIn("Browse Actors", not_found)
         self.assertNotIn(
-            "https://nomadagent.dev/404",
+            "https://jobatlas.dev/404",
             search_publish.discover_canonical_urls(
-                root / "website", "https://nomadagent.dev/"
+                root / "website", "https://jobatlas.dev/"
             ),
         )
 
@@ -523,13 +523,13 @@ class SearchPublishTests(unittest.TestCase):
         root = Path(__file__).resolve().parents[1]
         site_dir = root / "website"
         expected = search_publish.discover_canonical_urls(
-            site_dir, "https://nomadagent.dev/"
+            site_dir, "https://jobatlas.dev/"
         )
         actual = search_publish.parse_sitemap(
             (site_dir / "sitemap.xml").read_text(encoding="utf-8")
         )
         self.assertEqual(actual, expected)
-        self.assertNotIn("https://nomadagent.dev/404", actual)
+        self.assertNotIn("https://jobatlas.dev/404", actual)
 
     def test_deployment_notifies_only_after_tests_preflight_and_firebase(self) -> None:
         root = Path(__file__).resolve().parents[1]

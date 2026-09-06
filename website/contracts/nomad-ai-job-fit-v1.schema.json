@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://nomadagent.dev/contracts/nomad-ai-job-fit-v1.schema.json",
+  "$id": "https://jobatlas.dev/contracts/nomad-ai-job-fit-v1.schema.json",
   "title": "Nomad AI job-fit evaluation",
   "type": "object",
   "required": [

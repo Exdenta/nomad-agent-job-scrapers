@@ -1,11 +1,14 @@
 # Make to Google Sheets
 
+
+EURAXESS starters select `latest` and retain each run’s immutable `buildId` and numeric `buildNumber`. References to exact configured pins below apply to the other Actor targets. Validate the EURAXESS run, summary and dataset before delivery; `latest` itself is not immutable evidence.
+
 Import either blueprint:
 
 - [`linkedin-jobs-to-google-sheets.blueprint.json`](linkedin-jobs-to-google-sheets.blueprint.json),
   for a Task pinned to LinkedIn build `1.0.2`;
 - [`euraxess-jobs-to-google-sheets.blueprint.json`](euraxess-jobs-to-google-sheets.blueprint.json),
-  for a Task pinned to EURAXESS build `1.0.16`;
+  for a Task selecting EURAXESS `latest`;
 - [`ai-job-fit-scorer-to-google-sheets.blueprint.json`](ai-job-fit-scorer-to-google-sheets.blueprint.json),
   for a Task pinned to AI Job Search & Fit Scorer build `0.1.22`.
 
@@ -79,3 +82,5 @@ mapping, source checks, and credential hygiene are covered by offline tests. A
 destination-specific live test still requires the client's own Make and Google
 Sheets credentials. Importing a blueprint supplies no credentials and does not
 activate the scenario.
+
+For EURAXESS, `empty-limited` means zero rows within the run limits, with `resultsLimited: true` and no automatic retry. The workflow writes no destination rows and must not report that no matching jobs exist. Inspect the run summary before choosing a broader or higher-limit search.

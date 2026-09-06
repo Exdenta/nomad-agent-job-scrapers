@@ -1,13 +1,24 @@
-# Nomad Agent website
+# Job Atlas website
 
-Static, dependency-free site for the Nomad Agent job-data catalog. The public
-origin is `https://nomadagent.dev/`; Firebase Hosting serves the files in this
+Static, dependency-free site for the Job Atlas job-data catalog. The public
+origin is `https://jobatlas.dev/`; Firebase Hosting serves the files in this
 directory from the isolated `nomad-agent-job-scrapers` site in project
 `hryu-jobs`.
 
+## Visual system
+
+Job Atlas uses bottle green (`#0B4B38`), warm cream (`#F4E8CF`), and vermilion
+(`#E83A20`) with system typography, printed route tickets, and flat color. The
+shared `styles.css` and `detail.css` cover the homepage and reference pages;
+`assets/job-atlas-mark.svg` preserves the existing live brand mark. The social
+card is editable SVG with a matching 1200 x 630 PNG export. No hosted fonts or
+new runtime dependencies are required. Entry animations and the route drawing run
+once; hover effects are limited to pointer devices. Reduced-motion preferences
+disable them. Content remains visible without JavaScript.
+
 ## Information architecture
 
-The site has three product pages, seven integration pages, four task-led guides,
+The site has four product pages, seven integration pages, four task-led guides,
 and About, methodology, privacy, changelog, and contract pages. Every indexable
 HTML file declares one absolute canonical. `404.html` is intentionally
 `noindex,follow` and has no canonical.
@@ -63,7 +74,7 @@ service account already documented in `.github/workflows/deploy-website.yml`,
 plus an `INDEXNOW_KEY` secret containing 8–128 letters, digits, or dashes. The
 provider is restricted to `Exdenta/nomad-agent-job-scrapers` on
 `refs/heads/main`, and the service account must be a full user of the exact
-URL-prefix Search Console property `https://nomadagent.dev/`.
+URL-prefix Search Console property `https://jobatlas.dev/`.
 
 ## Search measurement
 

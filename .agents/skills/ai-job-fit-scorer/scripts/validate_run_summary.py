@@ -17,6 +17,8 @@ import sys
 from collections.abc import Mapping
 from typing import Any
 
+sys.dont_write_bytecode = True
+
 from schema_check import validate_schema, read_json
 
 SCHEMA_VERSION = "nomad-ai-job-fit-run-summary-v4"

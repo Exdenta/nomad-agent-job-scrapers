@@ -1,0 +1,97 @@
+/* First-visit explanations and previews extend the established Job Atlas palette. */
+.home-hero { padding-block: 58px 64px; }
+.hero-grid { grid-template-columns: minmax(0, 1.15fr) minmax(0, .85fr); gap: 64px; align-items: center; }
+.hero-copy h1 { max-width: 620px; font-size: clamp(48px, 5.15vw, 74px); line-height: 1.05; }
+.hero-lede { max-width: 550px; font-size: 18px; }
+.hero-setup { max-width: 530px; margin: 24px 0 0; color: #d5dec9; font-size: 14px; line-height: 1.65; }
+.hero-setup strong { color: var(--cream); font-weight: 600; }
+.hero-facts { margin-top: 18px; }
+.sample-card { min-width: 0; padding: 32px; border: 1px solid var(--border); background: var(--paper-light); color: var(--green); box-shadow: 0 18px 38px #04261c25; scroll-margin-top: 118px; }
+.sample-eyebrow { margin: 0 0 28px; color: var(--accent-ink); font: 11px/1.7 var(--font-mono); text-transform: uppercase; letter-spacing: .045em; }
+.sample-card h2 { margin: 0 0 8px; font-size: 34px; line-height: 1.1; letter-spacing: -.045em; }
+.sample-company { margin: 0 0 28px; color: var(--muted); font-size: 19px; }
+.sample-card dl { margin: 0; border-top: 1px solid var(--border); }
+.sample-card dl > div { display: grid; grid-template-columns: 1fr 1.15fr; gap: 20px; padding: 16px 0; border-bottom: 1px solid var(--border); }
+.sample-card dt { font-size: 12px; color: var(--muted); }
+.sample-card dd { margin: 0; font-size: 14px; }
+.sample-card dd small { display: block; margin-top: 4px; color: var(--muted); font-size: 11px; }
+.sample-actions { display: flex; flex-wrap: wrap; gap: 16px; margin-top: 24px; }
+.sample-actions a { font-size: 12px; font-weight: 600; text-decoration: underline; text-underline-offset: 4px; }
+.sample-note { margin: 22px 0 0; font-size: 12px; line-height: 1.7; color: var(--muted); }
+.card-price { margin-bottom: 20px !important; font-weight: 600; color: var(--green) !important; }
+.product-actions { align-items: flex-start; gap: 16px 24px; }
+.pricing-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 40px; margin-top: 38px; }
+.pricing-grid article { border-top: 3px solid var(--green); padding-top: 22px; }
+.pricing-grid h3 { font-size: 17px; margin: 0; }
+.price-figure { margin: 18px 0; font-size: 48px; font-weight: 500; letter-spacing: -.05em; }
+.price-figure span { display: block; font-size: 15px; font-weight: 400; letter-spacing: 0; }
+.pricing-grid p:not(.price-figure), .pricing-note, .format-note { color: var(--muted); font-size: 15px; line-height: 1.7; }
+.pricing-note { margin-top: 26px; font-size: 13px; }
+.release-notes > p { max-width: 950px; color: var(--muted); font-size: 14px; line-height: 1.75; }
+.release-notes a, .format-note a { text-decoration: underline; text-underline-offset: 3px; }
+.onboarding-steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 40px; list-style: none; margin: 42px 0 30px; padding: 0; }
+.onboarding-steps > li { border-top: 1px solid var(--border); padding-top: 22px; }
+.onboarding-steps > li > span { color: var(--accent-ink); font: 12px/1.5 var(--font-mono); }
+.onboarding-steps h3 { font-size: 23px; letter-spacing: -.035em; }
+.onboarding-steps p { color: var(--muted); font-size: 15px; line-height: 1.7; }
+.audience-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 35px; margin-top: 40px; }
+.audience-grid article { display: flex; flex-direction: column; align-items: flex-start; padding-top: 22px; border-top: 1px solid var(--border); }
+.audience-grid h3 { margin: 0; font-size: 24px; letter-spacing: -.035em; line-height: 1.2; }
+.audience-grid p { color: var(--muted); font-size: 15px; line-height: 1.75; }
+.audience-grid a { margin-top: auto; font-size: 13px; font-weight: 600; text-decoration: underline; text-underline-offset: 4px; }
+.format-note { max-width: 960px; margin-block: 34px 24px; font-size: 13px; }
+.format-note code { overflow-wrap: anywhere; font-size: .9em; }
+.inline-links { display: flex; flex-wrap: wrap; gap: 16px 28px; font-size: 13px; font-weight: 600; }
+.faq-layout { display: grid; grid-template-columns: .8fr 1.2fr; gap: 70px; }
+.home-faq { border-top: 1px solid var(--border); }
+.home-faq details { padding: 22px 0; border-bottom: 1px solid var(--border); }
+.home-faq summary { cursor: pointer; font-size: 17px; font-weight: 500; }
+.home-faq p { color: var(--muted); font-size: 15px; line-height: 1.75; margin-bottom: 0; }
+.home-faq a { text-decoration: underline; }
+.getting-started-note { max-width: 850px; color: var(--muted); font-size: 14px; line-height: 1.7; margin-top: 24px; }
+.tool-chooser { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-top: 32px; }
+.tool-chooser a { padding: 20px 16px; background: var(--paper); border: 1px solid var(--border); }
+.tool-chooser strong, .tool-chooser span { display: block; }
+.tool-chooser strong { font-size: 16px; font-weight: 600; }
+.tool-chooser span { margin-top: 12px; font-size: 12px; color: var(--muted); }
+.catalog-products { margin-top: 32px; }
+.catalog-products h2 { font-size: 30px; line-height: 1.15; letter-spacing: -.04em; }
+.catalog-start { margin-top: 32px; }
+#first-run { scroll-margin-top: 118px; }
+@media (max-width: 960px) {
+  .hero-grid { grid-template-columns: 1fr; gap: 38px; }
+  .hero-copy h1 { max-width: 650px; font-size: 66px; }
+  .sample-card { max-width: 600px; }
+  .tool-chooser { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .audience-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .faq-layout { grid-template-columns: 1fr; gap: 32px; }
+}
+@media (max-width: 640px) {
+  .home-hero { padding-block: 36px 44px; }
+  .hero-copy h1 { font-size: clamp(40px, 10.5vw, 58px); }
+  .hero-copy .eyebrow { margin-bottom: 20px; font-size: 9px; }
+  .hero-lede { margin-top: 22px; font-size: 16px; line-height: 1.65; }
+  .hero-setup { font-size: 13px; line-height: 1.6; margin-top: 20px; }
+  .hero-facts { font-size: 10px; }
+  .hero-actions { gap: 10px; }
+  .hero-actions .button { padding-inline: 14px; font-size: 12px; }
+  .sample-card { padding: 25px; }
+  .sample-eyebrow { margin-bottom: 22px; font-size: 9px; }
+  .sample-card h2 { font-size: 30px; }
+  .sample-company { font-size: 17px; }
+  .sample-card dl > div { gap: 15px; }
+  .pricing-grid, .onboarding-steps, .audience-grid { grid-template-columns: 1fr; gap: 28px; }
+  .price-figure { font-size: 44px; }
+  .tool-chooser a { padding: 18px 12px; }
+  .tool-chooser strong { font-size: 14px; }
+  .tool-chooser span { font-size: 11px; }
+  .product-actions { flex-direction: column; gap: 16px; }
+  .product-actions a { font-size: 13px; }
+  .home-faq summary { font-size: 16px; }
+  .detail-actions .button { font-size: 13px; }
+  .catalog-products h2 { font-size: 28px; }
+  #first-run, .sample-card { scroll-margin-top: 98px; }
+}
+@media (max-width: 360px) {
+  .hero-copy h1 { font-size: 38px; }
+}

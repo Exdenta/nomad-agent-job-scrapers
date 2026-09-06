@@ -1,72 +1,75 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://nomadagent.dev/</loc>
+    <loc>https://jobatlas.dev/</loc>
   </url>
   <url>
-    <loc>https://nomadagent.dev/about</loc>
+    <loc>https://jobatlas.dev/about</loc>
   </url>
   <url>
-    <loc>https://nomadagent.dev/actors</loc>
+    <loc>https://jobatlas.dev/actors</loc>
   </url>
   <url>
-    <loc>https://nomadagent.dev/actors/ai-job-fit-scorer</loc>
+    <loc>https://jobatlas.dev/actors/ai-job-fit-scorer</loc>
   </url>
   <url>
-    <loc>https://nomadagent.dev/actors/euraxess</loc>
+    <loc>https://jobatlas.dev/actors/euraxess</loc>
   </url>
   <url>
-    <loc>https://nomadagent.dev/actors/linkedin</loc>
+    <loc>https://jobatlas.dev/actors/linkedin</loc>
   </url>
   <url>
-    <loc>https://nomadagent.dev/changelog</loc>
+    <loc>https://jobatlas.dev/actors/ycombinator</loc>
   </url>
   <url>
-    <loc>https://nomadagent.dev/contracts</loc>
+    <loc>https://jobatlas.dev/changelog</loc>
   </url>
   <url>
-    <loc>https://nomadagent.dev/guides</loc>
+    <loc>https://jobatlas.dev/contracts</loc>
   </url>
   <url>
-    <loc>https://nomadagent.dev/guides/ai-job-fit-scoring-api</loc>
+    <loc>https://jobatlas.dev/guides</loc>
   </url>
   <url>
-    <loc>https://nomadagent.dev/guides/euraxess-jobs-api-export</loc>
+    <loc>https://jobatlas.dev/guides/ai-job-fit-scoring-api</loc>
   </url>
   <url>
-    <loc>https://nomadagent.dev/guides/linkedin-job-alerts-n8n</loc>
+    <loc>https://jobatlas.dev/guides/euraxess-jobs-api-export</loc>
   </url>
   <url>
-    <loc>https://nomadagent.dev/guides/linkedin-jobs-api-alternatives</loc>
+    <loc>https://jobatlas.dev/guides/linkedin-job-alerts-n8n</loc>
   </url>
   <url>
-    <loc>https://nomadagent.dev/integrations</loc>
+    <loc>https://jobatlas.dev/guides/linkedin-jobs-api-alternatives</loc>
   </url>
   <url>
-    <loc>https://nomadagent.dev/integrations/airtable</loc>
+    <loc>https://jobatlas.dev/integrations</loc>
   </url>
   <url>
-    <loc>https://nomadagent.dev/integrations/api</loc>
+    <loc>https://jobatlas.dev/integrations/airtable</loc>
   </url>
   <url>
-    <loc>https://nomadagent.dev/integrations/make</loc>
+    <loc>https://jobatlas.dev/integrations/api</loc>
   </url>
   <url>
-    <loc>https://nomadagent.dev/integrations/mcp</loc>
+    <loc>https://jobatlas.dev/integrations/make</loc>
   </url>
   <url>
-    <loc>https://nomadagent.dev/integrations/n8n</loc>
+    <loc>https://jobatlas.dev/integrations/mcp</loc>
   </url>
   <url>
-    <loc>https://nomadagent.dev/integrations/python</loc>
+    <loc>https://jobatlas.dev/integrations/n8n</loc>
   </url>
   <url>
-    <loc>https://nomadagent.dev/integrations/zapier</loc>
+    <loc>https://jobatlas.dev/integrations/python</loc>
   </url>
   <url>
-    <loc>https://nomadagent.dev/methodology</loc>
+    <loc>https://jobatlas.dev/integrations/zapier</loc>
   </url>
   <url>
-    <loc>https://nomadagent.dev/privacy</loc>
+    <loc>https://jobatlas.dev/methodology</loc>
+  </url>
+  <url>
+    <loc>https://jobatlas.dev/privacy</loc>
   </url>
 </urlset>

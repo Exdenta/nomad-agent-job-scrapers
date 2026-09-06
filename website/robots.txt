@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://nomadagent.dev/sitemap.xml
+Sitemap: https://jobatlas.dev/sitemap.xml

@@ -15,13 +15,26 @@
     "retry"
   ],
   "properties": {
-    "schemaVersion": {"const": "nomad-agent-run-summary-v4"},
+    "schemaVersion": {
+      "const": "nomad-agent-run-summary-v4"
+    },
     "status": {
       "type": "string",
-      "enum": ["succeeded", "empty", "partial"]
+      "enum": [
+        "succeeded",
+        "empty",
+        "partial",
+        "empty-limited"
+      ]
     },
-    "startedAt": {"type": "string", "format": "date-time"},
-    "finishedAt": {"type": "string", "format": "date-time"},
+    "startedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "finishedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
     "resultsLimited": {
       "type": "boolean",
       "description": "True when the Actor knowingly stopped before processing all available candidates because of an item, billing, scan, or execution bound. False means no known result limit, not proof that the external source was exhausted."
@@ -31,17 +44,27 @@
       "minimum": 0,
       "maximum": 2147483647
     },
-    "retry": {"$ref": "#/$defs/retry"}
+    "retry": {
+      "$ref": "#/$defs/retry"
+    }
   },
   "$defs": {
     "retry": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["recommended", "afterSeconds"],
+      "required": [
+        "recommended",
+        "afterSeconds"
+      ],
       "properties": {
-        "recommended": {"type": "boolean"},
+        "recommended": {
+          "type": "boolean"
+        },
         "afterSeconds": {
-          "type": ["integer", "null"],
+          "type": [
+            "integer",
+            "null"
+          ],
           "minimum": 1,
           "maximum": 3600
         }
@@ -49,13 +72,19 @@
       "oneOf": [
         {
           "properties": {
-            "recommended": {"const": false},
-            "afterSeconds": {"const": null}
+            "recommended": {
+              "const": false
+            },
+            "afterSeconds": {
+              "const": null
+            }
           }
         },
         {
           "properties": {
-            "recommended": {"const": true},
+            "recommended": {
+              "const": true
+            },
             "afterSeconds": {
               "type": "integer",
               "minimum": 1,
@@ -69,40 +98,105 @@
   "allOf": [
     {
       "if": {
-        "properties": {"status": {"const": "succeeded"}},
-        "required": ["status"]
+        "properties": {
+          "status": {
+            "const": "succeeded"
+          }
+        },
+        "required": [
+          "status"
+        ]
       },
       "then": {
         "properties": {
-          "delivered": {"minimum": 1},
+          "delivered": {
+            "minimum": 1
+          },
           "retry": {
-            "properties": {"recommended": {"const": false}}
+            "properties": {
+              "recommended": {
+                "const": false
+              }
+            }
           }
         }
       }
     },
     {
       "if": {
-        "properties": {"status": {"const": "empty"}},
-        "required": ["status"]
+        "properties": {
+          "status": {
+            "const": "empty"
+          }
+        },
+        "required": [
+          "status"
+        ]
       },
       "then": {
         "properties": {
-          "delivered": {"const": 0},
-          "resultsLimited": {"const": false},
+          "delivered": {
+            "const": 0
+          },
+          "resultsLimited": {
+            "const": false
+          },
           "retry": {
-            "properties": {"recommended": {"const": false}}
+            "properties": {
+              "recommended": {
+                "const": false
+              }
+            }
           }
         }
       }
     },
     {
       "if": {
-        "properties": {"status": {"const": "partial"}},
-        "required": ["status"]
+        "properties": {
+          "status": {
+            "const": "partial"
+          }
+        },
+        "required": [
+          "status"
+        ]
       },
       "then": {
-        "properties": {"delivered": {"minimum": 1}}
+        "properties": {
+          "delivered": {
+            "minimum": 1
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "empty-limited"
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "then": {
+        "properties": {
+          "delivered": {
+            "const": 0
+          },
+          "resultsLimited": {
+            "const": true
+          },
+          "retry": {
+            "properties": {
+              "recommended": {
+                "const": false
+              }
+            }
+          }
+        }
       }
     }
   ]

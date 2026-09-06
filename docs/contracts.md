@@ -77,3 +77,10 @@ python3 integrations/shared/validate_run_summary.py < run-summary.json
 historical saved records. New integrations must require
 `nomad-agent-run-summary-v4`; maintained templates and validators do not fall
 back to v3.
+
+## Y Combinator extension
+
+The [YC v2 schema](../integrations/shared/ycombinator-v2.schema.json) validates
+`custom.data` for the normalized YC Actor. Its public `$id` is also emitted as
+`custom.schemaId`. The six-root job envelope and `ycombinator_was` source identity
+are preserved; null remains unknown. See the [YC guide](ycombinator.md).

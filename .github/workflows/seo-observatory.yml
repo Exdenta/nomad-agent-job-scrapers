@@ -20,7 +20,7 @@ jobs:
     timeout-minutes: 15
     environment:
       name: production
-      url: https://nomadagent.dev/
+      url: https://jobatlas.dev/
     steps:
       - name: Check out repository
         uses: actions/checkout@v6

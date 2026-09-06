@@ -13,13 +13,13 @@ from urllib.parse import parse_qs, unquote, urlsplit
 
 ROOT = Path(__file__).resolve().parents[1]
 WEBSITE = ROOT / "website"
-ORIGIN = "https://nomadagent.dev"
+ORIGIN = "https://jobatlas.dev"
 SOCIAL_IMAGE = f"{ORIGIN}/assets/nomad-agent-social-card.png"
 
 # Intent owners come from docs/seo-program.md; its first milestone adds these
 # hubs and trust pages to the public surface.
 EXPECTED_CANONICALS = {
-    "/", "/actors", "/actors/linkedin", "/actors/euraxess", "/actors/ai-job-fit-scorer",
+    "/", "/actors", "/actors/ycombinator", "/actors/linkedin", "/actors/euraxess", "/actors/ai-job-fit-scorer",
     "/integrations", "/integrations/n8n", "/integrations/make", "/integrations/mcp",
     "/integrations/api", "/integrations/airtable", "/integrations/python", "/integrations/zapier",
     "/guides", "/guides/linkedin-jobs-api-alternatives", "/guides/linkedin-job-alerts-n8n",
@@ -28,9 +28,10 @@ EXPECTED_CANONICALS = {
 }
 HUBS = {"/", "/actors", "/integrations", "/guides"}
 ACTOR_PATHS = {
-    "linkedin": "/nomad-agent/linkedin-enrich-translate-normalize-scraper",
-    "euraxess": "/nomad-agent/euraxess-enrich-translate-normalize-scraper",
-    "ai-job-fit-scorer": "/nomad-agent/ai-job-fit-scorer",
+    "ycombinator": "/job-atlas/ycombinator-enrich-translate-normalize-scraper",
+    "linkedin": "/job-atlas/linkedin-enrich-translate-normalize-scraper",
+    "euraxess": "/job-atlas/euraxess-enrich-translate-normalize-scraper",
+    "ai-job-fit-scorer": "/job-atlas/ai-job-fit-scorer",
 }
 PUBLIC_SCHEMAS = (
     "nomad-ai-job-fit-destination-v1.schema.json",
@@ -39,6 +40,7 @@ PUBLIC_SCHEMAS = (
     "nomad-ai-job-fit-v1.schema.json",
 )
 PROGRAM_INTENT_ROUTES = {
+    "/actors/ycombinator",
     "/", "/actors/linkedin", "/actors/euraxess", "/actors/ai-job-fit-scorer",
     "/integrations/n8n", "/integrations/make", "/integrations/mcp", "/integrations/api",
     "/integrations/airtable", "/integrations/python", "/integrations/zapier", "/contracts",
@@ -188,7 +190,7 @@ class WebsiteContractTests(unittest.TestCase):
                 self.assertEqual(canonical(parser), [ORIGIN + route])
                 self.assertIn(data.get("og:type"), {"website", "article"})
                 self.assertEqual(data.get("og:url"), ORIGIN + route)
-                self.assertEqual(data.get("og:site_name"), "Nomad Agent")
+                self.assertEqual(data.get("og:site_name"), "Job Atlas")
                 self.assertEqual(data.get("og:image"), SOCIAL_IMAGE)
                 self.assertEqual(data.get("og:image:width"), "1200")
                 self.assertEqual(data.get("og:image:height"), "630")
@@ -212,13 +214,20 @@ class WebsiteContractTests(unittest.TestCase):
                 self.assertTrue(all(item.get("@context") == "https://schema.org" for item in payloads if isinstance(item, dict)))
                 raw = " ".join(parser.json_ld).lower()
                 self.assertNotIn("aggregaterating", raw)
-                self.assertNotIn('"offers"', raw)
+                if route == "/actors/euraxess":
+                    graph = payloads[0]["@graph"]
+                    app = next(x for x in graph if x["@type"] == "SoftwareApplication")
+                    self.assertEqual(app["offers"]["price"], "0.0009")
+                    self.assertEqual(app["offers"]["priceCurrency"], "USD")
+                    self.assertIn("per delivered job", app["offers"]["description"])
+                else:
+                    self.assertNotIn('"offers"', raw)
         graph = structured_data(self.home)[0]["@graph"]
         by_type = {entry["@type"]: entry for entry in graph}
         self.assertEqual({"Organization", "WebSite", "ItemList"}, set(by_type))
-        self.assertEqual(by_type["WebSite"].get("alternateName"), "Nomad Agent Job Data")
+        self.assertEqual(by_type["WebSite"].get("alternateName"), "Job Atlas Job Data")
         items = by_type["ItemList"]["itemListElement"]
-        self.assertEqual(len(items), 3)
+        self.assertEqual(len(items), len(ACTOR_PATHS))
         self.assertEqual({urlsplit(item["item"]["sameAs"]).path for item in items}, set(ACTOR_PATHS.values()))
 
     def test_non_hub_pages_have_valid_breadcrumbs(self) -> None:
@@ -242,11 +251,11 @@ class WebsiteContractTests(unittest.TestCase):
                 if not reference or reference.startswith(("data:", "mailto:", "tel:", "javascript:")):
                     continue
                 parsed = urlsplit(reference)
-                if parsed.netloc and parsed.netloc != "nomadagent.dev":
+                if parsed.netloc and parsed.netloc != "jobatlas.dev":
                     continue
                 if parsed.scheme and parsed.scheme != "https":
                     continue
-                if parsed.path.startswith("/") or parsed.netloc == "nomadagent.dev":
+                if parsed.path.startswith("/") or parsed.netloc == "jobatlas.dev":
                     target = local_document_for_route(clean_path(parsed.path))
                 else:
                     candidate = (self.pages[route].parent / unquote(parsed.path or ".")).resolve()
@@ -263,7 +272,7 @@ class WebsiteContractTests(unittest.TestCase):
                 if tag != "a":
                     continue
                 parsed = urlsplit(attrs.get("href", ""))
-                if parsed.netloc not in {"", "nomadagent.dev"} or parsed.scheme not in {"", "https"}:
+                if parsed.netloc not in {"", "jobatlas.dev"} or parsed.scheme not in {"", "https"}:
                     continue
                 target = clean_path(parsed.path)
                 if target in graph:
@@ -317,7 +326,7 @@ class WebsiteContractTests(unittest.TestCase):
         visible = " ".join(text for parser in self.parsers.values() for text in parser.visible_text)
         for phrase in ("nomad-agent-job-v1", "named destination", "not affiliated with or endorsed by", "not a live release"):
             self.assertIn(phrase, visible)
-        self.assertIn("$0.02 per returned shortlist result", visible)
+        self.assertIn("$0.02 per returned shortlist or non-failure audit row", visible)
         self.assertNotIn("$0.02 per job", visible)
         self.assertNotIn("$0.02 per run", visible)
         self.assertNotRegex(visible, r"\b(?:100|[1-9]\d(?:\.\d+)?)\s*%")
@@ -354,7 +363,7 @@ class WebsiteContractTests(unittest.TestCase):
         self.assertNotIn("'unsafe-inline'", security["Content-Security-Policy"])
         self.assertIn("clipboard-fallback", self.script)
         self.assertIn(".clipboard-fallback", self.css)
-        shared = sum(path.stat().st_size for path in (WEBSITE / "styles.css", WEBSITE / "detail.css", WEBSITE / "script.js", WEBSITE / "assets" / "mark.svg"))
+        shared = sum(path.stat().st_size for path in (WEBSITE / "styles.css", WEBSITE / "detail.css", WEBSITE / "first-visit.css", WEBSITE / "script.js", WEBSITE / "assets" / "job-atlas-mark.svg"))
         for route, document in self.pages.items():
             self.assertLess(document.stat().st_size + shared, 100 * 1024, route)
 

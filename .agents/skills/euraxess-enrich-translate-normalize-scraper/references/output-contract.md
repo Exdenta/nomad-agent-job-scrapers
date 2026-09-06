@@ -47,7 +47,7 @@ explicit education row belongs in `data.requirements.education`.
 
 ```json
 {
-  "schemaId": "https://raw.githubusercontent.com/Exdenta/OinkJobSearch/main/apify/job_custom_schemas/euraxess-v1.schema.json",
+  "schemaId": "https://raw.githubusercontent.com/Exdenta/nomad-agent-job-scrapers/main/integrations/shared/euraxess-v1.schema.json",
   "data": {
     "academicLevelRaw": ["PhD Positions"],
     "researchInfrastructureStaffPosition": null,
