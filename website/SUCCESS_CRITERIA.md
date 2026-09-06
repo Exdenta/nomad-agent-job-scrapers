@@ -6,9 +6,9 @@ are separate proof layers.
 
 ## 1. Product and intent coverage
 
-- The homepage presents three honest paths: collect job data, automate delivery,
-  and score fit with evidence.
-- LinkedIn, EURAXESS, and AI Job Fit Scorer each have a canonical product page
+- The homepage presents three honest paths: build an alert, populate a board or tracker,
+  and create an explained shortlist.
+- LinkedIn, YC, EURAXESS, and AI Job Fit Scorer each have a canonical product page
   with a bounded use case, input, output, limitation, version boundary, and
   direct Store CTA.
 - Actor, integration, guide, and trust hubs make every intended page reachable
@@ -18,11 +18,13 @@ are separate proof layers.
 
 ## 2. Claim and contract accuracy
 
-- Current Store defaults are labeled separately from older integration-tested
-  pins: LinkedIn `1.0.6` versus `1.0.2`, EURAXESS `1.0.20` versus `1.0.16`,
-  as observed on 2026-09-03. The scorer starters and observed default use
-  `latest` as of 2026-09-05; older scorer canaries retain their original
-  `0.1.12` and `0.1.13` builds.
+- Maintained starters select `latest` and record the immutable build returned by
+  the run. Historical pins remain dated evidence and never imply verification of
+  the current Job Atlas listing or a new destination.
+- First-run pricing examples identify the base Actor-event charge, observation
+  date, optional services, and separate Apify costs; no free-run guarantee appears.
+- The homepage sample matches the checked-in public EURAXESS example, retains
+  its source and observation date, and does not imply current availability.
 - The scorer price is stated as `$0.02` per returned shortlist row or retained
   non-failure audit row;
   no unsupported accuracy, customer, adoption, savings, or speed claim appears.
@@ -38,7 +40,7 @@ are separate proof layers.
 
 - Every indexable HTML document has one unique on-origin HTTPS canonical, title,
   description, H1, Open Graph set, Twitter card, and 1200×630 social image.
-- Homepage JSON-LD describes Organization, WebSite, and the three-product
+- Homepage JSON-LD describes Organization, WebSite, and the four-product
   ItemList; supporting pages use truthful breadcrumbs or page entities. No
   fabricated offers, ratings, reviews, or JobPosting inventory appears.
 - `404.html` is useful, has `noindex,follow`, and declares no canonical.
@@ -63,11 +65,11 @@ are separate proof layers.
 
 - Semantic landmarks, a skip link, one H1, useful accessible names,
   keyboard-visible focus, and reduced-motion handling are present.
-- Desktop and 390 px layouts have no horizontal overflow; the mobile menu,
-  Escape close, Actor selector, and copy feedback work with keyboard input.
-- All local routes, fragments, styles, scripts, icons, and images return HTTP
-  200 from the documented preview server; a clean page load has no console
-  errors.
+- Desktop, 390 px, and 320 px layouts have no horizontal overflow; the mobile menu,
+  Escape close, tool selector, and copy feedback work with keyboard input.
+- All local routes, fragments, styles, scripts, icons, and images resolve from
+  the preview; clean canonical routes and security headers are additionally
+  checked on Firebase. A clean page load has no console errors.
 - The site has no runtime package, hosted font, or required third-party request.
   Each HTML page plus shared CSS/JS/mark remains within the enforced test budget.
 - The Firebase target is explicit, has no Functions or rewrites, and sends the
@@ -89,7 +91,7 @@ are separate proof layers.
 
 | Layer | Current status | Required or retained evidence |
 | --- | --- | --- |
-| Expanded 23-page implementation | Repository implementation recorded 2026-09-03; validation is attached to the exact commit | Checked-in pages, contracts, tests, browser QA, and the successful pull-request workflow for that commit |
+| Expanded 24-page implementation | Repository implementation recorded 2026-09-03; validation is attached to the exact commit | Checked-in pages, contracts, tests, browser QA, and the successful pull-request workflow for that commit |
 | Production deployment | Established only by the exact successful `main` Firebase workflow receipt | Exact commit, successful Firebase workflow run, live byte parity |
 | Google/IndexNow notification | Established only by the post-parity `main` workflow receipts | Post-parity workflow receipts; acceptance is never labeled indexing |
 | Crawling and indexing | Monitored separately | URL Inspection and Bing state at 72-hour, 7-, 14-, 28-, 56-, and 84-day checkpoints |

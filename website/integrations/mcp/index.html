@@ -12,7 +12,7 @@
     <meta property="og:description" content="Exact-build, cost-capped job Actor calls through five scoped Apify MCP tools." />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://nomadagent.dev/integrations/mcp" />
-    <meta property="og:image" content="https://nomadagent.dev/assets/job-atlas-social-card.png?v=supplied-20260905" />
+    <meta property="og:image" content="https://nomadagent.dev/assets/nomad-agent-social-card.png" />
     <meta property="og:image:alt" content="Job Atlas job data for APIs, automations, and AI agents" />
     <meta property="og:site_name" content="Job Atlas" />
     <meta property="og:image:width" content="1200" />
@@ -21,24 +21,25 @@
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="Job Search and Fit Scoring with MCP | Job Atlas" />
     <meta name="twitter:description" content="Connect an agent to bounded normalized job searches." />
-    <meta name="twitter:image" content="https://nomadagent.dev/assets/job-atlas-social-card.png?v=supplied-20260905" />
+    <meta name="twitter:image" content="https://nomadagent.dev/assets/nomad-agent-social-card.png" />
     <title>Job Search and Fit Scoring with MCP | Job Atlas</title>
     <link rel="canonical" href="https://nomadagent.dev/integrations/mcp" />
-    <link rel="icon" type="image/svg+xml" href="/assets/job-atlas-mark.svg?v=supplied-20260905" />
-    <link rel="stylesheet" href="/styles.css" />
-    <link rel="stylesheet" href="/detail.css" />
+    <link rel="icon" type="image/svg+xml" href="/assets/job-atlas-mark.svg?v=atlas-20260906" />
+    <link rel="stylesheet" href="/styles.css?v=first-visit-20260906" />
+    <link rel="stylesheet" href="/detail.css?v=first-visit-20260906" />
+    <link rel="stylesheet" href="/first-visit.css?v=first-visit-20260906" />
     <script type="application/ld+json">
       {"@context":"https://schema.org","@graph":[{"@type":"WebPage","@id":"https://nomadagent.dev/integrations/mcp#webpage","url":"https://nomadagent.dev/integrations/mcp","name":"Job Search and Fit Scoring with MCP","description":"Scoped Apify MCP tools for exact-build Job Atlas calls."},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://nomadagent.dev/"},{"@type":"ListItem","position":2,"name":"Integrations","item":"https://nomadagent.dev/integrations"},{"@type":"ListItem","position":3,"name":"MCP","item":"https://nomadagent.dev/integrations/mcp"}]}]}
     </script>
-    <script defer src="/script.js"></script>
+    <script defer src="/script.js?v=first-visit-20260906"></script>
 
 
   </head>
   <body>
     <a class="skip-link" href="#main-content">Skip to content</a>
-    <header class="topbar"><nav class="nav-container" aria-label="Primary navigation"><a class="brand" href="/" aria-label="Job Atlas home"><img src="/assets/job-atlas-mark.svg?v=supplied-20260905" alt="" width="36" height="36" /><span>Job Atlas</span></a><div class="nav-actions"><a class="nav-link" href="/actors">Actors</a><a class="nav-link" href="/integrations">Integrations</a><a class="nav-link" href="/guides">Guides</a><a class="nav-primary" href="https://github.com/Exdenta/nomad-agent-job-scrapers/tree/main/integrations/mcp">Get MCP configs</a></div></nav></header>
+    <header class="topbar"><nav class="nav-container" aria-label="Primary navigation"><a class="brand" href="/" aria-label="Job Atlas home"><img src="/assets/job-atlas-mark.svg?v=atlas-20260906" alt="" width="36" height="36" /><span>Job Atlas</span></a><div class="nav-actions"><a class="nav-link" href="/actors">Tools</a><a class="nav-link" href="/integrations">Workflows</a><a class="nav-link" href="/guides">Guides</a><a class="nav-primary" href="https://github.com/Exdenta/nomad-agent-job-scrapers/tree/main/integrations/mcp">Get MCP configs</a></div><div class="mobile-tools"><a class="nav-select" href="/actors">Tools</a><button class="menu-button" type="button" aria-expanded="false" aria-controls="mobile-menu" aria-label="Open navigation" data-menu-button><span></span><span></span><span></span></button></div></nav><nav class="mobile-menu" id="mobile-menu" aria-label="Mobile navigation" data-mobile-menu><a href="/actors">Tools</a><a href="/integrations">Workflows</a><a href="/guides">Guides</a><a href="https://github.com/Exdenta/nomad-agent-job-scrapers/tree/main/integrations/mcp">Get MCP configs</a></nav></header>
     <main class="detail-main" id="main-content">
-      <nav class="detail-breadcrumbs" aria-label="Breadcrumb"><a href="/">Home</a><span>/</span><a href="/integrations">Integrations</a><span>/</span><span>MCP</span></nav>
+      <nav class="detail-breadcrumbs" aria-label="Breadcrumb"><a href="/">Home</a><span>/</span><a href="/integrations">Workflows</a><span>/</span><span>MCP</span></nav>
       <section class="detail-hero"><p class="detail-eyebrow">Agent integration</p><h1>Job search and fit scoring through MCP</h1><p class="detail-lede">Give an MCP client only the Apify tools needed to inspect, run, and validate one Actor. Generic calls keep exact builds, inputs, item limits, and maximum charges visible to the agent and operator.</p><div class="detail-badges"><span class="detail-badge">Five scoped tools</span><span class="detail-badge">OAuth preferred</span><span class="detail-badge">Bounded examples</span></div><div class="detail-actions"><a class="button button-dark" href="https://github.com/Exdenta/nomad-agent-job-scrapers/tree/main/integrations/mcp" target="_blank" rel="noopener noreferrer" data-event="asset_cta_click" data-actor="all" data-placement="mcp-config-pack">Get MCP configurations ↗</a><a class="button button-outline" href="/actors/linkedin" data-event="product_page_click" data-actor="linkedin" data-placement="mcp-linkedin-product">Explore LinkedIn jobs</a></div></section>
       <div class="detail-layout"><div class="detail-content">
         <section class="detail-panel"><h2>Use the least-privilege server</h2><p>Expose only Actor discovery, run, exact-run status, dataset, and key-value-store access:</p><pre><code>https://mcp.apify.com?tools=fetch-actor-details,call-actor,get-actor-run,get-dataset-items,get-key-value-store-record</code></pre><p>Prefer OAuth. Environment-token examples read <code>APIFY_TOKEN</code> from the client process and never embed its value in repository configuration.</p></section>
@@ -51,8 +52,8 @@ enable analytics, or enable cross-run deduplication. Keep canonical records.</co
         <section class="detail-panel detail-note"><h2>Client and destination proof are separate</h2><p>The repository’s configs, descriptors, validators, and smoke harness are credential-free. The LinkedIn and EURAXESS harness verifies Actor state and rows through MCP plus an exact-build REST check. The scorer descriptor is validated offline, but hosted MCP exposure has not been claimed as live-tested. An MCP result also does not prove n8n, Make, Sheets, Airtable, or webhook delivery.</p></section>
         <section class="detail-panel"><h2>Troubleshooting</h2><ul><li><strong>Tool is unavailable:</strong> check the hosted MCP URL, workspace connector policy, authentication, and Actor access before changing prompts.</li><li><strong>Build is absent:</strong> use the returned run ID with the exact REST status endpoint; do not infer build from <code>latest</code>.</li><li><strong>Rows are partial or empty:</strong> inspect the summary and source-specific evidence before retrying or widening the query.</li><li><strong>Too much data reaches the model:</strong> lower the item cap, omit raw descriptions, and retain canonical records outside the conversational display.</li></ul></section>
       </div><aside class="detail-aside" aria-label="MCP resources"><section class="detail-panel"><h3>Client setup</h3><ul class="detail-link-list"><li><a href="https://github.com/Exdenta/nomad-agent-job-scrapers/blob/main/docs/mcp.md">Full client guide ↗</a></li><li><a href="https://github.com/Exdenta/nomad-agent-job-scrapers/tree/main/integrations/mcp/configs">Config examples ↗</a></li><li><a href="/privacy">Data handling</a></li></ul></section><section class="detail-panel"><h3>Alternative execution</h3><ul class="detail-link-list"><li><a href="/integrations/api">REST API</a></li><li><a href="/integrations/python">Local validation</a></li></ul></section></aside></div>
-      <nav class="detail-footer-nav" aria-label="Related pages"><a href="/actors">Choose an Actor →</a><a href="/integrations/api">Use a custom API client →</a></nav>
+      <nav class="detail-footer-nav" aria-label="Related pages"><a href="/actors">Choose a tool →</a><a href="/integrations/api">Use a custom API client →</a></nav>
     </main>
-    <footer class="site-footer"><div class="footer-container"><a href="/about">About</a><a href="/methodology">Methodology</a><a href="/contracts">Contracts</a><a href="/privacy">Privacy</a><a href="/changelog">Changelog</a><span>Independent community project · MIT</span></div></footer>
+    <footer class="site-footer"><div class="footer-container"><a href="/about">About</a><a href="/methodology">Methodology</a><a href="/contracts">Data format</a><a href="/privacy">Privacy</a><a href="/changelog">Changelog</a><span>Independent community project · MIT</span></div></footer>
   </body>
 </html>

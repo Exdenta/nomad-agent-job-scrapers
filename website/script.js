@@ -1,6 +1,28 @@
 (() => {
   "use strict";
 
+
+  // Content stays readable without JavaScript or IntersectionObserver.
+  // Animate each section once, and honor changes to the OS motion preference.
+  const motionPreference = window.matchMedia("(prefers-reduced-motion: reduce)");
+  let revealObserver;
+  const configureMotion = () => {
+    revealObserver?.disconnect();
+    document.querySelectorAll(".is-revealed").forEach((node) => node.classList.remove("is-revealed"));
+    if (motionPreference.matches || !("IntersectionObserver" in window)) return;
+    revealObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        entry.target.classList.add("is-revealed");
+        revealObserver.unobserve(entry.target);
+      });
+    }, { threshold: 0.12 });
+    document.querySelectorAll(".home-section .section-heading, .outcome-card, .product-card, .contract-code, .integration-grid, .proof-list, .resource-grid, .detail-hero")
+      .forEach((node) => revealObserver.observe(node));
+  };
+  configureMotion();
+  motionPreference.addEventListener("change", configureMotion);
+
   const menuButton = document.querySelector("[data-menu-button]");
   const mobileMenu = document.querySelector("[data-mobile-menu]");
 

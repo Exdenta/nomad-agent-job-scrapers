@@ -9,7 +9,7 @@
     <meta property="og:description" content="Bounded REST and webhook patterns for normalized LinkedIn, EURAXESS, and candidate-specific fit data." />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://nomadagent.dev/integrations/api" />
-    <meta property="og:image" content="https://nomadagent.dev/assets/job-atlas-social-card.png?v=supplied-20260905" />
+    <meta property="og:image" content="https://nomadagent.dev/assets/nomad-agent-social-card.png" />
     <meta property="og:image:alt" content="Job Atlas job data for APIs, automations, and AI agents" />
     <meta property="og:site_name" content="Job Atlas" />
     <meta property="og:image:width" content="1200" />
@@ -18,22 +18,23 @@
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="Job Scraper REST API and Webhooks | Job Atlas" />
     <meta name="twitter:description" content="Exact-run REST clients for normalized jobs and evidence-gated fit results." />
-    <meta name="twitter:image" content="https://nomadagent.dev/assets/job-atlas-social-card.png?v=supplied-20260905" />
+    <meta name="twitter:image" content="https://nomadagent.dev/assets/nomad-agent-social-card.png" />
     <title>Job Scraper REST API and Webhooks | Job Atlas</title>
     <link rel="canonical" href="https://nomadagent.dev/integrations/api" />
-    <link rel="icon" type="image/svg+xml" href="/assets/job-atlas-mark.svg?v=supplied-20260905" />
-    <link rel="stylesheet" href="/styles.css" />
-    <link rel="stylesheet" href="/detail.css" />
+    <link rel="icon" type="image/svg+xml" href="/assets/job-atlas-mark.svg?v=atlas-20260906" />
+    <link rel="stylesheet" href="/styles.css?v=first-visit-20260906" />
+    <link rel="stylesheet" href="/detail.css?v=first-visit-20260906" />
+    <link rel="stylesheet" href="/first-visit.css?v=first-visit-20260906" />
     <script type="application/ld+json">
       {"@context":"https://schema.org","@graph":[{"@type":"WebPage","@id":"https://nomadagent.dev/integrations/api#webpage","url":"https://nomadagent.dev/integrations/api","name":"Job Scraper REST API and Webhooks","description":"REST and webhook patterns for exact Job Atlas Actor runs."},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://nomadagent.dev/"},{"@type":"ListItem","position":2,"name":"Integrations","item":"https://nomadagent.dev/integrations"},{"@type":"ListItem","position":3,"name":"REST API","item":"https://nomadagent.dev/integrations/api"}]}]}
     </script>
-    <script defer src="/script.js"></script>
+    <script defer src="/script.js?v=first-visit-20260906"></script>
   </head>
   <body>
     <a class="skip-link" href="#main-content">Skip to content</a>
-    <header class="topbar"><nav class="nav-container" aria-label="Primary navigation"><a class="brand" href="/" aria-label="Job Atlas home"><img src="/assets/job-atlas-mark.svg?v=supplied-20260905" alt="" width="36" height="36" /><span>Job Atlas</span></a><div class="nav-actions"><a class="nav-link" href="/actors">Actors</a><a class="nav-link" href="/integrations">Integrations</a><a class="nav-link" href="/guides">Guides</a><a class="nav-primary" href="https://github.com/Exdenta/nomad-agent-job-scrapers/tree/main/integrations/api">Get API examples</a></div></nav></header>
+    <header class="topbar"><nav class="nav-container" aria-label="Primary navigation"><a class="brand" href="/" aria-label="Job Atlas home"><img src="/assets/job-atlas-mark.svg?v=atlas-20260906" alt="" width="36" height="36" /><span>Job Atlas</span></a><div class="nav-actions"><a class="nav-link" href="/actors">Tools</a><a class="nav-link" href="/integrations">Workflows</a><a class="nav-link" href="/guides">Guides</a><a class="nav-primary" href="https://github.com/Exdenta/nomad-agent-job-scrapers/tree/main/integrations/api">Get API examples</a></div><div class="mobile-tools"><a class="nav-select" href="/actors">Tools</a><button class="menu-button" type="button" aria-expanded="false" aria-controls="mobile-menu" aria-label="Open navigation" data-menu-button><span></span><span></span><span></span></button></div></nav><nav class="mobile-menu" id="mobile-menu" aria-label="Mobile navigation" data-mobile-menu><a href="/actors">Tools</a><a href="/integrations">Workflows</a><a href="/guides">Guides</a><a href="https://github.com/Exdenta/nomad-agent-job-scrapers/tree/main/integrations/api">Get API examples</a></nav></header>
     <main class="detail-main" id="main-content">
-      <nav class="detail-breadcrumbs" aria-label="Breadcrumb"><a href="/">Home</a><span>/</span><a href="/integrations">Integrations</a><span>/</span><span>REST API</span></nav>
+      <nav class="detail-breadcrumbs" aria-label="Breadcrumb"><a href="/">Home</a><span>/</span><a href="/integrations">Workflows</a><span>/</span><span>REST API</span></nav>
       <section class="detail-hero"><p class="detail-eyebrow">Developer integration</p><h1>Job scraper REST API and webhooks</h1><p class="detail-lede">Transport the complete Actor input, select the latest release, preserve the returned run identity, and validate its completion record before your application accepts data.</p><div class="detail-badges"><span class="detail-badge">REST and webhook recipes</span><span class="detail-badge">Bounded charges</span><span class="detail-badge">Exact-run storage</span></div><div class="detail-actions"><a class="button button-dark" href="https://github.com/Exdenta/nomad-agent-job-scrapers/tree/main/integrations/api" target="_blank" rel="noopener noreferrer" data-event="asset_cta_click" data-actor="all" data-placement="api-example-pack">Get the API examples ↗</a><a class="button button-outline" href="/guides/ai-job-fit-scoring-api" data-event="guide_cta_click" data-actor="ai-job-fit-scorer" data-placement="api-fit-guide">Build fit scoring</a></div></section>
       <div class="detail-layout"><div class="detail-content">
         <section class="detail-panel"><h2>Maintained client targets</h2><p>Maintained clients select <code>latest</code> for each new run. Check the LinkedIn <a href="https://api.apify.com/v2/acts/job-atlas~linkedin-enrich-translate-normalize-scraper/builds/default">current default build API</a> for its current build number and immutable ID. Validate every resolved run against the supported contracts before delivery.</p><ul><li><strong>LinkedIn:</strong> <code>job-atlas~linkedin-enrich-translate-normalize-scraper</code>, client selector <code>latest</code>.</li><li><strong>EURAXESS:</strong> <code>job-atlas~euraxess-enrich-translate-normalize-scraper</code>, client selector <code>latest</code>; confirm account access before paying for a run.</li><li><strong>AI Job Search &amp; Fit Scorer:</strong> <code>job-atlas~ai-job-fit-scorer</code>, Store and client build <code>latest</code>, with its separate fit output and billing contract.</li></ul></section>
@@ -52,6 +53,6 @@ node integrations/api/ai-job-fit-scorer-run-and-fetch.mjs</code></pre><p>The fiv
       </div><aside class="detail-aside" aria-label="REST API resources"><section class="detail-panel"><h3>Repository references</h3><ul class="detail-link-list"><li><a href="https://github.com/Exdenta/nomad-agent-job-scrapers/blob/main/integrations/api/README.md">Complete API guide ↗</a></li><li><a href="/contracts">Data contracts</a></li><li><a href="/methodology">Proof methodology</a></li></ul></section><section class="detail-panel"><h3>No-code alternatives</h3><ul class="detail-link-list"><li><a href="/integrations/n8n">n8n</a></li><li><a href="/integrations/make">Make</a></li></ul></section></aside></div>
       <nav class="detail-footer-nav" aria-label="Related pages"><a href="/guides/linkedin-jobs-api-alternatives">Compare LinkedIn API options →</a><a href="/integrations/mcp">Use the same Actors through MCP →</a></nav>
     </main>
-    <footer class="site-footer"><div class="footer-container"><a href="/about">About</a><a href="/methodology">Methodology</a><a href="/contracts">Contracts</a><a href="/privacy">Privacy</a><a href="/changelog">Changelog</a><span>Independent community project · MIT</span></div></footer>
+    <footer class="site-footer"><div class="footer-container"><a href="/about">About</a><a href="/methodology">Methodology</a><a href="/contracts">Data format</a><a href="/privacy">Privacy</a><a href="/changelog">Changelog</a><span>Independent community project · MIT</span></div></footer>
   </body>
 </html>

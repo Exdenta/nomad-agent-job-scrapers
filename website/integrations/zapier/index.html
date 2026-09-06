@@ -9,7 +9,7 @@
     <meta property="og:description" content="An editor recipe for scheduled job-fit scoring and candidate-safe Google Sheets upserts—not a published Zap." />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://nomadagent.dev/integrations/zapier" />
-    <meta property="og:image" content="https://nomadagent.dev/assets/job-atlas-social-card.png?v=supplied-20260905" />
+    <meta property="og:image" content="https://nomadagent.dev/assets/nomad-agent-social-card.png" />
     <meta property="og:image:alt" content="Job Atlas job data for APIs, automations, and AI agents" />
     <meta property="og:site_name" content="Job Atlas" />
     <meta property="og:image:width" content="1200" />
@@ -18,22 +18,23 @@
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="Zapier AI Job Fit Scoring Recipe | Job Atlas" />
     <meta name="twitter:description" content="Build a bounded scored-job Sheet in the Zapier editor." />
-    <meta name="twitter:image" content="https://nomadagent.dev/assets/job-atlas-social-card.png?v=supplied-20260905" />
+    <meta name="twitter:image" content="https://nomadagent.dev/assets/nomad-agent-social-card.png" />
     <title>Zapier AI Job Fit Scoring Recipe | Job Atlas</title>
     <link rel="canonical" href="https://nomadagent.dev/integrations/zapier" />
-    <link rel="icon" type="image/svg+xml" href="/assets/job-atlas-mark.svg?v=supplied-20260905" />
-    <link rel="stylesheet" href="/styles.css" />
-    <link rel="stylesheet" href="/detail.css" />
+    <link rel="icon" type="image/svg+xml" href="/assets/job-atlas-mark.svg?v=atlas-20260906" />
+    <link rel="stylesheet" href="/styles.css?v=first-visit-20260906" />
+    <link rel="stylesheet" href="/detail.css?v=first-visit-20260906" />
+    <link rel="stylesheet" href="/first-visit.css?v=first-visit-20260906" />
     <script type="application/ld+json">
       {"@context":"https://schema.org","@graph":[{"@type":"WebPage","@id":"https://nomadagent.dev/integrations/zapier#webpage","url":"https://nomadagent.dev/integrations/zapier","name":"Zapier AI Job Fit Scoring Recipe","description":"A manual Zapier editor recipe for bounded candidate-specific fit scoring and Google Sheets upserts."},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://nomadagent.dev/"},{"@type":"ListItem","position":2,"name":"Integrations","item":"https://nomadagent.dev/integrations"},{"@type":"ListItem","position":3,"name":"Zapier","item":"https://nomadagent.dev/integrations/zapier"}]}]}
     </script>
-    <script defer src="/script.js"></script>
+    <script defer src="/script.js?v=first-visit-20260906"></script>
   </head>
   <body>
     <a class="skip-link" href="#main-content">Skip to content</a>
-    <header class="topbar"><nav class="nav-container" aria-label="Primary navigation"><a class="brand" href="/" aria-label="Job Atlas home"><img src="/assets/job-atlas-mark.svg?v=supplied-20260905" alt="" width="36" height="36" /><span>Job Atlas</span></a><div class="nav-actions"><a class="nav-link" href="/actors">Actors</a><a class="nav-link" href="/integrations">Integrations</a><a class="nav-link" href="/guides">Guides</a><a class="nav-primary" href="https://github.com/Exdenta/nomad-agent-job-scrapers/tree/main/integrations/zapier">View recipe source</a></div></nav></header>
+    <header class="topbar"><nav class="nav-container" aria-label="Primary navigation"><a class="brand" href="/" aria-label="Job Atlas home"><img src="/assets/job-atlas-mark.svg?v=atlas-20260906" alt="" width="36" height="36" /><span>Job Atlas</span></a><div class="nav-actions"><a class="nav-link" href="/actors">Tools</a><a class="nav-link" href="/integrations">Workflows</a><a class="nav-link" href="/guides">Guides</a><a class="nav-primary" href="https://github.com/Exdenta/nomad-agent-job-scrapers/tree/main/integrations/zapier">View recipe source</a></div><div class="mobile-tools"><a class="nav-select" href="/actors">Tools</a><button class="menu-button" type="button" aria-expanded="false" aria-controls="mobile-menu" aria-label="Open navigation" data-menu-button><span></span><span></span><span></span></button></div></nav><nav class="mobile-menu" id="mobile-menu" aria-label="Mobile navigation" data-mobile-menu><a href="/actors">Tools</a><a href="/integrations">Workflows</a><a href="/guides">Guides</a><a href="https://github.com/Exdenta/nomad-agent-job-scrapers/tree/main/integrations/zapier">View recipe source</a></nav></header>
     <main class="detail-main" id="main-content">
-      <nav class="detail-breadcrumbs" aria-label="Breadcrumb"><a href="/">Home</a><span>/</span><a href="/integrations">Integrations</a><span>/</span><span>Zapier</span></nav>
+      <nav class="detail-breadcrumbs" aria-label="Breadcrumb"><a href="/">Home</a><span>/</span><a href="/integrations">Workflows</a><span>/</span><span>Zapier</span></nav>
       <section class="detail-hero"><p class="detail-eyebrow">Manual editor recipe</p><h1>AI job-fit scoring with Zapier</h1><p class="detail-lede">Build a scheduled Zap that runs one bounded candidate search, filters validated fit rows, and updates or creates a Google Sheets row by candidate-specific <code>matchKey</code>.</p><div class="detail-badges"><span class="detail-badge">Not an importable Zap</span><span class="detail-badge">Build latest</span><span class="detail-badge">Five-result starter</span></div><div class="detail-actions"><a class="button button-dark" href="https://github.com/Exdenta/nomad-agent-job-scrapers/blob/main/integrations/zapier/README.md" target="_blank" rel="noopener noreferrer" data-event="asset_cta_click" data-actor="ai-job-fit-scorer" data-placement="zapier-editor-recipe">Open the editor recipe ↗</a><a class="button button-outline" href="/actors/ai-job-fit-scorer" data-event="product_page_click" data-actor="ai-job-fit-scorer" data-placement="zapier-scorer-details">Review the scorer</a></div></section>
       <div class="detail-layout"><div class="detail-content">
         <section class="detail-panel detail-note"><h2>Availability boundary</h2><p>Zapier does not provide a portable workflow-import file for this maintained recipe. The repository contains a human-readable editor specification. It is not a published Zap, does not include credentials, has not proved an authenticated editor build, and is not evidence that a named Google Sheet received a row.</p></section>
@@ -44,6 +45,6 @@
       </div><aside class="detail-aside" aria-label="Zapier recipe resources"><section class="detail-panel"><h3>Repository assets</h3><ul class="detail-link-list"><li><a href="https://github.com/Exdenta/nomad-agent-job-scrapers/blob/main/integrations/zapier/ai-job-fit-scorer-template-spec.json">Editor specification ↗</a></li><li><a href="https://github.com/Exdenta/nomad-agent-job-scrapers/blob/main/integrations/shared/ai-job-fit-google-sheets-columns.csv">Sheet columns ↗</a></li><li><a href="/contracts">Fit contracts</a></li></ul></section><section class="detail-panel"><h3>Prefer an import?</h3><ul class="detail-link-list"><li><a href="/integrations/n8n">Import n8n JSON</a></li><li><a href="/integrations/make">Import Make blueprint</a></li></ul></section></aside></div>
       <nav class="detail-footer-nav" aria-label="Related pages"><a href="/guides/ai-job-fit-scoring-api">Understand the scoring API →</a><a href="/integrations/n8n">Compare n8n →</a></nav>
     </main>
-    <footer class="site-footer"><div class="footer-container"><a href="/about">About</a><a href="/methodology">Methodology</a><a href="/contracts">Contracts</a><a href="/privacy">Privacy</a><a href="/changelog">Changelog</a><span>Independent community project · MIT</span></div></footer>
+    <footer class="site-footer"><div class="footer-container"><a href="/about">About</a><a href="/methodology">Methodology</a><a href="/contracts">Data format</a><a href="/privacy">Privacy</a><a href="/changelog">Changelog</a><span>Independent community project · MIT</span></div></footer>
   </body>
 </html>

@@ -14,7 +14,7 @@ from urllib.parse import parse_qs, unquote, urlsplit
 ROOT = Path(__file__).resolve().parents[1]
 WEBSITE = ROOT / "website"
 ORIGIN = "https://nomadagent.dev"
-SOCIAL_IMAGE = f"{ORIGIN}/assets/job-atlas-social-card.png?v=supplied-20260905"
+SOCIAL_IMAGE = f"{ORIGIN}/assets/nomad-agent-social-card.png"
 
 # Intent owners come from docs/seo-program.md; its first milestone adds these
 # hubs and trust pages to the public surface.
@@ -363,7 +363,7 @@ class WebsiteContractTests(unittest.TestCase):
         self.assertNotIn("'unsafe-inline'", security["Content-Security-Policy"])
         self.assertIn("clipboard-fallback", self.script)
         self.assertIn(".clipboard-fallback", self.css)
-        shared = sum(path.stat().st_size for path in (WEBSITE / "styles.css", WEBSITE / "detail.css", WEBSITE / "script.js", WEBSITE / "assets" / "mark.svg"))
+        shared = sum(path.stat().st_size for path in (WEBSITE / "styles.css", WEBSITE / "detail.css", WEBSITE / "first-visit.css", WEBSITE / "script.js", WEBSITE / "assets" / "job-atlas-mark.svg"))
         for route, document in self.pages.items():
             self.assertLess(document.stat().st_size + shared, 100 * 1024, route)
 

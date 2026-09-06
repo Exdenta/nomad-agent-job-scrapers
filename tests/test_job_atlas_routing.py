@@ -8,11 +8,17 @@ SLUGS = ('linkedin-enrich-translate-normalize-scraper', 'euraxess-enrich-transla
          'ycombinator-enrich-translate-normalize-scraper', 'ai-job-fit-scorer')
 
 class JobAtlasRoutingTests(unittest.TestCase):
-    def test_website_has_no_legacy_store_destinations_or_brand(self):
+    def test_website_routes_to_current_store_and_keeps_current_brand(self):
         for path in (ROOT / 'website').rglob('*.html'):
             text = path.read_text()
             self.assertNotIn('apify.com/nomad-agent', text, path)
-            self.assertNotIn('Nomad Agent', text, path)
+            for identity in re.findall(r'<title[^>]*>.*?</title>|<header[^>]*>.*?</header>', text, re.S):
+                if identity.startswith('<header'):
+                    self.assertIn('Job Atlas', identity, path)
+                self.assertNotIn('Nomad Agent', identity, path)
+            # The homepage FAQ and About may explain the retained legacy domain.
+            if path.relative_to(ROOT).as_posix() not in {'website/index.html', 'website/about/index.html'}:
+                self.assertNotIn('Nomad Agent', text, path)
             self.assertIn('/assets/job-atlas-mark.svg', text, path)
         home = (ROOT / 'website/index.html').read_text()
         for slug in SLUGS:

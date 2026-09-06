@@ -9,7 +9,7 @@
     <meta property="og:description" content="Bounded, contract-aware tutorials for job data, automations, and candidate-specific scoring." />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://nomadagent.dev/guides" />
-    <meta property="og:image" content="https://nomadagent.dev/assets/job-atlas-social-card.png?v=supplied-20260905" />
+    <meta property="og:image" content="https://nomadagent.dev/assets/nomad-agent-social-card.png" />
     <meta property="og:image:alt" content="Job Atlas job data for APIs, automations, and AI agents" />
     <meta property="og:site_name" content="Job Atlas" />
     <meta property="og:image:width" content="1200" />
@@ -18,32 +18,33 @@
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="Job Data Implementation Guides | Job Atlas" />
     <meta name="twitter:description" content="Build bounded job searches, alerts, exports, and fit scoring." />
-    <meta name="twitter:image" content="https://nomadagent.dev/assets/job-atlas-social-card.png?v=supplied-20260905" />
+    <meta name="twitter:image" content="https://nomadagent.dev/assets/nomad-agent-social-card.png" />
     <title>Job Data Implementation Guides | Job Atlas</title>
     <link rel="canonical" href="https://nomadagent.dev/guides" />
-    <link rel="icon" type="image/svg+xml" href="/assets/job-atlas-mark.svg?v=supplied-20260905" />
-    <link rel="stylesheet" href="/styles.css" />
-    <link rel="stylesheet" href="/detail.css" />
+    <link rel="icon" type="image/svg+xml" href="/assets/job-atlas-mark.svg?v=atlas-20260906" />
+    <link rel="stylesheet" href="/styles.css?v=first-visit-20260906" />
+    <link rel="stylesheet" href="/detail.css?v=first-visit-20260906" />
+    <link rel="stylesheet" href="/first-visit.css?v=first-visit-20260906" />
     <script type="application/ld+json">
       {"@context":"https://schema.org","@graph":[{"@type":"CollectionPage","@id":"https://nomadagent.dev/guides#webpage","url":"https://nomadagent.dev/guides","name":"Job Data Implementation Guides","description":"Practical guides for job data, automations, and fit scoring."},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://nomadagent.dev/"},{"@type":"ListItem","position":2,"name":"Guides","item":"https://nomadagent.dev/guides"}]}]}
     </script>
-    <script defer src="/script.js"></script>
+    <script defer src="/script.js?v=first-visit-20260906"></script>
   </head>
   <body>
     <a class="skip-link" href="#main-content">Skip to content</a>
-    <header class="topbar"><nav class="nav-container" aria-label="Primary navigation"><a class="brand" href="/" aria-label="Job Atlas home"><img src="/assets/job-atlas-mark.svg?v=supplied-20260905" alt="" width="36" height="36" /><span>Job Atlas</span></a><div class="nav-actions"><a class="nav-link" href="/actors">Actors</a><a class="nav-link" href="/integrations">Integrations</a><a class="nav-link" href="/guides">Guides</a><a class="nav-primary" href="https://github.com/Exdenta/nomad-agent-job-scrapers">View source</a></div></nav></header>
+    <header class="topbar"><nav class="nav-container" aria-label="Primary navigation"><a class="brand" href="/" aria-label="Job Atlas home"><img src="/assets/job-atlas-mark.svg?v=atlas-20260906" alt="" width="36" height="36" /><span>Job Atlas</span></a><div class="nav-actions"><a class="nav-link" href="/actors">Tools</a><a class="nav-link" href="/integrations">Workflows</a><a class="nav-link" href="/guides">Guides</a><a class="nav-primary" href="/actors">Choose a tool</a></div><div class="mobile-tools"><a class="nav-select" href="/actors">Tools</a><button class="menu-button" type="button" aria-expanded="false" aria-controls="mobile-menu" aria-label="Open navigation" data-menu-button><span></span><span></span><span></span></button></div></nav><nav class="mobile-menu" id="mobile-menu" aria-label="Mobile navigation" data-mobile-menu><a href="/actors">Tools</a><a href="/integrations">Workflows</a><a href="/guides">Guides</a><a href="https://github.com/Exdenta/nomad-agent-job-scrapers">View source</a></nav></header>
     <main class="detail-main" id="main-content">
       <nav class="detail-breadcrumbs" aria-label="Breadcrumb"><a href="/">Home</a><span>/</span><span>Guides</span></nav>
-      <section class="detail-hero"><p class="detail-eyebrow">Start from a real task</p><h1>Job-data implementation guides</h1><p class="detail-lede">Choose an API route, build a duplicate-safe alert, work with academic vacancies, or add candidate-specific scoring. Each guide starts bounded and marks where source, Actor, and destination proof diverge.</p></section>
+      <section class="detail-hero"><p class="detail-eyebrow">Start from a real task</p><h1>Build your first job-data workflow.</h1><p class="detail-lede">Choose a practical task: a daily LinkedIn alert, a research-opportunity tracker, or a résumé-based shortlist. Each guide starts with a small example and explains the accounts, setup, and checks you need.</p></section>
       <div class="detail-layout"><div class="detail-content">
         <section class="detail-panel"><h2>LinkedIn Jobs API alternatives</h2><p>Understand what LinkedIn’s official partner APIs do, when an independent public-job scraper may fit, and which legal, operational, and data-quality questions must be answered before choosing.</p><div class="detail-actions"><a class="button button-dark" href="/guides/linkedin-jobs-api-alternatives" data-event="guide_cta_click" data-actor="linkedin" data-placement="guides-hub-linkedin-api">Compare the options</a></div></section>
-        <section class="detail-panel"><h2>Daily LinkedIn job alerts with n8n</h2><p>Import the compact alert workflow, configure a stable dedupe scope, route to exactly one Slack, Telegram, or email branch, and prove a named destination before scheduling.</p><div class="detail-actions"><a class="button button-dark" href="/guides/linkedin-job-alerts-n8n" data-event="guide_cta_click" data-actor="linkedin" data-placement="guides-hub-n8n-alert">Build the alert</a></div></section>
-        <section class="detail-panel"><h2>EURAXESS jobs API and export options</h2><p>Separate the official vacancy publishing feed from read/search access, then choose a bounded normalized export that preserves academic taxonomy and evidence.</p><div class="detail-actions"><a class="button button-dark" href="/guides/euraxess-jobs-api-export" data-event="guide_cta_click" data-actor="euraxess" data-placement="guides-hub-euraxess-api">Compare EURAXESS paths</a></div></section>
-        <section class="detail-panel"><h2>Evidence-backed job-fit scoring API</h2><p>Model candidate constraints, run a five-result scorer canary, reconcile billing and output, and use candidate-safe destination identity.</p><div class="detail-actions"><a class="button button-dark" href="/guides/ai-job-fit-scoring-api" data-event="guide_cta_click" data-actor="ai-job-fit-scorer" data-placement="guides-hub-fit-api">Implement fit scoring</a></div></section>
+        <section class="detail-panel"><h2>Daily LinkedIn job alerts with n8n</h2><p>Start with an n8n workflow for a daily alert. Choose your search, connect Slack, Telegram, or email, and check a manual delivery before scheduling.</p><div class="detail-actions"><a class="button button-dark" href="/guides/linkedin-job-alerts-n8n" data-event="guide_cta_click" data-actor="linkedin" data-placement="guides-hub-n8n-alert">Build the alert</a></div></section>
+        <section class="detail-panel"><h2>EURAXESS jobs API and export options</h2><p>Collect research vacancies for a community tracker or academic roundup. Understand the official search options and export job details with their research context.</p><div class="detail-actions"><a class="button button-dark" href="/guides/euraxess-jobs-api-export" data-event="guide_cta_click" data-actor="euraxess" data-placement="guides-hub-euraxess-api">Compare EURAXESS paths</a></div></section>
+        <section class="detail-panel"><h2>Evidence-backed job-fit scoring API</h2><p>Compare developer jobs with one candidate and review a small shortlist. Learn how to inspect match reasons, keep costs bounded, and store each candidate’s results separately.</p><div class="detail-actions"><a class="button button-dark" href="/guides/ai-job-fit-scoring-api" data-event="guide_cta_click" data-actor="ai-job-fit-scorer" data-placement="guides-hub-fit-api">Implement fit scoring</a></div></section>
         <section class="detail-panel detail-note"><h2>Why these guides stay narrow</h2><p>The project publishes maintained workflows and contracts, not live job inventory. It will not generate thin role/location pages or imply source access, accuracy, customer outcomes, or destination delivery without current evidence.</p></section>
-      </div><aside class="detail-aside" aria-label="Guide resources"><section class="detail-panel"><h3>Reference material</h3><ul class="detail-link-list"><li><a href="/actors">Actor catalog</a></li><li><a href="/integrations">Integration catalog</a></li><li><a href="/contracts">Data contracts</a></li></ul></section><section class="detail-panel"><h3>Trust</h3><ul class="detail-link-list"><li><a href="/methodology">Verification methodology</a></li><li><a href="/privacy">Data handling</a></li></ul></section></aside></div>
-      <nav class="detail-footer-nav" aria-label="Related pages"><a href="/actors">Choose an Actor →</a><a href="/integrations">Choose an integration →</a></nav>
+      </div><aside class="detail-aside" aria-label="Guide resources"><section class="detail-panel"><h3>Reference material</h3><ul class="detail-link-list"><li><a href="/actors">Tool catalog</a></li><li><a href="/integrations">Workflow catalog</a></li><li><a href="/contracts">Data contracts</a></li></ul></section><section class="detail-panel"><h3>Trust</h3><ul class="detail-link-list"><li><a href="/methodology">Verification methodology</a></li><li><a href="/privacy">Data handling</a></li></ul></section></aside></div>
+      <nav class="detail-footer-nav" aria-label="Related pages"><a href="/actors">Choose a tool →</a><a href="/integrations">Choose an integration →</a></nav>
     </main>
-    <footer class="site-footer"><div class="footer-container"><a href="/about">About</a><a href="/methodology">Methodology</a><a href="/contracts">Contracts</a><a href="/privacy">Privacy</a><a href="/changelog">Changelog</a><span>Independent community project · MIT</span></div></footer>
+    <footer class="site-footer"><div class="footer-container"><a href="/about">About</a><a href="/methodology">Methodology</a><a href="/contracts">Data format</a><a href="/privacy">Privacy</a><a href="/changelog">Changelog</a><span>Independent community project · MIT</span></div></footer>
   </body>
 </html>

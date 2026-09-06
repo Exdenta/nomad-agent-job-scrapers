@@ -9,7 +9,7 @@
     <meta property="og:description" content="Task-owned inputs, exact Actor builds, completion gates, and duplicate-safe Google Sheets upserts in Make." />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://nomadagent.dev/integrations/make" />
-    <meta property="og:image" content="https://nomadagent.dev/assets/job-atlas-social-card.png?v=supplied-20260905" />
+    <meta property="og:image" content="https://nomadagent.dev/assets/nomad-agent-social-card.png" />
     <meta property="og:image:alt" content="Job Atlas job data for APIs, automations, and AI agents" />
     <meta property="og:site_name" content="Job Atlas" />
     <meta property="og:image:width" content="1200" />
@@ -18,22 +18,23 @@
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="Make Job Data to Google Sheets | Job Atlas" />
     <meta name="twitter:description" content="Importable Make blueprints for exact-run job data and fit scoring." />
-    <meta name="twitter:image" content="https://nomadagent.dev/assets/job-atlas-social-card.png?v=supplied-20260905" />
+    <meta name="twitter:image" content="https://nomadagent.dev/assets/nomad-agent-social-card.png" />
     <title>Make Job Data to Google Sheets | Job Atlas</title>
     <link rel="canonical" href="https://nomadagent.dev/integrations/make" />
-    <link rel="icon" type="image/svg+xml" href="/assets/job-atlas-mark.svg?v=supplied-20260905" />
-    <link rel="stylesheet" href="/styles.css" />
-    <link rel="stylesheet" href="/detail.css" />
+    <link rel="icon" type="image/svg+xml" href="/assets/job-atlas-mark.svg?v=atlas-20260906" />
+    <link rel="stylesheet" href="/styles.css?v=first-visit-20260906" />
+    <link rel="stylesheet" href="/detail.css?v=first-visit-20260906" />
+    <link rel="stylesheet" href="/first-visit.css?v=first-visit-20260906" />
     <script type="application/ld+json">
       {"@context":"https://schema.org","@graph":[{"@type":"WebPage","@id":"https://nomadagent.dev/integrations/make#webpage","url":"https://nomadagent.dev/integrations/make","name":"Make Job Data to Google Sheets","description":"Importable Make blueprints for validated job and fit-result upserts."},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://nomadagent.dev/"},{"@type":"ListItem","position":2,"name":"Integrations","item":"https://nomadagent.dev/integrations"},{"@type":"ListItem","position":3,"name":"Make","item":"https://nomadagent.dev/integrations/make"}]}]}
     </script>
-    <script defer src="/script.js"></script>
+    <script defer src="/script.js?v=first-visit-20260906"></script>
   </head>
   <body>
     <a class="skip-link" href="#main-content">Skip to content</a>
-    <header class="topbar"><nav class="nav-container" aria-label="Primary navigation"><a class="brand" href="/" aria-label="Job Atlas home"><img src="/assets/job-atlas-mark.svg?v=supplied-20260905" alt="" width="36" height="36" /><span>Job Atlas</span></a><div class="nav-actions"><a class="nav-link" href="/actors">Actors</a><a class="nav-link" href="/integrations">Integrations</a><a class="nav-link" href="/guides">Guides</a><a class="nav-primary" href="https://github.com/Exdenta/nomad-agent-job-scrapers/tree/main/integrations/make">Get blueprints</a></div></nav></header>
+    <header class="topbar"><nav class="nav-container" aria-label="Primary navigation"><a class="brand" href="/" aria-label="Job Atlas home"><img src="/assets/job-atlas-mark.svg?v=atlas-20260906" alt="" width="36" height="36" /><span>Job Atlas</span></a><div class="nav-actions"><a class="nav-link" href="/actors">Tools</a><a class="nav-link" href="/integrations">Workflows</a><a class="nav-link" href="/guides">Guides</a><a class="nav-primary" href="https://github.com/Exdenta/nomad-agent-job-scrapers/tree/main/integrations/make">Get blueprints</a></div><div class="mobile-tools"><a class="nav-select" href="/actors">Tools</a><button class="menu-button" type="button" aria-expanded="false" aria-controls="mobile-menu" aria-label="Open navigation" data-menu-button><span></span><span></span><span></span></button></div></nav><nav class="mobile-menu" id="mobile-menu" aria-label="Mobile navigation" data-mobile-menu><a href="/actors">Tools</a><a href="/integrations">Workflows</a><a href="/guides">Guides</a><a href="https://github.com/Exdenta/nomad-agent-job-scrapers/tree/main/integrations/make">Get blueprints</a></nav></header>
     <main class="detail-main" id="main-content">
-      <nav class="detail-breadcrumbs" aria-label="Breadcrumb"><a href="/">Home</a><span>/</span><a href="/integrations">Integrations</a><span>/</span><span>Make</span></nav>
+      <nav class="detail-breadcrumbs" aria-label="Breadcrumb"><a href="/">Home</a><span>/</span><a href="/integrations">Workflows</a><span>/</span><span>Make</span></nav>
       <section class="detail-hero"><p class="detail-eyebrow">Importable automation blueprints</p><h1>Make job data to Google Sheets</h1><p class="detail-lede">Watch a completed Apify Task, verify its exact run, validate the Actor-specific completion contract, and update or append one destination row per stable key.</p><div class="detail-badges"><span class="detail-badge">Three blueprints</span><span class="detail-badge">Task-owned input</span><span class="detail-badge">Inactive after import</span></div><div class="detail-actions"><a class="button button-dark" href="https://github.com/Exdenta/nomad-agent-job-scrapers/tree/main/integrations/make" target="_blank" rel="noopener noreferrer" data-event="asset_cta_click" data-actor="all" data-placement="make-blueprint-pack">Download Make blueprints ↗</a><a class="button button-outline" href="/actors/euraxess" data-event="product_page_click" data-actor="euraxess" data-placement="make-euraxess-product">Explore research jobs</a></div></section>
       <div class="detail-layout"><div class="detail-content">
         <section class="detail-panel"><h2>Choose the matching blueprint</h2><ul><li><strong>LinkedIn to Google Sheets:</strong> Apify Task selects LinkedIn build <code>latest</code>.</li><li><strong>EURAXESS to Google Sheets:</strong> Task selects EURAXESS <code>latest</code> and records the returned immutable build.</li><li><strong>AI Job Fit to Google Sheets:</strong> Task uses scorer selector <code>latest</code>, uses shortlist mode at delivery score 2, validates fit output, and uses candidate-specific <code>matchKey</code>.</li></ul><p>The saved Apify Task owns the complete Actor input, build selector, item limit, and maximum charge. The scenario begins only when that Task run completes.</p></section>
@@ -45,6 +46,6 @@
       </div><aside class="detail-aside" aria-label="Make blueprint resources"><section class="detail-panel"><h3>Repository assets</h3><ul class="detail-link-list"><li><a href="https://github.com/Exdenta/nomad-agent-job-scrapers/blob/main/integrations/make/README.md">Setup guide ↗</a></li><li><a href="https://github.com/Exdenta/nomad-agent-job-scrapers/tree/main/integrations/make">Blueprint files ↗</a></li><li><a href="/contracts">Schema contracts</a></li></ul></section><section class="detail-panel"><h3>Compare</h3><ul class="detail-link-list"><li><a href="/integrations/n8n">n8n workflows</a></li><li><a href="/integrations/api">Custom API client</a></li></ul></section></aside></div>
       <nav class="detail-footer-nav" aria-label="Related pages"><a href="/integrations/n8n">Compare n8n →</a><a href="/integrations/airtable">Use Airtable instead →</a></nav>
     </main>
-    <footer class="site-footer"><div class="footer-container"><a href="/about">About</a><a href="/methodology">Methodology</a><a href="/contracts">Contracts</a><a href="/privacy">Privacy</a><a href="/changelog">Changelog</a><span>Independent community project · MIT</span></div></footer>
+    <footer class="site-footer"><div class="footer-container"><a href="/about">About</a><a href="/methodology">Methodology</a><a href="/contracts">Data format</a><a href="/privacy">Privacy</a><a href="/changelog">Changelog</a><span>Independent community project · MIT</span></div></footer>
   </body>
 </html>
