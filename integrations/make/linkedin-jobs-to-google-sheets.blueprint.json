@@ -13,7 +13,7 @@
           "y": 0,
           "name": "Watch completed LinkedIn Task runs"
         },
-        "notes": "Select the Apify Task pinned to exact LinkedIn build 1.0.2. Only terminal successful runs are evaluated; one valid partial v4 outcome may repeat the same Task once."
+        "notes": "Select the Apify Task using LinkedIn build latest. Only terminal successful runs are evaluated; one valid partial v4 outcome may repeat the same Task once."
       }
     },
     {
@@ -23,17 +23,17 @@
       "parameters": {},
       "mapper": {
         "variables": [
-        {
-          "name": "maxitems",
-          "value": "1"
-        },
-        {
-          "name": "apifytaskid",
-          "value": "REPLACE_WITH_APIFY_TASK_ID"
-        },
+          {
+            "name": "maxitems",
+            "value": "1"
+          },
+          {
+            "name": "apifytaskid",
+            "value": "REPLACE_WITH_APIFY_TASK_ID"
+          },
           {
             "name": "actorbuild",
-            "value": "1.0.2"
+            "value": "latest"
           },
           {
             "name": "googlespreadsheetid",
@@ -52,7 +52,7 @@
           "y": 0,
           "name": "Configuration"
         },
-    "notes": "Replace the Task ID and spreadsheet ID. Select the same Task pinned to exact build 1.0.2 in the trigger. Keep maxitems small for the first destination smoke test."
+        "notes": "Replace the Task ID and spreadsheet ID. Select the same Task using build latest in the trigger. Keep maxitems small for the first destination smoke test."
       }
     },
     {
@@ -102,12 +102,45 @@
             },
             {
               "a": "{{1.buildNumber}}",
-              "b": "{{2.actorbuild}}",
-              "o": "text:equal"
+              "o": "exist"
             },
             {
               "a": "{{1.output.runSummary}}",
               "o": "exist"
+            },
+            {
+              "a": "{{1.buildId}}",
+              "o": "exist"
+            },
+            {
+              "a": "{{1.exitCode}}",
+              "b": "0",
+              "o": "number:equal"
+            },
+            {
+              "a": "{{2.actorbuild}}",
+              "b": "latest",
+              "o": "text:equal"
+            },
+            {
+              "a": "{{length(trim(1.buildId))}}",
+              "b": "0",
+              "o": "number:greater"
+            },
+            {
+              "a": "{{length(trim(1.buildNumber))}}",
+              "b": "0",
+              "o": "number:greater"
+            },
+            {
+              "a": "{{replace(1.buildNumber; \"/^[0-9]+[.][0-9]+[.][0-9]+$/\"; \"\")}}",
+              "b": "",
+              "o": "text:equal"
+            },
+            {
+              "a": "{{1.options.build}}",
+              "o": "text:equal",
+              "b": "latest"
             }
           ]
         ]
@@ -125,98 +158,97 @@
           "y": 150,
           "name": "Validate terminal run and deliver"
         },
-      "notes": "Validate minimal RUN-SUMMARY v4. A usable partial outcome may repeat the same saved Task once; API-origin retry completions cannot retry again."
-    },
-    "routes": [
-      {
-        "flow": [
-          {
-            "id": 6,
-            "module": "util:FunctionSleep",
-            "version": 1,
-            "parameters": {},
-            "filter": {
-              "name": "Retry one valid partial v4 outcome",
-              "conditions": [
-                [
-                  {
-                    "a": "{{3.statusCode}}",
-                    "b": "200",
-                    "o": "number:equal"
-                  },
-                  {
-                    "a": "{{3.data.schemaVersion}}",
-                    "b": "nomad-agent-run-summary-v4",
-                    "o": "text:equal"
-                  },
-                  {
-                    "a": "{{3.data.status}}",
-                    "b": "partial",
-                    "o": "text:equal"
-                  },
-                  {
-                    "a": "{{3.data.delivered}}",
-                    "b": "1",
-                    "o": "number:greaterorequal"
-                  },
-                  {
-                    "a": "{{3.data.retry.recommended}}",
-                    "b": true,
-                    "o": "boolean:equal"
-                  },
-                  {
-                    "a": "{{3.data.retry.afterSeconds}}",
-                    "b": "1",
-                    "o": "number:greaterorequal"
-                  },
-                  {
-                    "a": "{{3.data.retry.afterSeconds}}",
-                    "b": "240",
-                    "o": "number:lessorequal"
-                  },
-                  {
-                    "a": "{{1.meta.origin}}",
-                    "b": "API",
-                    "o": "text:notequal"
-                  }
-                ]
-              ]
-            },
-            "mapper": {
-              "duration": "{{3.data.retry.afterSeconds}}"
-            },
-            "metadata": {
-              "designer": {
-                "x": 1500,
-                "y": -300,
-                "name": "Wait bounded v4 retry delay"
-              },
-              "notes": "Make's basic in-scenario wait is bounded to 240 seconds. Longer valid v4 recommendations are delivered as usable partial output without an automatic retry."
-            }
-          },
-          {
-            "id": 7,
-            "module": "apify:runTask",
-            "version": 1,
-            "parameters": {},
-            "mapper": {
-              "taskId": "{{2.apifytaskid}}",
-              "runSync": false
-            },
-            "metadata": {
-              "designer": {
-                "x": 1800,
-                "y": -300,
-                "name": "Retry the same Apify Task once"
-              },
-              "notes": "Starts the same saved Task asynchronously. Its API-origin completion cannot enter the retry route again."
-            }
-          }
-        ]
+        "notes": "Validate minimal RUN-SUMMARY v4. A usable partial outcome may repeat the same saved Task once; API-origin retry completions cannot retry again."
       },
-
-      {
-        "flow": [
+      "routes": [
+        {
+          "flow": [
+            {
+              "id": 6,
+              "module": "util:FunctionSleep",
+              "version": 1,
+              "parameters": {},
+              "filter": {
+                "name": "Retry one valid partial v4 outcome",
+                "conditions": [
+                  [
+                    {
+                      "a": "{{3.statusCode}}",
+                      "b": "200",
+                      "o": "number:equal"
+                    },
+                    {
+                      "a": "{{3.data.schemaVersion}}",
+                      "b": "nomad-agent-run-summary-v4",
+                      "o": "text:equal"
+                    },
+                    {
+                      "a": "{{3.data.status}}",
+                      "b": "partial",
+                      "o": "text:equal"
+                    },
+                    {
+                      "a": "{{3.data.delivered}}",
+                      "b": "1",
+                      "o": "number:greaterorequal"
+                    },
+                    {
+                      "a": "{{3.data.retry.recommended}}",
+                      "b": true,
+                      "o": "boolean:equal"
+                    },
+                    {
+                      "a": "{{3.data.retry.afterSeconds}}",
+                      "b": "1",
+                      "o": "number:greaterorequal"
+                    },
+                    {
+                      "a": "{{3.data.retry.afterSeconds}}",
+                      "b": "240",
+                      "o": "number:lessorequal"
+                    },
+                    {
+                      "a": "{{1.meta.origin}}",
+                      "b": "API",
+                      "o": "text:notequal"
+                    }
+                  ]
+                ]
+              },
+              "mapper": {
+                "duration": "{{3.data.retry.afterSeconds}}"
+              },
+              "metadata": {
+                "designer": {
+                  "x": 1500,
+                  "y": -300,
+                  "name": "Wait bounded v4 retry delay"
+                },
+                "notes": "Make's basic in-scenario wait is bounded to 240 seconds. Longer valid v4 recommendations are delivered as usable partial output without an automatic retry."
+              }
+            },
+            {
+              "id": 7,
+              "module": "apify:runTask",
+              "version": 1,
+              "parameters": {},
+              "mapper": {
+                "taskId": "{{2.apifytaskid}}",
+                "runSync": false
+              },
+              "metadata": {
+                "designer": {
+                  "x": 1800,
+                  "y": -300,
+                  "name": "Retry the same Apify Task once"
+                },
+                "notes": "Starts the same saved Task asynchronously. Its API-origin completion cannot enter the retry route again."
+              }
+            }
+          ]
+        },
+        {
+          "flow": [
             {
               "id": 8,
               "module": "apify:fetchDatasetItems",

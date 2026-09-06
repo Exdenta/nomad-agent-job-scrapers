@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://github.com/Exdenta/nomad-agent-job-scrapers/blob/main/integrations/shared/flat-job-v1.schema.json",
-  "title": "Nomad Agent flat job integration record",
+  "title": "Job Atlas flat job integration record",
   "description": "A primitive-only projection of nomad-agent-job-v1 for tables and no-code integrations. The nested normalized record remains authoritative.",
   "type": "object",
   "additionalProperties": false,

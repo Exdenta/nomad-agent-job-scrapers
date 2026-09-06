@@ -1,5 +1,5 @@
 {
-  "actor": "nomad-agent/euraxess-enrich-translate-normalize-scraper",
+  "actor": "job-atlas/euraxess-enrich-translate-normalize-scraper",
   "input": {
     "schemaVersion": "nomad-agent-job-search-input-v1",
     "keyword": "postdoctoral machine learning",

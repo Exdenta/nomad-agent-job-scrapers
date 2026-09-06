@@ -1,15 +1,18 @@
 # REST API and webhook integration
 
+Current starters target Job Atlas. [Migration steps and evidence limits](https://github.com/Exdenta/nomad-agent-job-scrapers/blob/main/docs/job-atlas.md): recreate saved Tasks for Job Atlas; historical destination proofs remain tied to their original organization.
+
 The Apify REST API transports the complete Actor input without an
-integration-specific subset. Use the maintained build selector in the run query:
+integration-specific subset. Select `latest` in the run query:
 
 | Actor | API Actor identifier | Required build |
 | --- | --- | --- |
-| LinkedIn | `nomad-agent~linkedin-enrich-translate-normalize-scraper` | `1.0.2` |
-| EURAXESS | `nomad-agent~euraxess-enrich-translate-normalize-scraper` | `latest` |
-| AI Job Search & Fit Scorer | `nomad-agent~ai-job-fit-scorer` | `0.1.11` |
+| LinkedIn | `job-atlas~linkedin-enrich-translate-normalize-scraper` | `latest` |
+| EURAXESS | `job-atlas~euraxess-enrich-translate-normalize-scraper` | `latest` |
+| AI Job Search & Fit Scorer | `job-atlas~ai-job-fit-scorer` | `latest` |
 
 Confirm EURAXESS availability before a paid run. EURAXESS uses `build=latest`; record the immutable `buildId` and numeric `buildNumber` returned by the run. Other Actor targets keep their documented selectors.
+The scorer also selects `latest` and validates the immutable build returned by that exact run.
 
 ## Start one bounded run
 
@@ -21,7 +24,7 @@ curl --request POST \
   --header "Authorization: Bearer $APIFY_TOKEN" \
   --header "Content-Type: application/json" \
   --data @integrations/api/linkedin-search.json \
-  "https://api.apify.com/v2/acts/nomad-agent~linkedin-enrich-translate-normalize-scraper/runs?build=1.0.2&maxTotalChargeUsd=0.10"
+  "https://api.apify.com/v2/acts/job-atlas~linkedin-enrich-translate-normalize-scraper/runs?build=latest&maxTotalChargeUsd=0.10"
 ```
 
 For EURAXESS, substitute its Actor identifier, body file, and
@@ -35,24 +38,25 @@ current input schema; see the
 The scorer has its own output and billing contract. Run the maintained client:
 
 ```bash
-export ACTOR_BUILD_NUMBER="0.1.11"
+export ACTOR_BUILD_NUMBER="latest"
 node integrations/api/ai-job-fit-scorer-run-and-fetch.mjs
 ```
 
 Provide `APIFY_TOKEN` through the process environment or secret manager; never
 put it in the URL, input JSON, or repository.
 
-The adjacent input is capped at five evaluations and the client caps the run at
-$0.10. It uses the canonical `/v2/actors` endpoint, pins immutable build
-`0.1.11`, polls only the returned run ID, boundedly reconciles storage and
-charge metadata, validates `nomad-ai-job-fit-run-summary-v3`, and requires each
-row to satisfy `nomad-ai-job-fit-v1` before printing it. See the
+The adjacent input explicitly selects `shortlist` at delivery score `2`, is
+capped at five evaluations, and caps the run at $0.10. The client uses
+production selector `latest`, polls only the returned run ID, boundedly reconciles
+storage and charge metadata, accepts legacy v3 or current
+`nomad-ai-job-fit-run-summary-v4`, enforces v4 result-policy arithmetic, and
+requires each row to satisfy `nomad-ai-job-fit-v1` before printing it. See the
 [complete fit-scoring guide](../../docs/ai-job-fit-scorer.md).
 
 The start response identifies a run. Poll that exact run until its terminal run status is available:
 
 1. continue only for `SUCCEEDED` and exit code `0` when present;
-2. require the response's `buildNumber` to equal the requested build;
+2. record the returned numeric `buildNumber` and immutable `buildId`, and require them to remain unchanged while polling that run;
 3. read `RUN-SUMMARY` from the same run's default key-value store and validate
    `nomad-agent-run-summary-v4`;
 4. if a usable `partial` outcome recommends a retry, wait its bounded
@@ -83,7 +87,7 @@ trusted replacement for the run or dataset:
    the polling flow.
 
 For Make, use the maintained Task-completion blueprint instead of rebuilding
-this receiver. Its Task must carry the same exact build and bounded input.
+this receiver. Its Task must carry the same `latest` selector and bounded input.
 
 ## Feature and security boundary
 

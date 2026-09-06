@@ -40,6 +40,19 @@ python3 -m http.server 4173 --directory website
 Open `http://127.0.0.1:4173/`. The complete acceptance contract and current
 proof state are in `SUCCESS_CRITERIA.md`.
 
+## First-visit content
+
+The homepage explains the outcome before the platform terminology, shows a dated
+EURAXESS record from `samples/euraxess-job.json`, and connects six audience use
+cases to a tool or workflow. The sample is a checked-in illustration, not a live
+vacancy feed; retain its observation date and source link. The four-tool catalog
+and product `#first-run` sections provide bounded starter inputs. Price examples
+are dated Actor-event estimates and separate optional services and Apify costs.
+
+`first-visit.css` extends the existing visual design. Keep meaningful content in
+reading order on mobile, and retain the lower-page technical contracts and
+source limitations when editing the introductory copy.
+
 ## Privacy-minimized interaction events
 
 `script.js` dispatches a local `nomad-agent:analytics` `CustomEvent` for page

@@ -1,6 +1,6 @@
 # AI Job Search & Fit Scorer integration guide
 
-[`nomad-agent/ai-job-fit-scorer`](https://apify.com/nomad-agent/ai-job-fit-scorer)
+[`job-atlas/ai-job-fit-scorer`](https://apify.com/job-atlas/ai-job-fit-scorer)
 turns one résumé or structured candidate profile into a ranked developer-job
 shortlist. It can search and deduplicate 10 public job sources in one run, or
 score supplied `nomad-agent-job-v1` records. Default `shortlist` mode returns
@@ -9,11 +9,11 @@ mode retains drops, holds, and failures for pipeline analysis. A charged result
 costs $0.02 and includes a raw 0–100 fit, a gate-adjusted 0–5 delivery score,
 evidence, gaps, source provenance, and stable destination keys.
 
-This repository pins the live-verified Actor build `0.1.22`
-(`XQhyxEg3YZ3NMel70`), which is also the Store `latest` as of 2026-09-05. Keep
-automated integrations on `0.1.22` until a newer build is separately
-contract-tested. Maintained consumers accept legacy
-`nomad-ai-job-fit-run-summary-v3` and current v4 during migration.
+Maintained scorer starters select `latest` and record the immutable build ID
+and number returned by that exact run. They bind the summary to that receipt
+before accepting rows. Historical example fixtures retain build `0.1.22`
+(`XQhyxEg3YZ3NMel70`). Consumers accept legacy `nomad-ai-job-fit-run-summary-v3` and current v4
+during migration.
 
 Real inputs and outputs live in
 [`docs/examples/ai-job-fit-scorer/`](examples/ai-job-fit-scorer/): a
@@ -25,8 +25,8 @@ and one real `RUN-SUMMARY`. An agent skill that wraps this contract is at
 
 | Channel | Artifact | What it proves locally |
 | --- | --- | --- |
-| REST | [`ai-job-fit-scorer-run-and-fetch.mjs`](../integrations/api/ai-job-fit-scorer-run-and-fetch.mjs) | Starts one bounded exact build, polls the returned run, reconciles eventually consistent run/storage receipts, and validates every fit row |
-| Hosted MCP | [`ai-job-fit-scorer.mcp.json`](../integrations/mcp/examples/ai-job-fit-scorer.mcp.json) | Supplies generic `call-actor` arguments with an exact build, five-row cap, and $0.10 charge cap |
+| REST | [`ai-job-fit-scorer-run-and-fetch.mjs`](../integrations/api/ai-job-fit-scorer-run-and-fetch.mjs) | Starts one bounded run through `latest`, polls the returned run, reconciles eventually consistent run/storage receipts, and validates every fit row |
+| Hosted MCP | [`ai-job-fit-scorer.mcp.json`](../integrations/mcp/examples/ai-job-fit-scorer.mcp.json) | Supplies generic `call-actor` arguments with the `latest` selector, five-row cap, and $0.10 charge cap |
 | n8n | [`ai-job-fit-scorer-to-google-sheets.json`](../integrations/n8n/ai-job-fit-scorer-to-google-sheets.json) | Inactive exact-run workflow with summary, row, billing, and `matchKey` upsert gates |
 | Make | [`ai-job-fit-scorer-to-google-sheets.blueprint.json`](../integrations/make/ai-job-fit-scorer-to-google-sheets.blueprint.json) | Task-completion blueprint with native filters and separate update/append routes |
 | Zapier | [`ai-job-fit-scorer-template-spec.json`](../integrations/zapier/ai-job-fit-scorer-template-spec.json) | Editor recipe with exact mappings and required live checks; it is not an importable Zap |
@@ -43,7 +43,7 @@ and search terms:
 
 ```bash
 export APIFY_TOKEN="..."
-export ACTOR_BUILD_NUMBER="0.1.22"
+export ACTOR_BUILD_NUMBER="latest"
 node integrations/api/ai-job-fit-scorer-run-and-fetch.mjs
 ```
 
@@ -98,10 +98,10 @@ provided.
 
 Every integration should preserve this order:
 
-1. start `nomad-agent/ai-job-fit-scorer` with build `0.1.22`, an explicit input,
+1. start `job-atlas/ai-job-fit-scorer` with build `latest`, an explicit input,
    item cap, and maximum total charge;
 2. retain the returned run ID and poll only that run to a terminal state;
-3. require `SUCCEEDED`, exit code `0`, build number `0.1.22`, and immutable
+3. require `SUCCEEDED`, exit code `0`, the immutable build ID and number returned at start, and
    default dataset and key-value-store IDs;
 4. read `RUN-SUMMARY` from that run and require
    `nomad-ai-job-fit-run-summary-v4`, a usable status, scoring v3, a valid
@@ -161,7 +161,7 @@ named row and the same fixture updates that row instead of duplicating it.
 
 ### Make
 
-Create an Apify Task that owns the complete bounded input, exact build, and
+Create an Apify Task that owns the complete bounded input, `latest` selector, and
 charge cap. Import the blueprint, connect Apify and Google Sheets, replace both
 destination placeholders, and execute once on demand. Native filters can check
 declared values but are not a full closed-object schema oracle; retain the
@@ -191,15 +191,27 @@ Prove create and update behavior before enabling the schedule.
 
 ## Current live proof
 
+The public documentation and form release is `0.1.24`
+(`xQR0NAjBhmJdxG0XK`). Its runtime source files are unchanged from `0.1.22`.
+After promotion, both `latest` and the default selector resolved to this build.
+Default run `2LeF5m1YjsWw2rMWD` then succeeded on 2026-09-05 with exit code 0,
+three scored rows, no AI failures, and three result charges totaling $0.06.
+Its dataset, v4 summary, and exact run receipt reconcile. The run used the
+built-in fictional candidate. The preceding inline canary
+`Z0i7In8Kibqh4Qoe8` returned one scored row for a $0.02 result charge.
+This proves the Actor path; authenticated integration and destination writes
+remain separately untested.
+
+### Maintained integration and example proof
+
 Build `0.1.22` (`XQhyxEg3YZ3NMel70`) was read back as both `latest` and
 its default selector on 2026-09-05. Existing run `AkjZ6lVDultxapjdP`, started
 through `latest`, succeeded with exit code 0, three scored rows and three
 `job-fit-result` charges ($0.06). All three selected sources succeeded. This
 run used the built-in fictional candidate; it does not describe a customer.
 The full dataset and summary reconcile locally against that exact run receipt.
-No new paid run was started for this documentation work.
 
-Current starters pin `0.1.22`. The following older runs retain their actual
+Current starters select `latest` and validate the returned immutable build. The following older runs retain their actual
 build IDs and demonstrate historical cases, not fresh audit/inline execution
 on `0.1.22`.
 
@@ -227,3 +239,7 @@ evidence that all ten adapters succeeded together, not current-release proof.
 Those runs prove the Actor path, not hosted MCP, workflow import, scheduling, or
 a named destination write. See the evidence manifest before making a stronger
 claim.
+
+## Reading an existing dataset or run
+
+Selecting `sourceDatasetId` grants this run read-only access to that dataset. For `sourceActorRunId` outside the Actor's limited access, supply `sourceApifyToken` with read access to the run and its dataset. The token is an encrypted input; it is never included in results or run summaries. Using the dataset ID avoids needing a separate token.

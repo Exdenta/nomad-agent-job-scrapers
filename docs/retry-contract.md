@@ -2,7 +2,7 @@
 
 LinkedIn and EURAXESS integrations use the same delivery gate:
 
-1. Pin one exact Actor build and a conservative item and charge cap.
+1. Select `latest` and a conservative item and charge cap.
 2. Poll or wait until the run is terminal.
 3. Continue only for `SUCCEEDED` with exit code `0` when the API exposes it.
 4. Verify the run used the requested exact build.

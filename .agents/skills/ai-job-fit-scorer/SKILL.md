@@ -1,13 +1,13 @@
 ---
 name: ai-job-fit-scorer
-description: Search developer jobs and score them for one candidate with the Apify Actor nomad-agent/ai-job-fit-scorer. Use to build a bounded search-and-score or score-supplied-jobs input, run it on the exact build through Apify MCP, validate nomad-ai-job-fit-v1 rows and the nomad-ai-job-fit-run-summary-v4 record, and present a shortlist with fit scores, delivery scores, evidence, and gaps.
+description: Search developer jobs and score them for one candidate with the Apify Actor job-atlas/ai-job-fit-scorer. Use to build a bounded search-and-score or score-supplied-jobs input, run it through Apify MCP using latest and validate the resolved immutable build, validate nomad-ai-job-fit-v1 rows and the nomad-ai-job-fit-run-summary-v4 record, and present a shortlist with fit scores, delivery scores, evidence, and gaps.
 ---
 
 # AI job search and fit scoring
 
-Use this skill for the `nomad-agent/ai-job-fit-scorer` contract. This skill
-supports exact build `0.1.22`. Verify Actor availability and the completed
-run's build before accepting results.
+Use this skill for the `job-atlas/ai-job-fit-scorer` contract. This skill
+uses the production `latest` selector. Capture the immutable build ID and
+number returned by each run and validate its summary against that receipt.
 
 The Actor takes one candidate (a structured profile, a résumé upload, or
 résumé text) and either searches up to 10 public developer-job sources or
@@ -26,8 +26,8 @@ write one to a repository.
 
 1. Fetch the deployed Actor details to confirm account access and current
    pricing. Local skill text is not evidence of the live price.
-2. Use generic `call-actor` with `callOptions.build: "0.1.22"`. Require the
-   completed run to report `buildNumber: "0.1.22"` before reading its output.
+2. Use generic `call-actor` with `callOptions.build: "latest"`. Record the
+   returned run ID, immutable `buildId`, and numeric `buildNumber`.
 3. Send exactly one candidate source: `candidateProfile`, `resume`, or
    `resumeText`. Sending two is rejected before any paid work.
 4. In `search` mode, `search.keywords` is required. The Actor never invents a
@@ -104,7 +104,7 @@ this outer envelope; the bounded input above belongs under `input`:
 
 ```json
 {
-  "actor": "nomad-agent/ai-job-fit-scorer",
+  "actor": "job-atlas/ai-job-fit-scorer",
   "input": {
     "mode": "search",
     "search": {"sources": ["linkedin"], "keywords": ["platform engineer"], "maxItemsPerSource": 5},
@@ -112,15 +112,15 @@ this outer envelope; the bounded input above belongs under `input`:
     "maxItems": 5, "resultMode": "shortlist", "minDeliveryScore": 2
   },
   "waitSecs": 0,
-  "callOptions": {"build": "0.1.22", "maxItems": 5, "maxTotalChargeUsd": 0.1}
+  "callOptions": {"build": "latest", "maxItems": 5, "maxTotalChargeUsd": 0.1}
 }
 ```
 
-1. Call generic `call-actor`; do not rely on a direct Actor tool or a mutable
-   tag such as `latest`.
-2. Require the authoritative run to report `buildNumber: "0.1.22"`. If MCP
-   omits that field, verify the same run through Apify's authenticated run
-   API. A different build is a compatibility failure.
+1. Call generic `call-actor` with selector `latest`.
+2. Preserve the authoritative run's immutable `buildId` and numeric
+   `buildNumber`. If MCP omits either, verify the same run through Apify's
+   authenticated run API. A later read must preserve the same run and build.
+   Never compare a numeric build number to the literal alias `latest`.
 3. Poll non-terminal runs by run ID with `get-actor-run` until terminal.
 4. Continue only after `SUCCEEDED` with exit code `0`. Treat `FAILED`,
    `TIMED-OUT`, and `ABORTED` as errors; report the run ID, status message,
@@ -152,7 +152,7 @@ contract and the count arithmetic the validator enforces.
 ## Validate and present output
 
 ```bash
-python3 scripts/validate_run_summary.py run-summary.json --expected-build 0.1.22 --run run.json
+python3 scripts/validate_run_summary.py run-summary.json --run run.json
 python3 scripts/validate_fit_rows.py dataset.json --summary run-summary.json --run run.json --table
 ```
 

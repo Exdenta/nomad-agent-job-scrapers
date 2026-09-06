@@ -1,5 +1,5 @@
 {
-  "actor": "nomad-agent/ai-job-fit-scorer",
+  "actor": "job-atlas/ai-job-fit-scorer",
   "input": {
     "mode": "search",
     "search": {
@@ -48,7 +48,7 @@
   },
   "waitSecs": 0,
   "callOptions": {
-    "build": "0.1.22",
+    "build": "latest",
     "maxItems": 5,
     "maxTotalChargeUsd": 0.1
   }

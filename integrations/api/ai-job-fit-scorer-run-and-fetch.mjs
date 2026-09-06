@@ -2,16 +2,16 @@
 // Bounded exact-run REST example. Requires Node 18+ and APIFY_TOKEN.
 import { readFile } from 'node:fs/promises';
 
-const ACTOR = 'nomad-agent~ai-job-fit-scorer';
-const VERIFIED_BUILD = '0.1.22';
-const EXPECTED_BUILD = (process.env.ACTOR_BUILD_NUMBER || VERIFIED_BUILD).trim();
+const ACTOR = 'job-atlas~ai-job-fit-scorer';
+const BUILD_SELECTOR = 'latest';
+const ACTOR_ID = 'OZ919PaAyAbifOdcL';
 const MAX_TOTAL_CHARGE_USD = 0.10;
 const TERMINAL = new Set(['SUCCEEDED', 'FAILED', 'ABORTED', 'TIMED-OUT']);
 const token = (process.env.APIFY_TOKEN || '').trim();
 const base = (process.env.APIFY_API_BASE_URL || 'https://api.apify.com').replace(/\/$/, '');
 if (!token) throw new Error('APIFY_TOKEN is required');
-if (EXPECTED_BUILD !== VERIFIED_BUILD) {
-  throw new Error(`ACTOR_BUILD_NUMBER must remain pinned to verified build ${VERIFIED_BUILD}`);
+if (process.env.ACTOR_BUILD_NUMBER && process.env.ACTOR_BUILD_NUMBER.trim() !== BUILD_SELECTOR) {
+  throw new Error('The production starter requires ACTOR_BUILD_NUMBER=latest');
 }
 
 const inputPath = process.argv[2] || new URL('./ai-job-fit-scorer-input.json', import.meta.url);
@@ -44,7 +44,7 @@ async function request(path, options = {}) {
 const sleep = (milliseconds) => new Promise((resolve) => setTimeout(resolve, milliseconds));
 
 const query = new URLSearchParams({
-  build: EXPECTED_BUILD,
+  build: BUILD_SELECTOR,
   maxTotalChargeUsd: String(MAX_TOTAL_CHARGE_USD),
 });
 const started = await request(`/v2/actors/${ACTOR}/runs?${query}`, {
@@ -54,35 +54,53 @@ const started = await request(`/v2/actors/${ACTOR}/runs?${query}`, {
 let run = started.data;
 if (!run?.id) throw new Error('Actor start response contained no run ID');
 const exactRunId = run.id;
+const resolvedBuildId = run.buildId;
+const resolvedBuildNumber = run.buildNumber;
+if (run.actId !== ACTOR_ID || !resolvedBuildId || !/^\d+\.\d+\.\d+$/.test(resolvedBuildNumber || '')) {
+  throw new Error('Actor start omitted the immutable build identity');
+}
+function validateRunIdentity(receipt) {
+  if (receipt?.id !== exactRunId || receipt.actId !== ACTOR_ID
+      || receipt.buildId !== resolvedBuildId || receipt.buildNumber !== resolvedBuildNumber) {
+    throw new Error('run receipt changed the exact run or resolved build identity');
+  }
+}
 const deadline = Date.now() + 10 * 60_000;
 
 while (!TERMINAL.has(run.status)) {
   if (Date.now() >= deadline) throw new Error('Actor polling deadline exceeded after 600 seconds');
   const polled = await request(`/v2/actor-runs/${exactRunId}?waitForFinish=60`);
   run = polled.data;
-  if (run?.id !== exactRunId) throw new Error('poll response changed the exact run ID');
+  validateRunIdentity(run);
 }
 
 if (run.status !== 'SUCCEEDED' || run.exitCode !== 0) {
   throw new Error(`Actor run ${exactRunId} ended ${run.status} exitCode=${run.exitCode}`);
 }
-if (run.buildNumber !== EXPECTED_BUILD) {
-  throw new Error(`Actor used build ${run.buildNumber}; expected ${EXPECTED_BUILD}`);
-}
+validateRunIdentity(run);
 if (!run.defaultDatasetId || !run.defaultKeyValueStoreId) {
   throw new Error('terminal run omitted its immutable storage IDs');
 }
 
+const datasetId = run.defaultDatasetId;
+const storeId = run.defaultKeyValueStoreId;
 let summary;
 let rows;
 const settlementDeadline = Date.now() + 45_000;
 while (true) {
   const refreshed = await request(`/v2/actor-runs/${exactRunId}`);
   run = refreshed.data;
-  if (run?.id !== exactRunId) throw new Error('settlement read changed the exact run ID');
+  validateRunIdentity(run);
+  if (run.status !== 'SUCCEEDED' || run.exitCode !== 0 || run.defaultDatasetId !== datasetId || run.defaultKeyValueStoreId !== storeId) {
+    throw new Error('settlement read changed terminal status or exact-run storage');
+  }
   summary = await request(
     `/v2/key-value-stores/${run.defaultKeyValueStoreId}/records/RUN-SUMMARY`,
   );
+  if (summary?.actor?.id !== ACTOR_ID || summary.actor.runId !== exactRunId
+      || summary.actor.buildId !== resolvedBuildId || summary.actor.buildNumber !== resolvedBuildNumber) {
+    throw new Error('RUN-SUMMARY does not match the exact run and resolved build');
+  }
   rows = await request(
     `/v2/datasets/${run.defaultDatasetId}/items?clean=true&limit=${actorInput.maxItems}`,
   );
@@ -250,4 +268,4 @@ for (const row of rows) {
   seen.add(row.matchKey);
 }
 
-process.stdout.write(`${JSON.stringify({ runId: exactRunId, summary, rows }, null, 2)}\n`);
+process.stdout.write(`${JSON.stringify({ runId: exactRunId, buildId: resolvedBuildId, buildNumber: resolvedBuildNumber, summary, rows }, null, 2)}\n`);

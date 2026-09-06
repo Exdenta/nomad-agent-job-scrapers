@@ -71,7 +71,7 @@ class MakePackTest(unittest.TestCase):
             for item in self.by_name["Configuration"]["mapper"]["variables"]
         }
         self.assertEqual(config["maxitems"], "1")
-        self.assertEqual(config["actorbuild"], "1.0.2")
+        self.assertEqual(config["actorbuild"], "latest")
         self.assertEqual(config["apifytaskid"], "REPLACE_WITH_APIFY_TASK_ID")
         self.assertEqual(
             config["googlespreadsheetid"],
@@ -89,14 +89,11 @@ class MakePackTest(unittest.TestCase):
         status = self.by_name["Read public RUN-SUMMARY v4"]
         self.assertEqual(status["mapper"]["url"], "{{1.output.runSummary}}")
         self.assertFalse(status["mapper"]["serializeUrl"])
-        self.assertEqual(status["filter"], {
-            "name": "Read status only for the exact successful Actor build",
-            "conditions": [[
-                {"a": "{{1.status}}", "b": "SUCCEEDED", "o": "text:equal"},
-                {"a": "{{1.buildNumber}}", "b": "{{2.actorbuild}}", "o": "text:equal"},
-                {"a": "{{1.output.runSummary}}", "o": "exist"},
-            ]],
-        })
+        conditions = status["filter"]["conditions"][0]
+        self.assertIn({"a": "{{1.status}}", "b": "SUCCEEDED", "o": "text:equal"}, conditions)
+        self.assertIn({"a": "{{1.options.build}}", "b": "latest", "o": "text:equal"}, conditions)
+        self.assertTrue(any("1.buildId" in c["a"] for c in conditions))
+        self.assertTrue(any("1.buildNumber" in c["a"] for c in conditions))
         wait = self.by_name["Wait bounded v4 retry delay"]
         retry = self.by_name["Retry the same Apify Task once"]
         self.assertEqual(wait["module"], "util:FunctionSleep")

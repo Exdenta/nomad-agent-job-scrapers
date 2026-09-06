@@ -21,14 +21,14 @@ Save LinkedIn jobs to Google Sheets
 
 ### Short description
 
-Watch a completed Apify Task, validate exact LinkedIn build `1.0.2`, flatten
+Watch a completed Apify Task, validate exact LinkedIn build `latest`, flatten
 normalized jobs, and update or append Google Sheets rows by stable `jobKey`.
 
 ### Full description
 
 Turn a bounded LinkedIn job-search Task into a duplicate-safe Google Sheets
 tracker. The scenario watches completed Apify Task runs, requires terminal
-`SUCCEEDED` from exact build `1.0.2`, reads the factual
+`SUCCEEDED` from build selector `latest`, reads the factual
 `nomad-agent-run-summary-v4` record through that run's signed output link, and
 fetches only the selected run's default dataset.
 
@@ -55,14 +55,14 @@ off for the first smoke.
 ### Setup
 
 1. Create an Apify Task for
-   `nomad-agent/linkedin-enrich-translate-normalize-scraper` with complete
-   strict input, exact build `1.0.2`, a one-item first run, and a conservative
+   `job-atlas/linkedin-enrich-translate-normalize-scraper` with complete
+   strict input, build selector `latest`, a one-item first run, and a conservative
    maximum total charge.
 2. Import
    [`linkedin-jobs-to-google-sheets.blueprint.json`](linkedin-jobs-to-google-sheets.blueprint.json)
    into a new Make scenario and select that Task in
    **Watch completed LinkedIn Task runs**.
-3. Set `actorbuild` to `1.0.2`, replace the Task and spreadsheet placeholders,
+3. Set `actorbuild` to `latest`, replace the Task and spreadsheet placeholders,
    and connect the Apify and Google Sheets modules.
 4. Import [`google-sheets-columns.csv`](google-sheets-columns.csv) into a tab
    named `Jobs`.
@@ -84,7 +84,7 @@ destination delivery.
 - Blueprint: [`linkedin-jobs-to-google-sheets.blueprint.json`](linkedin-jobs-to-google-sheets.blueprint.json)
 - Product guide: <https://jobatlas.dev/actors/linkedin>
 - Setup and support: <https://jobatlas.dev/integrations/make>
-- Actor: <https://apify.com/nomad-agent/linkedin-enrich-translate-normalize-scraper>
+- Actor: <https://apify.com/job-atlas/linkedin-enrich-translate-normalize-scraper>
 - Source and issues: <https://github.com/Exdenta/nomad-agent-job-scrapers>
 
 ## Template 2: EURAXESS jobs to Google Sheets
@@ -95,7 +95,7 @@ Save EURAXESS jobs to Google Sheets
 
 ### Short description
 
-Watch a completed EURAXESS Task at selector `latest`, validate its factual run
+Watch a completed EURAXESS Task at build `latest`, validate its factual run
 summary, and upsert normalized research jobs in Google Sheets by `jobKey`.
 
 ### Full description
@@ -129,8 +129,8 @@ analytics, raw output, and cross-run deduplication off. EURAXESS supports
 ### Setup
 
 1. Create an Apify Task for
-   `nomad-agent/euraxess-enrich-translate-normalize-scraper` with complete
-   strict input, the `latest` selector, no more than five results for the first
+   `job-atlas/euraxess-enrich-translate-normalize-scraper` with complete
+   strict input, build selector `latest`, no more than five results for the first
    run, and a conservative maximum total charge.
 2. Import
    [`euraxess-jobs-to-google-sheets.blueprint.json`](euraxess-jobs-to-google-sheets.blueprint.json)
@@ -157,7 +157,7 @@ claim that the template is submitted, approved, shared, or public.
 - Blueprint: [`euraxess-jobs-to-google-sheets.blueprint.json`](euraxess-jobs-to-google-sheets.blueprint.json)
 - Product guide: <https://jobatlas.dev/actors/euraxess>
 - Setup and support: <https://jobatlas.dev/integrations/make>
-- Actor: <https://apify.com/nomad-agent/euraxess-enrich-translate-normalize-scraper>
+- Actor: <https://apify.com/job-atlas/euraxess-enrich-translate-normalize-scraper>
 - Source and issues: <https://github.com/Exdenta/nomad-agent-job-scrapers>
 
 ## Template 3: AI job-fit scores to Google Sheets
@@ -168,14 +168,14 @@ Save AI job-fit scores to Google Sheets
 
 ### Short description
 
-Watch an AI Job Search & Fit Task at build `0.1.22`, validate evidence-gated
+Watch an AI Job Search & Fit Task at build `latest`, validate evidence-gated
 evaluations and billing, and upsert Google Sheets rows by unique `matchKey`.
 
 ### Full description
 
 Convert a completed AI Job Search & Fit Scorer Task into a candidate-specific
 Google Sheets shortlist. The scenario watches the configured Apify Task,
-requires the expected Actor and exact build `0.1.22`, reads that run's legacy
+requires the expected Actor and the immutable build returned by that run, reads that run's legacy
 v3 or current `nomad-ai-job-fit-run-summary-v4`, fetches its exact dataset,
 and validates the declared scoring, result-policy, and billing fields before
 delivery.
@@ -188,7 +188,7 @@ candidate evaluation. Each retained successful evaluation uses the Actor's
 single `$0.02` `job-fit-result` event.
 
 The Apify Task owns the complete bounded search or supplied-job input,
-candidate profile or résumé, exact build, item count, and charge cap. Start
+candidate profile or résumé, production selector, item count, and charge cap. Start
 with no more than five evaluations and a `$0.10` maximum total charge. The
 hosted Actor supplies the model, so no customer AI-provider key is required.
 
@@ -202,14 +202,14 @@ hosted Actor supplies the model, so no customer AI-provider key is required.
 
 ### Setup
 
-1. Create an Apify Task for `nomad-agent/ai-job-fit-scorer` with exact build
-   `0.1.22`, complete bounded input, at most five evaluations, and a `$0.10`
+1. Create an Apify Task for `job-atlas/ai-job-fit-scorer` with production selector
+   `latest`, complete bounded input, at most five evaluations, and a `$0.10`
    maximum total charge.
 2. Import
    [`ai-job-fit-scorer-to-google-sheets.blueprint.json`](ai-job-fit-scorer-to-google-sheets.blueprint.json)
    into a new Make scenario and select that Task in
    **Watch completed AI Job Search & Fit Task runs**.
-3. Keep `expectedbuild=0.1.22`, replace the spreadsheet placeholder, and
+3. Preserve the immutable build from the completed run, replace the spreadsheet placeholder, and
    connect the Apify and Google Sheets modules.
 4. Import
    [`../shared/ai-job-fit-google-sheets-columns.csv`](../shared/ai-job-fit-google-sheets-columns.csv)
@@ -233,7 +233,7 @@ elsewhere do not prove this Make scenario or its named Google Sheets write.
 - Blueprint: [`ai-job-fit-scorer-to-google-sheets.blueprint.json`](ai-job-fit-scorer-to-google-sheets.blueprint.json)
 - Product guide: <https://jobatlas.dev/actors/ai-job-fit-scorer>
 - Setup and support: <https://jobatlas.dev/integrations/make>
-- Actor: <https://apify.com/nomad-agent/ai-job-fit-scorer>
+- Actor: <https://apify.com/job-atlas/ai-job-fit-scorer>
 - Source and issues: <https://github.com/Exdenta/nomad-agent-job-scrapers>
 
 ## License

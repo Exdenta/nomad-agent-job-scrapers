@@ -25,7 +25,7 @@ update Google Sheets rows by stable job identity without duplicate rows.
 
 Turn a repeatable LinkedIn job search into a clean, searchable Google Sheets
 tracker. The workflow runs manually or every day at 08:00 UTC, calls the
-Nomad Agent LinkedIn Actor at exact build `1.0.2`, polls only that run, and
+Job Atlas LinkedIn Actor at build selector `latest`, polls only that run, and
 stops unless the terminal status, exit code, build, and factual `RUN-SUMMARY`
 are valid.
 
@@ -60,7 +60,7 @@ No community node or AI-provider credential is required.
    HTTP nodes.
 4. Connect Google Sheets to **Upsert jobs in Google Sheets**.
 5. Replace `REPLACE_WITH_GOOGLE_SPREADSHEET_ID` and review
-   **Configuration**. Keep build `1.0.2`, `maxItems=1`, and the `$0.10` charge
+   **Configuration**. Keep build `latest`, `maxItems=1`, and the `$0.10` charge
    cap for the first run.
 6. Run the workflow manually and confirm the exact Apify run, dataset count,
    and resulting Sheet row.
@@ -81,7 +81,7 @@ named Sheet write.
 - Workflow: [`linkedin-jobs-to-google-sheets.json`](linkedin-jobs-to-google-sheets.json)
 - Product guide: <https://jobatlas.dev/actors/linkedin>
 - Setup and support: <https://jobatlas.dev/integrations/n8n>
-- Actor: <https://apify.com/nomad-agent/linkedin-enrich-translate-normalize-scraper>
+- Actor: <https://apify.com/job-atlas/linkedin-enrich-translate-normalize-scraper>
 - Source and issues: <https://github.com/Exdenta/nomad-agent-job-scrapers>
 
 ## Template 2: LinkedIn daily job alerts
@@ -99,8 +99,8 @@ and send each new job to one selected Slack, Telegram, or email destination.
 
 Create one bounded daily LinkedIn job alert without maintaining a separate
 delivery database in n8n. The workflow runs manually or at 08:00 UTC, validates
-its configuration before the paid call, and calls exact Actor build `1.0.2`
-through Apify's synchronous dataset endpoint. The starter requests at most ten
+its configuration before the paid call, and calls Actor build selector `latest`
+through same-run polling and validated dataset retrieval. The starter requests at most ten
 jobs and caps the run at `$0.10`.
 
 The Actor's opaque alert scope enables source-side cross-run deduplication, so
@@ -123,8 +123,8 @@ and dataset reconciliation are required before delivery.
 ### Setup
 
 1. Import [`linkedin-daily-job-alerts.json`](linkedin-daily-job-alerts.json).
-2. Add a scoped Apify Header Auth credential to **Find only new jobs**.
-3. In **Alert configuration**, keep build `1.0.2`, choose `slack`,
+2. Assign a scoped Apify Header Auth credential to **Find only new jobs**, **Poll same alert run**, and **Get verified alert jobs**.
+3. In **Alert configuration**, keep build `latest`, choose `slack`,
    `telegram`, or `email`, replace the destination placeholder, and replace
    the alert-scope placeholder with a stable opaque value.
 4. Add credentials only to the selected delivery node. Email also needs a
@@ -147,7 +147,7 @@ an n8n template.
 - Workflow: [`linkedin-daily-job-alerts.json`](linkedin-daily-job-alerts.json)
 - Product guide: <https://jobatlas.dev/actors/linkedin>
 - Setup and support: <https://jobatlas.dev/integrations/n8n>
-- Actor: <https://apify.com/nomad-agent/linkedin-enrich-translate-normalize-scraper>
+- Actor: <https://apify.com/job-atlas/linkedin-enrich-translate-normalize-scraper>
 - Source and issues: <https://github.com/Exdenta/nomad-agent-job-scrapers>
 
 ## Template 3: EURAXESS jobs to Google Sheets
@@ -165,7 +165,7 @@ Actor run, and upsert duplicate-safe Google Sheets rows by stable job identity.
 
 Build a repeatable tracker for PhD, postdoc, fellowship, research, and faculty
 vacancies from EURAXESS. The workflow runs manually or daily, calls the Nomad
-Agent EURAXESS Actor at the `latest` selector, polls the original run ID, and
+Agent EURAXESS Actor at build selector `latest`, polls the original run ID, and
 requires terminal success, exit code 0, the expected build, and a valid factual
 `nomad-agent-run-summary-v4` record.
 
@@ -197,7 +197,7 @@ No community node or AI-provider credential is required.
    named `Jobs`.
 3. Assign one scoped Apify Header Auth credential to all four Apify HTTP nodes.
 4. Connect Google Sheets to **Upsert jobs in Google Sheets**.
-5. Replace the spreadsheet placeholder and keep selector `latest`, five results,
+5. Replace the spreadsheet placeholder and keep build `latest`, five results,
    and the starter charge cap for the first run.
 6. Set a bounded keyword, location, or `euraxessSearch` plan; use
    `advancedInputJson` for other current Actor fields.
@@ -217,7 +217,7 @@ successful Actor run remain supporting artifact evidence only.
 - Workflow: [`euraxess-jobs-to-google-sheets.json`](euraxess-jobs-to-google-sheets.json)
 - Product guide: <https://jobatlas.dev/actors/euraxess>
 - Setup and support: <https://jobatlas.dev/integrations/n8n>
-- Actor: <https://apify.com/nomad-agent/euraxess-enrich-translate-normalize-scraper>
+- Actor: <https://apify.com/job-atlas/euraxess-enrich-translate-normalize-scraper>
 - Source and issues: <https://github.com/Exdenta/nomad-agent-job-scrapers>
 
 ## Template 4: AI job-fit scores to Google Sheets
@@ -235,7 +235,7 @@ and upsert evidence-gated fit scores to Google Sheets by candidate-specific ID.
 
 Turn a bounded developer-job search into a candidate-specific shortlist. On a
 manual trigger, the workflow calls the AI Job Search & Fit Scorer at exact
-build `0.1.22`, polls the same run until terminal, validates legacy v3 or the
+build `latest`, polls the same run until terminal, validates legacy v3 or the
 current `nomad-ai-job-fit-run-summary-v4` result policy and billing fields,
 and fetches only that run's dataset.
 
@@ -267,7 +267,7 @@ customer AI-provider key.
    Google Sheets to **Upsert Google Sheets by matchKey**.
 4. Replace the spreadsheet placeholder and edit the structured search and
    candidate profile in **Configuration**.
-5. Keep exact build `0.1.22`, five evaluations, and the `$0.10` maximum total
+5. Keep production selector `latest`, five evaluations, and the `$0.10` maximum total
    charge for the first run.
 6. Run manually and reconcile the terminal Actor run, v4 summary, charged
    events, exact dataset, and named Sheet rows.
@@ -288,7 +288,7 @@ or submitted to the template library.
 - Workflow: [`ai-job-fit-scorer-to-google-sheets.json`](ai-job-fit-scorer-to-google-sheets.json)
 - Product guide: <https://jobatlas.dev/actors/ai-job-fit-scorer>
 - Setup and support: <https://jobatlas.dev/integrations/n8n>
-- Actor: <https://apify.com/nomad-agent/ai-job-fit-scorer>
+- Actor: <https://apify.com/job-atlas/ai-job-fit-scorer>
 - Source and issues: <https://github.com/Exdenta/nomad-agent-job-scrapers>
 
 ## License

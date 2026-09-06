@@ -13,7 +13,7 @@
           "y": 0,
           "name": "Watch completed AI Job Search & Fit Task runs"
         },
-        "notes": "Create an Apify Task for nomad-agent/ai-job-fit-scorer pinned to verified build 0.1.22, use the bounded shortlist starter with resultMode=shortlist, minDeliveryScore=2, maxItems=5, and maximum total charge USD 0.10."
+        "notes": "Create an Apify Task for job-atlas/ai-job-fit-scorer using build latest and preserving the immutable build returned by the completed run, use the bounded shortlist starter with resultMode=shortlist, minDeliveryScore=2, maxItems=5, and maximum total charge USD 0.10."
       }
     },
     {
@@ -24,12 +24,8 @@
       "mapper": {
         "variables": [
           {
-            "name": "expectedbuild",
-            "value": "0.1.22"
-          },
-          {
             "name": "expectedactorid",
-            "value": "mBRj1sgHTWmoPJEcb"
+            "value": "OZ919PaAyAbifOdcL"
           },
           {
             "name": "googlespreadsheetid",
@@ -77,11 +73,6 @@
               "o": "text:equal"
             },
             {
-              "a": "{{1.buildNumber}}",
-              "b": "{{2.expectedbuild}}",
-              "o": "text:equal"
-            },
-            {
               "a": "{{1.defaultDatasetId}}",
               "o": "exist"
             },
@@ -93,6 +84,14 @@
               "a": "{{2.googlespreadsheetid}}",
               "b": "REPLACE_WITH_GOOGLE_SPREADSHEET_ID",
               "o": "text:notequal"
+            },
+            {
+              "a": "{{1.buildId}}",
+              "o": "exist"
+            },
+            {
+              "a": "{{1.buildNumber}}",
+              "o": "exist"
             }
           ]
         ]
@@ -137,11 +136,6 @@
             {
               "a": "{{1.actId}}",
               "b": "{{2.expectedactorid}}",
-              "o": "text:equal"
-            },
-            {
-              "a": "{{1.buildNumber}}",
-              "b": "{{2.expectedbuild}}",
               "o": "text:equal"
             },
             {
@@ -196,6 +190,34 @@
               "a": "{{3.data.schemaVersion}}",
               "b": "nomad-ai-job-fit-run-summary-v3",
               "o": "text:equal"
+            },
+            {
+              "a": "{{1.buildId}}",
+              "o": "exist"
+            },
+            {
+              "a": "{{1.buildNumber}}",
+              "o": "exist"
+            },
+            {
+              "a": "{{3.data.actor.id}}",
+              "b": "{{1.actId}}",
+              "o": "text:equal"
+            },
+            {
+              "a": "{{3.data.actor.runId}}",
+              "b": "{{1.id}}",
+              "o": "text:equal"
+            },
+            {
+              "a": "{{3.data.actor.buildId}}",
+              "b": "{{1.buildId}}",
+              "o": "text:equal"
+            },
+            {
+              "a": "{{3.data.actor.buildNumber}}",
+              "b": "{{1.buildNumber}}",
+              "o": "text:equal"
             }
           ],
           [
@@ -212,11 +234,6 @@
             {
               "a": "{{1.actId}}",
               "b": "{{2.expectedactorid}}",
-              "o": "text:equal"
-            },
-            {
-              "a": "{{1.buildNumber}}",
-              "b": "{{2.expectedbuild}}",
               "o": "text:equal"
             },
             {
@@ -296,6 +313,34 @@
             {
               "a": "{{3.data.counts.resultFilteredOut}}",
               "o": "exist"
+            },
+            {
+              "a": "{{1.buildId}}",
+              "o": "exist"
+            },
+            {
+              "a": "{{1.buildNumber}}",
+              "o": "exist"
+            },
+            {
+              "a": "{{3.data.actor.id}}",
+              "b": "{{1.actId}}",
+              "o": "text:equal"
+            },
+            {
+              "a": "{{3.data.actor.runId}}",
+              "b": "{{1.id}}",
+              "o": "text:equal"
+            },
+            {
+              "a": "{{3.data.actor.buildId}}",
+              "b": "{{1.buildId}}",
+              "o": "text:equal"
+            },
+            {
+              "a": "{{3.data.actor.buildNumber}}",
+              "b": "{{1.buildNumber}}",
+              "o": "text:equal"
             }
           ],
           [
@@ -312,11 +357,6 @@
             {
               "a": "{{1.actId}}",
               "b": "{{2.expectedactorid}}",
-              "o": "text:equal"
-            },
-            {
-              "a": "{{1.buildNumber}}",
-              "b": "{{2.expectedbuild}}",
               "o": "text:equal"
             },
             {
@@ -397,6 +437,34 @@
               "a": "{{3.data.counts.resultFilteredOut}}",
               "b": 0,
               "o": "number:equal"
+            },
+            {
+              "a": "{{1.buildId}}",
+              "o": "exist"
+            },
+            {
+              "a": "{{1.buildNumber}}",
+              "o": "exist"
+            },
+            {
+              "a": "{{3.data.actor.id}}",
+              "b": "{{1.actId}}",
+              "o": "text:equal"
+            },
+            {
+              "a": "{{3.data.actor.runId}}",
+              "b": "{{1.id}}",
+              "o": "text:equal"
+            },
+            {
+              "a": "{{3.data.actor.buildId}}",
+              "b": "{{1.buildId}}",
+              "o": "text:equal"
+            },
+            {
+              "a": "{{3.data.actor.buildNumber}}",
+              "b": "{{1.buildNumber}}",
+              "o": "text:equal"
             }
           ]
         ]
@@ -447,6 +515,14 @@
             {
               "a": "{{4.matchKey}}",
               "o": "exist"
+            },
+            {
+              "a": "{{1.buildId}}",
+              "o": "exist"
+            },
+            {
+              "a": "{{1.buildNumber}}",
+              "o": "exist"
             }
           ],
           [
@@ -483,6 +559,14 @@
             {
               "a": "{{4.matchKey}}",
               "o": "exist"
+            },
+            {
+              "a": "{{1.buildId}}",
+              "o": "exist"
+            },
+            {
+              "a": "{{1.buildNumber}}",
+              "o": "exist"
             }
           ],
           [
@@ -513,6 +597,14 @@
             },
             {
               "a": "{{4.matchKey}}",
+              "o": "exist"
+            },
+            {
+              "a": "{{1.buildId}}",
+              "o": "exist"
+            },
+            {
+              "a": "{{1.buildNumber}}",
               "o": "exist"
             }
           ]

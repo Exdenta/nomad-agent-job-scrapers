@@ -13,7 +13,7 @@ Use generic MCP `call-actor` with this complete envelope. Adapt the keyword and 
 
 ```json
 {
-  "actor": "nomad-agent/euraxess-enrich-translate-normalize-scraper",
+  "actor": "job-atlas/euraxess-enrich-translate-normalize-scraper",
   "input": {
     "schemaVersion": "nomad-agent-job-search-input-v1",
     "keyword": "research",

@@ -20,3 +20,7 @@ This repository publishes integration assets for normalized job-search Actors.
   Agent Skill before committing.
 - Do not claim a workflow is live-validated unless it was tested against the
   deployed Actor and the named destination platform.
+
+- Maintained Actor callers select `latest`. Verify the immutable build ID and
+  build number returned by each exact run; never require a historical numeric
+  build selector. Preserve schema, source, count, retry, and cost validation.

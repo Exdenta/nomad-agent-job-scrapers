@@ -10,9 +10,9 @@ the JSON Schema is
 
 | Block | What to check |
 | --- | --- |
-| `schemaVersion` | Must be `nomad-ai-job-fit-run-summary-v4`. Build `0.1.22` never emits v3. |
+| `schemaVersion` | Must be `nomad-ai-job-fit-run-summary-v4`. |
 | `recordType` | `RUN-SUMMARY`. |
-| `actor` | `id`, `runId`, `buildId`, `buildNumber`. `buildNumber` must equal the pinned build. |
+| `actor` | `id`, `runId`, `buildId`, `buildNumber`. The build ID and number must equal the authoritative run receipt. |
 | `algorithm` | `name: "scoring-v3"` and `interactionStateUsed: false`. |
 | `status` | Usable values are `complete`, `partial`, and `empty`. `failed`, `cancelled`, and `aborted` are not usable. |
 | `cleanEmpty` | True for a validated empty source; in search mode, inspect each source outcome. |
@@ -52,7 +52,7 @@ is how many the caller's charge cap allowed; `aiAttempted` equals
   or a lower `minDeliveryScore` only if the user wants to see them.
 - Zero evaluations with `cleanEmpty == false`: inspect the terminal reason
   and budget fields; this does not establish that no jobs were found.
-- `status` not usable, or `actor.buildNumber` different from the pin: stop and
+- `status` not usable, or `actor.buildNumber` different from the resolved run receipt: stop and
   report the run ID and status message.
 
 Validate a downloaded record from the installed skill directory:
@@ -66,6 +66,6 @@ example is from build `0.1.22`, run `AkjZ6lVDultxapjdP`, and the built-in
 fictional candidate. Its full dataset has three rows; the single-row example
 is an excerpt and cannot reconcile against a summary reporting three rows.
 
-Use `--expected-build 0.1.22 --run run.json` to verify the exact authoritative
+Use `--run run.json` to verify the exact authoritative
 run receipt. The local validators cannot prove where downloaded files came
 from; fetch them by the storage IDs on that same run.

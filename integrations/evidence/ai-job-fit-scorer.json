@@ -7,12 +7,13 @@
   },
   "recordedAt": "2026-09-05",
   "deployment": {
-    "state": "DEPLOYED",
+    "state": "LIVE_VERIFIED",
     "isPublic": true,
-    "latestBuildNumber": "0.1.22",
-    "latestBuildId": "XQhyxEg3YZ3NMel70",
+    "latestBuildNumber": "0.1.24",
+    "latestBuildId": "xQR0NAjBhmJdxG0XK",
     "defaultBuildSelector": "latest",
-    "note": "Read-only observation of an existing release; no release performed in this continuation."
+    "note": "Public copy, form schema, example, and production-selector release. Runtime source files are unchanged from 0.1.22. Maintained starters select latest and bind summary actor/run/build fields to the immutable returned receipt. Historical example fixtures retain 0.1.22. Latest and default were read back before releaseActorRun.",
+    "sourceVersionBuildTag": "latest"
   },
   "historicalCompatibilityEvidence": {
     "buildNumber": "0.1.10",
@@ -39,7 +40,7 @@
       "evidence": [
         {
           "layer": "artifact",
-          "summary": "The generic call-actor descriptor is credential-free, bounded, explicit about shortlist mode, and pinned to live-verified runtime build 0.1.22."
+          "summary": "The generic call-actor descriptor is credential-free, bounded, explicit about shortlist mode, and configured for latest with immutable run-receipt validation."
         },
         {
           "layer": "historical-actor-run",
@@ -129,7 +130,7 @@
       "evidence": [
         {
           "layer": "artifact",
-          "summary": "The editor specification pins build 0.1.22, shortlist mode, delivery score 2, exact-run storage, and matchKey-based Google Sheets upserts."
+          "summary": "The editor specification selects latest, shortlist mode, delivery score 2, exact-run storage, and matchKey-based Google Sheets upserts."
         },
         {
           "layer": "historical-actor-run",
@@ -289,6 +290,78 @@
         "job-fit-result": 1
       },
       "runSummarySchema": "nomad-ai-job-fit-run-summary-v4"
+    }
+  },
+  "releaseActorRun": {
+    "runId": "2LeF5m1YjsWw2rMWD",
+    "resolvedBuildNumber": "0.1.24",
+    "resolvedBuildId": "xQR0NAjBhmJdxG0XK",
+    "status": "SUCCEEDED",
+    "exitCode": 0,
+    "selector": "latest",
+    "buildParameterOmitted": true,
+    "startedAt": "2026-09-05T19:11:15.721Z",
+    "finishedAt": "2026-09-05T19:11:42.234Z",
+    "datasetId": "jenzbtO5UVovcyGnM",
+    "keyValueStoreId": "F2DWca0SUZgvmyqYy",
+    "datasetRows": 3,
+    "usedExampleProfile": true,
+    "chargedEventCounts": {
+      "job-fit-result": 3
+    },
+    "totalResultChargeUsd": 0.06,
+    "maxTotalChargeUsd": 0.06,
+    "runSummarySchema": "nomad-ai-job-fit-run-summary-v4",
+    "warningNote": "The default run uses a fictional example candidate and is limited to three evaluated jobs.",
+    "prePromotionCanary": {
+      "runId": "Z0i7In8Kibqh4Qoe8",
+      "mode": "score-jobs",
+      "datasetRows": 1,
+      "totalResultChargeUsd": 0.02
+    },
+    "sourceStatuses": {
+      "linkedin": "succeeded",
+      "remote_boards": "succeeded",
+      "justjoinit": "succeeded"
+    }
+  },
+  "productionSelector": "latest",
+  "precedingDocumentationRelease": {
+    "deployment": {
+      "state": "LIVE_VERIFIED",
+      "isPublic": true,
+      "latestBuildNumber": "0.1.23",
+      "latestBuildId": "s2oMxT94Pbe0cNqY5",
+      "defaultBuildSelector": "latest",
+      "note": "Earlier documentation build accepted during this release session, before the production-selector migration."
+    },
+    "run": {
+      "runId": "GcTl6gbZSbrnhLRfT",
+      "resolvedBuildNumber": "0.1.23",
+      "resolvedBuildId": "s2oMxT94Pbe0cNqY5",
+      "status": "SUCCEEDED",
+      "exitCode": 0,
+      "selector": "latest",
+      "buildParameterOmitted": true,
+      "startedAt": "2026-09-05T18:54:01.815Z",
+      "finishedAt": "2026-09-05T18:54:30.350Z",
+      "datasetId": "MgJQNyp8BhrSXQUio",
+      "keyValueStoreId": "IN7Kk1YIhaBgbAqgo",
+      "datasetRows": 3,
+      "usedExampleProfile": true,
+      "chargedEventCounts": {
+        "job-fit-result": 3
+      },
+      "totalResultChargeUsd": 0.06,
+      "maxTotalChargeUsd": 0.06,
+      "runSummarySchema": "nomad-ai-job-fit-run-summary-v4",
+      "warningNote": "The default run uses a fictional example candidate and is limited to three evaluated jobs.",
+      "prePromotionCanary": {
+        "runId": "uAR0mHTrqeTfXWG07",
+        "mode": "score-jobs",
+        "datasetRows": 1,
+        "totalResultChargeUsd": 0.02
+      }
     }
   }
 }

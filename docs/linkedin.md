@@ -81,7 +81,7 @@ from apify_client import ApifyClient
 
 client = ApifyClient("<YOUR_APIFY_TOKEN>")
 run = client.actor(
-    "nomad-agent/linkedin-enrich-translate-normalize-scraper"
+    "job-atlas/linkedin-enrich-translate-normalize-scraper"
 ).call(run_input={
     "schemaVersion": "nomad-agent-job-search-input-v1",
     "keyword": "software engineer",
@@ -102,9 +102,8 @@ for job in client.dataset(run["defaultDatasetId"]).iterate_items():
     print(job["data"]["title"], job["identity"]["url"])
 ```
 
-This standalone example follows `latest`. Check the [current default build API](https://api.apify.com/v2/acts/nomad-agent~linkedin-enrich-translate-normalize-scraper/builds/default)
-for the default build number and immutable ID. Maintained integration templates
-use their own tested exact pins; follow the selected template's compatibility
+This standalone example follows `latest`. Check the [current default build API](https://api.apify.com/v2/acts/job-atlas~linkedin-enrich-translate-normalize-scraper/builds/default)
+for the default build number and immutable ID. Maintained integration templates select `latest`; follow the selected template's compatibility
 guide when running it. A `1.0.x` check alone does not prove compatibility.
 
 [Integration guides and templates](https://github.com/Exdenta/nomad-agent-job-scrapers)
@@ -124,3 +123,5 @@ exclude jobs with missing evidence.
 This independent Actor is not affiliated with or endorsed by LinkedIn.
 Contact the Actor creator through the Apify issue tab for help or privacy requests.
 For corrections or removal, include the job URL or ID and avoid private information.
+
+The `dedupe.key` field is optional. Both `{"enabled": false}` and `{"enabled": true}` are accepted; an omitted key uses an empty, search-specific scope. Explicit keys keep their existing meaning.

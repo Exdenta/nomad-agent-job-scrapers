@@ -15,9 +15,9 @@ PINNED_URL = (
     "fetch-actor-details,call-actor,get-actor-run,get-dataset-items,"
     "get-key-value-store-record"
 )
-LINKEDIN_ACTOR = "nomad-agent/linkedin-enrich-translate-normalize-scraper"
-EURAXESS_ACTOR = "nomad-agent/euraxess-enrich-translate-normalize-scraper"
-LINKEDIN_BUILD = "1.0.2"
+LINKEDIN_ACTOR = "job-atlas/linkedin-enrich-translate-normalize-scraper"
+EURAXESS_ACTOR = "job-atlas/euraxess-enrich-translate-normalize-scraper"
+LINKEDIN_BUILD = "latest"
 EURAXESS_BUILD = "latest"
 CANONICAL_ROOTS = {"custom", "data", "identity", "llm", "raw", "schemaVersion"}
 INPUT_KEYS = {
@@ -163,7 +163,7 @@ def validate() -> None:
         "maxItems": 5,
         "maxTotalChargeUsd": 0.1,
     }:
-        _fail("LinkedIn MCP example must pin build and both cost caps")
+        _fail("LinkedIn MCP example must select latest and both cost caps")
     linkedin_input = example["input"]
     if set(linkedin_input) != INPUT_KEYS:
         _fail("LinkedIn MCP input has missing or unexpected arguments")
@@ -203,7 +203,7 @@ def validate() -> None:
         "maxItems": 5,
         "maxTotalChargeUsd": 0.1,
     }:
-        _fail("EURAXESS MCP example must pin build and both cost caps")
+        _fail("EURAXESS MCP example must select latest and both cost caps")
     euraxess_input = euraxess["input"]
     if euraxess_input.get("schemaVersion") != "nomad-agent-job-search-input-v1":
         _fail("EURAXESS MCP example has the wrong input schema")

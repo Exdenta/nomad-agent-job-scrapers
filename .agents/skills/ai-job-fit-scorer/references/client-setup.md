@@ -38,7 +38,7 @@ and [Codex MCP configuration](https://learn.chatgpt.com/docs/extend/mcp?surface=
 ## Execute only after checking compatibility
 
 Fetch Actor details and current account pricing before a paid run. Use generic
-`call-actor` with build `0.1.22`, item and total-charge caps. Inspect the tool's
+`call-actor` with build `latest`, item and total-charge caps. Inspect the tool's
 advertised input schema: if it cannot forward build or charge caps, use the
 REST API instead of silently dropping those controls. Fetch all dataset pages
 from the run's default dataset and read its `RUN-SUMMARY` from the matching
@@ -48,7 +48,7 @@ a destination write.
 ## Without MCP
 
 Start a run with
-`POST /v2/actors/nomad-agent~ai-job-fit-scorer/runs?build=0.1.22&maxItems=5&maxTotalChargeUsd=0.10`,
+`POST /v2/actors/job-atlas~ai-job-fit-scorer/runs?build=latest&maxItems=5&maxTotalChargeUsd=0.10`,
 poll `GET /v2/actor-runs/{runId}`, then fetch only that run's storages.
 The [REST client](https://github.com/Exdenta/nomad-agent-job-scrapers/blob/main/integrations/api/ai-job-fit-scorer-run-and-fetch.mjs)
 performs exact-run settlement checks. It does not configure a destination.

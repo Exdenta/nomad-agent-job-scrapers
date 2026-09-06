@@ -1,21 +1,23 @@
 # n8n job alerts and trackers
 
+Current starters target Job Atlas. [Migration steps and evidence limits](https://github.com/Exdenta/nomad-agent-job-scrapers/blob/main/docs/job-atlas.md): recreate saved Tasks for Job Atlas; historical destination proofs remain tied to their original organization.
 
-EURAXESS starters select `latest` and retain each run’s immutable `buildId` and numeric `buildNumber`. References to exact configured pins below apply to the other Actor targets. Validate the EURAXESS run, summary and dataset before delivery; `latest` itself is not immutable evidence.
+
+All maintained starters select `latest` and retain each run’s immutable `buildId` and numeric `buildNumber`. Validate the run, summary and dataset before delivery; the selector itself is not immutable evidence.
 
 Import an inactive, outcome-ready workflow:
 
 - [`linkedin-daily-job-alerts.json`](linkedin-daily-job-alerts.json) searches
   every day and sends only newly delivered jobs to one selected Slack channel,
-  Telegram chat, or email address. It pins LinkedIn build `1.0.2`, enables a
+  Telegram chat, or email address. It uses LinkedIn `latest`, enables a
   stable Actor dedupe scope, and starts with at most ten jobs;
 - [`linkedin-jobs-to-google-sheets.json`](linkedin-jobs-to-google-sheets.json)
   creates a duplicate-safe job tracker by appending or updating the shared flat
-  row on stable `jobKey`; it pins LinkedIn build `1.0.2`;
+  row on stable `jobKey`; it uses LinkedIn `latest`;
 - [`euraxess-jobs-to-google-sheets.json`](euraxess-jobs-to-google-sheets.json)
-  creates the same tracker shape for EURAXESS selector `latest`;
+  creates the same tracker shape for EURAXESS build `latest`;
 - [`ai-job-fit-scorer-to-google-sheets.json`](ai-job-fit-scorer-to-google-sheets.json)
-  searches and scores developer jobs with build `0.1.22`, validates the
+  searches and scores developer jobs with build `latest`, validates the
   distinct fit contract, and upserts candidate-specific evaluations by
   `matchKey`.
 
@@ -53,8 +55,8 @@ for that workflow; `jobKey` alone is not candidate-specific.
 
 ## Daily new-job alerts
 
-The alert workflow uses the bounded synchronous dataset endpoint for a shorter
-first automation. It requires exact build `1.0.2`, a run charge cap, no more
+The alert workflow uses the bounded asynchronous run endpoint for a shorter
+first automation. It requires build selector `latest`, a run charge cap, no more
 than 25 requested jobs, strict six-root `nomad-agent-job-v1` rows, LinkedIn
 source identity, and stable `jobKey = source:externalId` within-run dedupe.
 Actor-side cross-run deduplication is always enabled with the configured opaque

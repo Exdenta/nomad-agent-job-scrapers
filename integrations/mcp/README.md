@@ -1,7 +1,9 @@
 # MCP: normalized LinkedIn and EURAXESS jobs
 
+Current starters target Job Atlas. [Migration steps and evidence limits](https://github.com/Exdenta/nomad-agent-job-scrapers/blob/main/docs/job-atlas.md): recreate saved Tasks for Job Atlas; historical destination proofs remain tied to their original organization.
 
-EURAXESS starters select `latest` and retain each run’s immutable `buildId` and numeric `buildNumber`. References to exact configured pins below apply to the other Actor targets. Validate the EURAXESS run, summary and dataset before delivery; `latest` itself is not immutable evidence.
+
+All maintained starters select `latest` and retain each run’s immutable `buildId` and numeric `buildNumber`. Validate the run, summary and dataset before delivery; the selector itself is not immutable evidence.
 
 Use the generic Apify MCP tools so every paid run has an exact build and cost
 cap:
@@ -12,18 +14,20 @@ https://mcp.apify.com?tools=fetch-actor-details,call-actor,get-actor-run,get-dat
 
 | Profile | Actor | Exact build |
 | --- | --- | --- |
-| LinkedIn | `nomad-agent/linkedin-enrich-translate-normalize-scraper` | `1.0.2` |
-| EURAXESS | `nomad-agent/euraxess-enrich-translate-normalize-scraper` | `latest` |
-| AI Job Search & Fit Scorer | `nomad-agent/ai-job-fit-scorer` | `0.1.11` |
+| LinkedIn | `job-atlas/linkedin-enrich-translate-normalize-scraper` | `latest` |
+| EURAXESS | `job-atlas/euraxess-enrich-translate-normalize-scraper` | `latest` |
+| AI Job Search & Fit Scorer | `job-atlas/ai-job-fit-scorer` | `latest` |
 
-Keep the build explicit instead of relying on a movable tag. Confirm Actor
+Select `latest` explicitly, then verify the immutable build returned by that run. Confirm Actor
 availability and account access with `fetch-actor-details` before a paid run.
 
 The scorer descriptor is
 [`examples/ai-job-fit-scorer.mcp.json`](examples/ai-job-fit-scorer.mcp.json).
-It requests at most five evaluations with a $0.10 charge cap. Its output is
-`nomad-ai-job-fit-v1` plus `nomad-ai-job-fit-run-summary-v3`, not the six-root
-scraper dataset/v4 summary described below; follow the
+It requests at most five evaluations in default `shortlist` mode at delivery
+score `2`, with a $0.10 charge cap. Its output is
+`nomad-ai-job-fit-v1` plus the scorer-specific
+`nomad-ai-job-fit-run-summary-v4` (with legacy v3 accepted by the clients),
+not the six-root scraper dataset/v4 summary described below; follow the
 [scorer-specific execution contract](../../docs/ai-job-fit-scorer.md).
 
 ## Client configuration
@@ -44,13 +48,15 @@ cross-run dedupe disabled.
 ## Public outcome and dataset execution contract
 
 1. Call `call-actor` with `actor`, strict v1 `input`, `waitSecs: 0`, and
-   `callOptions` containing the exact build, `maxItems`, and
+   `callOptions` containing the documented build selector, `maxItems`, and
    `maxTotalChargeUsd`.
 2. Poll non-terminal runs with `get-actor-run` until terminal.
 3. Continue only for terminal run status `SUCCEEDED`. Treat `FAILED`,
    `TIMED-OUT`, and `ABORTED` as errors and report the run ID, status message,
    and exit code.
-4. Verify the exact build. The MCP run projection can omit `buildNumber`, so the
+4. For the scorer, start with `latest`, then preserve the returned immutable
+   `buildId` and `buildNumber`. Validate summary actor/run/build fields against
+   that receipt. The MCP run projection can omit `buildNumber`, so the
    smoke script re-reads `GET /v2/actor-runs/{runId}` through the Apify REST API
    using the same bearer token.
 5. Resolve `storages.keyValueStores.default.id`, read `RUN-SUMMARY` with
@@ -94,7 +100,7 @@ contract.
 
 ## Validation boundary
 
-The maintained profiles and smoke harness target LinkedIn `1.0.2` and
+The maintained profiles and smoke harness target LinkedIn `latest` and
 EURAXESS `latest`. The harness contains no credential and verifies the exact
 build, terminal result, v4 completion record, delivered count, and canonical
 dataset rows.

@@ -89,18 +89,18 @@ class AiJobFitScorerIntegrationTests(unittest.TestCase):
                 / "ai-job-fit-scorer.mcp.json"
             ).read_text()
         )
-        self.assertEqual(mcp["actor"], "nomad-agent/ai-job-fit-scorer")
+        self.assertEqual(mcp["actor"], "job-atlas/ai-job-fit-scorer")
         self.assertEqual(mcp["input"], actor_input)
         self.assertEqual(
             mcp["callOptions"],
-            {"build": BUILD, "maxItems": 5, "maxTotalChargeUsd": 0.10},
+            {"build": "latest", "maxItems": 5, "maxTotalChargeUsd": 0.10},
         )
 
         runner_path = (
             INTEGRATIONS / "api" / "ai-job-fit-scorer-run-and-fetch.mjs"
         )
         runner = runner_path.read_text()
-        self.assertIn("const VERIFIED_BUILD = '0.1.22'", runner)
+        self.assertIn("const BUILD_SELECTOR = 'latest'", runner)
         self.assertIn("/v2/actors/${ACTOR}/runs", runner)
         self.assertNotIn("/v2/acts/${ACTOR}/runs", runner)
         self.assertIn("settlementDeadline", runner)
@@ -129,12 +129,13 @@ class AiJobFitScorerIntegrationTests(unittest.TestCase):
 process.env.APIFY_TOKEN = 'test-token';
 globalThis.fetch = async (url) => {{
   const run = {{
-    id:'run-v4', status:'SUCCEEDED', exitCode:0, buildNumber:'0.1.22',
+    id:'run-v4', actId:'OZ919PaAyAbifOdcL', status:'SUCCEEDED', exitCode:0, buildNumber:'0.9.99', buildId:'build-future',
     defaultDatasetId:'dataset-v4', defaultKeyValueStoreId:'store-v4',
     chargedEventCounts:{{'job-fit-result':0}}
   }};
   let body;
   if (url.includes('/runs?')) {{
+    if (new URL(url).searchParams.get('build') !== 'latest') throw new Error('start must select latest');
     body = {{data:run}};
   }} else if (url.includes('/actor-runs/run-v4')) {{
     body = {{data:run}};
@@ -142,6 +143,7 @@ globalThis.fetch = async (url) => {{
     body = {{
       schemaVersion:'nomad-ai-job-fit-run-summary-v4', status:'complete',
       cleanEmpty:false,
+      actor:{{id:'OZ919PaAyAbifOdcL',runId:'run-v4',buildId:'build-future',buildNumber:'0.9.99'}},
       algorithm:{{name:'scoring-v3',interactionStateUsed:false}},
       parameters:{{resultMode:'shortlist',minDeliveryScore:2}},
       counts:{{evaluatedJobs:1,staticDropped:0,staticHeld:0,aiScored:1,
@@ -173,6 +175,20 @@ await import({json.dumps(module_url)});
         self.assertEqual(result["rows"], [])
         self.assertEqual(result["summary"]["counts"]["resultFilteredOut"], 1)
         self.assertEqual(result["summary"]["billing"]["chargedCount"], 0)
+        self.assertEqual(result["buildNumber"], "0.9.99")
+        self.assertEqual(result["buildId"], "build-future")
+        for field, original, changed in [
+            ("runId", "run-v4", "other-run"),
+            ("buildId", "build-future", "other-build"),
+            ("buildNumber", "0.9.99", "0.9.98"),
+        ]:
+            with self.subTest(mismatched_summary=field):
+                actor_block = "actor:{id:'OZ919PaAyAbifOdcL',runId:'run-v4',buildId:'build-future',buildNumber:'0.9.99'}"
+                mutated = runner.replace(actor_block, actor_block.replace(f"{field}:'{original}'", f"{field}:'{changed}'"))
+                rejected = subprocess.run(["node", "--input-type=module", "-e", mutated], cwd=ROOT, capture_output=True, text=True)
+                self.assertNotEqual(rejected.returncode, 0)
+                self.assertIn("does not match the exact run", rejected.stderr)
+
 
     def test_closed_adapter_projects_and_upserts_by_match_key(self) -> None:
         row = sample_row()
@@ -254,11 +270,11 @@ await import({json.dumps(module_url)});
             item["name"]: item["value"]
             for item in nodes["Configuration"]["parameters"]["assignments"]["assignments"]
         }
-        self.assertEqual(assignments["actorBuild"], BUILD)
+        self.assertEqual(assignments["actorBuild"], "latest")
         self.assertEqual(assignments["maxTotalChargeUsd"], 0.10)
         self.assertEqual(
             nodes["Start exact Actor build"]["parameters"]["url"],
-            "https://api.apify.com/v2/acts/nomad-agent~ai-job-fit-scorer/runs",
+            "https://api.apify.com/v2/acts/job-atlas~ai-job-fit-scorer/runs",
         )
         self.assertEqual(
             nodes["Upsert Google Sheets by matchKey"]["parameters"]["columns"]["matchingColumns"],
@@ -304,6 +320,31 @@ process.stdout.write(JSON.stringify(result));
         self.assertEqual(projected["matchKey"], "a" * 64)
         self.assertEqual(set(projected), set(adapter.COLUMNS))
 
+    def test_n8n_terminal_receipt_binds_resolved_build(self) -> None:
+        path = INTEGRATIONS / "n8n" / "ai-job-fit-scorer-to-google-sheets.json"
+        runner = r"""
+const fs = require('fs');
+const workflow = JSON.parse(fs.readFileSync(process.argv[1], 'utf8'));
+const started = JSON.parse(process.argv[2]);
+const run = JSON.parse(process.argv[3]);
+global.$input = {first: () => ({json:{data:run}})};
+global.$ = () => ({first: () => ({json:{data:started}})});
+const node = workflow.nodes.find(value => value.name === 'Validate terminal run');
+process.stdout.write(JSON.stringify(new Function(node.parameters.jsCode)()));
+"""
+        run = dict(id="new-run", actId="OZ919PaAyAbifOdcL", buildId="new-build", buildNumber="0.9.99", status="SUCCEEDED", exitCode=0, defaultDatasetId="dataset", defaultKeyValueStoreId="store")
+        for field in [None, "id", "actId", "buildId", "buildNumber"]:
+            with self.subTest(changed=field):
+                terminal = dict(run)
+                if field:
+                    terminal[field] = "changed"
+                result = subprocess.run(["node", "-e", runner, str(path), json.dumps(run), json.dumps(terminal)], capture_output=True, text=True)
+                if field:
+                    self.assertNotEqual(result.returncode, 0)
+                else:
+                    self.assertEqual(result.returncode, 0, result.stderr)
+                    self.assertEqual(json.loads(result.stdout)[0]["json"]["buildNumber"], "0.9.99")
+
     def test_n8n_v4_summary_validation_rejects_count_and_audit_drift(self) -> None:
         path = INTEGRATIONS / "n8n" / "ai-job-fit-scorer-to-google-sheets.json"
         runner = r"""
@@ -312,6 +353,7 @@ const workflow = JSON.parse(fs.readFileSync(process.argv[1], 'utf8'));
 const summary = JSON.parse(process.argv[2]);
 const node = workflow.nodes.find(value => value.name === 'Validate RUN-SUMMARY');
 global.$input = {first: () => ({json: summary})};
+global.$ = () => ({first: () => ({json: {actorId:'OZ919PaAyAbifOdcL',runId:'run-new',buildId:'new-build',buildNumber:'0.9.99'}})});
 try {
   const result = new Function(node.parameters.jsCode)();
   process.stdout.write(JSON.stringify(result));
@@ -331,6 +373,7 @@ try {
 
         base = {
             "schemaVersion": "nomad-ai-job-fit-run-summary-v4",
+            "actor": {"id":"OZ919PaAyAbifOdcL","runId":"run-new","buildId":"new-build","buildNumber":"0.9.99"},
             "status": "complete",
             "cleanEmpty": False,
             "algorithm": {"name": "scoring-v3", "interactionStateUsed": False},
@@ -361,6 +404,13 @@ try {
         }
         completed = validate(base)
         self.assertEqual(completed.returncode, 0, completed.stderr)
+
+        for field in ["id", "runId", "buildId", "buildNumber"]:
+            mismatch = json.loads(json.dumps(base))
+            mismatch["actor"][field] = "mismatched"
+            rejected = validate(mismatch)
+            self.assertNotEqual(rejected.returncode, 0)
+            self.assertIn("exact run and resolved build", rejected.stderr)
 
         count_drift = json.loads(json.dumps(base))
         count_drift["counts"]["resultFilteredOut"] = 2
@@ -409,8 +459,8 @@ try {
             item["name"]: item["value"]
             for item in by_name["Configuration"]["mapper"]["variables"]
         }
-        self.assertEqual(config["expectedbuild"], BUILD)
-        self.assertEqual(config["expectedactorid"], "mBRj1sgHTWmoPJEcb")
+        self.assertNotIn("expectedbuild", config)
+        self.assertEqual(config["expectedactorid"], "OZ919PaAyAbifOdcL")
         rendered_blueprint = json.dumps(blueprint)
         self.assertIn("RUN-SUMMARY", rendered_blueprint)
         self.assertIn("nomad-ai-job-fit-run-summary-v4", rendered_blueprint)
@@ -430,7 +480,18 @@ try {
             ).read_text()
         )
         self.assertEqual(zapier["distribution"], "editor-only")
-        self.assertEqual(zapier["actions"][0]["build"], BUILD)
+        self.assertEqual(zapier["actions"][0]["build"], "latest")
+        steps = {action["step"]: action for action in zapier["actions"]}
+        self.assertEqual(steps[2]["url"], "https://api.apify.com/v2/actor-runs/{{1.startedRun.id}}")
+        self.assertEqual(steps[2]["outputName"], "run")
+        self.assertEqual(steps[3]["url"], "https://api.apify.com/v2/key-value-stores/{{2.run.defaultKeyValueStoreId}}/records/RUN-SUMMARY")
+        self.assertEqual(steps[3]["outputName"], "summary")
+        self.assertEqual(steps[4]["dataset"], "{{2.run.defaultDatasetId}}")
+        self.assertEqual(steps[5]["bindings"]["summary"], "{{3.summary}}")
+        for field, run_field in [("id", "actId"), ("runId", "id"), ("buildId", "buildId"), ("buildNumber", "buildNumber")]:
+            self.assertIn(f"summary.actor.{field} == run.{run_field}", steps[5]["conditions"])
+        self.assertGreater(steps[6]["step"], steps[5]["step"])
+
         self.assertEqual(zapier["actions"][0]["input"]["resultMode"], "shortlist")
         self.assertEqual(zapier["actions"][0]["input"]["minDeliveryScore"], 2)
         self.assertEqual(zapier["publicationState"], "not-created-in-Zapier-editor")
@@ -480,7 +541,10 @@ try {
             evidence["historicalActorCanaries"]["auditRetainsHold"]["runId"],
             "lIpiLiudBukaaFI7d",
         )
-        self.assertEqual(evidence["deployment"]["latestBuildNumber"], BUILD)
+        self.assertEqual(evidence["deployment"]["latestBuildNumber"], "0.1.24")
+        self.assertEqual(evidence["deployment"]["latestBuildId"], evidence["releaseActorRun"]["resolvedBuildId"])
+        self.assertEqual(evidence["releaseActorRun"]["selector"], "latest")
+        self.assertEqual(evidence["releaseActorRun"]["chargedEventCounts"]["job-fit-result"], evidence["releaseActorRun"]["datasetRows"])
         self.assertEqual(
             evidence["historicalDeployment"]["documentationSmoke"]["chargedEventCounts"],
             {"job-fit-result": 0},
@@ -495,7 +559,7 @@ try {
         text = (ROOT / "docs" / "ai-job-fit-scorer.md").read_text()
         normalized = " ".join(text.split())
         for required in (
-            BUILD,
+            "latest",
             BUILD_ID,
             "$0.02",
             "matchKey",

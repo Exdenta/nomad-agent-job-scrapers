@@ -1,6 +1,6 @@
 # Y Combinator startup jobs for pipelines and alerts
 
-Use [the normalized YC Actor](https://apify.com/nomad-agent/ycombinator-enrich-translate-normalize-scraper) for
+Use [the normalized YC Actor](https://apify.com/job-atlas/ycombinator-enrich-translate-normalize-scraper) for
 startup recruiting pipelines, job boards, and recurring alerts. It returns
 `nomad-agent-job-v1` with `identity.source = ycombinator_was`, keeping stable
 job identity across source integrations. The legacy flat-export Actor remains
@@ -82,13 +82,13 @@ and supported full-time, part-time, contract, and internship aliases.
 
 ## API and MCP
 
-The release pin is `1.0.6` (immutable build `6aqB3jicww58310qm`).
-Use it explicitly and verify the returned run's `buildId`. This pin has Actor
+Use build selector `latest` and record the returned numeric build number and immutable `buildId`.
+Historical build `1.0.6` (`6aqB3jicww58310qm`) has Actor
 execution proof only; hosted MCP and named destination writes are separate.
 
 ```bash
 curl --fail-with-body -X POST \
-  'https://api.apify.com/v2/acts/nomad-agent~ycombinator-enrich-translate-normalize-scraper/runs?build=1.0.6&maxTotalChargeUsd=0.05&timeout=600&memory=512' \
+  'https://api.apify.com/v2/acts/job-atlas~ycombinator-enrich-translate-normalize-scraper/runs?build=latest&maxTotalChargeUsd=0.05&timeout=600&memory=512' \
   -H "Authorization: Bearer $APIFY_TOKEN" \
   -H 'Content-Type: application/json' \
   --data '{"schemaVersion":"nomad-agent-job-search-input-v1","postedWithin":"any","maxItems":5,"dedupe":{"enabled":false,"key":""},"firstRunMode":false,"aiEnrichment":{"enabled":false,"accuracy":"silver"},"translateToEnglish":false}'
@@ -109,8 +109,8 @@ https://mcp.apify.com?tools=fetch-actor-details,call-actor,get-actor-run,get-dat
 
 Inspect current `call-actor` tool metadata, then pass the Actor identifier,
 the bounded input above, and `callOptions` containing
-`{"build":"1.0.6","maxTotalChargeUsd":0.05,"maxItems":5}`.
-Do not let an unpinned dynamic Actor tool silently select another build.
+`{"build":"latest","maxTotalChargeUsd":0.05,"maxItems":5}`.
+Use `latest` and retain the returned run ID, numeric build number, and immutable build ID.
 
 ## Actor execution evidence
 
@@ -140,3 +140,5 @@ The [Agent Skill](../.agents/skills/ycombinator-enrich-translate-normalize-scrap
 input and completion checks. Existing LinkedIn/EURAXESS destination templates
 have not been ported or live-tested for this YC profile; do not merely replace
 their Actor slug. See the [compatibility matrix](integration-compatibility.md).
+
+The `dedupe.key` field is optional. Both `{"enabled": false}` and `{"enabled": true}` are accepted; an omitted key uses an empty, search-specific scope. Explicit keys keep their existing meaning.

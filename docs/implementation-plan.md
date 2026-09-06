@@ -33,9 +33,7 @@ See the [compatibility matrix](integration-compatibility.md) for supported
 Actor builds, input coverage, output handling, and the current validation
 status of each pack.
 
-The repository integration-tested pins are LinkedIn `1.0.2`, EURAXESS
-`1.0.16`, and scorer `0.1.22`. They are compatibility boundaries, not an
-automatic statement that a source pin is the current Store default. Public
+Maintained integrations select `latest`. Each new production release becomes latest. Record and validate the immutable build resolved by each run; schema versions remain explicit contracts. Public
 product and setup pages live at `https://jobatlas.dev/actors` and
 `https://jobatlas.dev/integrations`.
 

@@ -47,7 +47,7 @@ class IntegrationListingCopyTests(unittest.TestCase):
         ):
             self.assertIn(f"]({asset})", copy)
 
-        for build in ("1.0.2", "latest", "0.1.22"):
+        for build in ("latest", "latest", "latest"):
             self.assertIn(f"`{build}`", copy)
         for product_url in (
             "https://jobatlas.dev/actors/linkedin",
@@ -69,7 +69,7 @@ class IntegrationListingCopyTests(unittest.TestCase):
         ):
             self.assertIn(f"]({asset})", copy)
 
-        for build in ("1.0.2", "latest", "0.1.22"):
+        for build in ("latest", "latest", "latest"):
             self.assertIn(f"`{build}`", copy)
         for product_url in (
             "https://jobatlas.dev/actors/linkedin",

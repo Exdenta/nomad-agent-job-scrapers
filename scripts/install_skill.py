@@ -16,8 +16,9 @@ SKILL_NAME = "linkedin-enrich-translate-normalize-scraper"
 SKILL_NAMES = (
     SKILL_NAME,
     "euraxess-enrich-translate-normalize-scraper",
-    "ai-job-fit-scorer",
     "ycombinator-enrich-translate-normalize-scraper",
+
+    "ai-job-fit-scorer",
 )
 
 

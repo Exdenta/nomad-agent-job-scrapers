@@ -326,7 +326,7 @@ class WebsiteContractTests(unittest.TestCase):
         visible = " ".join(text for parser in self.parsers.values() for text in parser.visible_text)
         for phrase in ("nomad-agent-job-v1", "named destination", "not affiliated with or endorsed by", "not a live release"):
             self.assertIn(phrase, visible)
-        self.assertIn("$0.02 per returned shortlist or non-failure audit row", visible)
+        self.assertIn("$0.02 per returned shortlist result", visible)
         self.assertNotIn("$0.02 per job", visible)
         self.assertNotIn("$0.02 per run", visible)
         self.assertNotRegex(visible, r"\b(?:100|[1-9]\d(?:\.\d+)?)\s*%")
@@ -340,7 +340,7 @@ class WebsiteContractTests(unittest.TestCase):
                 self.assertEqual(json.loads(published.read_text(encoding="utf-8")).get("$id"), f"{ORIGIN}/contracts/{filename}")
 
     def test_social_card_is_exact_standard_dimensions(self) -> None:
-        raw = (WEBSITE / "assets" / "nomad-agent-social-card.png").read_bytes()
+        raw = (WEBSITE / "assets" / "job-atlas-social-card.png").read_bytes()
         self.assertEqual(raw[:8], b"\x89PNG\r\n\x1a\n")
         self.assertEqual(raw[12:16], b"IHDR")
         self.assertEqual(struct.unpack(">II", raw[16:24]), (1200, 630))

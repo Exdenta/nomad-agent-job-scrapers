@@ -1,23 +1,25 @@
 # Make to Google Sheets
 
+Current starters target Job Atlas. [Migration steps and evidence limits](https://github.com/Exdenta/nomad-agent-job-scrapers/blob/main/docs/job-atlas.md): recreate saved Tasks for Job Atlas; historical destination proofs remain tied to their original organization.
 
-EURAXESS starters select `latest` and retain each run’s immutable `buildId` and numeric `buildNumber`. References to exact configured pins below apply to the other Actor targets. Validate the EURAXESS run, summary and dataset before delivery; `latest` itself is not immutable evidence.
+
+All maintained starters select `latest` and retain each run’s immutable `buildId` and numeric `buildNumber`. Validate the run, summary and dataset before delivery; the selector itself is not immutable evidence.
 
 Import either blueprint:
 
 - [`linkedin-jobs-to-google-sheets.blueprint.json`](linkedin-jobs-to-google-sheets.blueprint.json),
-  for a Task pinned to LinkedIn build `1.0.2`;
+  for a Task using LinkedIn build `latest`;
 - [`euraxess-jobs-to-google-sheets.blueprint.json`](euraxess-jobs-to-google-sheets.blueprint.json),
-  for a Task selecting EURAXESS `latest`;
+  for a Task using EURAXESS build `latest`;
 - [`ai-job-fit-scorer-to-google-sheets.blueprint.json`](ai-job-fit-scorer-to-google-sheets.blueprint.json),
-  for a Task pinned to AI Job Search & Fit Scorer build `0.1.22`.
+  for a Task using AI Job Search & Fit Scorer build `latest`.
 
-The Apify Task owns the complete Actor input, item limit, exact build, and
+The Apify Task owns the complete Actor input, item limit, build selector, and
 charge cap. The Make scenario consumes the completed Task run:
 
 ```text
 completed Task run
-  -> require SUCCEEDED and the configured exact build
+  -> require SUCCEEDED and validate the resolved immutable build
   -> read minimal RUN-SUMMARY v4 from the completed run store
   -> wait and repeat the same Task at most once when v4 recommends it
   -> fetch the selected run's default dataset
@@ -42,10 +44,12 @@ source-only `jobKey`.
 ## Setup
 
 1. Create an Apify Task with the selected Actor, complete strict v1 input,
-   exact build, bounded item limit, and conservative charge cap.
+   documented build selector, bounded item limit, and conservative charge cap.
+   The scorer Task must select `latest`.
 2. Import the matching blueprint and select that Task in **Watch completed Task
    runs**.
-3. Set `actorbuild` to the same exact build used by the Task.
+3. For the scraper blueprints, set `actorbuild` to the documented build.
+   The scorer instead validates the immutable build returned by the Task run.
 4. Import [`google-sheets-columns.csv`](google-sheets-columns.csv) into a sheet
    named `Jobs`.
 5. Replace the spreadsheet placeholder and select the Google Sheets connection

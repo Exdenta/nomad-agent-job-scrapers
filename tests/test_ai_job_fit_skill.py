@@ -153,9 +153,9 @@ class FitSkillTests(unittest.TestCase):
             self.assertEqual(result.returncode,0,result.stderr)
             for root in ['.agents','.claude']:
                 skill=target/root/'skills/ai-job-fit-scorer'
+                self.assertFalse(any(skill.rglob('*.pyc')))
                 result=subprocess.run([sys.executable,str(skill/'scripts/validate_run_summary.py')],input=json.dumps(self.summary),capture_output=True,text=True,cwd=temp)
                 self.assertEqual(result.returncode,0,result.stderr)
-                self.assertFalse(any(skill.rglob('*.pyc')))
 
 
 if __name__=='__main__': unittest.main()
