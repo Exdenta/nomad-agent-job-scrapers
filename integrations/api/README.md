@@ -7,7 +7,7 @@ integration-specific subset. Pin the exact qualified build in the run query:
 | --- | --- | --- |
 | LinkedIn | `nomad-agent~linkedin-enrich-translate-normalize-scraper` | `1.0.2` |
 | EURAXESS | `nomad-agent~euraxess-enrich-translate-normalize-scraper` | `1.0.16` |
-| AI Job Search & Fit Scorer | `nomad-agent~ai-job-fit-scorer` | `0.1.12` |
+| AI Job Search & Fit Scorer | `nomad-agent~ai-job-fit-scorer` | `0.1.22` |
 
 Confirm EURAXESS availability before a paid run. Keep the exact build query
 instead of relying on `latest`.
@@ -36,7 +36,7 @@ current input schema; see the
 The scorer has its own output and billing contract. Run the maintained client:
 
 ```bash
-export ACTOR_BUILD_NUMBER="0.1.12"
+export ACTOR_BUILD_NUMBER="0.1.22"
 node integrations/api/ai-job-fit-scorer-run-and-fetch.mjs
 ```
 
@@ -45,7 +45,7 @@ put it in the URL, input JSON, or repository.
 
 The adjacent input explicitly selects `shortlist` at delivery score `2`, is
 capped at five evaluations, and caps the run at $0.10. The client pins
-immutable build `0.1.12`, polls only the returned run ID, boundedly reconciles
+immutable build `0.1.22`, polls only the returned run ID, boundedly reconciles
 storage and charge metadata, accepts legacy v3 or current
 `nomad-ai-job-fit-run-summary-v4`, enforces v4 result-policy arithmetic, and
 requires each row to satisfy `nomad-ai-job-fit-v1` before printing it. See the

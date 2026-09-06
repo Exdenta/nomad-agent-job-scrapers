@@ -12,7 +12,7 @@ Import an inactive, outcome-ready workflow:
 - [`euraxess-jobs-to-google-sheets.json`](euraxess-jobs-to-google-sheets.json)
   creates the same tracker shape for EURAXESS build `1.0.16`;
 - [`ai-job-fit-scorer-to-google-sheets.json`](ai-job-fit-scorer-to-google-sheets.json)
-  searches and scores developer jobs with build `0.1.12`, validates the
+  searches and scores developer jobs with build `0.1.22`, validates the
   distinct fit contract, and upserts candidate-specific evaluations by
   `matchKey`.
 

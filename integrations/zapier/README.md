@@ -6,7 +6,7 @@ from [`template-spec.json`](template-spec.json) and preserve these controls.
 1. Trigger: **Schedule by Zapier → Every Day**. Keep the Zap off during setup.
 2. Action: **Apify → Run Actor**.
    - Actor: `nomad-agent/ai-job-fit-scorer`
-   - build: keep the template pinned to verified build `0.1.12` (never `latest`)
+   - build: keep the template pinned to verified build `0.1.22` (never `latest`)
    - input: the bounded five-item search starter after reviewing the explicit
      search terms and candidate profile; keep `resultMode: "shortlist"` and
      `minDeliveryScore: 2` for the first run

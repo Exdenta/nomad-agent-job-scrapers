@@ -25,7 +25,7 @@ structured fields or English display values are useful to the workflow.
 The LinkedIn and EURAXESS Actors turn public job postings into the same stable,
 source-linked record shape. The AI Job Search & Fit Scorer adds a separate
 candidate-evaluation layer: it searches 10 developer-job sources or accepts
-normalized jobs, then returns a gate-aware shortlist by default or a complete
+normalized jobs, then returns a ranked shortlist by default or a complete
 drop/hold/failure audit when requested, without requiring a customer model key.
 
 > **Unofficial integrations.** This project and its Actors are independently
@@ -40,7 +40,7 @@ drop/hold/failure audit when requested, without requiring a customer model key.
 | --- | --- | --- | --- |
 | [`LinkedIn Jobs Scraper \| Remove Duplicates \| AI Enrichment`](https://apify.com/nomad-agent/linkedin-enrich-translate-normalize-scraper) | Public LinkedIn job search | Find fresh jobs, suppress already-delivered matches, and send clean records with complete descriptions when available to alerts, trackers, job boards, or agents. Optional enrichment and translation stay off until selected. | Public Store Actor; Store default observed at `1.0.6` on 2026-09-03; integrations remain tested against `1.0.2` |
 | [`EURAXESS Jobs Scraper — Research & Academic Jobs`](https://apify.com/nomad-agent/euraxess-enrich-translate-normalize-scraper) | PhD, postdoc, fellowship, research, and faculty vacancies | Research domains, requirements, funding, deadlines, contacts, multilingual keyword expansion, strict filters, deduplication, optional enrichment, and translation | Public Store Actor; Store default observed at `1.0.20` on 2026-09-03; integrations remain tested against `1.0.16` |
-| [`AI Job Search & Fit Scorer — 10 Sources + V3 Matching`](https://apify.com/nomad-agent/ai-job-fit-scorer) | Candidate-specific developer-job shortlists | Search 10 public developer-job sources—or score your own job list—against a résumé or profile; default shortlist mode returns only scored jobs meeting the gate-aware delivery threshold, while audit mode retains every decision | Public Store Actor; public documentation build `0.1.13`, integration-tested runtime `0.1.12`; $0.02 per returned shortlist row or retained non-failure audit row |
+| [`AI Job Search & Fit Scorer — 10 Sources + AI Matching`](https://apify.com/nomad-agent/ai-job-fit-scorer) | Candidate-specific developer-job shortlists | Search 10 public developer-job sources or score your own job list against a résumé or profile. Get a ranked shortlist with a 0–100 fit score, a 0–5 delivery score after hard-requirement checks, evidence, skill gaps, and links to the postings. No model key needed. | Public Store Actor; live-verified build `0.1.22` (also the Store `latest`) on 2026-09-05; $0.02 per returned shortlist row or retained non-failure audit row |
 
 Implementation guides: [LinkedIn jobs](https://nomadagent.dev/actors/linkedin) ·
 [EURAXESS jobs](https://nomadagent.dev/actors/euraxess) ·
@@ -84,7 +84,7 @@ https://mcp.apify.com?tools=fetch-actor-details,call-actor,get-actor-run,get-dat
 ```
 
 Inspect Actor details, then use generic `call-actor` with build `1.0.2` for
-LinkedIn, `1.0.16` for EURAXESS, or `0.1.12` for the AI Job Search & Fit
+LinkedIn, `1.0.16` for EURAXESS, or `0.1.22` for the AI Job Search & Fit
 Scorer. Confirm terminal success, verify the exact build through the Apify run
 API, validate the Actor-specific `RUN-SUMMARY`, and reconcile the default
 dataset.
@@ -111,16 +111,16 @@ Codex instructions and per-Actor compatibility gates.
 
 | Priority | Pack | Workflow | Status |
 | --- | --- | --- | --- |
-| 1 | [n8n](integrations/n8n/README.md) | Daily alerts, normalized-job trackers, or a scored-shortlist Sheet | Exact LinkedIn `1.0.2`, EURAXESS `1.0.16`, and fit scorer `0.1.12` pins |
+| 1 | [n8n](integrations/n8n/README.md) | Daily alerts, normalized-job trackers, or a scored-shortlist Sheet | Exact LinkedIn `1.0.2`, EURAXESS `1.0.16`, and fit scorer `0.1.22` pins |
 | 2 | [Make](integrations/make/README.md) | Completed Actor run -> validated Google Sheets upsert | Task-owned complete inputs; exact scraper and fit-scorer builds required |
 | 3 | [Airtable](integrations/airtable/README.md) | Import 32 fields and upsert on stable `jobKey` | Shared flat destination preset with `linkedin` and `euraxess` source choices |
 | 4 | [MCP](integrations/mcp/README.md) | ChatGPT, Claude, Cursor, Codex, or another MCP client | Exact-build generic calls and Actor-specific output contracts for all three products |
 | 5 | [API/webhook](integrations/api/README.md) | Custom job board, database, or internal application | Exact-build REST recipes; the scorer client is settlement-aware and validates legacy v3 plus current v4 result-policy and billing receipts |
-| 6 | [Zapier](integrations/zapier/README.md) | Scheduled scored-job Sheet | Editor specification pinned to scorer `0.1.12`; not a published Zap or destination proof |
+| 6 | [Zapier](integrations/zapier/README.md) | Scheduled scored-job Sheet | Editor specification pinned to scorer `0.1.22`; not a published Zap or destination proof |
 | 7 | [Python parsers](.agents/skills) | Validate canonical JSON or create a destination projection | Source-specific validators plus the fit-row adapter |
 
 The REST, MCP, n8n, Make, and Zapier directories also contain a distinct
-AI Job Search & Fit Scorer pack pinned to `0.1.12`. Its destination uses
+AI Job Search & Fit Scorer pack pinned to `0.1.22`. Its destination uses
 `matchKey`, not the source-only `jobKey`; see the
 [fit-scoring integration guide](docs/ai-job-fit-scorer.md).
 

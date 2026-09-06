@@ -3,7 +3,7 @@
 import { readFile } from 'node:fs/promises';
 
 const ACTOR = 'nomad-agent~ai-job-fit-scorer';
-const VERIFIED_BUILD = '0.1.12';
+const VERIFIED_BUILD = '0.1.22';
 const EXPECTED_BUILD = (process.env.ACTOR_BUILD_NUMBER || VERIFIED_BUILD).trim();
 const MAX_TOTAL_CHARGE_USD = 0.10;
 const TERMINAL = new Set(['SUCCEEDED', 'FAILED', 'ABORTED', 'TIMED-OUT']);

@@ -1,0 +1,1383 @@
+[
+  {
+    "schemaVersion": "nomad-ai-job-fit-v1",
+    "matchKey": "9d1e4f3e44a494a5762adfd1d91ca67cfeb07d8bc72f9b025f701548e2c87d0b",
+    "evaluationKey": "2de865d80d6decfbc2fca1fb9d75ce6470c79bf0a5f4687f7860b78a39736e0d",
+    "jobKey": "linkedin:4436371317",
+    "candidateHash": "c61557c7acbb2b791ebe09cc74cd3d3d29344035853528bb77833f83e760f31c",
+    "candidateSnapshotHash": "505e87a12cceb8cad1a7e7b2360d92b2ee1b339a30dd06234e7c699f071fe9b2",
+    "evaluatedAt": "2026-09-05T16:55:35Z",
+    "source": "linkedin",
+    "externalId": "4436371317",
+    "url": "https://www.linkedin.com/jobs/view/senior-software-engineer-java-at-clear-4436371317",
+    "title": "Senior Software Engineer, Java",
+    "company": "CLEAR",
+    "location": "New York, NY",
+    "postedAt": "2026-09-05",
+    "fitScore": 78,
+    "deliveryScore": 4,
+    "recommendation": "strong",
+    "evaluationStatus": "scored",
+    "why": "Strong match for a senior full-stack software engineering role: eight years of backend/full-stack experience, React, TypeScript, AWS, Docker, Kubernetes, APIs, and CI/CD align well with the posting.",
+    "gapSummary": "The posting highlights Java, which is not listed in the candidate’s skills. Work arrangement, New York logistics, and work authorization are not specified.",
+    "blockingGates": [],
+    "scoreAdjustedForGates": false,
+    "gates": {
+      "coreRole": {
+        "status": "pass",
+        "postingEvidence": "\"Senior Fullstack Software Engineers\" to build scalable full-stack applications.",
+        "candidateEvidence": "Candidate is a Software Engineer with experience building backend and full-stack web services."
+      },
+      "mandatoryRequirements": {
+        "status": "pass",
+        "postingEvidence": "Requires 6+ years using technologies such as Java, React, and TypeScript, plus AWS, Docker, Kubernetes, GitHub, and CI/CD.",
+        "candidateEvidence": "Eight years’ experience; lists React, TypeScript, AWS, Docker, Kubernetes, Git, and CI/CD. Java is not listed, but the posting says technologies such as."
+      },
+      "experienceSeniority": {
+        "status": "pass",
+        "postingEvidence": "Title is \"Senior Software Engineer, Java\" and posting requires \"6+ years\" of professional experience.",
+        "candidateEvidence": "Candidate has eight years of experience and accepts mid and senior levels; no senior-role rejection is stated."
+      },
+      "workModeLocation": {
+        "status": "unknown",
+        "postingEvidence": "Posting lists New York, NY; work arrangement is not specified.",
+        "candidateEvidence": "Candidate accepts remote, hybrid, and onsite work worldwide, but specific New York ability is not established."
+      },
+      "explicitPreferences": {
+        "status": "pass",
+        "postingEvidence": "Role targets Software Engineer and full-stack engineering work.",
+        "candidateEvidence": "Target terms include Software Engineer, Backend Engineer, and Full Stack Engineer; no conflicting preference is stated."
+      }
+    },
+    "staticDecision": {
+      "schemaVersion": "nomad-scoring-v3-static-decision-v3",
+      "action": "forward",
+      "lane": "rank-forward",
+      "rankScore": 52,
+      "knownComparisons": 3,
+      "unknownComparisons": 7,
+      "unknownRescue": false,
+      "reasons": [
+        "static rank 52 meets forward threshold 30"
+      ],
+      "signals": [
+        {
+          "name": "content_validity",
+          "status": "pass",
+          "hard": true,
+          "postingValue": "Senior Software Engineer, Java",
+          "profileValue": null,
+          "evidence": "no explicit invalidity",
+          "source": "source-envelope",
+          "similarity": null,
+          "exactMatch": null
+        },
+        {
+          "name": "work_arrangement",
+          "status": "unknown",
+          "hard": true,
+          "postingValue": null,
+          "profileValue": [
+            "remote",
+            "hybrid",
+            "onsite"
+          ],
+          "evidence": "constraint is missing, empty, or not explicitly closed",
+          "source": "data.employment.workArrangements",
+          "similarity": null,
+          "exactMatch": null
+        },
+        {
+          "name": "physical_country",
+          "status": "unknown",
+          "hard": true,
+          "postingValue": [
+            {
+              "raw": "New York, NY",
+              "countryName": null,
+              "countryCode": null,
+              "city": null,
+              "region": null
+            }
+          ],
+          "profileValue": null,
+          "evidence": "posting did not establish exclusively physical arrangements",
+          "source": "data.employment.workArrangements",
+          "similarity": null,
+          "exactMatch": null
+        },
+        {
+          "name": "required_language",
+          "status": "unknown",
+          "hard": true,
+          "postingValue": null,
+          "profileValue": [
+            {
+              "language": "English",
+              "level": "B2",
+              "evidence": "Example profile: professional working proficiency"
+            }
+          ],
+          "evidence": "required language or complete candidate language set is missing",
+          "source": "data.requirements.languages",
+          "similarity": null,
+          "exactMatch": null
+        },
+        {
+          "name": "contract_type",
+          "status": "unknown",
+          "hard": true,
+          "postingValue": null,
+          "profileValue": [],
+          "evidence": "posting or closed candidate contract set is missing",
+          "source": "data.employment.contractTypes",
+          "similarity": null,
+          "exactMatch": null
+        },
+        {
+          "name": "target_terms",
+          "status": "match",
+          "hard": false,
+          "postingValue": [
+            "Senior Software Engineer, Java"
+          ],
+          "profileValue": [
+            "Software Engineer",
+            "Backend Engineer",
+            "Full Stack Engineer",
+            "Platform Engineer"
+          ],
+          "evidence": "provider-free semantic approximation=0.667; shared tokens=['engineer', 'software']; exact whole terms=[]",
+          "source": "data.title|data.classification|data.domains",
+          "similarity": 0.6666666666666666,
+          "exactMatch": false
+        },
+        {
+          "name": "required_skills",
+          "status": "unknown",
+          "hard": false,
+          "postingValue": null,
+          "profileValue": [
+            "Python",
+            "TypeScript",
+            "JavaScript",
+            "React",
+            "Node.js",
+            "SQL",
+            "PostgreSQL",
+            "Docker",
+            "Kubernetes",
+            "AWS",
+            "REST APIs",
+            "Git",
+            "CI/CD"
+          ],
+          "evidence": "one side is unknown",
+          "source": "data.requirements.requiredSkills",
+          "similarity": null,
+          "exactMatch": null
+        },
+        {
+          "name": "preferred_skills",
+          "status": "unknown",
+          "hard": false,
+          "postingValue": null,
+          "profileValue": [
+            "Python",
+            "TypeScript",
+            "JavaScript",
+            "React",
+            "Node.js",
+            "SQL",
+            "PostgreSQL",
+            "Docker",
+            "Kubernetes",
+            "AWS",
+            "REST APIs",
+            "Git",
+            "CI/CD"
+          ],
+          "evidence": "one side is unknown",
+          "source": "data.requirements.preferredSkills",
+          "similarity": null,
+          "exactMatch": null
+        },
+        {
+          "name": "seniority",
+          "status": "unknown",
+          "hard": false,
+          "postingValue": {
+            "levels": null,
+            "experience": null
+          },
+          "profileValue": {
+            "levels": [
+              "mid",
+              "senior"
+            ],
+            "yearsExperience": 8
+          },
+          "evidence": "no comparable structured seniority or experience facts",
+          "source": "data.seniority.levels|data.requirements.experience",
+          "similarity": null,
+          "exactMatch": null
+        },
+        {
+          "name": "semantic_proxy",
+          "status": "match",
+          "hard": false,
+          "postingValue": [
+            "Senior Software Engineer, Java"
+          ],
+          "profileValue": [
+            "Software Engineer",
+            "Backend Engineer",
+            "Full Stack Engineer",
+            "Platform Engineer",
+            "Python",
+            "TypeScript",
+            "JavaScript",
+            "React",
+            "Node.js",
+            "SQL",
+            "PostgreSQL",
+            "Docker"
+          ],
+          "evidence": "provider-free semantic approximation=0.667; shared tokens=['engineer', 'software']; exact whole terms=[]",
+          "source": "structured-target-skill-domain-proxy",
+          "similarity": 0.6666666666666666,
+          "exactMatch": false
+        }
+      ]
+    },
+    "scoring": {
+      "algorithm": "scoring-v3",
+      "actorJobSchema": "nomad-agent-job-v1",
+      "profileSchema": "nomad-scoring-v3-profile-v2",
+      "staticDecisionSchema": "nomad-scoring-v3-static-decision-v3",
+      "verdictSchema": "nomad-scoring-v3-verdict-v2",
+      "promptVersion": "nomad-scoring-v3-prompt-v2",
+      "provider": "openrouter:OpenAI",
+      "model": "openai/gpt-5.6-luna",
+      "responseId": "gen-1788627336-8qC2ANmelP3KtUa9XLJf",
+      "aiUsed": true,
+      "recoveredFromHold": false,
+      "contentReceipt": {
+        "schemaVersion": "nomad-scoring-v3-content-receipt-v1",
+        "actorBuild": null,
+        "normalizedRecordChars": 7915,
+        "normalizedRecordSha256": "a514532832004a68b2977e42edd1eaa949f98f0285cf6e12f6fd3be9c53e8533",
+        "descriptionChars": 5991,
+        "descriptionSha256": "b5b532beeb209c2b143aec441f7eef8fbeb914951117268ec36df3f5005e897f",
+        "descriptionComplete": true,
+        "htmlAvailable": false,
+        "htmlChars": 0,
+        "htmlSent": false
+      },
+      "sourceProvenance": {
+        "mode": "search",
+        "scope": "web-developer",
+        "actorRunId": null,
+        "actorId": null,
+        "buildId": null,
+        "buildNumber": null,
+        "datasetId": null,
+        "selectedSources": [
+          "linkedin",
+          "remote_boards",
+          "justjoinit"
+        ],
+        "keywords": [
+          "software engineer"
+        ],
+        "location": null,
+        "countryCodes": [],
+        "remoteOnly": false,
+        "postedWithinDays": 14,
+        "sources": {
+          "linkedin": {
+            "status": "succeeded",
+            "querySupport": "native",
+            "requestCount": 1,
+            "rawFetched": 10,
+            "normalized": 10,
+            "afterFilters": 10,
+            "errorType": null
+          },
+          "remote_boards": {
+            "status": "succeeded",
+            "querySupport": "native",
+            "requestCount": 1,
+            "rawFetched": 10,
+            "normalized": 10,
+            "afterFilters": 10,
+            "errorType": null
+          },
+          "justjoinit": {
+            "status": "succeeded",
+            "querySupport": "native",
+            "requestCount": 1,
+            "rawFetched": 10,
+            "normalized": 10,
+            "afterFilters": 10,
+            "errorType": null
+          }
+        },
+        "totalRaw": 30,
+        "totalNormalized": 30,
+        "totalAfterFilters": 30,
+        "totalUnique": 30,
+        "descriptionTruncatedCount": 0,
+        "truncated": true
+      }
+    },
+    "job": {
+      "schemaVersion": "nomad-agent-job-v1",
+      "identity": {
+        "source": "linkedin",
+        "externalId": "4436371317",
+        "url": "https://www.linkedin.com/jobs/view/senior-software-engineer-java-at-clear-4436371317"
+      },
+      "data": {
+        "title": "Senior Software Engineer, Java",
+        "company": {
+          "name": "CLEAR",
+          "sourceId": null,
+          "department": null,
+          "url": null,
+          "logoUrl": null
+        },
+        "classification": {
+          "industries": null,
+          "jobFunctions": null
+        },
+        "domains": null,
+        "domainsRaw": null,
+        "locations": [
+          {
+            "raw": "New York, NY",
+            "countryName": null,
+            "countryCode": null,
+            "city": null,
+            "region": null,
+            "postalCode": null,
+            "streetAddress": null,
+            "facilityName": null,
+            "positionsAvailable": null,
+            "latitude": null,
+            "longitude": null
+          }
+        ],
+        "employment": {
+          "workArrangements": null,
+          "applicantLocationRequirements": null,
+          "workSchedules": null,
+          "contractTypes": null,
+          "durationMonths": null,
+          "hoursPerWeek": null,
+          "hoursPerWeekRaw": null,
+          "startDate": null,
+          "startDateRaw": null
+        },
+        "application": {
+          "postedAt": "2026-09-05",
+          "deadline": null,
+          "referenceNumber": null,
+          "referenceNumberIssuer": null,
+          "applicantSnapshot": null,
+          "url": "https://www.linkedin.com/jobs/view/senior-software-engineer-java-at-clear-4436371317",
+          "email": null,
+          "directApply": null,
+          "applyMethodRaw": null,
+          "availability": null,
+          "hiringContacts": null,
+          "eligibilityCriteria": null,
+          "selectionProcess": null
+        },
+        "seniority": {
+          "raw": null,
+          "levels": null
+        },
+        "requirements": {
+          "education": null,
+          "experience": null,
+          "languages": null,
+          "requiredSkills": null,
+          "preferredSkills": null,
+          "certifications": null,
+          "skillsQualifications": null,
+          "specificRequirements": null
+        },
+        "benefits": null,
+        "funding": {
+          "programme": null
+        },
+        "compensation": {
+          "currency": null,
+          "exact": null,
+          "minimum": null,
+          "maximum": null,
+          "period": null,
+          "raw": null
+        },
+        "constraints": {
+          "visaSponsorship": null,
+          "workAuthorization": null,
+          "securityClearance": null,
+          "locationPreference": null
+        }
+      },
+      "custom": null,
+      "llm": {
+        "status": "not_requested",
+        "requestedFields": [],
+        "filledFields": [],
+        "provider": null,
+        "model": null,
+        "promptVersion": null,
+        "completedAt": null
+      },
+      "raw": {
+        "description": "CLEAR is building THE secure identity company of the future. Our mission is to make experiences safer and easier—physically and digitally. With more than 38 million Members and a growing network of partners across the world, CLEAR's secure identity platform is transforming the way people live, work, and travel. Whether it’s at the airport, stadium, or throughout your everyday life, CLEAR unlocks the magic of frictionless experiences. We're looking for Senior Fullstack Software Engineers to help build the next generation of CLEAR's identity platform. Beyond verifying identity, we're creating a secure, networked digital identity that enables seamless experiences across travel, enterprise, healthcare, financial services, and beyond. As a Senior Software Engineer, you'll own complex technical problems from design through deployment, partnering closely with Product, Design, Security, and Operations to deliver reliable, scalable solutions. We're looking for engineers with a strong builder mindset who thrive in ambiguity, take ownership, and enjoy turning ideas into production systems. Level and team matching (open roles across the three pillars that make up Technology at CLEAR: Core Identity, CLEAR1, and CLEAR Travel) will occur towards the end of our interview process. Tech stack overview: Java / React / Typescript What you’ll do: Design, build, test, and deploy scalable full-stack applications that power CLEAR's identity platform. Own projects end-to-end from technical discovery and architecture through implementation, rollout, and operational support. Partner closely with Product, Design, Data, Security, and Operations to translate business problems into simple, scalable technical solutions. Drive engineering excellence by improving system reliability, performance, testing, observability, and developer experience. Contribute to architectural decisions and continuously improve the scalability, security, and maintainability of our platform. Mentor teammates through thoughtful code reviews, technical collaboration, and sharing engineering best practices. What you’re great at: 6+ years of professional full-stack software engineering experience building production applications using technologies such as Java, React, and TypeScript. Strong technical fundamentals across distributed systems, APIs, cloud infrastructure, and modern software architecture. Experience building and operating cloud-native applications using AWS and technologies such as Docker, Kubernetes, GitHub, and CI/CD pipelines. A demonstrated history of owning complex, cross-functional projects and driving them from idea to production with a bias for action. Excellent communication skills with the ability to explain technical concepts and influence both technical and non-technical stakeholders. Comfortable operating in ambiguous environments, making thoughtful tradeoffs, and independently driving work forward. A collaborative mindset with a passion for mentoring others, continuously improving engineering practices, and building products that deliver measurable customer and business impact. Our process: We keep a swift process with shorter timelines that make the best use of everyone’s time. Our process is usually completed in about 3 weeks. Here’s what you can expect: Recruiter Call → Zoom Technical Screen → Onsite Panel Interviews → Final Manager Conversations → Offer How You’ll be Rewarded: At CLEAR, we help YOU move forward - because when you’re at your best, we’re at our best. You’ll work with talented team members motivated by our mission of making experiences safer and easier. Located in New York City, our Headquarters offers close collaboration with and access to a hands-on senior leadership team, a bright and energetic space with an open concept, and plenty of conference rooms and casual co-working spaces. We also offer catered lunches every day and have fully stocked kitchens. Outside of the office, we invest in your well-being and learning & development with stipends and reimbursement programs. We offer holistic total rewards, including comprehensive healthcare plans, family building benefits (fertility and adoption/surrogacy support), flexible time off, free OneMedical memberships for you and your dependents, and a 401(k) retirement plan with employer match. The total compensation range for this role is $225,000 - $300,000, depending on levels of skills and experience. This range represents the combined base salary, and new hire equity package (in Restricted Stock Units) for this position at CLEAR. Additionally, this role will be eligible for refresh equity grants as part of our ongoing compensation program. Actual compensation will vary based on factors including, but not limited to, location, education, skills, experience, and performance. All stock based compensation will be subject to the terms and conditions of applicable agreements CLEAR provides reasonable accommodation to qualified individuals with disabilities or protected needs. Please let us know if you require a reasonable accommodation to apply for a job or perform your job. Examples of reasonable accommodation include, but are not limited to, time off, extra breaks, making a change to the application process or work procedures, policy exceptions, providing documents in an alternative format, live captioning or using a sign language interpreter, or using specialized equipment. We are committed to a transparent and secure hiring process. All communications related to this role will come directly from a CLEAR employee through valid CLEAR channels (e.g., a valid @clearme.com email address or verified CLEAR LinkedIn profile). We encourage candidates to remain alert to job scams and to report any suspicious activity. Qualified applicants will receive consideration for employment without regard to race, color, religion, sex, sexual orientation, gender identity, national origin, disability, protected veteran status or other characteristics protected by law.",
+        "descriptionHtml": null
+      }
+    }
+  },
+  {
+    "schemaVersion": "nomad-ai-job-fit-v1",
+    "matchKey": "61d04ec826a7b7bdf228e50aebecc916d138a04443caec67094ae97ee0e00437",
+    "evaluationKey": "c58af5d53f2e76b4e792adb1c6316671a3cb3f2031b5ba2227e1f265c04a89c7",
+    "jobKey": "remote_boards:https://weworkremotely.com/remote-jobs/evident-change-senior-full-stack-software-engineer",
+    "candidateHash": "c61557c7acbb2b791ebe09cc74cd3d3d29344035853528bb77833f83e760f31c",
+    "candidateSnapshotHash": "505e87a12cceb8cad1a7e7b2360d92b2ee1b339a30dd06234e7c699f071fe9b2",
+    "evaluatedAt": "2026-09-05T16:55:35Z",
+    "source": "remote_boards",
+    "externalId": "https://weworkremotely.com/remote-jobs/evident-change-senior-full-stack-software-engineer",
+    "url": "https://weworkremotely.com/remote-jobs/evident-change-senior-full-stack-software-engineer",
+    "title": "Senior Full-Stack Software Engineer",
+    "company": "Evident Change",
+    "location": "Remote",
+    "postedAt": null,
+    "fitScore": 68,
+    "deliveryScore": 3,
+    "recommendation": "plausible",
+    "evaluationStatus": "scored",
+    "why": "Strong match on seniority, full-stack/backend experience, APIs, SQL, AWS, Docker, CI/CD, and remote work preference; however, required Ruby on Rails experience and U.S. work eligibility are not established.",
+    "gapSummary": "Ruby on Rails is explicitly required, while the candidate evidence lists Python, TypeScript, and JavaScript but not Rails. The role is remote only within the United States.",
+    "blockingGates": [],
+    "scoreAdjustedForGates": false,
+    "gates": {
+      "coreRole": {
+        "status": "pass",
+        "postingEvidence": "Senior Full-Stack Software Engineer building scalable web applications and APIs.",
+        "candidateEvidence": "Software engineer with eight years building backend and full-stack web services."
+      },
+      "mandatoryRequirements": {
+        "status": "unknown",
+        "postingEvidence": "Experience developing full-stack web applications using Ruby on Rails is required; 5–8 years required.",
+        "candidateEvidence": "Eight years and full-stack experience are stated, but Ruby on Rails is not listed."
+      },
+      "experienceSeniority": {
+        "status": "pass",
+        "postingEvidence": "Title is Senior Full-Stack Software Engineer; minimum 5–8 years required.",
+        "candidateEvidence": "Candidate has eight years of software engineering experience and accepts mid and senior levels."
+      },
+      "workModeLocation": {
+        "status": "unknown",
+        "postingEvidence": "Location: Remote; work from anywhere within the United States.",
+        "candidateEvidence": "Candidate accepts remote work worldwide, but U.S. location or work authorization is not provided."
+      },
+      "explicitPreferences": {
+        "status": "pass",
+        "postingEvidence": "Full-time remote role.",
+        "candidateEvidence": "Accepted work arrangements include remote, hybrid, and onsite; target terms include Software Engineer and Full Stack Engineer."
+      }
+    },
+    "staticDecision": {
+      "schemaVersion": "nomad-scoring-v3-static-decision-v3",
+      "action": "forward",
+      "lane": "rank-forward",
+      "rankScore": 52,
+      "knownComparisons": 3,
+      "unknownComparisons": 7,
+      "unknownRescue": false,
+      "reasons": [
+        "static rank 52 meets forward threshold 30"
+      ],
+      "signals": [
+        {
+          "name": "content_validity",
+          "status": "pass",
+          "hard": true,
+          "postingValue": "Senior Full-Stack Software Engineer",
+          "profileValue": null,
+          "evidence": "no explicit invalidity",
+          "source": "source-envelope",
+          "similarity": null,
+          "exactMatch": null
+        },
+        {
+          "name": "work_arrangement",
+          "status": "unknown",
+          "hard": true,
+          "postingValue": null,
+          "profileValue": [
+            "remote",
+            "hybrid",
+            "onsite"
+          ],
+          "evidence": "constraint is missing, empty, or not explicitly closed",
+          "source": "data.employment.workArrangements",
+          "similarity": null,
+          "exactMatch": null
+        },
+        {
+          "name": "physical_country",
+          "status": "unknown",
+          "hard": true,
+          "postingValue": [
+            {
+              "raw": "Remote",
+              "countryName": null,
+              "countryCode": null,
+              "city": null,
+              "region": null
+            }
+          ],
+          "profileValue": null,
+          "evidence": "posting did not establish exclusively physical arrangements",
+          "source": "data.employment.workArrangements",
+          "similarity": null,
+          "exactMatch": null
+        },
+        {
+          "name": "required_language",
+          "status": "unknown",
+          "hard": true,
+          "postingValue": null,
+          "profileValue": [
+            {
+              "language": "English",
+              "level": "B2",
+              "evidence": "Example profile: professional working proficiency"
+            }
+          ],
+          "evidence": "required language or complete candidate language set is missing",
+          "source": "data.requirements.languages",
+          "similarity": null,
+          "exactMatch": null
+        },
+        {
+          "name": "contract_type",
+          "status": "unknown",
+          "hard": true,
+          "postingValue": null,
+          "profileValue": [],
+          "evidence": "posting or closed candidate contract set is missing",
+          "source": "data.employment.contractTypes",
+          "similarity": null,
+          "exactMatch": null
+        },
+        {
+          "name": "target_terms",
+          "status": "match",
+          "hard": false,
+          "postingValue": [
+            "Senior Full-Stack Software Engineer"
+          ],
+          "profileValue": [
+            "Software Engineer",
+            "Backend Engineer",
+            "Full Stack Engineer",
+            "Platform Engineer"
+          ],
+          "evidence": "provider-free semantic approximation=0.667; shared tokens=['engineer', 'software']; exact whole terms=[]",
+          "source": "data.title|data.classification|data.domains",
+          "similarity": 0.6666666666666666,
+          "exactMatch": false
+        },
+        {
+          "name": "required_skills",
+          "status": "unknown",
+          "hard": false,
+          "postingValue": null,
+          "profileValue": [
+            "Python",
+            "TypeScript",
+            "JavaScript",
+            "React",
+            "Node.js",
+            "SQL",
+            "PostgreSQL",
+            "Docker",
+            "Kubernetes",
+            "AWS",
+            "REST APIs",
+            "Git",
+            "CI/CD"
+          ],
+          "evidence": "one side is unknown",
+          "source": "data.requirements.requiredSkills",
+          "similarity": null,
+          "exactMatch": null
+        },
+        {
+          "name": "preferred_skills",
+          "status": "unknown",
+          "hard": false,
+          "postingValue": null,
+          "profileValue": [
+            "Python",
+            "TypeScript",
+            "JavaScript",
+            "React",
+            "Node.js",
+            "SQL",
+            "PostgreSQL",
+            "Docker",
+            "Kubernetes",
+            "AWS",
+            "REST APIs",
+            "Git",
+            "CI/CD"
+          ],
+          "evidence": "one side is unknown",
+          "source": "data.requirements.preferredSkills",
+          "similarity": null,
+          "exactMatch": null
+        },
+        {
+          "name": "seniority",
+          "status": "unknown",
+          "hard": false,
+          "postingValue": {
+            "levels": null,
+            "experience": null
+          },
+          "profileValue": {
+            "levels": [
+              "mid",
+              "senior"
+            ],
+            "yearsExperience": 8
+          },
+          "evidence": "no comparable structured seniority or experience facts",
+          "source": "data.seniority.levels|data.requirements.experience",
+          "similarity": null,
+          "exactMatch": null
+        },
+        {
+          "name": "semantic_proxy",
+          "status": "match",
+          "hard": false,
+          "postingValue": [
+            "Senior Full-Stack Software Engineer"
+          ],
+          "profileValue": [
+            "Software Engineer",
+            "Backend Engineer",
+            "Full Stack Engineer",
+            "Platform Engineer",
+            "Python",
+            "TypeScript",
+            "JavaScript",
+            "React",
+            "Node.js",
+            "SQL",
+            "PostgreSQL",
+            "Docker"
+          ],
+          "evidence": "provider-free semantic approximation=0.667; shared tokens=['engineer', 'software']; exact whole terms=[]",
+          "source": "structured-target-skill-domain-proxy",
+          "similarity": 0.6666666666666666,
+          "exactMatch": false
+        }
+      ]
+    },
+    "scoring": {
+      "algorithm": "scoring-v3",
+      "actorJobSchema": "nomad-agent-job-v1",
+      "profileSchema": "nomad-scoring-v3-profile-v2",
+      "staticDecisionSchema": "nomad-scoring-v3-static-decision-v3",
+      "verdictSchema": "nomad-scoring-v3-verdict-v2",
+      "promptVersion": "nomad-scoring-v3-prompt-v2",
+      "provider": "openrouter:OpenAI",
+      "model": "openai/gpt-5.6-luna",
+      "responseId": "gen-1788627336-jaN6t33mTFMeghnCeVNn",
+      "aiUsed": true,
+      "recoveredFromHold": false,
+      "contentReceipt": {
+        "schemaVersion": "nomad-scoring-v3-content-receipt-v1",
+        "actorBuild": null,
+        "normalizedRecordChars": 6327,
+        "normalizedRecordSha256": "29a91310b359a6196f6be69d9aa10a49d90c4002ff43c0f6829e8ba2dcafe0c0",
+        "descriptionChars": 4309,
+        "descriptionSha256": "9010bf8dd4bef64abf88c6877a33c5701be239a81d696244ae1a1f26fa9b534e",
+        "descriptionComplete": true,
+        "htmlAvailable": false,
+        "htmlChars": 0,
+        "htmlSent": false
+      },
+      "sourceProvenance": {
+        "mode": "search",
+        "scope": "web-developer",
+        "actorRunId": null,
+        "actorId": null,
+        "buildId": null,
+        "buildNumber": null,
+        "datasetId": null,
+        "selectedSources": [
+          "linkedin",
+          "remote_boards",
+          "justjoinit"
+        ],
+        "keywords": [
+          "software engineer"
+        ],
+        "location": null,
+        "countryCodes": [],
+        "remoteOnly": false,
+        "postedWithinDays": 14,
+        "sources": {
+          "linkedin": {
+            "status": "succeeded",
+            "querySupport": "native",
+            "requestCount": 1,
+            "rawFetched": 10,
+            "normalized": 10,
+            "afterFilters": 10,
+            "errorType": null
+          },
+          "remote_boards": {
+            "status": "succeeded",
+            "querySupport": "native",
+            "requestCount": 1,
+            "rawFetched": 10,
+            "normalized": 10,
+            "afterFilters": 10,
+            "errorType": null
+          },
+          "justjoinit": {
+            "status": "succeeded",
+            "querySupport": "native",
+            "requestCount": 1,
+            "rawFetched": 10,
+            "normalized": 10,
+            "afterFilters": 10,
+            "errorType": null
+          }
+        },
+        "totalRaw": 30,
+        "totalNormalized": 30,
+        "totalAfterFilters": 30,
+        "totalUnique": 30,
+        "descriptionTruncatedCount": 0,
+        "truncated": true
+      }
+    },
+    "job": {
+      "schemaVersion": "nomad-agent-job-v1",
+      "identity": {
+        "source": "remote_boards",
+        "externalId": "https://weworkremotely.com/remote-jobs/evident-change-senior-full-stack-software-engineer",
+        "url": "https://weworkremotely.com/remote-jobs/evident-change-senior-full-stack-software-engineer"
+      },
+      "data": {
+        "title": "Senior Full-Stack Software Engineer",
+        "company": {
+          "name": "Evident Change",
+          "sourceId": null,
+          "department": null,
+          "url": null,
+          "logoUrl": null
+        },
+        "classification": {
+          "industries": null,
+          "jobFunctions": null
+        },
+        "domains": null,
+        "domainsRaw": null,
+        "locations": [
+          {
+            "raw": "Remote",
+            "countryName": null,
+            "countryCode": null,
+            "city": null,
+            "region": null,
+            "postalCode": null,
+            "streetAddress": null,
+            "facilityName": null,
+            "positionsAvailable": null,
+            "latitude": null,
+            "longitude": null
+          }
+        ],
+        "employment": {
+          "workArrangements": null,
+          "applicantLocationRequirements": null,
+          "workSchedules": null,
+          "contractTypes": null,
+          "durationMonths": null,
+          "hoursPerWeek": null,
+          "hoursPerWeekRaw": null,
+          "startDate": null,
+          "startDateRaw": null
+        },
+        "application": {
+          "postedAt": null,
+          "deadline": null,
+          "referenceNumber": null,
+          "referenceNumberIssuer": null,
+          "applicantSnapshot": null,
+          "url": "https://weworkremotely.com/remote-jobs/evident-change-senior-full-stack-software-engineer",
+          "email": null,
+          "directApply": null,
+          "applyMethodRaw": null,
+          "availability": null,
+          "hiringContacts": null,
+          "eligibilityCriteria": null,
+          "selectionProcess": null
+        },
+        "seniority": {
+          "raw": null,
+          "levels": null
+        },
+        "requirements": {
+          "education": null,
+          "experience": null,
+          "languages": null,
+          "requiredSkills": null,
+          "preferredSkills": null,
+          "certifications": null,
+          "skillsQualifications": null,
+          "specificRequirements": null
+        },
+        "benefits": null,
+        "funding": {
+          "programme": null
+        },
+        "compensation": {
+          "currency": null,
+          "exact": null,
+          "minimum": null,
+          "maximum": null,
+          "period": null,
+          "raw": null
+        },
+        "constraints": {
+          "visaSponsorship": null,
+          "workAuthorization": null,
+          "securityClearance": null,
+          "locationPreference": null
+        }
+      },
+      "custom": null,
+      "llm": {
+        "status": "not_requested",
+        "requestedFields": [],
+        "filledFields": [],
+        "provider": null,
+        "model": null,
+        "promptVersion": null,
+        "completedAt": null
+      },
+      "raw": {
+        "description": "Headquarters: Madison, WI URL: http://www.evidentchange.org Senior Full-Stack Software Engineer STATUS: Full time LOCATION: Remote; work from anywhere within the United States Are you interested in using Ruby on Rails to design and improve software systems that help social service professionals access meaningful and reliable data? We seek a senior full-stack software engineer to lead complex development efforts for our web-based applications that support social service system reporting and analysis using Ruby on Rails. In this role, you will influence technical architecture, mentor engineers, and ensure our systems are scalable, secure, and high performing. You will collaborate across teams, contribute to continuous improvement, and help advance tools that directly impact decision making and outcomes in social services. What Will You Do? Get ready to: Design, build, and maintain scalable, secure, high-performance software systems that support Evident Change’s mission Lead design discussions and provide architectural guidance across complex application development efforts Conduct and lead code reviews, offering constructive feedback and enforcing coding standards and best practices Mentor junior and mid-level engineers, supporting skill development and technical growth Evaluate and recommend tools, libraries, and frameworks to improve development efficiency and system performance Collaborate closely with stakeholders to translate business needs into effective technical solutions Participate in incident response and root cause analysis to ensure system reliability and continuous improvement Our Compensation and Benefit Offerings The national average salary for this position ranges between $108,500 and $115,000 per year. Compensation within this range is dependent on experience, parity with peers, and where an employee lives. Evident Change offers a monthly stipend to support our “work-from-anywhere” culture as well as other great benefits, including customizable medical, vision, and dental coverage. Our comprehensive benefits package includes no-premium cost share for employee-only medical coverage, generous vacation and paid holidays, and a relaxed environment with support for work schedule flexibility where possible. Other benefits include life and long-term disability insurance, retirement plan, paid sick leave, and more. Who Should Apply to Evident Change? Applicants who meet these essential qualifications will be considered a candidate for this role. Bachelor’s degree or equivalent professional experience. A minimum of 5–8 years of experience in full-stack software engineering. Experience developing full-stack web applications using Ruby on Rails is required. Familiarity with the following technologies: Hotwire (Turbo + Stimulus); Tailwind CSS; PostgreSQL; RSpec and FactoryBot (for testing). Advanced experience with Git, including code review workflows and CI/CD integration. Advanced SQL optimization and data modeling skills. Experience designing and building APIs and scalable systems. Demonstrated ability to lead technical projects and mentor other engineers. Experience working in Agile development environments. Additional assets a candidate may possess include the following. Proficiency in multiple programming languages or frameworks. Experience with performance tuning and system optimization. Strong system design skills and familiarity with modern architectural patterns. Experience collaborating with cross-functional and non-technical stakeholders. Join Us! We believe that our systems should help people achieve their greatest potential, not create barriers to their success. We are committed to building a work community that does the same—representing a variety of backgrounds, perspectives, skills, and ways of learning—and we therefore welcome all applicants. Evident Change adheres to all applicable equal opportunity employment laws. For best consideration, apply by September 14, 2026. Submissions not received through JazzHR will not be accepted or considered. If you need assistance with an accommodation due to a disability, please email HR@evidentchange.org or call (800) 306-6223. Visit EvidentChange.org for more information. To apply: https://weworkremotely.com/remote-jobs/evident-change-senior-full-stack-software-engineer",
+        "descriptionHtml": null
+      }
+    }
+  },
+  {
+    "schemaVersion": "nomad-ai-job-fit-v1",
+    "matchKey": "3247af0bc30cd35b38bdef2077f0fe4dfdee513e347747650182be77b13c74ad",
+    "evaluationKey": "4153a3b3c9808c0cc041565da11fc3d0072737312c40abbd5f356fd098bd6818",
+    "jobKey": "justjoinit:tradevest-senior-or-mid-backend-software-engineer-m-f-d--warszawa-go-923852c6",
+    "candidateHash": "c61557c7acbb2b791ebe09cc74cd3d3d29344035853528bb77833f83e760f31c",
+    "candidateSnapshotHash": "505e87a12cceb8cad1a7e7b2360d92b2ee1b339a30dd06234e7c699f071fe9b2",
+    "evaluatedAt": "2026-09-05T16:55:35Z",
+    "source": "justjoinit",
+    "externalId": "tradevest-senior-or-mid-backend-software-engineer-m-f-d--warszawa-go-923852c6",
+    "url": "https://justjoin.it/job-offer/tradevest-senior-or-mid-backend-software-engineer-m-f-d--warszawa-go-923852c6",
+    "title": "Senior or Mid Backend Software Engineer (m/f/d)",
+    "company": "Tradevest",
+    "location": "Warszawa (hybrid)",
+    "postedAt": "2026-09-05T13:52:19.9259276Z",
+    "fitScore": 48,
+    "deliveryScore": 2,
+    "recommendation": "blocked",
+    "evaluationStatus": "scored",
+    "why": "Strong backend experience and overlap in Python/TypeScript, PostgreSQL, AWS, CI/CD, and APIs, but the role centers on Go and requires hybrid attendance in Warsaw.",
+    "gapSummary": "No Go, DynamoDB, Terraform, or GitHub experience is evidenced. The posting requires in-office work in Warsaw every Tuesday and Thursday; candidate location feasibility is not explicit.",
+    "blockingGates": [
+      "mandatoryRequirements"
+    ],
+    "scoreAdjustedForGates": true,
+    "gates": {
+      "coreRole": {
+        "status": "pass",
+        "postingEvidence": "Backend Software Engineer; implement micro-services, APIs, tests, and distributed systems.",
+        "candidateEvidence": "Software engineer with eight years building and operating backend and full-stack web services."
+      },
+      "mandatoryRequirements": {
+        "status": "block",
+        "postingEvidence": "Implement new micro-services in Go; required skills include Golang and DynamoDB.",
+        "candidateEvidence": "Candidate skills list Python, TypeScript, SQL, PostgreSQL, AWS, and Kubernetes, but no Go or DynamoDB."
+      },
+      "experienceSeniority": {
+        "status": "pass",
+        "postingEvidence": "Title is Senior or Mid Backend Software Engineer; profile requests 3+ years professional backend experience.",
+        "candidateEvidence": "Candidate has eight years of backend and full-stack web-services experience and accepts mid/senior levels."
+      },
+      "workModeLocation": {
+        "status": "unknown",
+        "postingEvidence": "Hybrid Warsaw, in-office every Tuesday and Thursday.",
+        "candidateEvidence": "Candidate accepts hybrid worldwide, but does not explicitly confirm ability to attend Warsaw twice weekly."
+      },
+      "explicitPreferences": {
+        "status": "pass",
+        "postingEvidence": "Role is backend software engineering with hybrid work.",
+        "candidateEvidence": "Target terms include Software Engineer, Backend Engineer, and Platform Engineer; accepted arrangements include hybrid."
+      }
+    },
+    "staticDecision": {
+      "schemaVersion": "nomad-scoring-v3-static-decision-v3",
+      "action": "forward",
+      "lane": "rank-forward",
+      "rankScore": 76,
+      "knownComparisons": 4,
+      "unknownComparisons": 6,
+      "unknownRescue": false,
+      "reasons": [
+        "static rank 76 meets forward threshold 30"
+      ],
+      "signals": [
+        {
+          "name": "content_validity",
+          "status": "pass",
+          "hard": true,
+          "postingValue": "Senior or Mid Backend Software Engineer (m/f/d)",
+          "profileValue": null,
+          "evidence": "no explicit invalidity",
+          "source": "source-envelope",
+          "similarity": null,
+          "exactMatch": null
+        },
+        {
+          "name": "work_arrangement",
+          "status": "unknown",
+          "hard": true,
+          "postingValue": [
+            "hybrid"
+          ],
+          "profileValue": [
+            "remote",
+            "hybrid",
+            "onsite"
+          ],
+          "evidence": "constraint is missing, empty, or not explicitly closed",
+          "source": "data.employment.workArrangements",
+          "similarity": null,
+          "exactMatch": null
+        },
+        {
+          "name": "physical_country",
+          "status": "unknown",
+          "hard": true,
+          "postingValue": [
+            {
+              "raw": "Warszawa (hybrid)",
+              "countryName": null,
+              "countryCode": null,
+              "city": null,
+              "region": null
+            }
+          ],
+          "profileValue": null,
+          "evidence": "physical country or closed accepted-country set is missing",
+          "source": "data.locations",
+          "similarity": null,
+          "exactMatch": null
+        },
+        {
+          "name": "required_language",
+          "status": "unknown",
+          "hard": true,
+          "postingValue": null,
+          "profileValue": [
+            {
+              "language": "English",
+              "level": "B2",
+              "evidence": "Example profile: professional working proficiency"
+            }
+          ],
+          "evidence": "required language or complete candidate language set is missing",
+          "source": "data.requirements.languages",
+          "similarity": null,
+          "exactMatch": null
+        },
+        {
+          "name": "contract_type",
+          "status": "unknown",
+          "hard": true,
+          "postingValue": null,
+          "profileValue": [],
+          "evidence": "posting or closed candidate contract set is missing",
+          "source": "data.employment.contractTypes",
+          "similarity": null,
+          "exactMatch": null
+        },
+        {
+          "name": "target_terms",
+          "status": "match",
+          "hard": false,
+          "postingValue": [
+            "Senior or Mid Backend Software Engineer (m/f/d)"
+          ],
+          "profileValue": [
+            "Software Engineer",
+            "Backend Engineer",
+            "Full Stack Engineer",
+            "Platform Engineer"
+          ],
+          "evidence": "provider-free semantic approximation=0.667; shared tokens=['backend', 'engineer', 'software']; exact whole terms=[]",
+          "source": "data.title|data.classification|data.domains",
+          "similarity": 0.6666666666666666,
+          "exactMatch": false
+        },
+        {
+          "name": "required_skills",
+          "status": "match",
+          "hard": false,
+          "postingValue": [
+            "PostgreSQL",
+            "DynamoDB",
+            "Terraform",
+            "CI/CD",
+            "AWS",
+            "GitHub",
+            "Golang"
+          ],
+          "profileValue": [
+            "Python",
+            "TypeScript",
+            "JavaScript",
+            "React",
+            "Node.js",
+            "SQL",
+            "PostgreSQL",
+            "Docker",
+            "Kubernetes",
+            "AWS",
+            "REST APIs",
+            "Git"
+          ],
+          "evidence": "provider-free semantic approximation=0.814; shared tokens=['aws', 'cd', 'ci', 'postgresql']; exact whole terms=['aws', 'ci cd', 'postgresql']",
+          "source": "data.requirements.requiredSkills",
+          "similarity": 0.8144,
+          "exactMatch": true
+        },
+        {
+          "name": "preferred_skills",
+          "status": "unknown",
+          "hard": false,
+          "postingValue": null,
+          "profileValue": [
+            "Python",
+            "TypeScript",
+            "JavaScript",
+            "React",
+            "Node.js",
+            "SQL",
+            "PostgreSQL",
+            "Docker",
+            "Kubernetes",
+            "AWS",
+            "REST APIs",
+            "Git",
+            "CI/CD"
+          ],
+          "evidence": "one side is unknown",
+          "source": "data.requirements.preferredSkills",
+          "similarity": null,
+          "exactMatch": null
+        },
+        {
+          "name": "seniority",
+          "status": "unknown",
+          "hard": false,
+          "postingValue": {
+            "levels": null,
+            "experience": null
+          },
+          "profileValue": {
+            "levels": [
+              "mid",
+              "senior"
+            ],
+            "yearsExperience": 8
+          },
+          "evidence": "no comparable structured seniority or experience facts",
+          "source": "data.seniority.levels|data.requirements.experience",
+          "similarity": null,
+          "exactMatch": null
+        },
+        {
+          "name": "semantic_proxy",
+          "status": "match",
+          "hard": false,
+          "postingValue": [
+            "Senior or Mid Backend Software Engineer (m/f/d)",
+            "PostgreSQL",
+            "DynamoDB",
+            "Terraform",
+            "CI/CD",
+            "AWS",
+            "GitHub",
+            "Golang"
+          ],
+          "profileValue": [
+            "Software Engineer",
+            "Backend Engineer",
+            "Full Stack Engineer",
+            "Platform Engineer",
+            "Python",
+            "TypeScript",
+            "JavaScript",
+            "React",
+            "Node.js",
+            "SQL",
+            "PostgreSQL",
+            "Docker"
+          ],
+          "evidence": "provider-free semantic approximation=0.829; shared tokens=['aws', 'backend', 'cd', 'ci', 'engineer', 'postgresql', 'software']; exact whole terms=['aws', 'ci cd', 'postgresql']",
+          "source": "structured-target-skill-domain-proxy",
+          "similarity": 0.8290166666666666,
+          "exactMatch": true
+        }
+      ]
+    },
+    "scoring": {
+      "algorithm": "scoring-v3",
+      "actorJobSchema": "nomad-agent-job-v1",
+      "profileSchema": "nomad-scoring-v3-profile-v2",
+      "staticDecisionSchema": "nomad-scoring-v3-static-decision-v3",
+      "verdictSchema": "nomad-scoring-v3-verdict-v2",
+      "promptVersion": "nomad-scoring-v3-prompt-v2",
+      "provider": "openrouter:OpenAI",
+      "model": "openai/gpt-5.6-luna",
+      "responseId": "gen-1788627336-S2U0Lcz3d0T5YkquQAYA",
+      "aiUsed": true,
+      "recoveredFromHold": false,
+      "contentReceipt": {
+        "schemaVersion": "nomad-scoring-v3-content-receipt-v1",
+        "actorBuild": null,
+        "normalizedRecordChars": 5546,
+        "normalizedRecordSha256": "e8979d6b26e3930258a19d18ac85c386df4736ed9a2d8ddec4b5fa27f7fb6369",
+        "descriptionChars": 2943,
+        "descriptionSha256": "979c33eecb330f43e6bf78cf884876dcc722390c4cfb9795fa96e08ca7daeda9",
+        "descriptionComplete": true,
+        "htmlAvailable": false,
+        "htmlChars": 0,
+        "htmlSent": false
+      },
+      "sourceProvenance": {
+        "mode": "search",
+        "scope": "web-developer",
+        "actorRunId": null,
+        "actorId": null,
+        "buildId": null,
+        "buildNumber": null,
+        "datasetId": null,
+        "selectedSources": [
+          "linkedin",
+          "remote_boards",
+          "justjoinit"
+        ],
+        "keywords": [
+          "software engineer"
+        ],
+        "location": null,
+        "countryCodes": [],
+        "remoteOnly": false,
+        "postedWithinDays": 14,
+        "sources": {
+          "linkedin": {
+            "status": "succeeded",
+            "querySupport": "native",
+            "requestCount": 1,
+            "rawFetched": 10,
+            "normalized": 10,
+            "afterFilters": 10,
+            "errorType": null
+          },
+          "remote_boards": {
+            "status": "succeeded",
+            "querySupport": "native",
+            "requestCount": 1,
+            "rawFetched": 10,
+            "normalized": 10,
+            "afterFilters": 10,
+            "errorType": null
+          },
+          "justjoinit": {
+            "status": "succeeded",
+            "querySupport": "native",
+            "requestCount": 1,
+            "rawFetched": 10,
+            "normalized": 10,
+            "afterFilters": 10,
+            "errorType": null
+          }
+        },
+        "totalRaw": 30,
+        "totalNormalized": 30,
+        "totalAfterFilters": 30,
+        "totalUnique": 30,
+        "descriptionTruncatedCount": 0,
+        "truncated": true
+      }
+    },
+    "job": {
+      "schemaVersion": "nomad-agent-job-v1",
+      "identity": {
+        "source": "justjoinit",
+        "externalId": "tradevest-senior-or-mid-backend-software-engineer-m-f-d--warszawa-go-923852c6",
+        "url": "https://justjoin.it/job-offer/tradevest-senior-or-mid-backend-software-engineer-m-f-d--warszawa-go-923852c6"
+      },
+      "data": {
+        "title": "Senior or Mid Backend Software Engineer (m/f/d)",
+        "company": {
+          "name": "Tradevest",
+          "sourceId": null,
+          "department": null,
+          "url": null,
+          "logoUrl": "https://imgproxy.justjoinit.tech/pFsPDtT3TGgd1F1JQh14Kh-siJX9ChAE_HXJJH91tDg/h:200/w:200/plain/https://s3.eu-west-1.amazonaws.com/images.justjoin.it/justjoinit/company-logos/99373537-9a98-4477-849c-e2ae047d35e7.png"
+        },
+        "classification": {
+          "industries": null,
+          "jobFunctions": null
+        },
+        "domains": null,
+        "domainsRaw": null,
+        "locations": [
+          {
+            "raw": "Warszawa (hybrid)",
+            "countryName": null,
+            "countryCode": null,
+            "city": null,
+            "region": null,
+            "postalCode": null,
+            "streetAddress": null,
+            "facilityName": null,
+            "positionsAvailable": null,
+            "latitude": null,
+            "longitude": null
+          }
+        ],
+        "employment": {
+          "workArrangements": [
+            "hybrid"
+          ],
+          "applicantLocationRequirements": null,
+          "workSchedules": null,
+          "contractTypes": null,
+          "durationMonths": null,
+          "hoursPerWeek": null,
+          "hoursPerWeekRaw": null,
+          "startDate": null,
+          "startDateRaw": null
+        },
+        "application": {
+          "postedAt": "2026-09-05T13:52:19.9259276Z",
+          "deadline": null,
+          "referenceNumber": null,
+          "referenceNumberIssuer": null,
+          "applicantSnapshot": null,
+          "url": "https://justjoin.it/job-offer/tradevest-senior-or-mid-backend-software-engineer-m-f-d--warszawa-go-923852c6",
+          "email": null,
+          "directApply": null,
+          "applyMethodRaw": null,
+          "availability": null,
+          "hiringContacts": null,
+          "eligibilityCriteria": null,
+          "selectionProcess": null
+        },
+        "seniority": {
+          "raw": null,
+          "levels": null
+        },
+        "requirements": {
+          "education": null,
+          "experience": null,
+          "languages": null,
+          "requiredSkills": [
+            {
+              "name": "PostgreSQL",
+              "yearsRequired": null
+            },
+            {
+              "name": "DynamoDB",
+              "yearsRequired": null
+            },
+            {
+              "name": "Terraform",
+              "yearsRequired": null
+            },
+            {
+              "name": "CI/CD",
+              "yearsRequired": null
+            },
+            {
+              "name": "AWS",
+              "yearsRequired": null
+            },
+            {
+              "name": "GitHub",
+              "yearsRequired": null
+            },
+            {
+              "name": "Golang",
+              "yearsRequired": null
+            }
+          ],
+          "preferredSkills": null,
+          "certifications": null,
+          "skillsQualifications": null,
+          "specificRequirements": null
+        },
+        "benefits": null,
+        "funding": {
+          "programme": null
+        },
+        "compensation": {
+          "currency": "PLN",
+          "exact": null,
+          "minimum": 12600,
+          "maximum": 30750,
+          "period": "Month",
+          "raw": "B2B 12600.0–30750.0 PLN"
+        },
+        "constraints": {
+          "visaSponsorship": null,
+          "workAuthorization": null,
+          "securityClearance": null,
+          "locationPreference": null
+        }
+      },
+      "custom": null,
+      "llm": {
+        "status": "not_requested",
+        "requestedFields": [],
+        "filledFields": [],
+        "provider": null,
+        "model": null,
+        "promptVersion": null,
+        "completedAt": null
+      },
+      "raw": {
+        "description": "About usTradevest is a leading FinTech company offering an innovative platform for securities and cryptocurrency trading, specifically tailored for institutional clients. In Germany, Tradevest holds BaFin licenses as a securities institution, ensuring full regulatory compliance. With our cutting-edge development hub located in Warsaw, Tradevest Technologies Warsaw, we drive the technical innovation behind our products. Additionally, through our brand WAWEX, we operate a state-of-the-art cryptocurrency exchange in Warsaw, providing a seamless and secure trading experience. Our mission is to empower institutional traders with advanced tools and technologies that redefine the trading landscape.WAWEX is a cutting-edge fintech platform at the forefront of the digital finance revolution. Empowering financial institutions, brokers, and banks, WAWEX delivers seamless access to over 75 cryptocurrencies, combining state-of-the-art security with unparalleled market depth. Through innovative tokenization and real-time market insights, WAWEX is shaping the future of trading. With robust API integrations and 24/7 availability, this dynamic platform is designed for institutions ready to embrace the fast-paced world of digital assets and unlock limitless opportunities in global finance.Location: Hybrid (Warsaw – in-office every Tuesday & Thursday)Your day-to-dayImplement new micro-services and extend existing ones in Go.Help groom user-story requirements and surface performance / scaling concerns early.Write unit, integration and API tests; review PRs.Tune data-models in DynamoDB & Postgres for low-latency, high-throughput workloads.Pair with DevOps on CI/CD and observability improvements.Participate in on-call rotation as we’re building high available fintech systemAdditional tasks of the SeniorDesign and drive high-scale, low-latency services (tens of thousands of orders / sec).Lead architecture reviews, challenge assumptions and keep tech debt in check.Partner with Product on roadmap feasibility & effort sizing.Be a mentor to less experienced colleaguesPerfect candidate profile3+ years of professional back-end experience (ideally 1 year+ in Go).Solid grasp of cloud-native design (RESTful APIs, event-driven patterns).Working SQL and NoSQL skills; know when each shines.Comfort diagnosing performance bottlenecks in distributed systems.Ability to work on-site in Warsaw twice a week (Tue & Thu) and remotely otherwise.Nice to haveExposure to serverless architectures on AWS.Knowledge of automated trading, market data, or FIX/crypto exchanges.Familiarity with Infrastructure-as-Code (Terraform or CDK).What we offerAn experienced, welcoming team that loves clean, well-tested code.Real impact: the features you ship go straight into production for live traders.Flexible hours, modern tooling, and a fintech domain that’s never boring.Occasional work travel to Germany (Munich / Berlin)20 days PTO on B2BMultisport card",
+        "descriptionHtml": null
+      }
+    }
+  }
+]

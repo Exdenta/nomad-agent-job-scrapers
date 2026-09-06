@@ -27,7 +27,7 @@
             {
               "id": "actor-build",
               "name": "actorBuild",
-              "value": "0.1.12",
+              "value": "0.1.22",
               "type": "string"
             },
             {
@@ -76,7 +76,7 @@
         0
       ],
       "parameters": {
-        "jsCode": "const cfg = $input.first().json;\nlet actorInput; try { actorInput = JSON.parse(cfg.actorInputJson); } catch (error) { throw new Error(`actorInputJson must be valid JSON: ${error.message}`); }\nif (!actorInput || Array.isArray(actorInput)) throw new Error('actorInputJson must be one object');\nif (actorInput.mode !== 'search' || !actorInput.search || !Array.isArray(actorInput.search.keywords) || actorInput.search.keywords.length < 1) throw new Error('starter requires explicit search keywords');\nif (!Number.isInteger(actorInput.maxItems) || actorInput.maxItems < 1 || actorInput.maxItems > 5) throw new Error('starter maxItems must be 1 through 5');\nif (cfg.actorBuild !== '0.1.12') throw new Error('actorBuild must remain pinned to verified build 0.1.12');\nif (Number(cfg.maxTotalChargeUsd) !== 0.10) throw new Error('starter charge cap must be USD 0.10');\nif (!Number.isInteger(cfg.maxPollSeconds) || cfg.maxPollSeconds < 60 || cfg.maxPollSeconds > 600) throw new Error('maxPollSeconds must be 60 through 600');\nif (!cfg.googleSpreadsheetId || cfg.googleSpreadsheetId.startsWith('REPLACE_WITH_')) throw new Error('replace googleSpreadsheetId before running');\nif (!cfg.googleSheetName) throw new Error('googleSheetName is required');\nreturn [{json:{...cfg,actorInput}}];"
+        "jsCode": "const cfg = $input.first().json;\nlet actorInput; try { actorInput = JSON.parse(cfg.actorInputJson); } catch (error) { throw new Error(`actorInputJson must be valid JSON: ${error.message}`); }\nif (!actorInput || Array.isArray(actorInput)) throw new Error('actorInputJson must be one object');\nif (actorInput.mode !== 'search' || !actorInput.search || !Array.isArray(actorInput.search.keywords) || actorInput.search.keywords.length < 1) throw new Error('starter requires explicit search keywords');\nif (!Number.isInteger(actorInput.maxItems) || actorInput.maxItems < 1 || actorInput.maxItems > 5) throw new Error('starter maxItems must be 1 through 5');\nif (cfg.actorBuild !== '0.1.22') throw new Error('actorBuild must remain pinned to verified build 0.1.22');\nif (Number(cfg.maxTotalChargeUsd) !== 0.10) throw new Error('starter charge cap must be USD 0.10');\nif (!Number.isInteger(cfg.maxPollSeconds) || cfg.maxPollSeconds < 60 || cfg.maxPollSeconds > 600) throw new Error('maxPollSeconds must be 60 through 600');\nif (!cfg.googleSpreadsheetId || cfg.googleSpreadsheetId.startsWith('REPLACE_WITH_')) throw new Error('replace googleSpreadsheetId before running');\nif (!cfg.googleSheetName) throw new Error('googleSheetName is required');\nreturn [{json:{...cfg,actorInput}}];"
       }
     },
     {
@@ -341,7 +341,7 @@
         -360
       ],
       "parameters": {
-        "content": "## 1. Configure\n\nAdd Apify Header Auth (`Authorization: Bearer <APIFY_TOKEN>`) to every HTTP node and Google Sheets OAuth2 to the last node. Import the shared CSV header, replace the spreadsheet ID, choose explicit search terms, and keep actorBuild pinned to verified build 0.1.12. The starter explicitly uses shortlist mode at delivery score 2. Keep five jobs and the $0.10 cap for the first run.",
+        "content": "## 1. Configure\n\nAdd Apify Header Auth (`Authorization: Bearer <APIFY_TOKEN>`) to every HTTP node and Google Sheets OAuth2 to the last node. Import the shared CSV header, replace the spreadsheet ID, choose explicit search terms, and keep actorBuild pinned to verified build 0.1.22. The starter explicitly uses shortlist mode at delivery score 2. Keep five jobs and the $0.10 cap for the first run.",
         "height": 300,
         "width": 720,
         "color": 5

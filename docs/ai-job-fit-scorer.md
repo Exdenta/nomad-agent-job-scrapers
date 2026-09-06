@@ -4,17 +4,22 @@
 turns one résumé or structured candidate profile into a ranked developer-job
 shortlist. It can search and deduplicate 10 public job sources in one run, or
 score supplied `nomad-agent-job-v1` records. Default `shortlist` mode returns
-only scored rows meeting the gate-aware delivery threshold. Explicit `audit`
+only scored rows whose delivery score meets the threshold. Explicit `audit`
 mode retains drops, holds, and failures for pipeline analysis. A charged result
 costs $0.02 and includes a raw 0–100 fit, a gate-adjusted 0–5 delivery score,
 evidence, gaps, source provenance, and stable destination keys.
 
-This repository pins the live-verified scoring runtime at immutable Actor build
-`0.1.12` (`eLfTnCWohYVKejvsD`). Public `latest` is `0.1.13`
-(`7wXjnRw6XvfiUQUwB`), a documentation-only build with the same runtime image.
-Keep automated integrations on `0.1.12` until a newer runtime is separately
+This repository pins the live-verified Actor build `0.1.22`
+(`XQhyxEg3YZ3NMel70`), which is also the Store `latest` as of 2026-09-05. Keep
+automated integrations on `0.1.22` until a newer build is separately
 contract-tested. Maintained consumers accept legacy
 `nomad-ai-job-fit-run-summary-v3` and current v4 during migration.
+
+Real inputs and outputs live in
+[`docs/examples/ai-job-fit-scorer/`](examples/ai-job-fit-scorer/): a
+three-source search input, an inline supplied-job input, one real scored row,
+and one real `RUN-SUMMARY`. An agent skill that wraps this contract is at
+[`.agents/skills/ai-job-fit-scorer`](../.agents/skills/ai-job-fit-scorer/SKILL.md).
 
 ## Choose a starter
 
@@ -38,7 +43,7 @@ and search terms:
 
 ```bash
 export APIFY_TOKEN="..."
-export ACTOR_BUILD_NUMBER="0.1.12"
+export ACTOR_BUILD_NUMBER="0.1.22"
 node integrations/api/ai-job-fit-scorer-run-and-fetch.mjs
 ```
 
@@ -93,10 +98,10 @@ provided.
 
 Every integration should preserve this order:
 
-1. start `nomad-agent/ai-job-fit-scorer` with build `0.1.12`, an explicit input,
+1. start `nomad-agent/ai-job-fit-scorer` with build `0.1.22`, an explicit input,
    item cap, and maximum total charge;
 2. retain the returned run ID and poll only that run to a terminal state;
-3. require `SUCCEEDED`, exit code `0`, build number `0.1.12`, and immutable
+3. require `SUCCEEDED`, exit code `0`, build number `0.1.22`, and immutable
    default dataset and key-value-store IDs;
 4. read `RUN-SUMMARY` from that run and require
    `nomad-ai-job-fit-run-summary-v4`, a usable status, scoring v3, a valid
@@ -185,6 +190,20 @@ Prove create and update behavior before enabling the schedule.
   responsible for application and hiring decisions.
 
 ## Current live proof
+
+Build `0.1.22` (`XQhyxEg3YZ3NMel70`) was read back as both `latest` and
+its default selector on 2026-09-05. Existing run `AkjZ6lVDultxapjdP`, started
+through `latest`, succeeded with exit code 0, three scored rows and three
+`job-fit-result` charges ($0.06). All three selected sources succeeded. This
+run used the built-in fictional candidate; it does not describe a customer.
+The full dataset and summary reconcile locally against that exact run receipt.
+No new paid run was started for this documentation work.
+
+Current starters pin `0.1.22`. The following older runs retain their actual
+build IDs and demonstrate historical cases, not fresh audit/inline execution
+on `0.1.22`.
+
+### Historical behavior checks
 
 Immutable runtime build `0.1.12` passed four bounded v4 behaviors on
 2026-09-03:

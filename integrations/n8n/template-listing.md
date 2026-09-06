@@ -235,7 +235,7 @@ and upsert evidence-gated fit scores to Google Sheets by candidate-specific ID.
 
 Turn a bounded developer-job search into a candidate-specific shortlist. On a
 manual trigger, the workflow calls the AI Job Search & Fit Scorer at exact
-build `0.1.12`, polls the same run until terminal, validates legacy v3 or the
+build `0.1.22`, polls the same run until terminal, validates legacy v3 or the
 current `nomad-ai-job-fit-run-summary-v4` result policy and billing fields,
 and fetches only that run's dataset.
 
@@ -267,7 +267,7 @@ customer AI-provider key.
    Google Sheets to **Upsert Google Sheets by matchKey**.
 4. Replace the spreadsheet placeholder and edit the structured search and
    candidate profile in **Configuration**.
-5. Keep exact build `0.1.12`, five evaluations, and the `$0.10` maximum total
+5. Keep exact build `0.1.22`, five evaluations, and the `$0.10` maximum total
    charge for the first run.
 6. Run manually and reconcile the terminal Actor run, v4 summary, charged
    events, exact dataset, and named Sheet rows.

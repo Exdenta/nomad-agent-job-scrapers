@@ -3,10 +3,10 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Search or supply developer jobs, score them for one candidate, and retain evidence-gated fit results with stable destination keys." />
+    <meta name="description" content="Search 10 public developer-job sources or score your own job list against a résumé or profile. Get a ranked shortlist with a 0–100 fit score, a 0–5 delivery score after hard-requirement checks, evidence, skill gaps, and links to the postings." />
     <meta name="robots" content="index,follow" />
     <meta property="og:title" content="AI Job Search and Fit Scorer | Nomad Agent" />
-    <meta property="og:description" content="Candidate-specific job scoring across ten supported sources or supplied normalized jobs, with evidence and hard-requirement gates." />
+    <meta property="og:description" content="Search 10 public developer-job sources or score your own job list against a résumé or profile. Get a ranked shortlist with fit and delivery scores, evidence, skill gaps, and posting links." />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://nomadagent.dev/actors/ai-job-fit-scorer" />
     <meta property="og:image" content="https://nomadagent.dev/assets/nomad-agent-social-card.png" />
@@ -17,7 +17,7 @@
     <meta name="twitter:image:alt" content="Nomad Agent job data for APIs, automations, and AI agents" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="AI Job Search and Fit Scorer | Nomad Agent" />
-    <meta name="twitter:description" content="Evidence-gated candidate-to-job scoring with exact-run controls." />
+    <meta name="twitter:description" content="Search 10 public developer-job sources or score your own job list against a résumé or profile. Ranked shortlist with fit and delivery scores, evidence, and gaps." />
     <meta name="twitter:image" content="https://nomadagent.dev/assets/nomad-agent-social-card.png" />
     <title>AI Job Search and Fit Scorer | Nomad Agent</title>
     <link rel="canonical" href="https://nomadagent.dev/actors/ai-job-fit-scorer" />
@@ -25,7 +25,7 @@
     <link rel="stylesheet" href="/styles.css" />
     <link rel="stylesheet" href="/detail.css" />
     <script type="application/ld+json">
-      {"@context":"https://schema.org","@graph":[{"@type":"WebPage","@id":"https://nomadagent.dev/actors/ai-job-fit-scorer#webpage","url":"https://nomadagent.dev/actors/ai-job-fit-scorer","name":"AI Job Search and Fit Scorer","description":"Candidate-specific developer-job search and evidence-gated fit scoring."},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://nomadagent.dev/"},{"@type":"ListItem","position":2,"name":"Actors","item":"https://nomadagent.dev/actors"},{"@type":"ListItem","position":3,"name":"AI Job Search and Fit Scorer","item":"https://nomadagent.dev/actors/ai-job-fit-scorer"}]}]}
+      {"@context":"https://schema.org","@graph":[{"@type":"WebPage","@id":"https://nomadagent.dev/actors/ai-job-fit-scorer#webpage","url":"https://nomadagent.dev/actors/ai-job-fit-scorer","name":"AI Job Search and Fit Scorer","description":"Search 10 public developer-job sources or score your own job list against a résumé or profile. Get a ranked shortlist with a 0–100 fit score, a 0–5 delivery score after hard-requirement checks, evidence, skill gaps, and links to the postings."},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://nomadagent.dev/"},{"@type":"ListItem","position":2,"name":"Actors","item":"https://nomadagent.dev/actors"},{"@type":"ListItem","position":3,"name":"AI Job Search and Fit Scorer","item":"https://nomadagent.dev/actors/ai-job-fit-scorer"}]}]}
     </script>
     <script defer src="/script.js"></script>
   </head>
@@ -37,8 +37,8 @@
       <section class="detail-hero">
         <p class="detail-eyebrow">Candidate-specific job decision support</p>
         <h1>AI Job Search &amp; Fit Scorer</h1>
-        <p class="detail-lede">Search ten public developer-job sources—or score your own jobs—against one résumé or profile. Get a gate-aware shortlist with fit evidence, skill gaps, hard-requirement checks, and application links.</p>
-        <div class="detail-badges"><span class="detail-badge">Public docs 0.1.13 · verified runtime 0.1.12</span><span class="detail-badge">$0.02 per returned shortlist result</span><span class="detail-badge">nomad-ai-job-fit-v1</span></div>
+        <p class="detail-lede">Search 10 public developer-job sources or score your own job list against a résumé or profile. Get a ranked shortlist with a 0–100 fit score, a 0–5 delivery score after hard-requirement checks, evidence, skill gaps, and links to the postings. No model key needed.</p>
+        <div class="detail-badges"><span class="detail-badge">Live-verified build 0.1.22</span><span class="detail-badge">$0.02 per returned shortlist result</span><span class="detail-badge">nomad-ai-job-fit-v1</span></div>
         <div class="detail-actions"><a class="button button-dark" href="https://apify.com/nomad-agent/ai-job-fit-scorer?utm_source=nomad-agent-job-scrapers&amp;utm_medium=owned-site&amp;utm_campaign=actor-discovery&amp;utm_content=detail-ai-job-fit-scorer" target="_blank" rel="noopener noreferrer" data-event="actor_cta_click" data-actor="ai-job-fit-scorer" data-placement="detail-ai-job-fit-scorer">Open the scorer on Apify ↗</a><a class="button button-outline" href="/guides/ai-job-fit-scoring-api" data-event="guide_cta_click" data-actor="ai-job-fit-scorer" data-placement="detail-scorer-guide">Build with the API</a></div>
       </section>
       <div class="detail-layout">
@@ -46,7 +46,7 @@
           <section class="detail-panel">
             <h2>What one run does</h2>
             <p>In <code>search</code> mode, the Actor searches the selected sources, normalizes and deduplicates the returned jobs, then evaluates them for one candidate. In <code>score-jobs</code> mode, it accepts complete <code>nomad-agent-job-v1</code> records from a JSON array, immutable dataset ID, or exact successful upstream run.</p>
-            <p>Default <code>shortlist</code> mode returns only <code>scored</code> rows meeting the gate-aware delivery threshold. <code>audit</code> mode retains drops, holds, and failures. Every v4 run summary reports the evaluated, dropped, held, scored, failed, filtered, and output counts.</p>
+            <p>Default <code>shortlist</code> mode returns only <code>scored</code> rows whose delivery score meets the threshold. <code>audit</code> mode retains drops, holds, and failures. Every v4 run summary reports the evaluated, dropped, held, scored, failed, filtered, and output counts.</p>
             <p>Each retained evaluation carries a raw 0–100 fit score, a gate-adjusted 0–5 delivery score, recommendation, hard-requirement evidence, gap summary, source provenance, and stable keys. It is decision support: it does not apply to jobs, send alerts, learn from clicks, or make hiring decisions.</p>
           </section>
           <section class="detail-panel">
@@ -75,7 +75,7 @@
           </section>
           <section class="detail-panel">
             <h2>Consume the exact result safely</h2>
-            <ol><li>Start <code>nomad-agent/ai-job-fit-scorer</code> with build <code>0.1.12</code>, explicit input, item cap, and total charge cap.</li><li>Poll only the returned run ID. Continue only for terminal <code>SUCCEEDED</code>, exit code <code>0</code>, and the requested build.</li><li>Read that run’s <code>RUN-SUMMARY</code> and require scorer v4, scoring v3, valid result-policy counts, the declared billing meter, and bounded provider guards.</li><li>Fetch that run’s default dataset and reconcile its row count with <code>counts.outputRows</code>.</li><li>In shortlist mode require every row to be scored and meet <code>minDeliveryScore</code>; in audit mode require zero filtered rows. Upsert retained candidate-specific evaluations by <code>matchKey</code>, not the source-only <code>jobKey</code>.</li></ol>
+            <ol><li>Start <code>nomad-agent/ai-job-fit-scorer</code> with build <code>0.1.22</code>, explicit input, item cap, and total charge cap.</li><li>Poll only the returned run ID. Continue only for terminal <code>SUCCEEDED</code>, exit code <code>0</code>, and the requested build.</li><li>Read that run’s <code>RUN-SUMMARY</code> and require schema <code>nomad-ai-job-fit-run-summary-v4</code>, algorithm name <code>scoring-v3</code>, valid result-policy counts, the declared billing meter, and bounded provider guards.</li><li>Fetch that run’s default dataset and reconcile its row count with <code>counts.outputRows</code>.</li><li>In shortlist mode require every row to be scored and meet <code>minDeliveryScore</code>; in audit mode require zero filtered rows. Upsert retained candidate-specific evaluations by <code>matchKey</code>, not the source-only <code>jobKey</code>.</li></ol>
           </section>
           <section class="detail-panel">
             <h2>Pricing and privacy boundaries</h2>
@@ -83,7 +83,7 @@
           </section>
           <section class="detail-panel detail-note">
             <h2>Verified proof—and what it does not prove</h2>
-            <p>On 2026-09-03, immutable runtime build <code>0.1.12</code> passed v4 shortlist filtering, audit retention, a scored inline result, and a three-source default search. In the default search, all three adapters succeeded, three jobs were scored, two were filtered, and the one delivery-3 result reconciled with one $0.02 event. Documentation-only build <code>0.1.13</code> then passed a zero-charge exact-build smoke with the same runtime image.</p>
+            <p>Current starters pin <code>0.1.22</code>. Existing run <code>AkjZ6lVDultxapjdP</code> on 2026-09-05 returned three scored rows for the built-in fictional candidate; its summary, dataset and three $0.02 result charges reconcile. The earlier canaries below retain their original builds.</p><p>On 2026-09-03, immutable runtime build <code>0.1.12</code> passed v4 shortlist filtering, audit retention, a scored inline result, and a three-source default search. In the default search, all three adapters succeeded, three jobs were scored, two were filtered, and the one delivery-3 result reconciled with one $0.02 event. Documentation-only build <code>0.1.13</code> then passed a zero-charge exact-build smoke with the same runtime image.</p>
             <p>This proves the immutable Actor and dataset path. It does not prove hosted MCP exposure, importing an n8n or Make artifact, building a Zap, a schedule firing naturally, or a named Google Sheet receiving a row.</p>
           </section>
           <section class="detail-panel">

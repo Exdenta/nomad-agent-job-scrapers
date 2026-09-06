@@ -1,0 +1,131 @@
+{
+  "schemaVersion": "nomad-ai-job-fit-run-summary-v4",
+  "recordType": "RUN-SUMMARY",
+  "actor": {
+    "id": "mBRj1sgHTWmoPJEcb",
+    "runId": "AkjZ6lVDultxapjdP",
+    "buildId": "XQhyxEg3YZ3NMel70",
+    "buildNumber": "0.1.22"
+  },
+  "algorithm": {
+    "name": "scoring-v3",
+    "interactionStateUsed": false
+  },
+  "status": "complete",
+  "cleanEmpty": false,
+  "startedAt": "2026-09-05T16:55:14Z",
+  "finishedAt": "2026-09-05T16:55:43Z",
+  "evaluationAsOf": "2026-09-05T16:55:35Z",
+  "source": {
+    "mode": "search",
+    "scope": "web-developer",
+    "actorRunId": null,
+    "actorId": null,
+    "buildId": null,
+    "buildNumber": null,
+    "datasetId": null,
+    "selectedSources": [
+      "linkedin",
+      "remote_boards",
+      "justjoinit"
+    ],
+    "keywords": [
+      "software engineer"
+    ],
+    "location": null,
+    "countryCodes": [],
+    "remoteOnly": false,
+    "postedWithinDays": 14,
+    "sources": {
+      "linkedin": {
+        "status": "succeeded",
+        "querySupport": "native",
+        "requestCount": 1,
+        "rawFetched": 10,
+        "normalized": 10,
+        "afterFilters": 10,
+        "errorType": null
+      },
+      "remote_boards": {
+        "status": "succeeded",
+        "querySupport": "native",
+        "requestCount": 1,
+        "rawFetched": 10,
+        "normalized": 10,
+        "afterFilters": 10,
+        "errorType": null
+      },
+      "justjoinit": {
+        "status": "succeeded",
+        "querySupport": "native",
+        "requestCount": 1,
+        "rawFetched": 10,
+        "normalized": 10,
+        "afterFilters": 10,
+        "errorType": null
+      }
+    },
+    "totalRaw": 30,
+    "totalNormalized": 30,
+    "totalAfterFilters": 30,
+    "totalUnique": 30,
+    "descriptionTruncatedCount": 0,
+    "truncated": true
+  },
+  "candidate": {
+    "candidateHash": "c61557c7acbb2b791ebe09cc74cd3d3d29344035853528bb77833f83e760f31c",
+    "candidateSnapshotHash": "505e87a12cceb8cad1a7e7b2360d92b2ee1b339a30dd06234e7c699f071fe9b2",
+    "derivedFromResume": false,
+    "resumeChars": 0,
+    "usedExampleProfile": true
+  },
+  "parameters": {
+    "resultMode": "shortlist",
+    "minDeliveryScore": 2,
+    "mode": "search",
+    "maxItems": 3,
+    "minRankToForward": 30,
+    "maxAiItems": null,
+    "recoverHolds": false,
+    "aiConcurrency": 4
+  },
+  "counts": {
+    "sourceJobs": 3,
+    "budgetAuthorizedJobs": 3,
+    "evaluatedJobs": 3,
+    "staticDropped": 0,
+    "staticHeld": 0,
+    "aiAttempted": 3,
+    "aiScored": 3,
+    "aiFailed": 0,
+    "resultFilteredOut": 0,
+    "outputRows": 3
+  },
+  "ai": {
+    "provider": "openrouter:OpenAI",
+    "model": "openai/gpt-5.6-luna",
+    "profileExtractionUsed": false,
+    "providerCostUsd": 0.0034708,
+    "providerCostLimitUsd": 0.25,
+    "providerCostReservedUsd": 0.019006,
+    "providerCostLimited": false,
+    "maxProviderAttempts": 2,
+    "inputTokens": 5653,
+    "outputTokens": 1715
+  },
+  "billing": {
+    "eventName": "job-fit-result",
+    "unitPriceUsd": 0.02,
+    "chargedCount": 3,
+    "totalChargedUsd": 0.06,
+    "budgetAuthorizedCount": 3,
+    "budgetLimited": false
+  },
+  "terminal": {
+    "reason": "completed"
+  },
+  "warnings": [
+    "No candidate source was supplied, so this run scored the built-in example candidate. The results describe that example, not you.",
+    "An example run evaluates at most 3 jobs. Supply your own candidate to raise maxItems."
+  ]
+}

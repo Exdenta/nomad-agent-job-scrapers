@@ -2,11 +2,150 @@
   "schemaVersion": "apify-integration-evidence-v1",
   "actor": {
     "id": "nomad-agent/ai-job-fit-scorer",
-    "buildNumber": "0.1.12",
-    "buildId": "eLfTnCWohYVKejvsD"
+    "buildNumber": "0.1.22",
+    "buildId": "XQhyxEg3YZ3NMel70"
   },
-  "recordedAt": "2026-09-03T21:59:15.989Z",
+  "recordedAt": "2026-09-05",
   "deployment": {
+    "state": "DEPLOYED",
+    "isPublic": true,
+    "latestBuildNumber": "0.1.22",
+    "latestBuildId": "XQhyxEg3YZ3NMel70",
+    "defaultBuildSelector": "latest",
+    "note": "Read-only observation of an existing release; no release performed in this continuation."
+  },
+  "historicalCompatibilityEvidence": {
+    "buildNumber": "0.1.10",
+    "runSummarySchema": "nomad-ai-job-fit-run-summary-v3",
+    "suppliedJobRunId": "KuuEnCoMfFbFj3z5R",
+    "twoSourceRunId": "udTJyz3zJWOkKSNUS",
+    "allTenSourcesRunId": "CEofFmV6UEb82yi7M",
+    "restStarterRunId": "uqwj8p5qPU74JUyEo",
+    "note": "These predecessor runs remain evidence for v3 compatibility and all-ten-source coverage; they are not current-release proof."
+  },
+  "channels": {
+    "mcp": {
+      "artifactValidated": true,
+      "liveActorRunTested": true,
+      "liveChannelTested": false,
+      "destinationApplicable": false,
+      "liveDestinationWriteTested": false,
+      "review": {
+        "supported": false,
+        "status": "not-supported",
+        "submissionId": null,
+        "publicUrl": null
+      },
+      "evidence": [
+        {
+          "layer": "artifact",
+          "summary": "The generic call-actor descriptor is credential-free, bounded, explicit about shortlist mode, and pinned to live-verified runtime build 0.1.22."
+        },
+        {
+          "layer": "historical-actor-run",
+          "summary": "Historical evidence: Build 0.1.12 passed v4 shortlist filtering, audit retention, a scored inline result, and a three-source default search."
+        },
+        {
+          "layer": "actor-run",
+          "summary": "Existing 0.1.22 run AkjZ6lVDultxapjdP returned three scored rows for the built-in fictional candidate and reconciled three charges ($0.06). No live channel or destination write was tested."
+        }
+      ],
+      "blockers": [
+        "Call the public Actor through the hosted Apify MCP server and inspect the returned tool, exact run, summary, and dataset."
+      ]
+    },
+    "n8n": {
+      "artifactValidated": true,
+      "liveActorRunTested": true,
+      "liveChannelTested": false,
+      "destinationApplicable": true,
+      "liveDestinationWriteTested": false,
+      "review": {
+        "supported": true,
+        "status": "not-submitted",
+        "submissionId": null,
+        "publicUrl": null
+      },
+      "evidence": [
+        {
+          "layer": "artifact",
+          "summary": "The inactive workflow accepts v3/v4 summaries, reconciles v4 result policy and billing, validates fit rows, and upserts by matchKey."
+        },
+        {
+          "layer": "historical-actor-run",
+          "summary": "Historical evidence: Build 0.1.12 passed the four Actor-side v4 behaviors represented by the workflow."
+        },
+        {
+          "layer": "actor-run",
+          "summary": "Existing 0.1.22 run AkjZ6lVDultxapjdP returned three scored rows for the built-in fictional candidate and reconciled three charges ($0.06). No live channel or destination write was tested."
+        }
+      ],
+      "blockers": [
+        "Import into an authenticated n8n instance and prove one create plus one update in a named disposable Google Sheet."
+      ]
+    },
+    "make": {
+      "artifactValidated": true,
+      "liveActorRunTested": true,
+      "liveChannelTested": false,
+      "destinationApplicable": true,
+      "liveDestinationWriteTested": false,
+      "review": {
+        "supported": true,
+        "status": "not-submitted",
+        "submissionId": null,
+        "publicUrl": null
+      },
+      "evidence": [
+        {
+          "layer": "artifact",
+          "summary": "The blueprint is bounded, pins exact Actor and build identities, and has separate v3, v4 shortlist, and v4 audit filters."
+        },
+        {
+          "layer": "historical-actor-run",
+          "summary": "Historical evidence: Build 0.1.12 passed the four Actor-side v4 behaviors represented by the blueprint."
+        },
+        {
+          "layer": "actor-run",
+          "summary": "Existing 0.1.22 run AkjZ6lVDultxapjdP returned three scored rows for the built-in fictional candidate and reconciled three charges ($0.06). No live channel or destination write was tested."
+        }
+      ],
+      "blockers": [
+        "Import with an exact-build Apify Task and prove one create plus one update in a named disposable Google Sheet."
+      ]
+    },
+    "zapier": {
+      "artifactValidated": true,
+      "liveActorRunTested": true,
+      "liveChannelTested": false,
+      "destinationApplicable": true,
+      "liveDestinationWriteTested": false,
+      "review": {
+        "supported": true,
+        "status": "not-submitted",
+        "submissionId": null,
+        "publicUrl": null
+      },
+      "evidence": [
+        {
+          "layer": "artifact",
+          "summary": "The editor specification pins build 0.1.22, shortlist mode, delivery score 2, exact-run storage, and matchKey-based Google Sheets upserts."
+        },
+        {
+          "layer": "historical-actor-run",
+          "summary": "Historical evidence: Build 0.1.12 passed the v4 shortlist behavior required by the editor recipe."
+        },
+        {
+          "layer": "actor-run",
+          "summary": "Existing 0.1.22 run AkjZ6lVDultxapjdP returned three scored rows for the built-in fictional candidate and reconciled three charges ($0.06). No live channel or destination write was tested."
+        }
+      ],
+      "blockers": [
+        "Build the Zap in the authenticated editor and prove one create plus one update in a named disposable Google Sheet."
+      ]
+    }
+  },
+  "historicalDeployment": {
     "state": "LIVE_VERIFIED",
     "isPublic": true,
     "latestBuildNumber": "0.1.13",
@@ -36,7 +175,24 @@
       }
     }
   },
-  "actorCanaries": {
+  "currentActorRun": {
+    "runId": "AkjZ6lVDultxapjdP",
+    "resolvedBuildNumber": "0.1.22",
+    "resolvedBuildId": "XQhyxEg3YZ3NMel70",
+    "status": "SUCCEEDED",
+    "exitCode": 0,
+    "selector": "latest",
+    "datasetId": "POcNi5cIr3NmI2pmJ",
+    "keyValueStoreId": "XZZMXE6QEuPFWvsH6",
+    "datasetRows": 3,
+    "usedExampleProfile": true,
+    "chargedEventCounts": {
+      "job-fit-result": 3
+    },
+    "runSummarySchema": "nomad-ai-job-fit-run-summary-v4",
+    "readBackOn": "2026-09-05"
+  },
+  "historicalActorCanaries": {
     "defaultShortlist": {
       "runId": "fhMYR6bzdbzdNl84y",
       "resolvedBuildNumber": "0.1.12",
@@ -133,121 +289,6 @@
         "job-fit-result": 1
       },
       "runSummarySchema": "nomad-ai-job-fit-run-summary-v4"
-    }
-  },
-  "historicalCompatibilityEvidence": {
-    "buildNumber": "0.1.10",
-    "runSummarySchema": "nomad-ai-job-fit-run-summary-v3",
-    "suppliedJobRunId": "KuuEnCoMfFbFj3z5R",
-    "twoSourceRunId": "udTJyz3zJWOkKSNUS",
-    "allTenSourcesRunId": "CEofFmV6UEb82yi7M",
-    "restStarterRunId": "uqwj8p5qPU74JUyEo",
-    "note": "These predecessor runs remain evidence for v3 compatibility and all-ten-source coverage; they are not current-release proof."
-  },
-  "channels": {
-    "mcp": {
-      "artifactValidated": true,
-      "liveActorRunTested": true,
-      "liveChannelTested": false,
-      "destinationApplicable": false,
-      "liveDestinationWriteTested": false,
-      "review": {
-        "supported": false,
-        "status": "not-supported",
-        "submissionId": null,
-        "publicUrl": null
-      },
-      "evidence": [
-        {
-          "layer": "artifact",
-          "summary": "The generic call-actor descriptor is credential-free, bounded, explicit about shortlist mode, and pinned to live-verified runtime build 0.1.12."
-        },
-        {
-          "layer": "actor-run",
-          "summary": "Build 0.1.12 passed v4 shortlist filtering, audit retention, a scored inline result, and a three-source default search."
-        }
-      ],
-      "blockers": [
-        "Call the public Actor through the hosted Apify MCP server and inspect the returned tool, exact run, summary, and dataset."
-      ]
-    },
-    "n8n": {
-      "artifactValidated": true,
-      "liveActorRunTested": true,
-      "liveChannelTested": false,
-      "destinationApplicable": true,
-      "liveDestinationWriteTested": false,
-      "review": {
-        "supported": true,
-        "status": "not-submitted",
-        "submissionId": null,
-        "publicUrl": null
-      },
-      "evidence": [
-        {
-          "layer": "artifact",
-          "summary": "The inactive workflow accepts v3/v4 summaries, reconciles v4 result policy and billing, validates fit rows, and upserts by matchKey."
-        },
-        {
-          "layer": "actor-run",
-          "summary": "Build 0.1.12 passed the four Actor-side v4 behaviors represented by the workflow."
-        }
-      ],
-      "blockers": [
-        "Import into an authenticated n8n instance and prove one create plus one update in a named disposable Google Sheet."
-      ]
-    },
-    "make": {
-      "artifactValidated": true,
-      "liveActorRunTested": true,
-      "liveChannelTested": false,
-      "destinationApplicable": true,
-      "liveDestinationWriteTested": false,
-      "review": {
-        "supported": true,
-        "status": "not-submitted",
-        "submissionId": null,
-        "publicUrl": null
-      },
-      "evidence": [
-        {
-          "layer": "artifact",
-          "summary": "The blueprint is bounded, pins exact Actor and build identities, and has separate v3, v4 shortlist, and v4 audit filters."
-        },
-        {
-          "layer": "actor-run",
-          "summary": "Build 0.1.12 passed the four Actor-side v4 behaviors represented by the blueprint."
-        }
-      ],
-      "blockers": [
-        "Import with an exact-build Apify Task and prove one create plus one update in a named disposable Google Sheet."
-      ]
-    },
-    "zapier": {
-      "artifactValidated": true,
-      "liveActorRunTested": true,
-      "liveChannelTested": false,
-      "destinationApplicable": true,
-      "liveDestinationWriteTested": false,
-      "review": {
-        "supported": true,
-        "status": "not-submitted",
-        "submissionId": null,
-        "publicUrl": null
-      },
-      "evidence": [
-        {
-          "layer": "artifact",
-          "summary": "The editor specification pins build 0.1.12, shortlist mode, delivery score 2, exact-run storage, and matchKey-based Google Sheets upserts."
-        },
-        {
-          "layer": "actor-run",
-          "summary": "Build 0.1.12 passed the v4 shortlist behavior required by the editor recipe."
-        }
-      ],
-      "blockers": [
-        "Build the Zap in the authenticated editor and prove one create plus one update in a named disposable Google Sheet."
-      ]
     }
   }
 }

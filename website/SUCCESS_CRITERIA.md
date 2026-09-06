@@ -20,8 +20,9 @@ are separate proof layers.
 
 - Current Store defaults are labeled separately from older integration-tested
   pins: LinkedIn `1.0.6` versus `1.0.2`, EURAXESS `1.0.20` versus `1.0.16`,
-  and scorer documentation build `0.1.13` versus integration-tested runtime
-  `0.1.12`, as observed on 2026-09-03.
+  as observed on 2026-09-03. The scorer starters and observed default use
+  `0.1.22` as of 2026-09-05; older scorer canaries retain their original
+  `0.1.12` and `0.1.13` builds.
 - The scorer price is stated as `$0.02` per returned shortlist row or retained
   non-failure audit row;
   no unsupported accuracy, customer, adoption, savings, or speed claim appears.

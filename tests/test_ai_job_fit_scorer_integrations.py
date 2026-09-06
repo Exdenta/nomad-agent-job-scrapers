@@ -10,8 +10,8 @@ import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
 INTEGRATIONS = ROOT / "integrations"
-BUILD = "0.1.12"
-BUILD_ID = "eLfTnCWohYVKejvsD"
+BUILD = "0.1.22"
+BUILD_ID = "XQhyxEg3YZ3NMel70"
 
 adapter_spec = importlib.util.spec_from_file_location(
     "ai_job_fit_adapter",
@@ -100,7 +100,7 @@ class AiJobFitScorerIntegrationTests(unittest.TestCase):
             INTEGRATIONS / "api" / "ai-job-fit-scorer-run-and-fetch.mjs"
         )
         runner = runner_path.read_text()
-        self.assertIn("const VERIFIED_BUILD = '0.1.12'", runner)
+        self.assertIn("const VERIFIED_BUILD = '0.1.22'", runner)
         self.assertIn("/v2/actors/${ACTOR}/runs", runner)
         self.assertNotIn("/v2/acts/${ACTOR}/runs", runner)
         self.assertIn("settlementDeadline", runner)
@@ -129,7 +129,7 @@ class AiJobFitScorerIntegrationTests(unittest.TestCase):
 process.env.APIFY_TOKEN = 'test-token';
 globalThis.fetch = async (url) => {{
   const run = {{
-    id:'run-v4', status:'SUCCEEDED', exitCode:0, buildNumber:'0.1.12',
+    id:'run-v4', status:'SUCCEEDED', exitCode:0, buildNumber:'0.1.22',
     defaultDatasetId:'dataset-v4', defaultKeyValueStoreId:'store-v4',
     chargedEventCounts:{{'job-fit-result':0}}
   }};
@@ -451,7 +451,7 @@ try {
         )
         self.assertEqual(
             {
-                item["runId"] for item in evidence["actorCanaries"].values()
+                item["runId"] for item in evidence["historicalActorCanaries"].values()
             },
             {
                 "fhMYR6bzdbzdNl84y",
@@ -460,10 +460,10 @@ try {
                 "vzhqlbVeXhp5tKs4N",
             },
         )
-        default_demo = evidence["actorCanaries"]["defaultShortlist"]
+        default_demo = evidence["historicalActorCanaries"]["defaultShortlist"]
         self.assertEqual(default_demo["runId"], "fhMYR6bzdbzdNl84y")
-        self.assertEqual(default_demo["resolvedBuildNumber"], BUILD)
-        self.assertEqual(default_demo["resolvedBuildId"], BUILD_ID)
+        self.assertEqual(default_demo["resolvedBuildNumber"], "0.1.12")
+        self.assertEqual(default_demo["resolvedBuildId"], "eLfTnCWohYVKejvsD")
         self.assertEqual(default_demo["runSummarySchema"], "nomad-ai-job-fit-run-summary-v4")
         self.assertEqual(default_demo["resultMode"], "shortlist")
         self.assertEqual(default_demo["minDeliveryScore"], 2)
@@ -477,12 +477,12 @@ try {
         )
         self.assertEqual(default_demo["warnings"], [])
         self.assertEqual(
-            evidence["actorCanaries"]["auditRetainsHold"]["runId"],
+            evidence["historicalActorCanaries"]["auditRetainsHold"]["runId"],
             "lIpiLiudBukaaFI7d",
         )
-        self.assertEqual(evidence["deployment"]["latestBuildNumber"], "0.1.13")
+        self.assertEqual(evidence["deployment"]["latestBuildNumber"], BUILD)
         self.assertEqual(
-            evidence["deployment"]["documentationSmoke"]["chargedEventCounts"],
+            evidence["historicalDeployment"]["documentationSmoke"]["chargedEventCounts"],
             {"job-fit-result": 0},
         )
         for channel in evidence["channels"].values():
