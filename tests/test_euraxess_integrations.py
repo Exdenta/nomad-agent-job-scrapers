@@ -48,7 +48,7 @@ class EuraxessIntegrationPackTests(unittest.TestCase):
                 "assignments"
             ]
         }
-        self.assertEqual(config["actorBuild"], "1.0.16")
+        self.assertEqual(config["actorBuild"], "latest")
         self.assertEqual(config["advancedInputJson"], "{}")
         self.assertEqual(config["maxItems"], 5)
         self.assertEqual(config["maxRescheduleRetries"], 1)
@@ -168,7 +168,7 @@ process.stdout.write(JSON.stringify(new Function(node.parameters.jsCode)()));
             for item in by_name["Configuration"]["mapper"]["variables"]
         }
         self.assertEqual(config["maxitems"], "5")
-        self.assertEqual(config["actorbuild"], "1.0.16")
+        self.assertEqual(config["actorbuild"], "latest")
         self.assertEqual(config["apifytaskid"], "REPLACE_WITH_APIFY_TASK_ID")
         rendered = json.dumps(blueprint)
         self.assertIn("RUN-SUMMARY", rendered)
@@ -219,7 +219,7 @@ process.stdout.write(JSON.stringify(new Function(node.parameters.jsCode)()));
             )
         )
         self.assertEqual(example["actor"], "nomad-agent/euraxess-enrich-translate-normalize-scraper")
-        self.assertEqual(example["callOptions"]["build"], "1.0.16")
+        self.assertEqual(example["callOptions"]["build"], "latest")
         self.assertLessEqual(example["callOptions"]["maxItems"], 5)
         self.assertLessEqual(example["input"]["maxItems"], 5)
         self.assertFalse(example["input"]["translateToEnglish"])

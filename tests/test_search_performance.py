@@ -36,14 +36,14 @@ class SearchPerformanceTests(unittest.TestCase):
             {
                 "rows": [
                     {
-                        "keys": ["https://nomadagent.dev/", "job data api"],
+                        "keys": ["https://jobatlas.dev/", "job data api"],
                         "clicks": 2,
                         "impressions": 20,
                         "ctr": 0.1,
                         "position": 8.5,
                     },
                     {
-                        "keys": ["https://nomadagent.dev/actors/linkedin", "linkedin jobs api"],
+                        "keys": ["https://jobatlas.dev/actors/linkedin", "linkedin jobs api"],
                         "clicks": 1,
                         "impressions": 10,
                         "ctr": 0.1,
@@ -61,7 +61,7 @@ class SearchPerformanceTests(unittest.TestCase):
 
         with patch.object(search_performance, "urlopen", fake_urlopen):
             rows = search_performance.fetch_search_rows(
-                "https://nomadagent.dev/",
+                "https://jobatlas.dev/",
                 "test-token",
                 date(2026, 8, 1),
                 date(2026, 8, 28),
@@ -83,19 +83,19 @@ class SearchPerformanceTests(unittest.TestCase):
     def test_build_report_aggregates_pages_and_non_brand_queries(self) -> None:
         rows = [
             {
-                "keys": ["https://nomadagent.dev/", "nomad agent"],
+                "keys": ["https://jobatlas.dev/", "nomad agent"],
                 "clicks": 3,
                 "impressions": 10,
                 "position": 2,
             },
             {
-                "keys": ["https://nomadagent.dev/", "job data api"],
+                "keys": ["https://jobatlas.dev/", "job data api"],
                 "clicks": 2,
                 "impressions": 20,
                 "position": 8,
             },
             {
-                "keys": ["https://nomadagent.dev/actors/linkedin", "linkedin jobs api"],
+                "keys": ["https://jobatlas.dev/actors/linkedin", "linkedin jobs api"],
                 "clicks": 1,
                 "impressions": 10,
                 "position": 12,
@@ -103,7 +103,7 @@ class SearchPerformanceTests(unittest.TestCase):
         ]
 
         report = search_performance.build_report(
-            "https://nomadagent.dev/",
+            "https://jobatlas.dev/",
             date(2026, 8, 1),
             date(2026, 8, 28),
             rows,
@@ -119,7 +119,7 @@ class SearchPerformanceTests(unittest.TestCase):
         self.assertEqual(report["nonBrandTotals"]["impressions"], 30)
         self.assertEqual(report["nonBrandTotals"]["ctr"], 0.1)
         self.assertEqual(report["coverage"]["rowCount"], 3)
-        self.assertEqual(report["pages"][0]["page"], "https://nomadagent.dev/")
+        self.assertEqual(report["pages"][0]["page"], "https://jobatlas.dev/")
         self.assertEqual(report["queries"][0]["query"], "nomad agent")
         self.assertFalse(report["privacy"]["containsCookies"])
         self.assertFalse(report["privacy"]["containsSessionIdentifiers"])
@@ -128,7 +128,7 @@ class SearchPerformanceTests(unittest.TestCase):
         self.assertIn("review", report["privacy"]["handling"].lower())
 
         public_report = search_performance.build_report(
-            "https://nomadagent.dev/",
+            "https://jobatlas.dev/",
             date(2026, 8, 1),
             date(2026, 8, 28),
             rows,
@@ -177,7 +177,7 @@ class SearchPerformanceTests(unittest.TestCase):
             "no page is revised solely because it was unindexed for less than 72 hours",
         ):
             self.assertIn(required, program)
-        self.assertIn("https://nomadagent.dev/", (root / "README.md").read_text())
+        self.assertIn("https://jobatlas.dev/", (root / "README.md").read_text())
 
 
 if __name__ == "__main__":

@@ -29,7 +29,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: production
-      url: https://nomadagent.dev/
+      url: https://jobatlas.dev/
     steps:
       - name: Check out repository
         uses: actions/checkout@v6
@@ -98,7 +98,7 @@ jobs:
           {
             echo "## Nomad Agent website deployment"
             echo "- Commit: \`${GITHUB_SHA}\`"
-            echo "- Canonical origin: https://nomadagent.dev/"
+            echo "- Canonical origin: https://jobatlas.dev/"
             echo "- Live HTML: byte-matched before search notification"
             echo "- Search notification: see the preceding step; acceptance is not indexing proof"
           } >> "$GITHUB_STEP_SUMMARY"

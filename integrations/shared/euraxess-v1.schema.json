@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://raw.githubusercontent.com/Exdenta/OinkJobSearch/main/apify/job_custom_schemas/euraxess-v1.schema.json",
+  "$id": "https://raw.githubusercontent.com/Exdenta/nomad-agent-job-scrapers/main/integrations/shared/euraxess-v1.schema.json",
   "title": "EURAXESS nomad-agent-job-v1 extension",
   "description": "EURAXESS source fields that remain outside the common normalized contract, parsed deterministically from job detail pages.",
   "type": "object",
@@ -14,31 +14,61 @@
   "properties": {
     "academicLevelRaw": {
       "description": "Unmodified EURAXESS Positions / Academic Level taxonomy labels. These are source search classifications, not applicant education requirements.",
-      "type": ["array", "null"],
-      "items": {"type": "string", "minLength": 1},
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
       "uniqueItems": true
     },
-    "researchInfrastructureStaffPosition": {"type": ["string", "null"]},
+    "researchInfrastructureStaffPosition": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
     "unmappedJobInformation": {
-      "type": ["object", "null"],
+      "type": [
+        "object",
+        "null"
+      ],
       "additionalProperties": {
         "type": "array",
-        "items": {"type": "string"}
+        "items": {
+          "type": "string"
+        }
       }
     },
     "unparsedGeofields": {
-      "type": ["array", "null"],
-      "items": {"$ref": "#/$defs/unparsedGeofield"}
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "$ref": "#/$defs/unparsedGeofield"
+      }
     }
   },
   "$defs": {
     "unparsedGeofield": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["locationIndex", "raw"],
+      "required": [
+        "locationIndex",
+        "raw"
+      ],
       "properties": {
-        "locationIndex": {"type": "integer", "minimum": 0},
-        "raw": {"type": "string", "minLength": 1}
+        "locationIndex": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "raw": {
+          "type": "string",
+          "minLength": 1
+        }
       }
     }
   }

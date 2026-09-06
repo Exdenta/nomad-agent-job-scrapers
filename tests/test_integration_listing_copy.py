@@ -47,16 +47,16 @@ class IntegrationListingCopyTests(unittest.TestCase):
         ):
             self.assertIn(f"]({asset})", copy)
 
-        for build in ("1.0.2", "1.0.16", "0.1.11"):
+        for build in ("1.0.2", "latest", "0.1.11"):
             self.assertIn(f"`{build}`", copy)
         for product_url in (
-            "https://nomadagent.dev/actors/linkedin",
-            "https://nomadagent.dev/actors/euraxess",
-            "https://nomadagent.dev/actors/ai-job-fit-scorer",
+            "https://jobatlas.dev/actors/linkedin",
+            "https://jobatlas.dev/actors/euraxess",
+            "https://jobatlas.dev/actors/ai-job-fit-scorer",
         ):
             self.assertIn(product_url, copy)
         self.assertGreaterEqual(
-            copy.count("https://nomadagent.dev/integrations/n8n"), 4
+            copy.count("https://jobatlas.dev/integrations/n8n"), 4
         )
 
     def test_make_copy_covers_every_blueprint_and_exact_pin(self) -> None:
@@ -69,16 +69,16 @@ class IntegrationListingCopyTests(unittest.TestCase):
         ):
             self.assertIn(f"]({asset})", copy)
 
-        for build in ("1.0.2", "1.0.16", "0.1.11"):
+        for build in ("1.0.2", "latest", "0.1.11"):
             self.assertIn(f"`{build}`", copy)
         for product_url in (
-            "https://nomadagent.dev/actors/linkedin",
-            "https://nomadagent.dev/actors/euraxess",
-            "https://nomadagent.dev/actors/ai-job-fit-scorer",
+            "https://jobatlas.dev/actors/linkedin",
+            "https://jobatlas.dev/actors/euraxess",
+            "https://jobatlas.dev/actors/ai-job-fit-scorer",
         ):
             self.assertIn(product_url, copy)
         self.assertGreaterEqual(
-            copy.count("https://nomadagent.dev/integrations/make"), 3
+            copy.count("https://jobatlas.dev/integrations/make"), 3
         )
 
     def test_copy_keeps_marketplace_and_delivery_proof_separate(self) -> None:

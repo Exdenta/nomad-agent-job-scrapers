@@ -1,7 +1,7 @@
 # Nomad Agent SEO program
 
 This document is the operating contract for growing
-[nomadagent.dev](https://nomadagent.dev/) without weakening product accuracy,
+[jobatlas.dev](https://jobatlas.dev/) without weakening product accuracy,
 privacy, or release-proof boundaries. It covers the first 90 days after the
 expanded site launch and remains useful as the recurring review checklist.
 The pre-expansion state is preserved in the
@@ -149,3 +149,5 @@ design partner and retain only:
 
 If any item is missing, keep the evidence private and describe the work as a
 design-partner test rather than a customer result.
+
+| `/actors/ycombinator` | Y Combinator jobs scraper for startup pipelines and alerts | Normalized YC Actor guide and source limitations |

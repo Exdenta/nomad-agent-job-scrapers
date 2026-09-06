@@ -22,7 +22,7 @@ except ImportError:  # Direct execution: python3 scripts/search_performance.py
 SEARCH_ANALYTICS_ENDPOINT = (
     "https://www.googleapis.com/webmasters/v3/sites/{site}/searchAnalytics/query"
 )
-DEFAULT_SITE_URL = "https://nomadagent.dev/"
+DEFAULT_SITE_URL = "https://jobatlas.dev/"
 DEFAULT_ROW_LIMIT = 25_000
 MAX_ROWS = 50_000
 BRAND_TERMS = ("nomad agent", "nomadagent", "nomad-agent")

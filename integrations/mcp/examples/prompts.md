@@ -23,7 +23,7 @@ raw. Report a valid empty dataset as no matching jobs.
 
 ```text
 Use generic call-actor for
-nomad-agent/euraxess-enrich-translate-normalize-scraper at exact build 1.0.16.
+nomad-agent/euraxess-enrich-translate-normalize-scraper at the latest selector.
 Search for at most 5 postdoctoral machine-learning jobs in Germany. Disable
 translation, AI enrichment, analytics, raw output, and cross-run dedupe. Use a
 $0.10 charge cap and waitSecs 0.

@@ -79,8 +79,8 @@ named Sheet write.
 ### Links
 
 - Workflow: [`linkedin-jobs-to-google-sheets.json`](linkedin-jobs-to-google-sheets.json)
-- Product guide: <https://nomadagent.dev/actors/linkedin>
-- Setup and support: <https://nomadagent.dev/integrations/n8n>
+- Product guide: <https://jobatlas.dev/actors/linkedin>
+- Setup and support: <https://jobatlas.dev/integrations/n8n>
 - Actor: <https://apify.com/nomad-agent/linkedin-enrich-translate-normalize-scraper>
 - Source and issues: <https://github.com/Exdenta/nomad-agent-job-scrapers>
 
@@ -145,8 +145,8 @@ an n8n template.
 ### Links
 
 - Workflow: [`linkedin-daily-job-alerts.json`](linkedin-daily-job-alerts.json)
-- Product guide: <https://nomadagent.dev/actors/linkedin>
-- Setup and support: <https://nomadagent.dev/integrations/n8n>
+- Product guide: <https://jobatlas.dev/actors/linkedin>
+- Setup and support: <https://jobatlas.dev/integrations/n8n>
 - Actor: <https://apify.com/nomad-agent/linkedin-enrich-translate-normalize-scraper>
 - Source and issues: <https://github.com/Exdenta/nomad-agent-job-scrapers>
 
@@ -165,7 +165,7 @@ Actor run, and upsert duplicate-safe Google Sheets rows by stable job identity.
 
 Build a repeatable tracker for PhD, postdoc, fellowship, research, and faculty
 vacancies from EURAXESS. The workflow runs manually or daily, calls the Nomad
-Agent EURAXESS Actor at exact build `1.0.16`, polls the original run ID, and
+Agent EURAXESS Actor at the `latest` selector, polls the original run ID, and
 requires terminal success, exit code 0, the expected build, and a valid factual
 `nomad-agent-run-summary-v4` record.
 
@@ -197,7 +197,7 @@ No community node or AI-provider credential is required.
    named `Jobs`.
 3. Assign one scoped Apify Header Auth credential to all four Apify HTTP nodes.
 4. Connect Google Sheets to **Upsert jobs in Google Sheets**.
-5. Replace the spreadsheet placeholder and keep build `1.0.16`, five results,
+5. Replace the spreadsheet placeholder and keep selector `latest`, five results,
    and the starter charge cap for the first run.
 6. Set a bounded keyword, location, or `euraxessSearch` plan; use
    `advancedInputJson` for other current Actor fields.
@@ -215,8 +215,8 @@ successful Actor run remain supporting artifact evidence only.
 ### Links
 
 - Workflow: [`euraxess-jobs-to-google-sheets.json`](euraxess-jobs-to-google-sheets.json)
-- Product guide: <https://nomadagent.dev/actors/euraxess>
-- Setup and support: <https://nomadagent.dev/integrations/n8n>
+- Product guide: <https://jobatlas.dev/actors/euraxess>
+- Setup and support: <https://jobatlas.dev/integrations/n8n>
 - Actor: <https://apify.com/nomad-agent/euraxess-enrich-translate-normalize-scraper>
 - Source and issues: <https://github.com/Exdenta/nomad-agent-job-scrapers>
 
@@ -285,8 +285,8 @@ or submitted to the template library.
 ### Links
 
 - Workflow: [`ai-job-fit-scorer-to-google-sheets.json`](ai-job-fit-scorer-to-google-sheets.json)
-- Product guide: <https://nomadagent.dev/actors/ai-job-fit-scorer>
-- Setup and support: <https://nomadagent.dev/integrations/n8n>
+- Product guide: <https://jobatlas.dev/actors/ai-job-fit-scorer>
+- Setup and support: <https://jobatlas.dev/integrations/n8n>
 - Actor: <https://apify.com/nomad-agent/ai-job-fit-scorer>
 - Source and issues: <https://github.com/Exdenta/nomad-agent-job-scrapers>
 

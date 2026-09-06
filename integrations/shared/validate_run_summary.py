@@ -14,7 +14,7 @@ ROOT_KEYS = {
     "delivered", "retry",
 }
 RETRY_KEYS = {"recommended", "afterSeconds"}
-STATUSES = {"succeeded", "empty", "partial"}
+STATUSES = {"succeeded", "empty", "empty-limited", "partial"}
 MAX_COUNTER = 2_147_483_647
 MAX_RETRY_AFTER_SECONDS = 3_600
 
@@ -87,6 +87,9 @@ def validate_run_summary(value: Any) -> Mapping[str, Any]:
             raise RunSummaryValidationError(
                 "empty requires delivered=0, resultsLimited=false, and no retry"
             )
+    elif status == "empty-limited":
+        if delivered != 0 or not summary["resultsLimited"] or recommended:
+            raise RunSummaryValidationError("empty-limited requires zero rows, resultsLimited=true, and no retry")
     elif delivered < 1:
         raise RunSummaryValidationError(
             "succeeded and partial outcomes require at least one delivered job"

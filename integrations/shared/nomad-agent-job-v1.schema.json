@@ -1,0 +1,1108 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "custom",
+    "data",
+    "identity",
+    "llm",
+    "raw",
+    "schemaVersion"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "enum": [
+        "nomad-agent-job-v1"
+      ],
+      "type": "string"
+    },
+    "identity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "externalId",
+        "source",
+        "url"
+      ],
+      "properties": {
+        "source": {
+          "type": "string"
+        },
+        "externalId": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "url": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "description": "Stable source identity for one posting."
+    },
+    "data": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "application",
+        "benefits",
+        "classification",
+        "company",
+        "compensation",
+        "constraints",
+        "domains",
+        "domainsRaw",
+        "employment",
+        "funding",
+        "locations",
+        "requirements",
+        "seniority",
+        "title"
+      ],
+      "properties": {
+        "title": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "company": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "department",
+            "logoUrl",
+            "name",
+            "sourceId",
+            "url"
+          ],
+          "properties": {
+            "name": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "sourceId": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "department": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "url": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "logoUrl": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          },
+          "description": "Hiring organisation details."
+        },
+        "classification": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "industries",
+            "jobFunctions"
+          ],
+          "properties": {
+            "industries": {
+              "type": [
+                "array",
+                "null"
+              ],
+              "items": {
+                "type": "string"
+              }
+            },
+            "jobFunctions": {
+              "type": [
+                "array",
+                "null"
+              ],
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "description": "Source-published job classifications, in the selected output language."
+        },
+        "domains": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "type": "string"
+          }
+        },
+        "domainsRaw": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "type": "string"
+          }
+        },
+        "locations": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "city",
+              "countryCode",
+              "countryName",
+              "facilityName",
+              "latitude",
+              "longitude",
+              "positionsAvailable",
+              "postalCode",
+              "raw",
+              "region",
+              "streetAddress"
+            ],
+            "properties": {
+              "raw": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "countryName": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "countryCode": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "city": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "region": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "postalCode": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "streetAddress": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "facilityName": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "positionsAvailable": {
+                "type": [
+                  "integer",
+                  "null"
+                ]
+              },
+              "latitude": {
+                "type": [
+                  "number",
+                  "null"
+                ]
+              },
+              "longitude": {
+                "type": [
+                  "number",
+                  "null"
+                ]
+              }
+            },
+            "description": "One physical job location with an explicit ISO country identity."
+          }
+        },
+        "employment": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "applicantLocationRequirements",
+            "contractTypes",
+            "durationMonths",
+            "hoursPerWeek",
+            "hoursPerWeekRaw",
+            "startDate",
+            "startDateRaw",
+            "workArrangements",
+            "workSchedules"
+          ],
+          "properties": {
+            "workArrangements": {
+              "type": [
+                "array",
+                "null"
+              ],
+              "items": {
+                "enum": [
+                  "remote",
+                  "hybrid",
+                  "onsite"
+                ],
+                "type": "string"
+              }
+            },
+            "applicantLocationRequirements": {
+              "type": [
+                "array",
+                "null"
+              ],
+              "items": {
+                "type": "string"
+              }
+            },
+            "workSchedules": {
+              "type": [
+                "array",
+                "null"
+              ],
+              "items": {
+                "type": "string"
+              }
+            },
+            "contractTypes": {
+              "type": [
+                "array",
+                "null"
+              ],
+              "items": {
+                "type": "string"
+              }
+            },
+            "durationMonths": {
+              "type": [
+                "number",
+                "null"
+              ]
+            },
+            "hoursPerWeek": {
+              "type": [
+                "number",
+                "null"
+              ]
+            },
+            "hoursPerWeekRaw": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "startDate": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "startDateRaw": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          },
+          "description": "Workplace, schedule, and legal-contract attributes."
+        },
+        "application": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "applicantSnapshot",
+            "applyMethodRaw",
+            "availability",
+            "deadline",
+            "directApply",
+            "eligibilityCriteria",
+            "email",
+            "hiringContacts",
+            "postedAt",
+            "referenceNumber",
+            "referenceNumberIssuer",
+            "selectionProcess",
+            "url"
+          ],
+          "properties": {
+            "postedAt": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "deadline": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "referenceNumber": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "referenceNumberIssuer": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "applicantSnapshot": {
+              "type": [
+                "object",
+                "null"
+              ],
+              "additionalProperties": false,
+              "required": [
+                "capturedAt",
+                "count",
+                "raw"
+              ],
+              "properties": {
+                "count": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ]
+                },
+                "raw": {
+                  "type": "string"
+                },
+                "capturedAt": {
+                  "type": "string"
+                }
+              },
+              "description": "Applicant-count text observed at one point in time."
+            },
+            "url": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "email": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "directApply": {
+              "type": [
+                "boolean",
+                "null"
+              ]
+            },
+            "applyMethodRaw": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "availability": {
+              "type": [
+                "object",
+                "null"
+              ],
+              "additionalProperties": false,
+              "required": [
+                "evidence",
+                "observedAt",
+                "status"
+              ],
+              "properties": {
+                "status": {
+                  "enum": [
+                    "observed_available",
+                    "observed_unavailable",
+                    "unknown"
+                  ],
+                  "type": "string"
+                },
+                "evidence": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "kind",
+                      "value"
+                    ],
+                    "properties": {
+                      "kind": {
+                        "enum": [
+                          "search_card_present",
+                          "detail_http_status",
+                          "detail_jobposting_markup",
+                          "detail_unavailable_marker",
+                          "source_label"
+                        ],
+                        "type": "string"
+                      },
+                      "value": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      }
+                    },
+                    "description": "One source or transport fact supporting an availability observation."
+                  }
+                },
+                "observedAt": {
+                  "type": "string"
+                }
+              },
+              "description": "Point-in-time source evidence, never a claim of enduring job truth."
+            },
+            "hiringContacts": {
+              "type": [
+                "array",
+                "null"
+              ],
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "address",
+                  "email",
+                  "name",
+                  "organization",
+                  "photoUrl",
+                  "title",
+                  "url"
+                ],
+                "properties": {
+                  "name": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "title": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "organization": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "url": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "photoUrl": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "email": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "address": {
+                    "type": [
+                      "object",
+                      "null"
+                    ],
+                    "additionalProperties": false,
+                    "required": [
+                      "city",
+                      "countryCode",
+                      "countryName",
+                      "postalCode",
+                      "raw",
+                      "region",
+                      "streetAddress"
+                    ],
+                    "properties": {
+                      "raw": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "countryName": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "countryCode": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "city": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "region": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "postalCode": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "streetAddress": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      }
+                    },
+                    "description": "Postal address published for an application contact."
+                  }
+                },
+                "description": "One public recruiter, hiring manager, job poster, or contact point."
+              }
+            },
+            "eligibilityCriteria": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "selectionProcess": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          },
+          "description": "Publication and application details."
+        },
+        "seniority": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "levels",
+            "raw"
+          ],
+          "properties": {
+            "raw": {
+              "type": [
+                "array",
+                "null"
+              ],
+              "items": {
+                "type": "string"
+              }
+            },
+            "levels": {
+              "type": [
+                "array",
+                "null"
+              ],
+              "items": {
+                "enum": [
+                  "intern",
+                  "entry",
+                  "junior",
+                  "mid",
+                  "senior",
+                  "staff",
+                  "lead",
+                  "principal",
+                  "manager",
+                  "director",
+                  "executive",
+                  "R1",
+                  "R2",
+                  "R3",
+                  "R4"
+                ],
+                "type": "string"
+              }
+            }
+          },
+          "description": "Generic job seniority and research-career stages."
+        },
+        "requirements": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "certifications",
+            "education",
+            "experience",
+            "languages",
+            "preferredSkills",
+            "requiredSkills",
+            "skillsQualifications",
+            "specificRequirements"
+          ],
+          "properties": {
+            "education": {
+              "type": [
+                "array",
+                "null"
+              ],
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "field",
+                  "level",
+                  "preferred",
+                  "yearsRequired"
+                ],
+                "properties": {
+                  "level": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "field": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "yearsRequired": {
+                    "type": [
+                      "number",
+                      "null"
+                    ]
+                  },
+                  "preferred": {
+                    "type": [
+                      "boolean",
+                      "null"
+                    ]
+                  }
+                },
+                "description": "One accepted education route into the role. ``yearsRequired`` is experience coupled to this route; it is not the duration of the degree. This represents requirements such as \"PhD, or a master's degree plus two years of laboratory experience\" without losing the alternative-path relationship."
+              }
+            },
+            "experience": {
+              "type": [
+                "array",
+                "null"
+              ],
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "field",
+                  "maximumYears",
+                  "minimumYears",
+                  "raw"
+                ],
+                "properties": {
+                  "field": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "minimumYears": {
+                    "type": [
+                      "number",
+                      "null"
+                    ]
+                  },
+                  "maximumYears": {
+                    "type": [
+                      "number",
+                      "null"
+                    ]
+                  },
+                  "raw": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  }
+                },
+                "description": "Experience range for one field, retaining the source wording."
+              }
+            },
+            "languages": {
+              "type": [
+                "array",
+                "null"
+              ],
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "language",
+                  "level",
+                  "required"
+                ],
+                "properties": {
+                  "language": {
+                    "type": "string"
+                  },
+                  "level": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "required": {
+                    "type": [
+                      "boolean",
+                      "null"
+                    ]
+                  }
+                },
+                "description": "One language and its advertised proficiency/necessity."
+              }
+            },
+            "requiredSkills": {
+              "type": [
+                "array",
+                "null"
+              ],
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "name",
+                  "yearsRequired"
+                ],
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "yearsRequired": {
+                    "type": [
+                      "number",
+                      "null"
+                    ]
+                  }
+                },
+                "description": "One named skill, optionally with an explicitly associated duration."
+              }
+            },
+            "preferredSkills": {
+              "type": [
+                "array",
+                "null"
+              ],
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "name",
+                  "yearsRequired"
+                ],
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "yearsRequired": {
+                    "type": [
+                      "number",
+                      "null"
+                    ]
+                  }
+                },
+                "description": "One named skill, optionally with an explicitly associated duration."
+              }
+            },
+            "certifications": {
+              "type": [
+                "array",
+                "null"
+              ],
+              "items": {
+                "type": "string"
+              }
+            },
+            "skillsQualifications": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "specificRequirements": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          },
+          "description": "Education, experience, language, skill, and certification requirements."
+        },
+        "benefits": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "funding": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "programme"
+          ],
+          "properties": {
+            "programme": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          },
+          "description": "Funding facts explicitly published for the position."
+        },
+        "compensation": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "currency",
+            "exact",
+            "maximum",
+            "minimum",
+            "period",
+            "raw"
+          ],
+          "properties": {
+            "currency": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "exact": {
+              "type": [
+                "number",
+                "null"
+              ]
+            },
+            "minimum": {
+              "type": [
+                "number",
+                "null"
+              ]
+            },
+            "maximum": {
+              "type": [
+                "number",
+                "null"
+              ]
+            },
+            "period": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "raw": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          },
+          "description": "Structured compensation plus the source text it was parsed from."
+        },
+        "constraints": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "locationPreference",
+            "securityClearance",
+            "visaSponsorship",
+            "workAuthorization"
+          ],
+          "properties": {
+            "visaSponsorship": {
+              "type": [
+                "boolean",
+                "null"
+              ]
+            },
+            "workAuthorization": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "securityClearance": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "locationPreference": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          },
+          "description": "Applicant eligibility constraints that are often only present in prose."
+        }
+      },
+      "description": "Normalized facts: static values first, then null-only LLM fills."
+    },
+    "custom": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "additionalProperties": false,
+      "required": [
+        "data",
+        "schemaId"
+      ],
+      "properties": {
+        "schemaId": {
+          "type": "string"
+        },
+        "data": {
+          "type": "object",
+          "additionalProperties": true
+        }
+      },
+      "description": "Board-owned extension data and the schema that defines its shape. ``schemaId`` identifies a versioned JSON Schema. The normalized core only requires ``data`` to be JSON; board-aware consumers can validate and interpret it using that schema."
+    },
+    "llm": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "completedAt",
+        "filledFields",
+        "model",
+        "promptVersion",
+        "provider",
+        "requestedFields",
+        "status"
+      ],
+      "properties": {
+        "status": {
+          "enum": [
+            "not_requested",
+            "completed",
+            "failed"
+          ],
+          "type": "string"
+        },
+        "requestedFields": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "filledFields": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "provider": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "model": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "promptVersion": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "completedAt": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "description": "Bookkeeping only; LLM values themselves are written directly to data."
+    },
+    "raw": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "additionalProperties": false,
+      "required": [
+        "description",
+        "descriptionHtml"
+      ],
+      "properties": {
+        "description": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "descriptionHtml": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "description": "Complete source descriptions as supplied by the source mapper."
+    }
+  },
+  "description": "The complete ``nomad-agent-job-v1`` JSON record.",
+  "title": "nomad-agent-job-v1 dataset item",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://raw.githubusercontent.com/Exdenta/nomad-agent-job-scrapers/main/integrations/shared/nomad-agent-job-v1.schema.json"
+}

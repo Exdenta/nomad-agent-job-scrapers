@@ -33,6 +33,7 @@ SHARED_CONTRACT_DIR = PROJECT_ROOT / "integrations" / "shared"
 PUBLIC_CONTRACT_FILENAMES = (
     "nomad-ai-job-fit-destination-v1.schema.json",
     "nomad-ai-job-fit-run-summary-v3.schema.json",
+    "nomad-ai-job-fit-run-summary-v4.schema.json",
     "nomad-ai-job-fit-v1.schema.json",
 )
 ROBOTS_META_NAMES = {"robots", "googlebot", "bingbot"}
@@ -550,7 +551,7 @@ def build_parser() -> argparse.ArgumentParser:
     for command in ("prepare", "preflight", "inspect", "notify"):
         child = subparsers.add_parser(command)
         child.add_argument("--site-dir", type=Path, default=Path("website"))
-        child.add_argument("--site-url", default="https://nomadagent.dev/")
+        child.add_argument("--site-url", default="https://jobatlas.dev/")
     return parser
 
 

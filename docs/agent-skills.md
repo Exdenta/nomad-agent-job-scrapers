@@ -102,9 +102,9 @@ run status, completion records, and dataset retrieval. Setup does not create an
 Apify schedule by itself. Use the n8n daily-alert template or an Apify Task and
 schedule when unattended monitoring is required.
 
-The EURAXESS skill documents the public `1.0` contract on exact build `1.0.16`.
-Its client setup uses generic `call-actor` to pin and verify that build rather
-than rely on mutable `latest` or `canary` tags. It then validates minimal v4
+The EURAXESS skill documents the public `1.0` contract on the `latest` selector.
+Its client setup uses generic `call-actor` with `latest` and records the returned
+immutable `buildId` and numeric `buildNumber`. It then validates minimal v4
 `RUN-SUMMARY`, reconciles `delivered` with the dataset, and honors at most one
 bounded retry recommendation. Installing it is not evidence that the Actor is
 currently available, priced for a specific account, or authorized for the
@@ -113,3 +113,13 @@ current account.
 The installed skill also contains `references/client-setup.md`, so an agent can
 explain the Codex or Claude Code connection boundary without copying an Apify
 token into a prompt or repository.
+
+## Y Combinator normalized jobs
+
+The [ycombinator-enrich-translate-normalize-scraper](../.agents/skills/ycombinator-enrich-translate-normalize-scraper/SKILL.md) skill covers startup-job search, recurring-alert dedupe, exact-build calls, and v4 completion checks.
+
+```bash
+python3 scripts/install_skill.py --skill ycombinator-enrich-translate-normalize-scraper --client both --target /path/to/project
+```
+
+See the [YC guide](ycombinator.md) for current prices and source limitations.
